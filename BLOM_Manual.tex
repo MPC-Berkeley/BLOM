@@ -1,0 +1,196 @@
+
+\documentclass {article}
+ 
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage[left=2cm,top=1cm,right=2cm,nohead,nofoot]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+	
+
+\usepackage{amssymb}
+
+
+\doublespacing
+
+\usepackage{amsfonts}
+  \newcommand{\field}[1]{\mathbb{#1}}
+  \newcommand{\reals}{\field{R}}
+
+
+\begin{document}
+
+
+\title{ Manual: using optimization modeling library. \\
+Berkeley Library for Optimization Modeling:  BLOM\\
+Revision 0.1 }
+\author{Sergey Vichik}
+
+\maketitle
+
+
+\section{Introduction}
+
+The library and the associated tools are designed to ease process of modeling
+dynamical nonlinear systems for optimization problems, especially MPC. 
+The library allows intuitive block diagram definition of the system,
+simulation, validation, and an automatic generation of an optimization problem
+to be solved. This process eliminates errors introduced by manual conversion
+and allows conversion of large models, too large to be converted manually. 
+The library consists of Simulink blocks library and Matlab software for
+converting model to an optimization problem. 
+
+This library supports the following work flow for defining an optimization problems. 
+First the model of the system is drawn using Simulink and the supplied blocks. 
+The models includes 
+\begin{enumerate}
+\item All equations that describe the system
+\item Inequality constraints 
+\item Cost function
+\item Which variable is the free variable to optimize, and what variable is externally determined.
+\end{enumerate}
+In the second stage the model is validated by running forward mode
+simulation. The validation includes a check whether constraints are violated. 
+After the validation phase, the model is converted to optimization problem, thus
+\begin{enumerate}
+\item Cost function.
+\item Linear and nonlinear equality constraints (from model equations)
+\item Linear and nonlinear inequality constraints.
+\item List of optimization variables.
+\item Externally specified variables using user supplied data.
+\end{enumerate}
+If the model includes dynamics, like MPC problems, the optimization problem
+includes the requested number of time steps. 
+
+Finally, the optimization problem is exported to one of the following
+optimization engines, including automatic Matlab or C code generation  
+\begin{enumerate}
+\item Matalb's fmincont
+\item TOMLAB - TBD
+\item CPLEX - TBD
+\item IPOPT - TBD
+\end{enumerate}
+
+
+
+\section{Modeling blocks} 
+For model definition only the blocks listed in the library are allowed. All
+other Simulink blocks can be used outside of the modeled subsystem. 
+
+\subsection{PolyBlock}
+PolyBlock  is a key element of the library.
+\begin{description}
+  \item [Responsibility:] - Defines output as function of input. The function
+    is defined using ....
+\item [Input:] input variables, as many as width of A matrix.
+\item [Output] the calculated value.
+\end{description}
+
+\subsubsection{Remarks}
+ If the expression is short, it will be shown on the block. If the expression is too long, only y=f(x)/g(x) will be shown.
+
+More versions of the block exist in the library, for convenience only:
+\begin{description}
+  \item [Sum operator] sum of two variables,
+\item [Difference operator] - difference of two variables,
+\item [Product] - product of two variables.
+\item [Constant gain]
+\item [Bias]
+\item [General form PolyBlock] - can be used to define any relation between input and output, including non-functions, like solution of quadratic equation. In this case, the behavior in forward simulation is undefined. 
+\end{description}
+
+\subsubsection{Usage}
+
+Basic building block is a sum of terms of the following form $\sum_i \prod_j
+v_{i,j}(x_i)$, where $v(x_i)$ can be $x^p$ for any $p \in R$, $\exp(x)$ or
+$\log(x)$. 
+Functions are defined using two matrices, called here $A$ and $C$.  Where
+$A_{i,j} = p$ where $p$ is a power of $v_{i,j}$ function.  
+Two special values are reserved for $p$ to mark the $\exp$ and the $\log$
+functions. $p = \infty $ marks $\exp$ and $p =-\infty$ marks $\log$.
+Although $p$ can be any real number, only positive integers and $\exp$ must be
+used for most cases, because their provide the fastest computation time. 
+Library supports other options for completeness and to accommodate very
+special cases that cannot be handled with the fast functions. 
+Example:
+TBD
+  
+The PolyBlock enables definition of rational function of the form $\frac{f(x)}{g(x)}$ where $f$ and $g$ are functions as defined above.
+
+Following special cases of PolyBlock are important:
+\begin{description}
+  \item [Constant] $A = [0 \ldots 0]$ , output $= C$.
+\item [Linear algebra] If $A=I$, then the output of the block is $Cx$ where
+  $x$ is the input and $C$ is any matrix of compatible width. 
+\item [Vector functions] Vector functions can be defined. The number of rows
+  of C matrix defines the dimension of output vector. 
+\item [Selector function] each row of A holds $1$ at requested position, and
+  $C=I$. 
+\end{description}
+
+The dimensions of the A and C matrices of $f$ and $g$ functions, must follow
+the following rules. If:\\
+\begin{tabular}{ll}
+$n$ &input dimension \\
+$m$ & output dimension \\
+$r$ & number of term in f function \\
+$k$ & number of terms in g function \\
+\end{tabular} \\
+Then: \\
+\begin{align*}
+fA &\in \reals^{r x n} \\
+fC &\in \reals^{m x r} \\
+gA &\in \reals^{k x n} \\
+gC &\in \reals^{1 x k} \\
+\end{align*}
+note that $g$ must be scalar function, because division by vector is not defined.
+
+\subsection{ Constraint}
+\begin{description}
+  \item [Responsibility] - Marks variable as a constrained to be $ >0$ or $<0$. Turns red if the constraint is violated during the simulation.
+\item [Input] The variable to be constrained.
+\item [Output] none.
+\end{description}
+
+\subsection{ Input}
+\begin{description}
+  \item [Responsibility] - Marks a variable as an input variable. Can specify the number of steps to freeze the input.
+ \item [Input]  a variable
+\item [Output] - equal to input
+\end{description}
+
+\subsection{ External}
+\begin{description}
+  \item [Responsibility] - Marks a variable as an external variable. 
+ \item [Input]  a variable
+\item [Output] - equal to input
+\end{description}
+
+\subsection{ State}
+\begin{description}
+  \item [Responsibility] - Holds value for the next step.
+  \item [Input]  a variable
+  \item [Output]  value from the previous step.
+\end{description}
+
+\subsection{ Cost}
+\begin{description}
+  \item [Responsibility]  defines cost function. Sums input variable on every
+    time step to calculate the cost.
+  \item [Input]  variable
+  \item [Output] none
+\end{description}
+
+\subsection{ Save to workspace}
+\begin{description}
+  \item [Responsibility]  copy of the regular Simulink block. Required for storing variables for initial optimization solution.
+  \item [Output] none
+\end{description}
+
+
+
+\section{Generation of an optimization problem }
+
+TBD
+
+\end{document}

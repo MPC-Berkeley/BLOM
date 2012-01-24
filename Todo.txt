@@ -1,0 +1,4 @@
+1. fix > 0 in disp code
+2. provide solution for implicit equations
+3. vectorize all library - all blocks, add mux/demux
+4. 

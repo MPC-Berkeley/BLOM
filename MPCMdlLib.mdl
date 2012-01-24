@@ -1,0 +1,698 @@
+Library {
+  Name			  "MPCMdlLib"
+  Version		  7.1
+  MdlSubVersion		  0
+  SavedCharacterEncoding  "windows-1252"
+  LibraryType		  "BlockLibrary"
+  SaveDefaultBlockParams  on
+  SampleTimeColors	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowSignalResolutionIcons on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  Created		  "Wed Nov 30 11:59:58 2011"
+  Creator		  "Serg"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "serg"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Sun Jan 22 21:43:40 2012"
+  RTWModifiedTimeStamp	  249169409
+  ModelVersionFormat	  "1.%<AutoIncrement:126>"
+  ConfigurationManager	  "None"
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  CovModelRefEnable	  "Off"
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  BlockDefaults {
+    Orientation		    "right"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      FunctionName	      "mlfile"
+      DisplayMFileStacktrace  on
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Reference
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      UnitDelay
+      X0		      "0"
+      SampleTime	      "1"
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
+    }
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  System {
+    Name		    "MPCMdlLib"
+    Location		    [260, 98, 710, 640]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    Block {
+      BlockType		      Reference
+      Name		      "Bias"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [35, 346, 115, 374]
+      BackgroundColor	      "lightBlue"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1   ; 0  ]"
+      C			      "[1  2] "
+      gA		      "[ 0] "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "u"
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      Name		      "Cost functon"
+      Tag		      "OptCost"
+      Ports		      [1]
+      Position		      [230, 223, 285, 257]
+      FunctionName	      "CostFunction"
+      MaskDisplay	      "port_label('input',1,'in');\n\n\ntext(0.5,0.5,'\\Sigma','texmode','on');\n   "
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "normalized"
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      Name		      "CustomSave"
+      Ports		      [1]
+      Position		      [200, 441, 330, 479]
+      FunctionName	      "SaveToWrkspceBLOML2"
+      Parameters	      "'name'"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Delta"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [35, 109, 115, 136]
+      BackgroundColor	      "lightBlue"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1  0  ; 0 1 ]"
+      C			      "[1  -1]  "
+      gA		      "[0 0]  "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Demux
+      Name		      "Demux"
+      Ports		      [1, 2]
+      Position		      [220, 371, 225, 409]
+      ShowName		      off
+      Outputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "External Var"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [235, 159, 280, 181]
+      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskPromptString	      "Name to save"
+      MaskStyleString	      "edit"
+      MaskTunableValueString  "on"
+      MaskEnableString	      "off"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskVariables	      "save_name=&1;"
+      MaskDisplay	      "\nfprintf('External')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "0"
+      System {
+	Name			"External Var"
+	Location		[263, 234, 761, 534]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In"
+	  Position		  [110, 103, 140, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "CustomSave"
+	  Ports			  [1]
+	  Position		  [280, 30, 435, 70]
+	  SourceBlock		  "MPCMdlLib/state/CustomSave"
+	  SourceType		  "Unknown"
+	  name_to_save		  "save_name"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out"
+	  Position		  [360, 103, 390, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In"
+	  SrcPort		  1
+	  Points		  [70, 0]
+	  Branch {
+	    DstBlock		    "Out"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -60]
+	    DstBlock		    "CustomSave"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Gain"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [35, 286, 115, 314]
+      BackgroundColor	      "lightBlue"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1   ]"
+      C			      "[2 ] "
+      gA		      "[0 ] "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "u"
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      Name		      "General Form PolyBlock"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [40, 429, 125, 471]
+      BackgroundColor	      "lightBlue"
+      FunctionName	      "Polyblock"
+      Parameters	      "A, C , input_type, output_type "
+      MaskDescription	      "Function of the form p(x,y)=0.\ny is assumed to be m last variables, where m is size(C,1)."
+      MaskPromptString	      "A matrix|C matrix|Input as|Output as"
+      MaskStyleString	      "edit,edit,popup(Scalar|Vector),popup(Scalar|Vector)"
+      MaskTunableValueString  "off,off,off,off"
+      MaskCallbackString      "|||"
+      MaskEnableString	      "on,on,on,on"
+      MaskVisibilityString    "on,on,on,on"
+      MaskToolTipString	      "on,on,on,on"
+      MaskVarAliasString      ",,,"
+      MaskVariables	      "A=@1;C=@2;input_type=@3;output_type=@4;"
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "sparse([1 0 ; 0  1])|sparse([1 -1])|Scalar|Scalar"
+      MaskTabNameString	      ",,,"
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      Name		      "Inequality constraint"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [225, 293, 280, 327]
+      FunctionName	      "IneqBlock"
+      Parameters	      "CompareSign"
+      MaskPromptString	      "Sign"
+      MaskStyleString	      "popup(< 0|> 0)"
+      MaskTunableValueString  "on"
+      MaskEnableString	      "on"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskVariables	      "CompareSign=@1;"
+      MaskInitialization      "if (CompareSign == 1)\n    strtitle = '< 0 ';\nelse\n    strtitle = '> 0 ';\nend"
+      MaskDisplay	      "\nfprintf(strtitle);\n   "
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "normalized"
+      MaskValueString	      "< 0"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Input var"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [235, 97, 275, 123]
+      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskPromptString	      "Step ratio|Name to save"
+      MaskStyleString	      "edit,edit"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,off"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
+      MaskVariables	      "step_ratio=@1;save_name=&2;"
+      MaskDisplay	      "\nfprintf('Input')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "1|0"
+      MaskTabNameString	      ","
+      System {
+	Name			"Input var"
+	Location		[520, 264, 1018, 564]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In"
+	  Position		  [110, 103, 140, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "CustomSave"
+	  Ports			  [1]
+	  Position		  [185, 40, 340, 80]
+	  SourceBlock		  "MPCMdlLib/state/CustomSave"
+	  SourceType		  "Unknown"
+	  name_to_save		  "save_name"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out"
+	  Position		  [360, 103, 390, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In"
+	  SrcPort		  1
+	  Points		  [25, 0]
+	  Branch {
+	    DstBlock		    "Out"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "CustomSave"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux"
+      Ports		      [2, 1]
+      Position		      [270, 371, 275, 409]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Product"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [35, 219, 115, 246]
+      BackgroundColor	      "lightBlue"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1  1  ]"
+      C			      "[1 ] "
+      gA		      "[0 0] "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Sum"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [35, 164, 115, 191]
+      BackgroundColor	      "lightBlue"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1  0  ; 0 1 ]"
+      C			      "[1  1] "
+      gA		      "[0 0] "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      "M-S-Function"
+      Name		      "UserFriendly PolyBlock"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [30, 26, 145, 64]
+      BackgroundColor	      "lightBlue"
+      MoveFcn		      "                                     \nset_param(gcb,'A',get_param(gcb,'A'))\n                                     "
+      FunctionName	      "Polyblock"
+      Parameters	      "[A zeros(size(A,1),size(C,1)) ; repmat(gA,size(C,1),1) kron(eye( size(C,1)),ones(size(gA,1),1))  ],  [C kron(eye(size(C,1)),-gC)], input_type, output_type"
+      MaskDescription	      "y=f(x)/g(x)\nWhere f and g are sum of polinomial and exponential terms, described by A and C matrices.\nExample: f=x1*exp(x3)+0.8*x1^3*x2\nA = [1  0  inf ;\n        3  1  0];\nC = [1   0.8];"
+      MaskPromptString	      "A matrix for f|C matrix for f|A matrix for g|C matrix for g|Input as|Output as|Input names, comma separated"
+      MaskStyleString	      "edit,edit,edit,edit,popup(Scalar|Vector),popup(Scalar|Vector),edit"
+      MaskTunableValueString  "off,off,off,off,off,off,on"
+      MaskCallbackString      "||||||"
+      MaskEnableString	      "on,on,on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on,on,on"
+      MaskVarAliasString      ",,,,,,"
+      MaskVariables	      "A=@1;C=@2;gA=@3;gC=@4;input_type=@5;output_type=@6;port_names=&7;"
+      MaskInitialization      "\nCheckACSizes(A,C,gA,gC)\n\npos = get_param(gcb,'position');\nwidth = pos(3)-pos(1);\nletter_width = 6; % pixels\nmax_length = width/letter_width;\n\nremain = port_names;\ni=0;\nport_names_str = {};\nwhile true\n   [str, remain] = strtok(remain,',');\n   if isempty(str),  break;  end\n   if i >= size(A,2)\n       break\n   end\n   i = i+1;\n   port_names_str{i} = str;\n%   disp(sprintf('%s', str))\nend\n%port_names_str\n\nif (length(port_names_str) < size(A,2))\n    for i= length(port_names_str)+1: size(A,2)\n        port_names_str{i} = ['x' num2str(i)];\n    end\nend\n\n\n\nnames = port_names_str;\n\nfname = CreatePolyFromMatrix(A,C,names,'low');\nif (length(fname) > max_length-5)\n    fname = 'f(x)';\nend\n\nif (gC(1) == 1 && size(gA,1)==1 && sum(abs(gA(1,1:end)))==0)\n   name = sprintf('y=%s',fname);\nelse\n   gname = CreatePolyFromMatrix(gA,gC,names,'low');\n   name = sprintf('y=(%s)/(%s)',fname,gname);\n   if (length(name) > max_length)\n\n    gname = 'g(x)';\n    name = sprintf('y=(%s)/%s',fname,gname);\n   end\nend\n\n\nlabels = [ 'fprintf(name)' char(13) char(10)];\nif input_type == 1\n    for idx = 1:length(port_names_str)\n        thisLabel = sprintf('port_label(''input'',%d,''%s'')',idx,port_names_str{idx});\n        labels = [labels thisLabel char(13) char(10)];\n    end\n    labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\n\n\n\n"
+      MaskDisplay	      "fprintf(name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')"
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "sparse([1  1 ])|sparse([1 ]) |[0 0 ] |1|Scalar|Scalar|x1,x2"
+      MaskTabNameString	      ",,,,,,"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "state"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [235, 36, 275, 64]
+      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))\n                                                          "
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskPromptString	      "Initial value|save_name"
+      MaskStyleString	      "edit,edit"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,off"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
+      MaskVariables	      "init_val=@1;save_name=&2;"
+      MaskDisplay	      "\nfprintf('state')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "0|vvmodel_state1"
+      MaskTabNameString	      ","
+      System {
+	Name			"state"
+	Location		[527, 391, 1025, 691]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [110, 103, 140, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  "M-S-Function"
+	  Name			  "CustomSave"
+	  Ports			  [1]
+	  Position		  [295, 25, 450, 65]
+	  FunctionName		  "SaveToWrkspceBLOML2"
+	  Parameters		  "name_to_save"
+	  MaskPromptString	  "Variabke name "
+	  MaskStyleString	  "edit"
+	  MaskTunableValueString  "on"
+	  MaskEnableString	  "on"
+	  MaskVisibilityString	  "on"
+	  MaskToolTipString	  "on"
+	  MaskVariables		  "name_to_save=@1;"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "save_name"
+	}
+	Block {
+	  BlockType		  UnitDelay
+	  Name			  "Unit Delay"
+	  Position		  [215, 93, 250, 127]
+	  X0			  "init_val"
+	  SampleTime		  "-1"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [360, 103, 390, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Unit Delay"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Unit Delay"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  Branch {
+	    DstBlock		    "Out1"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -65]
+	    DstBlock		    "CustomSave"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+  }
+}
