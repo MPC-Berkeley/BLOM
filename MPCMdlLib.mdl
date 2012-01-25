@@ -35,9 +35,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "serg"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Jan 22 21:43:40 2012"
-  RTWModifiedTimeStamp	  249169409
-  ModelVersionFormat	  "1.%<AutoIncrement:126>"
+  LastModifiedDate	  "Mon Jan 23 07:11:16 2012"
+  RTWModifiedTimeStamp	  249203466
+  ModelVersionFormat	  "1.%<AutoIncrement:127>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -377,33 +377,6 @@ Library {
     }
     Block {
       BlockType		      "M-S-Function"
-      Name		      "General Form PolyBlock"
-      Tag		      "PolyBlock"
-      Ports		      [1, 1]
-      Position		      [40, 429, 125, 471]
-      BackgroundColor	      "lightBlue"
-      FunctionName	      "Polyblock"
-      Parameters	      "A, C , input_type, output_type "
-      MaskDescription	      "Function of the form p(x,y)=0.\ny is assumed to be m last variables, where m is size(C,1)."
-      MaskPromptString	      "A matrix|C matrix|Input as|Output as"
-      MaskStyleString	      "edit,edit,popup(Scalar|Vector),popup(Scalar|Vector)"
-      MaskTunableValueString  "off,off,off,off"
-      MaskCallbackString      "|||"
-      MaskEnableString	      "on,on,on,on"
-      MaskVisibilityString    "on,on,on,on"
-      MaskToolTipString	      "on,on,on,on"
-      MaskVarAliasString      ",,,"
-      MaskVariables	      "A=@1;C=@2;input_type=@3;output_type=@4;"
-      MaskSelfModifiable      on
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskIconUnits	      "autoscale"
-      MaskValueString	      "sparse([1 0 ; 0  1])|sparse([1 -1])|Scalar|Scalar"
-      MaskTabNameString	      ",,,"
-    }
-    Block {
-      BlockType		      "M-S-Function"
       Name		      "Inequality constraint"
       Tag		      "InequalBlock"
       Ports		      [1]
@@ -521,6 +494,33 @@ Library {
       DisplayOption	      "bar"
     }
     Block {
+      BlockType		      "M-S-Function"
+      Name		      "PolyBlock"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [40, 429, 125, 471]
+      BackgroundColor	      "lightBlue"
+      FunctionName	      "Polyblock"
+      Parameters	      "A, C , input_type, output_type "
+      MaskDescription	      "Function of the form p(x,y)=0.\ny is assumed to be m last variables, where m is size(C,1)."
+      MaskPromptString	      "A matrix|C matrix|Input as|Output as"
+      MaskStyleString	      "edit,edit,popup(Scalar|Vector),popup(Scalar|Vector)"
+      MaskTunableValueString  "off,off,off,off"
+      MaskCallbackString      "|||"
+      MaskEnableString	      "on,on,on,on"
+      MaskVisibilityString    "on,on,on,on"
+      MaskToolTipString	      "on,on,on,on"
+      MaskVarAliasString      ",,,"
+      MaskVariables	      "A=@1;C=@2;input_type=@3;output_type=@4;"
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "sparse([1 0 ; 0  1])|sparse([1 -1])|Scalar|Scalar"
+      MaskTabNameString	      ",,,"
+    }
+    Block {
       BlockType		      Reference
       Name		      "Product"
       Tag		      "PolyBlock"
@@ -616,7 +616,7 @@ Library {
       MaskTabNameString	      ","
       System {
 	Name			"state"
-	Location		[527, 391, 1025, 691]
+	Location		[520, 391, 1018, 691]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
