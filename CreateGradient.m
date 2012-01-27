@@ -26,4 +26,10 @@ for i = 1:size(A,2) % for all variables
 
         end
     end
+    
+    if (isempty(find( grad.AAs{i})) && isempty(find( grad.Cs{i})))
+        grad.AAs{i} = [];
+        grad.Cs{i} = [];
+    end
+    
 end
