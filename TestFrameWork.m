@@ -81,15 +81,27 @@ for i=1:length(all_names)
 end
 
 % fix TOA and Tref 
+k=0;
 idx = strmatch('AHU_VAV_TOA.',all_names);
 for i=1:length(idx)
     pr.Aeq(end+1,idx(i))=1;
     pr.beq(end+1) = pr.x0(idx(i));
+    k = k+1;
+    fixed.AAs{k} = sparse(2,length(all_names),0);
+    fixed.AAs{k}(1,idx(i))=1;
+    fixed.Cs{k}(1) = -1;
+    fixed.Cs{k}(2) = pr.x0(idx(i));
+    
 end
 idx = strmatch('AHU_VAV_Tref.',all_names);
 for i=1:length(idx)
     pr.Aeq(end+1,idx(i))=1;
     pr.beq(end+1) = pr.x0(idx(i));
+    k = k+1;
+    fixed.AAs{k} = sparse(2,length(all_names),0);
+    fixed.AAs{k}(1,idx(i))=1;
+    fixed.Cs{k}(1) = -1;
+    fixed.Cs{k}(2) = pr.x0(idx(i));
 end
 
 % fix initial state vars
@@ -97,10 +109,23 @@ idx = find(state_vars);
 for i=1:length(idx)
     pr.Aeq(end+1,idx(i))=1;
     pr.beq(end+1) = pr.x0(idx(i));
+    k = k+1;
+    fixed.AAs{k} = sparse(2,length(all_names),0);
+    fixed.AAs{k}(1,idx(i))=1;
+    fixed.Cs{k}(1) = -1;
+    fixed.Cs{k}(2) = pr.x0(idx(i));
 end
 
 
-x = fmincon(pr);
+profile on
+CreateIpoptCPP('test',all_names, AAs ,  Cs , ineq_vars,fixed,cost_vars);
+profile off; profile report
+CreateIpoptDAT('test',fixed,pr.x0);
+
+%%
+x = load('result.dat');
+
+% x = fmincon(pr);
 
 %% plot the results
 subplot(211);

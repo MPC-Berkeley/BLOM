@@ -1,11 +1,11 @@
 function [cost_name costGrad_name eqconstr_name eqconstrGrad_name neqconstr_name neqconstrGrad_name ...
           Aeq Beq A B ]...
-    =CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,cost,separate_linear)
+    =CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
 
 
 
 for i = 1:length(all_names)
-    idx_names{i} = sprintf('x[%d]',i);
+    idx_names{i} = sprintf('x[%d]',i-1);
 end
 
 
@@ -14,6 +14,10 @@ cost_grad = CreateGradient(cost.A,cost.C);
 
 for i=1:length(AAs)
     eq_grad{i} = CreateGradient(AAs{i},Cs{i});
+end
+
+for i=1:length(fixed.AAs)
+    eq_grad{end+1} = CreateGradient(fixed.AAs{i},fixed.Cs{i});
 end
 
 
@@ -47,15 +51,51 @@ nnz_jac_g = CreateJacobian(name,idx_names,ineq_grad,eq_grad);
 eq.AAs = AAs;
 eq.Cs = Cs;
 
-CreateConstraints(name,idx_names,ineq,eq);
+CreateConstraints(name,idx_names,ineq,eq,fixed);
 
 CreateCost(name,idx_names,cost);
 
 CreateCostGrad(name,idx_names,cost_grad);
 
- Create_get_nlp_info(name,length(idx_names), length(ineq.AAs) + length(eq.AAs),nnz_jac_g,nnz_h_lag);
- Create_get_bounds_info(name,length(idx_names),length(ineq.AAs) + length(eq.AAs),length(ineq.AAs));
+Create_get_nlp_info(name,length(idx_names), length(ineq.AAs) + length(eq.AAs)+length(fixed.AAs),nnz_jac_g,nnz_h_lag);
+Create_get_bounds_info(name,length(idx_names),length(ineq.AAs) + length(eq.AAs)+length(fixed.AAs),length(ineq.AAs));
+CreateConstructor(name,length(idx_names),fixed);
+ Createget_starting_point(name,length(idx_names));
 
+function Createget_starting_point(name,n)
+
+get_starting_point = fopen([name 'get_starting_point.cpp'],'wt');
+
+fprintf(get_starting_point,'for (int i=0; i < %d ; i ++) { ;\n', n);
+fprintf(get_starting_point,'x[i] = x0[i]; }\n', n);
+
+
+fclose(get_starting_point);
+
+
+function CreateConstructor(name,n,fixed)
+
+Constructor = fopen([name 'Constructor.cpp'],'wt');
+
+fprintf(Constructor,'fixed = new Number[%d] ;\n', length(fixed.AAs));
+fprintf(Constructor,'x0 = new Number[%d] ;\n \n', n);
+
+fprintf(Constructor,'FILE * f = fopen("%s","rt");\n', [name 'Fixed.dat']);
+fprintf(Constructor,'if (!f) { printf("Fixed file not found"); exit(1);} \n  ');
+fprintf(Constructor,'for (int i=0; i < %d ; i ++) { ;\n', length(fixed.AAs));
+fprintf(Constructor,'fscanf(f,"%%lf ",&fixed[i]); }\n\n');
+fprintf(Constructor,'fclose(f);\n \n');
+
+fprintf(Constructor,' f = fopen("%s","rt");\n', [name 'X0.dat']);
+fprintf(Constructor,'if (!f) { printf("X0 file not found"); exit(1);} \n  ');
+fprintf(Constructor,'for (int i=0; i < %d ; i ++) { ;\n', n);
+fprintf(Constructor,'fscanf(f,"%%lf ",&x0[i]); }\n\n');
+fprintf(Constructor,'fclose(f);\n \n');
+
+
+fclose(Constructor);
+
+ 
 
 function Create_get_nlp_info(name,n,m,nnz_jac_g,nnz_h_lag)
 
@@ -93,19 +133,19 @@ function Create_get_bounds_info(name,n,m,ineq_length)
 get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
 
 for i=1:n
-    fprintf(get_bounds_info,'x_l[%d] = -1.0e19;\n', i);
-    fprintf(get_bounds_info,'x_u[%d] = +1.0e19;\n', i);
+    fprintf(get_bounds_info,'x_l[%d] = -1.0e19;\n', i-1);
+    fprintf(get_bounds_info,'x_u[%d] = +1.0e19;\n', i-1);
 end
 
 for i=1:ineq_length
-    fprintf(get_bounds_info,'g_l[%d] = -1.0e19;\n', i);
-    fprintf(get_bounds_info,'g_l[%d] = 0;\n', i);
+    fprintf(get_bounds_info,'g_l[%d] = -1.0e19;\n', i-1);
+    fprintf(get_bounds_info,'g_u[%d] = 0;\n', i-1);
 end
 
 
-for i=ineq_length:m
-    fprintf(get_bounds_info,'g_l[%d] = 0;\n', i);
-    fprintf(get_bounds_info,'g_l[%d] = 0;\n', i);
+for i=ineq_length+1:m
+    fprintf(get_bounds_info,'g_l[%d] = 0;\n', i-1);
+    fprintf(get_bounds_info,'g_u[%d] = 0;\n', i-1);
 end
 
 fclose(get_bounds_info);
@@ -136,18 +176,18 @@ for i=1:length(cost_grad.AAs)
             end
         
         
-          fprintf(feval_grad_f,'grad_f[%d]=%s ;\n', i,str);
+          fprintf(feval_grad_f,'grad_f[%d]=%s ;\n', i-1,str);
 
 end
 
 fclose(feval_grad_f);
 
 
-function CreateConstraints(name,names,ineq,eq)
+function CreateConstraints(name,names,ineq,eq,fixed)
 
 feval_g = fopen([name 'eval_g.cpp'],'wt');
 
-for i=1:length(ineq.AAs) + length(eq.AAs)
+for i=1:(length(ineq.AAs) + length(eq.AAs)+length(fixed.AAs))
         str = '0';
         
         if (i <= length(ineq.AAs))
@@ -155,16 +195,24 @@ for i=1:length(ineq.AAs) + length(eq.AAs)
 
                 str = CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i},names);
             end
-        else
+        elseif (i <= length(ineq.AAs)+length(eq.AAs))
             k = i - length(ineq.AAs); 
             if ~isempty(eq.AAs) && ~isempty(eq.AAs{k})
 
                 str = CreatePolyFromMatrix(eq.AAs{k},eq.Cs{k},names);
             end
+        else
+            k = i - length(ineq.AAs)-length(eq.AAs); 
+            if ~isempty(fixed.AAs) && ~isempty(fixed.AAs{k})
+                [jA ] = find(fixed.AAs{k}(1,:));
+                
+                str = [ num2str(fixed.Cs{k}(1)) '*'  names{jA}  ' + fixed[' num2str(k-1) ']'];
+            end
+            
         end
         
         
-          fprintf(feval_g,'g[%d]=%s ;\n', i,str);
+          fprintf(feval_g,'g[%d]=%s ;\n', i-1,str);
 
 end
 
@@ -179,35 +227,35 @@ feval_h_val = fopen([name 'eval_h_val.cpp'],'wt');
 feval_h_idx = fopen([name 'eval_h_idx.cpp'],'wt');
 
 for i=1:length(names)
-    for j=i:length(names)
+    for j=1:i
         nz = 0;
         str = '';
-        if  ~isempty(cost_hessian{i}.AAs) &&  ~isempty(cost_hessian{i}.AAs{j}) 
+        if  ~isempty(cost_hessian{i}.AAs) &&  ~isempty(cost_hessian{i}.Cs{j}) 
             nz = 1;
             str = CreatePolyFromMatrix(cost_hessian{i}.AAs{j},cost_hessian{i}.Cs{j},names);
             str = [ 'obj_factor*(' str ')'];
         end
 
         for k = 1:size(ineq_hessian,1)
-            if  ~isempty(ineq_hessian{k,i}.AAs) && ~isempty(ineq_hessian{k,i}.AAs{j})
+            if  ~isempty(ineq_hessian{k,i}.AAs) && ~isempty(ineq_hessian{k,i}.Cs{j})
                 nz = 1;
                 tmp = CreatePolyFromMatrix(ineq_hessian{k,i}.AAs{j},ineq_hessian{k,i}.Cs{j},names);
-                str = [tmp  '+lambda[' num2str(k-1) ']*(' tmp ')' ];
+                str = [str  '+lambda[' num2str(k-1) ']*(' tmp ')' ];
             end
         end
         
         for k = 1:size(eq_hessian,1)
-            if ~isempty(ineq_hessian{k,i}.AAs) && ~isempty(ineq_hessian{k,i}.AAs{j})
+            if ~isempty(eq_hessian{k,i}.AAs) && ~isempty(eq_hessian{k,i}.Cs{j})
                 nz = 1;
                 tmp = CreatePolyFromMatrix(eq_hessian{k,i}.AAs{j},eq_hessian{k,i}.Cs{j},names);
-                str = [tmp  '+lambda[' num2str(k-1+size(ineq_hessian,1)) ']*(' tmp ')' ];
+                str = [str  '+lambda[' num2str(k-1+size(ineq_hessian,1)) ']*(' tmp ')' ];
             end
         end
         if (nz == 1)
           nnz_h_lag = nnz_h_lag + 1;
-          fprintf(feval_h_val,'values[%d]=%s ;\n', nnz_h_lag,str);
-          fprintf(feval_h_idx,'iRow[%d]=%d ;\n', nnz_h_lag,i);
-          fprintf(feval_h_idx,'jCol[%d]=%d ;\n', nnz_h_lag,j);
+          fprintf(feval_h_val,'values[%d]=%s ;\n', nnz_h_lag-1,str);
+          fprintf(feval_h_idx,'iRow[%d]=%d ;\n', nnz_h_lag-1,i);
+          fprintf(feval_h_idx,'jCol[%d]=%d ;\n', nnz_h_lag-1,j);
         end
     end
 end
@@ -223,18 +271,18 @@ feval_jac_g_val = fopen([name 'eval_jac_g_val.cpp'],'wt');
 feval_jac_g_idx = fopen([name 'eval_jac_g_idx.cpp'],'wt');
 
 for i=1:length(ineq_grad) + length(eq_grad)
-    for j=i:length(names)
+    for j=1:length(names)
         nz = 0;
         str = '';
         
         if (i <= length(ineq_grad))
-            if  ~isempty(ineq_grad{i}.AAs) && ~isempty(ineq_grad{i}.AAs{j})
+            if  ~isempty(ineq_grad{i}.AAs) && ~isempty(ineq_grad{i}.Cs{j})
                 nz = 1;
                 str = CreatePolyFromMatrix(ineq_grad{i}.AAs{j},ineq_grad{i}.Cs{j},names);
             end
         else
             k = i - length(ineq_grad); 
-            if ~isempty(eq_grad{k}.AAs) && ~isempty(eq_grad{k}.AAs{j})
+            if ~isempty(eq_grad{k}.AAs) && ~isempty(eq_grad{k}.Cs{j})
                 nz = 1;
                 str = CreatePolyFromMatrix(eq_grad{k}.AAs{j},eq_grad{k}.Cs{j},names);
             end
@@ -243,9 +291,9 @@ for i=1:length(ineq_grad) + length(eq_grad)
         
         if (nz == 1)
           nnz_jac_g = nnz_jac_g + 1;
-          fprintf(feval_jac_g_val,'values[%d]=%s ;\n', nnz_jac_g,str);
-          fprintf(feval_jac_g_idx,'iRow[%d]=%d ;\n', nnz_jac_g,i);
-          fprintf(feval_jac_g_idx,'jCol[%d]=%d ;\n', nnz_jac_g,j);
+          fprintf(feval_jac_g_val,'values[%d]=%s ;\n', nnz_jac_g-1,str);
+          fprintf(feval_jac_g_idx,'iRow[%d]=%d ;\n', nnz_jac_g-1,i);
+          fprintf(feval_jac_g_idx,'jCol[%d]=%d ;\n', nnz_jac_g-1,j);
         end
     end
 end
@@ -253,37 +301,6 @@ end
 fclose(feval_jac_g_val);
 fclose(feval_jac_g_idx);
 
-function PrintFunction(name,str)
-
-f = fopen([name '.cpp'],'wt');
-
-fprintf(f,'%%#eml\n');
-fprintf(f,'function y = %s(x)\n\n',name);
-
-if ~iscell(str)
-    str = {str};
-end
-
-MinimumMatrixSizeForSpare = 40;
-
-if size(str,1)*size(str,2) == 1  
-    % do not initialize
-elseif size(str,1)*size(str,2) > MinimumMatrixSizeForSpare 
-    % sparse
-    fprintf(f,'y = sparse(%d,%d,0);\n\n',size(str,2),size(str,1));
-else
-    fprintf(f,'y = zeros(%d,%d);\n\n',size(str,2),size(str,1));
-end
-
-for i=1:size(str,1)
-    for j=1:size(str,2)
-        if ~strcmp(str{i,j},'0')
-            fprintf(f,'y(%d,%d) = %s ; \n',j,i,str{i,j});
-        end
-    end
-end
-
-fclose(f);
 
 
 function [ Matrix , B,   nlAAs , nlCs ] = ExtractLinearPart(AAs,Cs)
