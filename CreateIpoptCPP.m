@@ -227,6 +227,27 @@ feval_h_val = fopen([name 'eval_h_val.cpp'],'wt');
 feval_h_idx = fopen([name 'eval_h_idx.cpp'],'wt');
 
 for i=1:length(names)
+        ineqK = zeros(1,size(ineq_hessian,1));
+        for k = 1:size(ineq_hessian,1)
+            if  ~isempty(ineq_hessian{k,i}.AAs) 
+                    ineqK(k) = 1;
+            end
+        end
+        ineqK_idx{i} = find(ineqK);
+end
+
+for i=1:length(names)
+        eqK = zeros(1,size(eq_hessian,1));
+        for k = 1:size(eq_hessian,1)
+            if  ~isempty(eq_hessian{k,i}.AAs) 
+                    eqK(k) = 1;
+            end
+        end
+        eqK_idx{i} = find(eqK);
+end
+
+
+for i=1:length(names)
     for j=1:i
         nz = 0;
         str = '';
@@ -236,20 +257,26 @@ for i=1:length(names)
             str = [ 'obj_factor*(' str ')'];
         end
 
-        for k = 1:size(ineq_hessian,1)
-            if  ~isempty(ineq_hessian{k,i}.AAs) && ~isempty(ineq_hessian{k,i}.Cs{j})
+        range = ineqK_idx{i};
+        if ~isempty(range)
+        for k = range
+            if   ~isempty(ineq_hessian{k,i}.Cs{j})
                 nz = 1;
                 tmp = CreatePolyFromMatrix(ineq_hessian{k,i}.AAs{j},ineq_hessian{k,i}.Cs{j},names);
                 str = [str  '+lambda[' num2str(k-1) ']*(' tmp ')' ];
             end
         end
+        end
         
-        for k = 1:size(eq_hessian,1)
-            if ~isempty(eq_hessian{k,i}.AAs) && ~isempty(eq_hessian{k,i}.Cs{j})
+        range = eqK_idx{i};
+        if ~isempty(range);
+        for k =  range
+            if  ~isempty(eq_hessian{k,i}.Cs{j})
                 nz = 1;
                 tmp = CreatePolyFromMatrix(eq_hessian{k,i}.AAs{j},eq_hessian{k,i}.Cs{j},names);
                 str = [str  '+lambda[' num2str(k-1+size(ineq_hessian,1)) ']*(' tmp ')' ];
             end
+        end
         end
         if (nz == 1)
           nnz_h_lag = nnz_h_lag + 1;

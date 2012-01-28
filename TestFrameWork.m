@@ -37,7 +37,7 @@ open('BLOM_ex');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars ] = ExtractModel(20);
+[all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars ] = ExtractModel(10);
 sim('BLOM_ex');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 code = PrintProblem(all_names, AAs ,  Cs ,ineq_vars,cost_vars);
