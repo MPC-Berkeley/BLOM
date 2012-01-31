@@ -1,27 +1,37 @@
-function [A, C] = A_BLOM_MatMul(const1,X,const2,Y,const3)
+function [A, C] = A_BLOM_MatMul(const1,X,const2,Y,const3,same_vars)
 % A_BLOM_MatMul_c1Xc2Yc3
 % Returns matrix of the form Z = c1*X*c2*Y*c3
 % where c1, c2, c3 are constant matrices, X and Y are variable matrices
 
+if nargin<6
+    same_vars = false;
+end
+
 f = MulConstVar(const1,X);
 g = MulConstVar(const2,Y);
-w = Mul2Funcs(f,g,[size(const1,1) ,  size(X,2)],[size(const2,1) size(Y,2)]);
+w = Mul2Funcs(f,g,[size(const1,1) ,  size(X,2)],[size(const2,1) size(Y,2)],same_vars);
+p.A = sparse(1,size(w.A,2),0);
+p.C = const3(:);
+y = Mul2Funcs(w,p,[size(const1,1) ,  size(Y,2)],[size(const3,1) size(const3,2)],true);
+
+A = y.A;
+C = y.C;
 
 
-A = w.A;
-C = w.C;
 
-
-
-function  w = Mul2Funcs(f,g,size_f,size_g)
+function  w = Mul2Funcs(f,g,size_f,size_g,same_vars)
 
 m=1;
 for k=1:size_g(2) % g columns
     for i=1:size_f(1) % f rows
-        Aki = sparse(1,size(f.A,2)+size(g.A,2));
+        if (same_vars)
+            Aki = sparse(1,size(f.A,2));
+        else
+            Aki = sparse(1,size(f.A,2)+size(g.A,2));
+        end
         Cki = 0;
         for j=1:size_g(1) % f columns (and g rows)
-            [A C] = mul_poly(f.A,g.A,f.C((j-1)*size_f(1)+i,:),g.C((k-1)+j,:));
+            [A C] = mul_poly(f.A,g.A,f.C((j-1)*size_f(1)+i,:),g.C((k-1)*size_g(1)+j,:),same_vars);
             [Aki,Cki]= sum_poly(Aki,Cki,A,C);
             
         end
@@ -33,8 +43,8 @@ for k=1:size_g(2) % g columns
 end
 
 A = [];
-for i=1:size(w.A,1)
-    for j=1:size(w.A,2)
+for j=1:size(w.A,2)
+    for i=1:size(w.A,1)
         A = [A ; w.A{i,j}];
     end
 end
@@ -43,8 +53,8 @@ k=1;
 
 n=0;
 C = [];
-for i=1:size(w.A,1)
-    for j=1:size(w.A,2)
+for j=1:size(w.A,2)
+    for i=1:size(w.A,1)
         C(k,n+[1:size(w.C{i,j},2)]) = w.C{i,j};
         k=k+1;
         n = n + size(w.C{i,j},2);
@@ -67,22 +77,35 @@ function  [A , C ] = sum_poly(A1,C1,A2,C2)
     
 
 
-function [A C] = mul_poly(A1,A2,C1,C2)
+function [A C] = mul_poly(A1,A2,C1,C2,same_vars)
 
 c1_idx = find(C1);
 c2_idx = find(C2);
 if isempty(c1_idx) || isempty(c2_idx)
-    A = sparse(1,size(A1,2)+size(A2,2),0);
+    if (same_vars)
+        A = sparse(1,size(A1,2),0);
+    else
+        A = sparse(1,size(A1,2)+size(A2,2),0);
+    end
     C = 0;
     return;
 end
-A = sparse(size(A1,1)*size(A2,1),size(A1,2)+size(A2,2),0);
+
+if (same_vars)
+    A = sparse(size(A1,1)*size(A2,1),size(A1,2),0);
+else
+    A = sparse(size(A1,1)*size(A2,1),size(A1,2)+size(A2,2),0);
+end
 C = zeros(1,size(A1,1)*size(A2,1));
 k=1;
 
 for i=c1_idx
     for j=c2_idx
+    if (same_vars)
+        A(k,:) =   A1(i,:) + A2(j,:);
+    else
         A(k,:) =  [ A1(i,:) A2(j,:)];
+    end
         C(k)   =  C1(i)*C2(j);
         k=k+1;
     end
