@@ -117,15 +117,15 @@ for i=1:length(idx)
 end
 
 
-profile on
+% profile on
 CreateIpoptCPP('test',all_names, AAs ,  Cs , ineq_vars,fixed,cost_vars);
-profile off; profile report
+% profile off; profile report
 CreateIpoptDAT('test',fixed,pr.x0);
 
 %%
-x = load('result.dat');
+% x = load('result.dat');
 
-% x = fmincon(pr);
+x = fmincon(pr);
 
 %% plot the results
 subplot(211);

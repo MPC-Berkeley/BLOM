@@ -1,6 +1,6 @@
 Library {
   Name			  "MPCMdlLib"
-  Version		  7.3
+  Version		  7.4
   MdlSubVersion		  0
   SavedCharacterEncoding  "windows-1252"
   LibraryType		  "BlockLibrary"
@@ -8,19 +8,20 @@ Library {
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
+  MaxMDLFileLineLength	  120
   Created		  "Wed Nov 30 11:59:58 2011"
   Creator		  "Serg"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "vichik"
+  LastModifiedBy	  "Serg"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jan 25 19:38:41 2012"
-  RTWModifiedTimeStamp	  249420348
-  ModelVersionFormat	  "1.%<AutoIncrement:128>"
+  LastModifiedDate	  "Tue Jan 31 17:01:20 2012"
+  RTWModifiedTimeStamp	  249930079
+  ModelVersionFormat	  "1.%<AutoIncrement:129>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
-  LibraryLinkDisplay	  "none"
+  LibraryLinkDisplay	  "all"
   WideLines		  off
   ShowLineDimensions	  off
   ShowPortDataTypes	  off
@@ -48,6 +49,7 @@ Library {
   CovMetricSettings	  "dw"
   CovNameIncrementing	  off
   CovHtmlReporting	  on
+  CovForceBlockReductionOff on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeReport	  off
@@ -117,7 +119,6 @@ Library {
 	  AutoInsertRateTranBlk	  off
 	  SampleTimeConstraint	  "Unconstrained"
 	  InsertRTBMode		  "Whenever possible"
-	  SignalSizeVariationType "Allow only fixed size"
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
@@ -138,12 +139,14 @@ Library {
 	  SignalLogging		  on
 	  InspectSignalLogs	  off
 	  SaveTime		  on
+	  ReturnWorkspaceOutputs  off
 	  StateSaveName		  "xout"
 	  TimeSaveName		  "tout"
 	  OutputSaveName	  "yout"
 	  SignalLoggingName	  "logsout"
 	  OutputOption		  "RefineOutputTimes"
 	  OutputTimes		  "[]"
+	  ReturnWorkspaceOutputsName "out"
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
@@ -164,6 +167,7 @@ Library {
 	  BooleanDataType	  off
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
+	  UseIntDivNetSlope	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
@@ -171,6 +175,7 @@ Library {
 	  StrengthReduction	  off
 	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
+	  BooleansAsBitfields	  off
 	  EnableMemcpy		  on
 	  MemcpyThreshold	  64
 	  PassReuseOutputArgsAs	  "Structure reference"
@@ -236,6 +241,9 @@ Library {
 	  ParameterUnderflowMsg	  "none"
 	  ParameterPrecisionLossMsg "warning"
 	  ParameterTunabilityLossMsg "warning"
+	  FixptConstUnderflowMsg  "none"
+	  FixptConstOverflowMsg	  "none"
+	  FixptConstPrecisionLossMsg "none"
 	  UnderSpecifiedDataTypeMsg "none"
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
@@ -260,6 +268,7 @@ Library {
 	  ModelReferenceSymbolNameMessage "warning"
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
+	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  StrictBusMsg		  "Warning"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
@@ -307,6 +316,9 @@ Library {
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
 	  SimBlas		  on
+	  SimCtrlC		  on
+	  SimExtrinsic		  on
+	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
 	  SimBuildMode		  "sf_incremental_build"
 	}
@@ -402,6 +414,7 @@ Library {
 	      CustomSymbolStrType     "$N$R$M"
 	      CustomSymbolStrField    "$N$M"
 	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrFcnArg   "rt$I$N$M"
 	      CustomSymbolStrBlkIO    "rtb_$N$M"
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
@@ -456,6 +469,7 @@ Library {
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
 	      IncludeMdlTerminateFcn  on
+	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
@@ -470,6 +484,7 @@ Library {
 	      PurelyIntegerCode	      off
 	      SupportContinuousTime   on
 	      SupportNonInlinedSFcns  on
+	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
 	      PortableWordSizes	      off
@@ -545,6 +560,7 @@ Library {
       BusObject		      "BusObject"
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
       SampleTime	      "-1"
       OutMin		      "[]"
       OutMax		      "[]"
@@ -558,7 +574,6 @@ Library {
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
-      DimensionsMode	      "auto"
     }
     Block {
       BlockType		      "M-S-Function"
@@ -580,6 +595,7 @@ Library {
       BusObject		      "BusObject"
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
       SampleTime	      "-1"
       OutMin		      "[]"
       OutMax		      "[]"
@@ -593,7 +609,6 @@ Library {
       SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
-      DimensionsMode	      "auto"
     }
     Block {
       BlockType		      SubSystem
@@ -638,13 +653,16 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
+    SIDHighWatermark	    28
     Block {
       BlockType		      Reference
       Name		      "Bias"
+      SID		      1
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [35, 346, 115, 374]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.128"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1   ; 0  ]"
@@ -657,7 +675,34 @@ Library {
     }
     Block {
       BlockType		      "M-S-Function"
+      Name		      "Constraint"
+      SID		      11
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [225, 293, 280, 327]
+      FunctionName	      "IneqBlock"
+      Parameters	      "CompareSign"
+      MaskPromptString	      "Sign"
+      MaskStyleString	      "popup(< 0|> 0)"
+      MaskTunableValueString  "on"
+      MaskEnableString	      "on"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskVariables	      "CompareSign=@1;"
+      MaskInitialization      "if (CompareSign == 1)\n    strtitle = '< 0 ';\nelse\n    strtitle = '> 0 ';\nend"
+      MaskDisplay	      "\nfprintf(strtitle);\n   "
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "normalized"
+      MaskValueString	      "< 0"
+    }
+    Block {
+      BlockType		      "M-S-Function"
       Name		      "Cost functon"
+      SID		      2
       Tag		      "OptCost"
       Ports		      [1]
       Position		      [230, 223, 285, 257]
@@ -673,6 +718,7 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "CustomSave"
+      SID		      3
       Ports		      [1]
       Position		      [200, 441, 330, 479]
       FunctionName	      "SaveToWrkspceBLOML2"
@@ -681,10 +727,12 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Delta"
+      SID		      4
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 109, 115, 136]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.128"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  0  ; 0 1 ]"
@@ -698,6 +746,7 @@ Library {
     Block {
       BlockType		      Demux
       Name		      "Demux"
+      SID		      5
       Ports		      [1, 2]
       Position		      [220, 371, 225, 409]
       ShowName		      off
@@ -707,6 +756,7 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "External Var"
+      SID		      6
       Tag		      "OptExternal"
       Ports		      [1, 1]
       Position		      [235, 159, 280, 181]
@@ -750,6 +800,7 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In"
+	  SID			  7
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -758,6 +809,7 @@ Library {
 	Block {
 	  BlockType		  Reference
 	  Name			  "CustomSave"
+	  SID			  8
 	  Ports			  [1]
 	  Position		  [280, 30, 435, 70]
 	  SourceBlock		  "MPCMdlLib/state/CustomSave"
@@ -767,6 +819,7 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out"
+	  SID			  9
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -791,10 +844,12 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Gain"
+      SID		      10
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [35, 286, 115, 314]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.128"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1   ]"
@@ -806,33 +861,21 @@ Library {
       port_names	      "u"
     }
     Block {
-      BlockType		      "M-S-Function"
+      BlockType		      Reference
       Name		      "Inequality constraint"
+      SID		      28
       Tag		      "InequalBlock"
       Ports		      [1]
-      Position		      [225, 293, 280, 327]
-      FunctionName	      "IneqBlock"
-      Parameters	      "CompareSign"
-      MaskPromptString	      "Sign"
-      MaskStyleString	      "popup(< 0|> 0)"
-      MaskTunableValueString  "on"
-      MaskEnableString	      "on"
-      MaskVisibilityString    "on"
-      MaskToolTipString	      "on"
-      MaskVariables	      "CompareSign=@1;"
-      MaskInitialization      "if (CompareSign == 1)\n    strtitle = '< 0 ';\nelse\n    strtitle = '> 0 ';\nend"
-      MaskDisplay	      "\nfprintf(strtitle);\n   "
-      MaskSelfModifiable      on
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
-      MaskIconUnits	      "normalized"
-      MaskValueString	      "< 0"
+      Position		      [370, 293, 425, 327]
+      LibraryVersion	      "1.128"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
     }
     Block {
       BlockType		      SubSystem
       Name		      "Input var"
+      SID		      12
       Tag		      "OptInput"
       Ports		      [1, 1]
       Position		      [235, 97, 275, 123]
@@ -851,7 +894,6 @@ Library {
       MaskEnableString	      "on,off"
       MaskVisibilityString    "on,on"
       MaskToolTipString	      "on,on"
-      MaskVarAliasString      ","
       MaskVariables	      "step_ratio=@1;save_name=&2;"
       MaskDisplay	      "\nfprintf('Input')"
       MaskIconFrame	      on
@@ -860,7 +902,6 @@ Library {
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "1|0"
-      MaskTabNameString	      ","
       System {
 	Name			"Input var"
 	Location		[520, 264, 1018, 564]
@@ -879,6 +920,7 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In"
+	  SID			  13
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -887,6 +929,7 @@ Library {
 	Block {
 	  BlockType		  Reference
 	  Name			  "CustomSave"
+	  SID			  14
 	  Ports			  [1]
 	  Position		  [185, 40, 340, 80]
 	  SourceBlock		  "MPCMdlLib/state/CustomSave"
@@ -896,6 +939,7 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out"
+	  SID			  15
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -919,6 +963,7 @@ Library {
     Block {
       BlockType		      Mux
       Name		      "Mux"
+      SID		      16
       Ports		      [2, 1]
       Position		      [270, 371, 275, 409]
       ShowName		      off
@@ -928,6 +973,7 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "PolyBlock"
+      SID		      17
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [40, 429, 125, 471]
@@ -943,7 +989,6 @@ Library {
       MaskEnableString	      "on,on,on,on"
       MaskVisibilityString    "on,on,on,on"
       MaskToolTipString	      "on,on,on,on"
-      MaskVarAliasString      ",,,"
       MaskVariables	      "A=@1;C=@2;input_type=@3;output_type=@4;"
       MaskSelfModifiable      on
       MaskIconFrame	      on
@@ -952,15 +997,16 @@ Library {
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "sparse([1 0 ; 0  1])|sparse([1 -1])|Scalar|Scalar"
-      MaskTabNameString	      ",,,"
     }
     Block {
       BlockType		      Reference
       Name		      "Product"
+      SID		      18
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 219, 115, 246]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.128"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  1  ]"
@@ -974,10 +1020,12 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Sum"
+      SID		      19
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 164, 115, 191]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.128"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  0  ; 0 1 ]"
@@ -991,6 +1039,7 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "UserFriendly PolyBlock"
+      SID		      20
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [30, 26, 145, 64]
@@ -1010,7 +1059,6 @@ Library {
       MaskEnableString	      "on,on,on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on,on,on"
-      MaskVarAliasString      ",,,,,,"
       MaskVariables	      "A=@1;C=@2;gA=@3;gC=@4;input_type=@5;output_type=@6;port_names=&7;"
       MaskInitialization      "\nCheckACSizes(A,C,gA,gC)\n\npos = get_param(gcb,'position');\nwidth = pos(3)-pos(1);\n"
       "height = pos(4)-pos(2);\nletter_width = 5; % pixels\nletter_height = 15; % pixels\nmax_length = (width-15)/lette"
@@ -1036,11 +1084,11 @@ Library {
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "sparse([1  1 ])|sparse([1 ]) |[0 0 ] |1|Scalar|Scalar|x1,x2"
-      MaskTabNameString	      ",,,,,,"
     }
     Block {
       BlockType		      SubSystem
       Name		      "state"
+      SID		      21
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [235, 36, 275, 64]
@@ -1060,7 +1108,6 @@ Library {
       MaskEnableString	      "on,off"
       MaskVisibilityString    "on,on"
       MaskToolTipString	      "on,on"
-      MaskVarAliasString      ","
       MaskVariables	      "init_val=@1;save_name=&2;"
       MaskDisplay	      "\nfprintf('state')"
       MaskIconFrame	      on
@@ -1069,7 +1116,6 @@ Library {
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "0|vvmodel_state1"
-      MaskTabNameString	      ","
       System {
 	Name			"state"
 	Location		[520, 391, 1018, 691]
@@ -1088,6 +1134,7 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
+	  SID			  22
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -1096,6 +1143,7 @@ Library {
 	Block {
 	  BlockType		  "M-S-Function"
 	  Name			  "CustomSave"
+	  SID			  23
 	  Ports			  [1]
 	  Position		  [295, 25, 450, 65]
 	  FunctionName		  "SaveToWrkspceBLOML2"
@@ -1117,6 +1165,7 @@ Library {
 	Block {
 	  BlockType		  UnitDelay
 	  Name			  "Unit Delay"
+	  SID			  24
 	  Position		  [215, 93, 250, 127]
 	  X0			  "init_val"
 	  SampleTime		  "-1"
@@ -1124,6 +1173,7 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
+	  SID			  25
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
