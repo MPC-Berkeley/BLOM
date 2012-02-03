@@ -147,7 +147,12 @@ for i=1:length(idx)
             term = find(powers);
             if (length(term) == 1) && (sum(AAs{last_used}(term,:)) == 1) % no other variables in the term
                 new_func.AAs{i} = AAs{last_used}([1:term-1 term+1:end],:);
-                new_func.Cs{i} = - vars(idx(i))*Cs{last_used}([1:term-1 term+1:end])/Cs{last_used}(term);
+                % find where this term is used in C
+                c_line = find(Cs{last_used}(:,term));
+                if (length(c_line) ~= 1)
+                    error('Something is wrong,length(c_line) ~= 1');
+                end
+                new_func.Cs{i} = - vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
                 to_remove_var = [to_remove_var idx(i)];
                 AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
                 Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
