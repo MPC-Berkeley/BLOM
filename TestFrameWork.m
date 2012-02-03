@@ -76,11 +76,11 @@ for i=1:length(all_names)
         continue;
     end
     time = str2double(all_names{i}(idx(2)+2:end));
-    pr.x0(i) =  eval([ name '.signals.values(' num2str(time) ')']) ; 
+    pr.x0(i) =  eval([ name '.signals.values(' num2str(time) ')']) ;
     
 end
 
-% fix TOA and Tref 
+% fix TOA and Tref
 k=0;
 idx = strmatch('AHU_VAV_TOA.',all_names);
 for i=1:length(idx)
@@ -116,17 +116,33 @@ for i=1:length(idx)
     fixed.Cs{k}(2) = pr.x0(idx(i));
 end
 
+mode = 'IPOPT_C' ;
 
-% profile on
-CreateIpoptCPP('test',all_names, AAs ,  Cs , ineq_vars,fixed,cost_vars);
-% profile off; profile report
-CreateIpoptDAT('test',fixed,pr.x0);
+switch (mode)
+    case 'IPOPT_C'
+        
+        % profile on
+        CreateIpoptCPP('test',all_names, AAs ,  Cs , ineq_vars,fixed,cost_vars);
+        % profile off; profile report
+        CreateIpoptDAT('test',fixed,pr.x0);
 
-%%
-% x = load('result.dat');
-
-x = fmincon(pr);
-
+        prev = pwd;
+        
+         cd ~/workspace/BLOM_Ipopt
+        ! make clean
+        ! make all
+        
+        ! ./BLOM_NLP
+        
+        x = load('result.dat');
+        
+        cd(prev);
+    case 'fmincon'
+ 
+        
+        x = fmincon(pr);
+        
+end
 %% plot the results
 subplot(211);
 plot(x(strmatch('AHU_VAV_Tin.',all_names))-273)
