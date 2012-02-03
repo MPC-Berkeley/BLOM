@@ -24,8 +24,8 @@ end
 for i=1:length(ineq.AAs)
     ineq_grad{i} = CreateGradient(ineq.AAs{i},ineq.Cs{i});
 end
-
-for j=1:length(idx_names)
+cost_hessian = {};
+for j=1:length(cost_grad.AAs)
     cost_hessian{j} = CreateGradient(cost_grad.AAs{j},cost_grad.Cs{j});
 end
 
@@ -246,7 +246,7 @@ for i=1:length(names)
         eqK_idx{i} = find(eqK);
 end
 
-
+if  ~isempty(cost_hessian)
 for i=1:length(names)
     for j=1:i
         nz = 0;
@@ -286,7 +286,7 @@ for i=1:length(names)
         end
     end
 end
-
+end
 fclose(feval_h_val);
 fclose(feval_h_idx);
 

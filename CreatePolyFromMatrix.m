@@ -7,10 +7,10 @@ end
 str = '';
     
 for i = 1:size(A,1)
-    [jA ] = find(A(i,:));
     if (C(i) == 0)
         continue;
     end
+    [jA ] = find(A(i,:));
     skip_mult = false;
     if C(i)==1 &&  ~isempty(jA)
         skip_mult = true;

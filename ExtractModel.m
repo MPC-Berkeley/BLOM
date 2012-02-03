@@ -1,4 +1,4 @@
-function [all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars] = ExtractModel(n_time_steps)
+function [all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(n_time_steps)
 
 
 if (nargin < 1)
@@ -6,7 +6,7 @@ if (nargin < 1)
 end
 
 % First, get structure for one time step
-[all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single ] = ExtractOnetimeStep;
+[all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single ] = ExtractOnetimeStep;
 
 %reverse the direction of state vars data : 
 state_vars = sparse(1,length(state_vars_tmp),0);
@@ -38,6 +38,7 @@ for t=1:n_time_steps
     ineq_vars((t-1)*n+(1:n)) =  ineq_vars_single;
     cost_vars((t-1)*n+(1:n)) =  cost_vars_single;
     in_vars  ((t-1)*n+(1:n)) =  in_vars_single;
+    ex_vars  ((t-1)*n+(1:n)) =  ex_vars_single;
     all_state_vars  ((t-1)*n+(1:n)) =  state_vars;
 end
 
@@ -92,13 +93,74 @@ all_names = {all_names{idx}};
 ineq_vars = ineq_vars(idx);
 cost_vars = cost_vars(idx);
 in_vars   = in_vars(idx);
+ex_vars   = ex_vars(idx);
 all_state_vars = all_state_vars(idx);
 
-[all_names, AAs ,  Cs, ineq , cost,in_vars,all_state_vars]=MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,all_state_vars);
+
+
+[all_names, AAs ,  Cs, ineq , cost,in_vars,all_state_vars,ex_vars]=MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,all_state_vars,ex_vars);
 
 return
 
-function [all_names, AAs ,  Cs, ineq , merged_cost,in_vars,state_vars]=  MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars)
+function [AAs, Cs, idx_to_stay , cost_vars, all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names)
+
+toremove_list = [];
+
+for i=1:length(AAs)
+    for j=1:size(Cs{i},1) % for all output variables
+        C = Cs{i}(j,:);
+        A = AAs{i}(C~=0,:);
+        if (sum(C)==0 && (max(C) == 1) && (min(C) == -1) ...
+                && (size(A,1) ==2) && (max(A(:))==1 )&&(sum(A(:))==2 ) ...
+                && (length(find(A(1,:))~=0)==1) && (length(find(A(2,:))~=0)==1) )
+            to_remove = find(A(2,:));
+            origin=find(A(1,:));
+            AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
+%             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
+            toremove_list = [toremove_list to_remove ];
+            cost_vars(origin) = cost_vars(to_remove);
+            
+        end
+    end
+end
+
+to_stay = ones(1,length(cost_vars));
+to_stay(toremove_list) = 0;
+idx_to_stay = find(to_stay);
+
+[AAs,Cs,all_names] = RemoveVariable(AAs,Cs,all_names,toremove_list);
+
+remove_functons  = [];
+for i=1:length(AAs)
+    remove_lines = [];
+    for j=1:size(Cs{i},1) % for all output variables
+        C = Cs{i}(j,:);
+        A = AAs{i}(C~=0,:);
+
+        if (sum(C)==0 && (max(C) == 1) && (min(C) == -1) ...
+                && (size(A,1) ==2) && (max(A(:))==1 )&&(sum(A(:))==2 ) ...
+                && (length(find(A(1,:))~=0)==1) && (length(find(A(2,:))~=0)==1) )
+            if  find(A(1,:)) == find(A(2,:))
+                remove_lines = [remove_lines j];
+            end
+        end
+    end
+    idx = ones(1,size(Cs{i},1));
+    idx(remove_lines)=0;
+    if length(remove_lines) == length(idx)
+        remove_functons = [remove_functons i];
+    else
+        Cs{i} = Cs{i}(idx==1,:);
+    end
+end
+idx = ones(1,length(AAs));
+idx(remove_functons)=0;
+AAs = { AAs{idx==1} };
+Cs  = { Cs{idx==1} };
+
+
+
+function [all_names, AAs ,  Cs, ineq , merged_cost,in_vars,state_vars,ex_vars]=  MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars,ex_vars)
 
 [cost, to_remove_var_cost ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,cost_vars);
 [ineq, to_remove_var_ineq ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,-ineq_vars); % minus is to handle definition of inequality
@@ -106,11 +168,12 @@ function [all_names, AAs ,  Cs, ineq , merged_cost,in_vars,state_vars]=  MoveEqT
 [AAs,Cs,all_names_new] = RemoveVariable(AAs,Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
 [cost.AAs,cost.Cs] = RemoveVariable(cost.AAs,cost.Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
 [ineq.AAs,ineq.Cs] = RemoveVariable(ineq.AAs,ineq.Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
-all_names = all_names_new;
 
 stay_places = ones(1,length(all_names));
+all_names = all_names_new;
 stay_places( [to_remove_var_ineq to_remove_var_cost]) = 0;
 in_vars = in_vars(stay_places==1);
+ex_vars = ex_vars(stay_places==1);
 state_vars = state_vars(stay_places==1);
 % merge all cost functions
 merged_cost.A = [];%sparse(0,length(all_names),0);
@@ -175,7 +238,7 @@ end
 %==========================================================================
 %==========================================================================
 
-function [all_names, AAs ,  Cs  , state_vars , ineq_vars ,cost_vars ,in_vars ] = ExtractOnetimeStep
+function [all_names, AAs ,  Cs  , state_vars , ineq_vars ,cost_vars ,in_vars, ex_vars ] = ExtractOnetimeStep
 
 
 blks = find_system(gcs, 'Tag', 'PolyBlock');
@@ -371,6 +434,13 @@ for i= 1:length(in_blks)
     in_vars(IIs{length(blks) + length(mem_blks)+i}) = str2num(get_param(in_blks{i},'step_ratio'));
 end
 
+% Mark external vars
+ex_vars = sparse(1,N,0);
+for i= 1:length(ex_blks)
+    ex_vars(IIs{length(blks) + length(mem_blks)+length(in_blks) + i}) = 1;
+end
+
+
 
 ineq_vars = sparse(1,N,0);
 cost_vars = sparse(1,N,0);
@@ -419,6 +489,20 @@ VarConnect = VarConnect(idx);
 ineq_vars = ineq_vars(idx);
 cost_vars = cost_vars(idx);
 in_vars   = in_vars(idx);
+ex_vars   = ex_vars(idx);
+
+[AAs, Cs, idx , cost_vars,all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names);
+
+BlockHandle = BlockHandle(idx);
+InPort = InPort(idx);
+BlockType = BlockType(idx);
+VarNum = VarNum(idx);
+VarConnect = VarConnect(idx);
+ineq_vars = ineq_vars(idx);
+in_vars   = in_vars(idx);
+ex_vars   = ex_vars(idx);
+cost_vars = cost_vars(idx);
+
 
 state_vars = sparse(1,length(all_names),0);
 
