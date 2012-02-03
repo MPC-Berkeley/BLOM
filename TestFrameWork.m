@@ -116,7 +116,7 @@ for i=1:length(idx)
     fixed.Cs{k}(2) = pr.x0(idx(i));
 end
 
-mode = 'IPOPT_C' ;
+mode = 'fmincon' ;
 
 switch (mode)
     case 'IPOPT_C'
