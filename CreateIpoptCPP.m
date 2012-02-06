@@ -222,7 +222,7 @@ feval_f = fopen([name 'eval_f.cpp'],'wt');
 
 
 
-str = CreatePolyFromMatrix(cost.A,cost.C,names);
+str = CreatePolyFromMatrix(cost.A,cost.C,names,'high','C');
 
 
 fprintf(feval_f,'obj_value=%s ;\n', str);
@@ -238,7 +238,7 @@ for i=1:length(cost_grad.AAs)
         
             if  ~isempty(cost_grad.AAs) && ~isempty(cost_grad.AAs{i})
 
-                str = CreatePolyFromMatrix(cost_grad.AAs{i},cost_grad.Cs{i},names);
+                str = CreatePolyFromMatrix(cost_grad.AAs{i},cost_grad.Cs{i},names,'high','C');
             end
         
         
@@ -259,7 +259,7 @@ for i=1:length(constr.AAs)
          if (i < i_fixed)
             if  ~isempty(constr.AAs) && ~isempty(constr.AAs{i})
 
-                str = CreatePolyFromMatrix(constr.AAs{i},constr.Cs{i},names);
+                str = CreatePolyFromMatrix(constr.AAs{i},constr.Cs{i},names,'high','C');
             end
          else
             k = i - i_fixed+1; 
@@ -299,7 +299,7 @@ if (~isempty(cost_hessian)&& n_range(1) == 1) % first time only
         idx = find(cost_hessian{i}.valid(1:i));
         if (~isempty(idx))
             for j=idx %1:i
-                tmp = CreatePolyFromMatrix(cost_hessian{i}.AAs{j},cost_hessian{i}.Cs{j},names);
+                tmp = CreatePolyFromMatrix(cost_hessian{i}.AAs{j},cost_hessian{i}.Cs{j},names,'high','C');
                 str = [  'obj_factor*(' tmp ')' ];
                 Hessian = AddToHessian(Hessian,n_range(i),j,str);
             end
@@ -313,7 +313,7 @@ for k=1:length(n_range)
          idx = find(hessian{k,i}.valid(1:i));
         if (~isempty(idx))
             for j=idx %1:i
-                tmp = CreatePolyFromMatrix(hessian{k,i}.AAs{j},hessian{k,i}.Cs{j},names);
+                tmp = CreatePolyFromMatrix(hessian{k,i}.AAs{j},hessian{k,i}.Cs{j},names,'high','C');
                 if (~strcmp(tmp,'0'))
                     str = [ '+lambda[' num2str(n_range(k)-1) ']*(' tmp ')' ];
                     Hessian = AddToHessian(Hessian,n_range(k),j,str);
@@ -426,7 +426,7 @@ for i=1:length(n_range)
         
             if  ~isempty(constr_grad{i}.AAs) && ~isempty(constr_grad{i}.Cs{j})
                 
-                str = CreatePolyFromMatrix(constr_grad{i}.AAs{j},constr_grad{i}.Cs{j},names);
+                str = CreatePolyFromMatrix(constr_grad{i}.AAs{j},constr_grad{i}.Cs{j},names,'high','C');
                 if (~strcmp(str,'0'))
                     nz = 1;
                 end

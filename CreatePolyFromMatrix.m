@@ -1,7 +1,11 @@
-function str = CreatePolyFromMatrix(A,C,names,precision)
+function str = CreatePolyFromMatrix(A,C,names,precision,target)
 
 if (nargin < 4)
     precision = 'high';
+end
+
+if (nargin < 5)
+    target = 'matlab';
 end
 
 str = '';
@@ -61,13 +65,20 @@ if (~isempty(idx))
                         str = [str  'log(' names{jA(j)} ')' ];
                     end
                 else % non integer power or negative
-                    switch precision
-                        case 'high'
-                            str = [str names{jA(j)} '^' sprintf('%15.14g',full(A(i,jA(j))))];
-                        otherwise
-                            str = [str names{jA(j)} '^' num2str(full(A(i,jA(j))))];
+                    switch(target)
+                        case 'matlab'
+                            switch precision
+                                case 'high'
+                                    str = [str names{jA(j)} '^' sprintf('%15.14g',full(A(i,jA(j))))];
+                                otherwise
+                                    str = [str names{jA(j)} '^' num2str(full(A(i,jA(j))))];
+                            end
+                        case 'C'
+                            str = [str 'pow('  names{jA(j)} ',' sprintf('%15.14g',full(A(i,jA(j))))];
+                            
                     end
                 end
+                
             end
             
         end
