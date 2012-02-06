@@ -74,7 +74,7 @@ if (~isempty(idx))
                                     str = [str names{jA(j)} '^' num2str(full(A(i,jA(j))))];
                             end
                         case 'C'
-                            str = [str 'pow('  names{jA(j)} ',' sprintf('%15.14g',full(A(i,jA(j))))];
+                            str = [str 'pow('  names{jA(j)} ',' sprintf('%15.14g',full(A(i,jA(j)))) ')' ];
                             
                     end
                 end
