@@ -9,9 +9,13 @@ str{end+1} = s ;
 
 
 for i=1:length(AAs)
-    str{end+1} = [ CreatePolyFromMatrix(AAs{i},Cs{i},all_names) ' = 0'] ;
+    for j=1:size(Cs{i},1)
+    str{end+1} = [ CreatePolyFromMatrix(AAs{i},Cs{i}(j,:),all_names) ' = 0'] ;
+    end
 end
 
 for i = 1:length(ineq.AAs)
-        str{end+1} = [ CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i},all_names) ' > 0'] ;
+    for j=1:size(ineq.Cs{i},1)
+        str{end+1} = [ CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i}(j,:),all_names) ' > 0'] ;
+    end
 end

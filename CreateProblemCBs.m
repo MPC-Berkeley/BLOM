@@ -38,7 +38,9 @@ end
 
 str = {};
 for i=1:length(AAs)
-    str{end+1} = CreatePolyFromMatrix(AAs{i},Cs{i},idx_names)  ;
+    for j=1:size(Cs{i},1)
+        str{end+1} = CreatePolyFromMatrix(AAs{i},Cs{i}(j,:),idx_names)  ;
+    end
 end
 
 
@@ -69,7 +71,9 @@ end
 
 str = {};
 for i = 1:length(ineq.AAs)
-        str{end+1} =  CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i},idx_names)  ;
+        for j=1:size(ineq.Cs{i},1)
+            str{end+1} =  CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i}(j,:),idx_names)  ;
+        end
 end
 
 neqconstr_name = [name 'NEq'];

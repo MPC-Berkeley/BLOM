@@ -115,6 +115,9 @@ for i=1:length(AAs)
                 && (length(find(A(1,:))~=0)==1) && (length(find(A(2,:))~=0)==1) )
             to_remove = find(A(2,:));
             origin=find(A(1,:));
+            if ~isempty(find(origin==toremove_list,1)) % handle the case that the origin variable is already removed
+                continue;
+            end
             AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
 %             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
             toremove_list = [toremove_list to_remove ];
@@ -491,18 +494,21 @@ cost_vars = cost_vars(idx);
 in_vars   = in_vars(idx);
 ex_vars   = ex_vars(idx);
 
-[AAs, Cs, idx , cost_vars,all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names);
-
-BlockHandle = BlockHandle(idx);
-InPort = InPort(idx);
-BlockType = BlockType(idx);
-VarNum = VarNum(idx);
-VarConnect = VarConnect(idx);
-ineq_vars = ineq_vars(idx);
-in_vars   = in_vars(idx);
-ex_vars   = ex_vars(idx);
-cost_vars = cost_vars(idx);
-
+prev_idx = [];
+while length(idx) ~= length(prev_idx)
+    prev_idx = idx;
+    [AAs, Cs, idx , cost_vars,all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names);
+    
+    BlockHandle = BlockHandle(idx);
+    InPort = InPort(idx);
+    BlockType = BlockType(idx);
+    VarNum = VarNum(idx);
+    VarConnect = VarConnect(idx);
+    ineq_vars = ineq_vars(idx);
+    in_vars   = in_vars(idx);
+    ex_vars   = ex_vars(idx);
+    cost_vars = cost_vars(idx);
+end
 
 state_vars = sparse(1,length(all_names),0);
 

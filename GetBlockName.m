@@ -9,4 +9,4 @@ name = name(idx(1)+1:end);
 idx = strfind(name,' ');
 name(idx) = '_';
 
-str = name;
+str = ['BL_' name];
