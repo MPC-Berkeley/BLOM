@@ -3,6 +3,10 @@ function [cost_name costGrad_name eqconstr_name eqconstrGrad_name neqconstr_name
     =CreateProblemCBs(name,all_names, AAs ,  Cs , ineq,cost,separate_linear)
 
 
+[AAs , Cs] = ConvertToSingleValue(AAs,Cs);
+[iAAs , iCs] = ConvertToSingleValue(ineq.AAs,ineq.Cs);
+ineq.AAs = iAAs;
+ineq.Cs = iCs;
 
 for i = 1:length(all_names)
     idx_names{i} = sprintf('x(%d)',i);
@@ -161,10 +165,27 @@ end
 Matrix = sparse(Matrix);
 
 function is_linear = IsLinear(A)
-if (max(sum(A'))<=1)&& (min(sum(A')) > -1 )
+   
+if  ((A==1) == A) 
+    if (sum(A') <= 1)'
     is_linear = true;
+    else
+      is_linear = false;
+    end
+    
 else
     is_linear = false;
 end
     
- 
+ function [AAs , Cs] = ConvertToSingleValue(inAAs,inCs)
+% convert to single value functions
+k=1;
+for i=1:length(inAAs)
+    for j=1:size(inCs{i},1)
+        AAs{k} = inAAs{i};
+        [I,J,s] = find(abs(inCs{i}(j,:))>1e-10);
+        [m,n] = size(inCs{i}(j,:));
+        Cs{k} = sparse(I,J,inCs{i}(j,J),m,n); %inCs{i}(j,:);
+        k=k+1;
+    end
+end

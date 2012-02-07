@@ -494,7 +494,7 @@ for i=1:length(inAAs)
         AAs{k} = inAAs{i};
         [I,J,s] = find(abs(inCs{i}(j,:))>1e-10);
         [m,n] = size(inCs{i}(j,:));
-        Cs{k} = sparse(I,J,s,m,n); %inCs{i}(j,:);
+        Cs{k} = sparse(I,J,inCs{i}(j,J),m,n); %inCs{i}(j,:);
         k=k+1;
     end
 end
