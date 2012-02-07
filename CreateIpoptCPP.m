@@ -301,7 +301,7 @@ if (~isempty(cost_hessian)&& n_range(1) == 1) % first time only
             for j=idx %1:i
                 tmp = CreatePolyFromMatrix(cost_hessian{i}.AAs{j},cost_hessian{i}.Cs{j},names,'high','C');
                 str = [  'obj_factor*(' tmp ')' ];
-                Hessian = AddToHessian(Hessian,n_range(i),j,str);
+                Hessian = AddToHessian(Hessian,i,j,str);
             end
         end
     end   
@@ -316,7 +316,7 @@ for k=1:length(n_range)
                 tmp = CreatePolyFromMatrix(hessian{k,i}.AAs{j},hessian{k,i}.Cs{j},names,'high','C');
                 if (~strcmp(tmp,'0'))
                     str = [ '+lambda[' num2str(n_range(k)-1) ']*(' tmp ')' ];
-                    Hessian = AddToHessian(Hessian,n_range(k),j,str);
+                    Hessian = AddToHessian(Hessian,i,j,str);
                 end
             end
         end
