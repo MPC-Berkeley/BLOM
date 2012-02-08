@@ -75,10 +75,16 @@ end
 % filter out input variables that are fixed for more than one time step
 idx = find(in_vars_single(1:n) > 1 );
 for i=1:length(idx)
-    for tt = 1:n_time_steps/in_vars_single(idx(i));
+    for tt = 1:ceil(n_time_steps/in_vars_single(idx(i)));
         t = 1 + (tt-1)*in_vars_single(idx(i));
-        AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,idx(i)+[t:(t+in_vars_single(idx(i))-2)]*n ); % just copy data, do not remove the column yet
-        toremove_list = [toremove_list idx(i)+[t:(t+in_vars_single(idx(i))-2)]*n];
+        next_vars = idx(i)+[t:(t+in_vars_single(idx(i))-2)]*n;
+        next_vars = next_vars(next_vars <= length(all_names)); % cut all variables after the last variable
+        if isempty(next_vars)
+            continue;
+        end
+        
+        AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,next_vars ); % just copy data, do not remove the column yet
+        toremove_list = [toremove_list next_vars];
     end
 end
 
@@ -440,7 +446,7 @@ end
 % Store step ratio of input vars
 in_vars = sparse(1,N,0);
 for i= 1:length(in_blks)
-    in_vars(IIs{length(blks) + length(mem_blks)+i}) = str2num(get_param(in_blks{i},'step_ratio'));
+    in_vars(IIs{length(blks) + length(mem_blks)+i}) = evalin('base',get_param(in_blks{i},'step_ratio'));
 end
 
 % Mark external vars
