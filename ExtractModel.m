@@ -220,8 +220,14 @@ for i=1:length(idx)
                 end
                 new_func.Cs{i} = - vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
                 to_remove_var = [to_remove_var idx(i)];
-                AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
-                Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
+                % if this is the only row in C, remove function,
+                if (size(Cs{last_used},1)==1)
+                    AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
+                    Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
+                else % remove only the row from C
+                    Cs{last_used} =  Cs{last_used}( [1:c_line-1 c_line+1:end],:);
+                end
+                    
                 unfolded = 1;
             end
         end
