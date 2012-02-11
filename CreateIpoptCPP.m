@@ -4,10 +4,10 @@ function [cost_name costGrad_name eqconstr_name eqconstrGrad_name neqconstr_name
 
 [AAs , Cs] = ConvertToSingleValue(AAs,Cs);
 [iAAs , iCs] = ConvertToSingleValue(ineq.AAs,ineq.Cs);
-[tAAs , tCs] = ConvertToSingleValue(fixed.AAs,fixed.Cs);
+% [tAAs , tCs] = ConvertToSingleValue(fixed.AAs,fixed.Cs);
 
-constr.AAs = {iAAs{:} AAs{:} tAAs{:}};
-constr.Cs = {iCs{:} Cs{:} tCs{:}};
+constr.AAs = {iAAs{:} AAs{:} };
+constr.Cs = {iCs{:} Cs{:} };
 
 n_eq = length(AAs);
 n_ineq = length(ineq.AAs);
@@ -31,7 +31,7 @@ nnz_jac_g = 0;
 Hessian.Idx = sparse(length(idx_names),length(idx_names));
 Hessian.str = {};
 
-textprogressbar('Creating Jacobian,Hessian');
+textprogressbar('Creating Jacobian,Hessian - ');
 
 for nn=1:n:length(constr.AAs)
     textprogressbar(nn/length(constr.AAs)*100);
@@ -42,77 +42,78 @@ for nn=1:n:length(constr.AAs)
     end
     
     nnz_jac_g = CreateJacobian(name,idx_names,constr_grad,nnz_jac_g,n_range);
-
-% for i=1:length(AAs)
-%     eq_grad{i} = CreateGradient(AAs{i},Cs{i});
-% end
-% 
-% for i=1:length(fixed.AAs)
-%     eq_grad{end+1} = CreateGradient(fixed.AAs{i},fixed.Cs{i});
-% end
-% 
-% 
-% for i=1:length(ineq.AAs)
-%     ineq_grad{i} = CreateGradient(ineq.AAs{i},ineq.Cs{i});
-% end
-
-
-hessian_valid = sparse(length(constr_grad),length(idx_names));
-hessian = cell(length(constr_grad),length(idx_names));
-for i=1:length(constr_grad)
-    idx = find(constr_grad{i}.valid);
-    for j=idx % 1:length(idx_names)
-        if (~isempty(constr_grad{i}.Cs{j}))
-            hessian{i,j} = CreateGradient(constr_grad{i}.AAs{j},constr_grad{i}.Cs{j});
-            hessian_valid(i,j) = 1;
-        else
+    
+    % for i=1:length(AAs)
+    %     eq_grad{i} = CreateGradient(AAs{i},Cs{i});
+    % end
+    %
+    % for i=1:length(fixed.AAs)
+    %     eq_grad{end+1} = CreateGradient(fixed.AAs{i},fixed.Cs{i});
+    % end
+    %
+    %
+    % for i=1:length(ineq.AAs)
+    %     ineq_grad{i} = CreateGradient(ineq.AAs{i},ineq.Cs{i});
+    % end
+    
+    
+    hessian_valid = sparse(length(constr_grad),length(idx_names));
+    hessian = cell(length(constr_grad),length(idx_names));
+    for i=1:length(constr_grad)
+        idx = find(constr_grad{i}.valid);
+        for j=idx % 1:length(idx_names)
+            if (~isempty(constr_grad{i}.Cs{j}))
+                hessian{i,j} = CreateGradient(constr_grad{i}.AAs{j},constr_grad{i}.Cs{j});
+                hessian_valid(i,j) = 1;
+            else
+                
+            end
+            
             
         end
-        
-        
     end
+    
+    Hessian = CreateHessian(idx_names,cost_hessian,hessian,hessian_valid,n_range,Hessian);
+    
+    % nnz_h_lag = CreateHessian(name,idx_names,cost_hessian,ineq_hessian,eq_hessian,ineq_hessian_valid,eq_hessian_valid);
+    
+    % ineq_hessian_valid = sparse(length(ineq_grad),length(idx_names),0);
+    % ineq_hessian = cell(length(ineq_grad),length(idx_names));
+    % for i=1:length(ineq_grad)
+    %     idx = find(ineq_grad{i}.valid);
+    %     for j=idx % 1:length(idx_names)
+    %         if (~isempty(ineq_grad{i}.Cs{j}))
+    %             ineq_hessian{i,j} = CreateGradient(ineq_grad{i}.AAs{j},ineq_grad{i}.Cs{j});
+    %             ineq_hessian_valid(i,j) = 1;
+    %         else
+    %
+    %         end
+    %
+    %
+    %     end
+    % end
+    %
+    % eq_hessian_valid = sparse(length(eq_grad),length(idx_names),0);
+    % eq_hessian = cell(length(eq_grad),length(idx_names));
+    %
+    % for i=1:length(eq_grad)
+    %     idx = find(eq_grad{i}.valid);
+    %     for j=idx %1:length(idx_names)
+    %         if (~isempty(eq_grad{i}.Cs{j}))
+    %             eq_hessian{i,j} = CreateGradient(eq_grad{i}.AAs{j},eq_grad{i}.Cs{j});
+    %             eq_hessian_valid(i,j) = 1;
+    %         else
+    %
+    %         end
+    %     end
+    % end
+    
+    %%%%%%%%%%%%%%%%%%%%%%
+
+
 end
 
-Hessian = CreateHessian(idx_names,cost_hessian,hessian,hessian_valid,n_range,Hessian);
 textprogressbar(100);
-% nnz_h_lag = CreateHessian(name,idx_names,cost_hessian,ineq_hessian,eq_hessian,ineq_hessian_valid,eq_hessian_valid);
-
-% ineq_hessian_valid = sparse(length(ineq_grad),length(idx_names),0);
-% ineq_hessian = cell(length(ineq_grad),length(idx_names));
-% for i=1:length(ineq_grad)
-%     idx = find(ineq_grad{i}.valid);
-%     for j=idx % 1:length(idx_names)
-%         if (~isempty(ineq_grad{i}.Cs{j}))
-%             ineq_hessian{i,j} = CreateGradient(ineq_grad{i}.AAs{j},ineq_grad{i}.Cs{j});
-%             ineq_hessian_valid(i,j) = 1;
-%         else
-%             
-%         end
-%         
-%         
-%     end
-% end
-% 
-% eq_hessian_valid = sparse(length(eq_grad),length(idx_names),0);
-% eq_hessian = cell(length(eq_grad),length(idx_names));
-% 
-% for i=1:length(eq_grad)
-%     idx = find(eq_grad{i}.valid);
-%     for j=idx %1:length(idx_names)
-%         if (~isempty(eq_grad{i}.Cs{j}))
-%             eq_hessian{i,j} = CreateGradient(eq_grad{i}.AAs{j},eq_grad{i}.Cs{j});
-%             eq_hessian_valid(i,j) = 1;
-%         else
-%             
-%         end
-%     end
-% end
-
-%%%%%%%%%%%%%%%%%%%%%%
-
-
-end
-
 nnz_h_lag = SaveHessian(name,Hessian);
 
 
@@ -124,8 +125,8 @@ CreateCost(name,idx_names,cost);
 CreateCostGrad(name,idx_names,cost_grad);
 
 Create_get_nlp_info(name,length(idx_names), length(constr.AAs) ,nnz_jac_g,nnz_h_lag);
-Create_get_bounds_info(name,length(idx_names),length(constr.AAs) ,n_ineq);
-CreateConstructor(name,length(idx_names),length(constr.AAs) - i_fixed+1);
+Create_get_bounds_info(name,length(idx_names),length(constr.AAs) ,n_ineq,fixed);
+CreateConstructor(name,length(idx_names),length(fixed.AAs) );
  Createget_starting_point(name,length(idx_names));
 
 function Createget_starting_point(name,n)
@@ -194,13 +195,24 @@ fprintf(get_nlp_info,' index_style = FORTRAN_STYLE;\n');
 
 fclose(get_nlp_info);
 
-function Create_get_bounds_info(name,n,m,ineq_length)
+function Create_get_bounds_info(name,n,m,ineq_length,fixed)
+
 
 get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
 
+fixed_vars = sparse(1,n,length(fixed.AAs));
+for i=1:length(fixed.AAs)
+    fixed_vars(find(fixed.AAs{i}(1,:)))=i;
+end
+
 for i=1:n
-    fprintf(get_bounds_info,'x_l[%d] = -1.0e19;\n', i-1);
-    fprintf(get_bounds_info,'x_u[%d] = +1.0e19;\n', i-1);
+    if (fixed_vars(i) ~= 0)
+         fprintf(get_bounds_info,'x_l[%d] = fixed[%d];\n', i-1,fixed_vars(i)-1);
+         fprintf(get_bounds_info,'x_u[%d] = fixed[%d];\n', i-1,fixed_vars(i)-1);
+    else
+        fprintf(get_bounds_info,'x_l[%d] = -1.0e19;\n', i-1);
+        fprintf(get_bounds_info,'x_u[%d] = +1.0e19;\n', i-1);
+    end
 end
 
 for i=1:ineq_length
