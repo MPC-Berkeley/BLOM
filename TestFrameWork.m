@@ -145,9 +145,9 @@ switch (mode)
 end
 %% plot the results
 subplot(211);
-plot(x(strmatch('AHU_VAV_Tin.',all_names))-273)
+plot(x(strmatch('BL_AHU_VAV_Tin.',all_names))-273)
 ylabel('Tin [^oC]');
 subplot(212);
-plot(x(strmatch('AHU_VAV_ARmodel.Out1',all_names))-273)
+plot(x(strmatch('BL_AHU_VAV_ARmodel.Out1',all_names))-273)
 ylabel('T zone [^oC]');
 
