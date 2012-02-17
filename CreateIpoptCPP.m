@@ -200,7 +200,7 @@ function Create_get_bounds_info(name,n,m,ineq_length,fixed)
 
 get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
 
-fixed_vars = sparse(1,n,length(fixed.AAs));
+fixed_vars = sparse(1,n);
 for i=1:length(fixed.AAs)
     fixed_vars(find(fixed.AAs{i}(1,:)))=i;
 end

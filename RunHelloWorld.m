@@ -1,6 +1,6 @@
 clear
 clc
-mode = 'fmincon' ;
+mode = 'IPOPT_C' ;
 
 
 open('HelloWorld');
@@ -102,15 +102,15 @@ switch (mode)
 
         prev = pwd;
         
-         cd ~/workspace/BLOM_Ipopt
+         cd BLOM_Ipopt
         ! make clean
         ! make all
-        
-        ! ./BLOM_NLP
+        cd(prev);
+        ! ./BLOM_Ipopt/BLOM_NLP
         
         x = load('result.dat');
         
-        cd(prev);
+        
     case 'fmincon'
  
           pr.lb = [];
