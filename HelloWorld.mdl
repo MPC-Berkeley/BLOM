@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.29"
+    ComputedModelVersion    "1.30"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -45,9 +45,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "serg"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 17 00:10:03 2012"
+  LastModifiedDate	  "Fri Feb 17 09:35:02 2012"
   RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:29>"
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -652,7 +652,7 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"80"
+	ZoomFactor		"100"
 	Block {
 	  BlockType		  Inport
 	  Name			  "u_in"
@@ -786,7 +786,7 @@ Model {
 	  Name			  "xk1"
 	  Tag			  "PolyBlock"
 	  Ports			  [2, 1]
-	  Position		  [440, 94, 530, 141]
+	  Position		  [440, 94, 550, 141]
 	  BackgroundColor	  "lightBlue"
 	  SourceBlock		  "MPCMdlLib/UserFriendly PolyBlock"
 	  SourceType		  ""
@@ -801,14 +801,14 @@ Model {
 	Line {
 	  SrcBlock		  "xk1"
 	  SrcPort		  1
-	  Points		  [5, 0]
+	  Points		  [10, 0]
 	  Branch {
-	    Points		    [0, 125]
+	    Points		    [5, 0; 0, 125]
 	    DstBlock		    "cost "
 	    DstPort		    1
 	  }
 	  Branch {
-	    Points		    [145, 0]
+	    Points		    [120, 0]
 	    Branch {
 	      DstBlock		      "state"
 	      DstPort		      1

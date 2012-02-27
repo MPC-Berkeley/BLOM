@@ -558,3 +558,19 @@ for i=1:length(AAs)
 end
 
 names = {names{stay_idx} };
+
+
+% 
+% function[core_vars,core_functions]  = FindCoreModel(AAs,Cs,state_vars,ex_vars,in_vars)
+% 
+% core_vars = zeros(1,size(AAs{1},2));
+% 
+% core_vars(state_vars ~= 0) = 1;
+% core_vars(state_vars(state_vars ~= 0) ) = 1;
+% core_vars(ex_vars ) = 1;
+% core_vars(in_vars ) = 1;
+
+% Variable is a core var, if : it is a state, a derivative, or part of
+% function that all other variables are core variable
+
+
