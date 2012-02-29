@@ -1,18 +1,36 @@
 Model {
   Name			  "TestFuncionality"
-  Version		  7.1
+  Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.23"
+    ComputedModelVersion    "1.24"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
   SavedCharacterEncoding  "UTF-8"
   SaveDefaultBlockParams  on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  MaxMDLFileLineLength	  120
+  Created		  "Thu Jan 12 15:40:57 2012"
+  Creator		  "serg"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "Serg"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Tue Feb 28 18:28:18 2012"
+  RTWModifiedTimeStamp	  0
+  ModelVersionFormat	  "1.%<AutoIncrement:24>"
+  ConfigurationManager	  "None"
   SampleTimeColors	  off
+  SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
   WideLines		  off
   ShowLineDimensions	  off
@@ -26,12 +44,6 @@ Model {
   SortedOrder		  off
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
-  ScopeRefreshTime	  0.035000
-  OverrideScopeRefreshTime on
-  DisableAllScopes	  off
-  DataTypeOverride	  "UseLocalSettings"
-  MinMaxOverflowLogging	  "UseLocalSettings"
-  MinMaxOverflowArchiveMode "Overwrite"
   BlockNameDataTip	  off
   BlockParametersDataTip  off
   BlockDescriptionStringDataTip	off
@@ -39,16 +51,6 @@ Model {
   StatusBar		  on
   BrowserShowLibraryLinks off
   BrowserLookUnderMasks	  off
-  Created		  "Thu Jan 12 15:40:57 2012"
-  Creator		  "serg"
-  UpdateHistory		  "UpdateHistoryNever"
-  ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "serg"
-  ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Jan 22 21:36:44 2012"
-  RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:23>"
-  ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
   Profile		  off
@@ -63,12 +65,14 @@ Model {
   CovMetricSettings	  "dw"
   CovNameIncrementing	  off
   CovHtmlReporting	  on
+  CovForceBlockReductionOff on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeVarName	  "covCumulativeData"
   CovCumulativeReport	  off
   CovReportOnPause	  on
   CovModelRefEnable	  "Off"
+  CovExternalEMLEnable	  off
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
@@ -98,13 +102,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.4.0"
+      Version		      "1.6.0"
       Array {
 	Type			"Handle"
-	Dimension		8
+	Dimension		9
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.4.0"
+	  Version		  "1.6.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -126,7 +130,7 @@ Model {
 	  SolverName		  "FixedStepDiscrete"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
-	  ZeroCrossAlgorithm	  "Non-adaptive"
+	  ZeroCrossAlgorithm	  "Nonadaptive"
 	  AlgebraicLoopSolver	  "TrustRegion"
 	  SolverResetMethod	  "Fast"
 	  PositivePriorityOrder	  off
@@ -136,7 +140,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.4.0"
+	  Version		  "1.6.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -146,43 +150,51 @@ Model {
 	  LoadExternalInput	  off
 	  LoadInitialState	  off
 	  SaveFinalState	  off
+	  SaveCompleteFinalSimState off
 	  SaveFormat		  "Array"
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
 	  InspectSignalLogs	  off
 	  SaveTime		  on
+	  ReturnWorkspaceOutputs  off
 	  StateSaveName		  "xout"
 	  TimeSaveName		  "tout"
 	  OutputSaveName	  "yout"
 	  SignalLoggingName	  "logsout"
 	  OutputOption		  "RefineOutputTimes"
 	  OutputTimes		  "[]"
+	  ReturnWorkspaceOutputsName "out"
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
-	    Dimension		    5
+	    Dimension		    4
 	    Cell		    "ZeroExternalMemoryAtStartup"
 	    Cell		    "ZeroInternalMemoryAtStartup"
-	    Cell		    "InitFltsAndDblsToZero"
-	    Cell		    "OptimizeModelRefInitCode"
 	    Cell		    "NoFixptDivByZeroProtection"
+	    Cell		    "OptimizeModelRefInitCode"
 	    PropName		    "DisabledProps"
 	  }
-	  Version		  "1.4.0"
 	  BlockReduction	  on
 	  BooleanDataType	  on
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
+	  UseIntDivNetSlope	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
+	  StrengthReduction	  off
 	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
+	  BooleansAsBitfields	  off
+	  EnableMemcpy		  on
+	  MemcpyThreshold	  64
+	  PassReuseOutputArgsAs	  "Structure reference"
 	  ExpressionDepthLimit	  2147483647
 	  FoldNonRolledExpr	  on
 	  LocalBlockOutputs	  on
@@ -196,6 +208,7 @@ Model {
 	  InitFltsAndDblsToZero	  on
 	  NoFixptDivByZeroProtection off
 	  EfficientFloat2IntCast  off
+	  EfficientMapNaN2IntZero on
 	  OptimizeModelRefInitCode off
 	  LifeSpan		  "inf"
 	  BufferReusableBoundary  on
@@ -204,7 +217,7 @@ Model {
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.4.0"
+	  Version		  "1.6.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -218,6 +231,8 @@ Model {
 	  SaveWithDisabledLinksMsg "warning"
 	  SaveWithParameterizedLinksMsg	"warning"
 	  CheckSSInitialOutputMsg on
+	  UnderspecifiedInitializationDetection	"Classic"
+	  MergeDetectMultiDrivingBlocksExec "none"
 	  CheckExecutionContextPreStartOutputMsg off
 	  CheckExecutionContextRuntimeOutputMsg	off
 	  SignalResolutionControl "UseLocalSettings"
@@ -242,6 +257,9 @@ Model {
 	  ParameterUnderflowMsg	  "none"
 	  ParameterPrecisionLossMsg "warning"
 	  ParameterTunabilityLossMsg "warning"
+	  FixptConstUnderflowMsg  "none"
+	  FixptConstOverflowMsg	  "none"
+	  FixptConstPrecisionLossMsg "none"
 	  UnderSpecifiedDataTypeMsg "none"
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
@@ -261,19 +279,19 @@ Model {
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
-	  ModelReferenceSimTargetVerbose off
 	  UnknownTsInhSupMsg	  "warning"
 	  ModelReferenceDataLoggingMessage "warning"
 	  ModelReferenceSymbolNameMessage "warning"
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
+	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  StrictBusMsg		  "Warning"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.4.0"
+	  Version		  "1.6.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
@@ -300,17 +318,30 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.4.0"
+	  Version		  "1.6.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
 	  ModelReferenceNumInstancesAllowed "Multi"
-	  ModelReferenceSigSizeVariationType "Always allowed"
 	  ModelReferencePassRootInputsByReference on
 	  ModelReferenceMinAlgLoopOccurrences off
 	}
+	Simulink.SFSimCC {
+	  $ObjectID		  8
+	  Version		  "1.6.0"
+	  SFSimEnableDebug	  on
+	  SFSimOverflowDetection  on
+	  SFSimEcho		  on
+	  SimBlas		  on
+	  SimCtrlC		  on
+	  SimExtrinsic		  on
+	  SimIntegrity		  on
+	  SimUseLocalCustomCode	  off
+	  SimBuildMode		  "sf_incremental_build"
+	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  8
+	  $ObjectID		  9
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -322,7 +353,6 @@ Model {
 	    Cell		    "GenerateTraceReportEml"
 	    PropName		    "DisabledProps"
 	  }
-	  Version		  "1.4.0"
 	  SystemTargetFile	  "grt.tlc"
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
@@ -339,6 +369,8 @@ Model {
 	  ProcessScriptMode	  "Default"
 	  ConfigurationMode	  "Optimized"
 	  ConfigAtBuild		  off
+	  RTWUseLocalCustomCode	  off
+	  RTWUseSimCustomCode	  off
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
@@ -351,11 +383,13 @@ Model {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  RTWCompilerOptimization "Off"
+	  CheckMdlBeforeBuild	  "Off"
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      9
+	      $ObjectID		      10
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -377,10 +411,10 @@ Model {
 		Cell			"CustomSymbolStrMacro"
 		PropName		"DisabledProps"
 	      }
-	      Version		      "1.4.0"
 	      ForceParamTrailComments off
 	      GenerateComments	      on
 	      IgnoreCustomStorageClasses on
+	      IgnoreTestpoints	      off
 	      IncHierarchyInIds	      off
 	      MaxIdLength	      31
 	      PreserveName	      off
@@ -395,6 +429,7 @@ Model {
 	      CustomSymbolStrType     "$N$R$M"
 	      CustomSymbolStrField    "$N$M"
 	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrFcnArg   "rt$I$N$M"
 	      CustomSymbolStrBlkIO    "rtb_$N$M"
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
@@ -406,10 +441,12 @@ Model {
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
+	      UseSimReservedNames     off
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      10
+	      $ObjectID		      11
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -431,19 +468,23 @@ Model {
 		Cell			"PortableWordSizes"
 		PropName		"DisabledProps"
 	      }
-	      Version		      "1.4.0"
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
+	      ERTMultiwordTypeDef     "System defined"
+	      ERTMultiwordLength      256
+	      MultiwordLength	      2048
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
 	      IsPILTarget	      off
 	      ModelReferenceCompliant on
+	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
 	      IncludeMdlTerminateFcn  on
+	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
@@ -458,11 +499,14 @@ Model {
 	      PurelyIntegerCode	      off
 	      SupportContinuousTime   on
 	      SupportNonInlinedSFcns  on
+	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
 	      PortableWordSizes	      off
 	      ModelStepFunctionPrototypeControlCompliant off
+	      CPPClassGenCompliant    off
 	      AutosarCompliant	      off
+	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
 	      ExtModeTesting	      off
@@ -479,22 +523,16 @@ Model {
 	  }
 	}
 	hdlcoderui.hdlcc {
-	  $ObjectID		  11
+	  $ObjectID		  12
+	  Version		  "1.6.0"
 	  Description		  "HDL Coder custom configuration component"
-	  Version		  "1.4.0"
 	  Name			  "HDL Coder"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    1
-	    Cell		    ""
-	    PropName		    "HDLConfigFile"
-	  }
-	  HDLCActiveTab		  "0"
 	}
 	PropName		"Components"
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
+      ConfigPrmDlgPosition    " [ 400, 210, 1280, 840 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -503,7 +541,6 @@ Model {
     $ObjectID		    1
   }
   BlockDefaults {
-    Orientation		    "right"
     ForegroundColor	    "black"
     BackgroundColor	    "white"
     DropShadow		    off
@@ -513,8 +550,57 @@ Model {
     FontWeight		    "normal"
     FontAngle		    "normal"
     ShowName		    on
+    BlockRotation	    0
+    BlockMirror		    off
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
   }
   BlockParameterDefaults {
+    Block {
+      BlockType		      Abs
+      ZeroCross		      on
+      SampleTime	      "-1"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+    }
+    Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "fixdt(1,16,0)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
+      LockScale		      off
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+    }
     Block {
       BlockType		      Demux
       Outputs		      "4"
@@ -549,24 +635,9 @@ Model {
       SampleTime	      "-1"
     }
     Block {
-      BlockType		      Inport
-      Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
-      BusOutputAsStruct	      off
-      PortDimensions	      "-1"
-      SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      SignalType	      "auto"
-      SamplingMode	      "auto"
-      LatchByDelayingOutsideSignal off
-      LatchByCopyingInsideSignal off
-      Interpolate	      on
+      BlockType		      "M-S-Function"
+      FunctionName	      "mlfile"
+      DisplayMFileStacktrace  on
     }
     Block {
       BlockType		      Math
@@ -582,11 +653,9 @@ Model {
       LockScale		      off
       RndMeth		      "Floor"
       SaturateOnIntegerOverflow	on
-    }
-    Block {
-      BlockType		      "M-S-Function"
-      FunctionName	      "mlfile"
-      DisplayMFileStacktrace  on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
     }
     Block {
       BlockType		      Mux
@@ -595,25 +664,6 @@ Model {
       UseBusObject	      off
       BusObject		      "BusObject"
       NonVirtualBus	      off
-    }
-    Block {
-      BlockType		      Outport
-      Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
-      BusOutputAsStruct	      off
-      PortDimensions	      "-1"
-      SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      SignalType	      "auto"
-      SamplingMode	      "auto"
-      OutputWhenDisabled      "held"
-      InitialOutput	      "[]"
     }
     Block {
       BlockType		      Scope
@@ -631,25 +681,6 @@ Model {
       Decimation	      "1"
       SampleInput	      off
       SampleTime	      "-1"
-    }
-    Block {
-      BlockType		      SubSystem
-      ShowPortLabels	      "FromPortIcon"
-      Permissions	      "ReadWrite"
-      PermitHierarchicalResolution "All"
-      TreatAsAtomicUnit	      off
-      CheckFcnCallInpInsideContextMsg off
-      SystemSampleTime	      "-1"
-      RTWFcnNameOpts	      "Auto"
-      RTWFileNameOpts	      "Auto"
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      SimViewingDevice	      off
-      DataTypeOverride	      "UseLocalSettings"
-      MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
       BlockType		      Sum
@@ -670,63 +701,10 @@ Model {
       SaturateOnIntegerOverflow	on
       SampleTime	      "-1"
     }
-    Block {
-      BlockType		      UnitDelay
-      X0		      "0"
-      SampleTime	      "1"
-      StateMustResolveToSignalObject off
-      RTWStateStorageClass    "Auto"
-    }
-    Block {
-      BlockType		      Abs
-      ZeroCross		      on
-      SampleTime	      "-1"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Same as input"
-      LockScale		      off
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	on
-    }
-    Block {
-      BlockType		      Constant
-      Value		      "1"
-      VectorParams1D	      on
-      SamplingMode	      "Sample based"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
-      SampleTime	      "inf"
-      FramePeriod	      "inf"
-    }
-  }
-  AnnotationDefaults {
-    HorizontalAlignment	    "center"
-    VerticalAlignment	    "middle"
-    ForegroundColor	    "black"
-    BackgroundColor	    "white"
-    DropShadow		    off
-    FontName		    "Helvetica"
-    FontSize		    10
-    FontWeight		    "normal"
-    FontAngle		    "normal"
-    UseDisplayTextAsClickCallback off
-  }
-  LineDefaults {
-    FontName		    "Helvetica"
-    FontSize		    9
-    FontWeight		    "normal"
-    FontAngle		    "normal"
   }
   System {
     Name		    "TestFuncionality"
-    Location		    [0, 50, 1024, 730]
+    Location		    [0, 82, 1228, 856]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -740,9 +718,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
+    SIDHighWatermark	    69
     Block {
       BlockType		      Constant
       Name		      "500b"
+      SID		      1
       Position		      [575, 100, 605, 130]
       Value		      "399"
       OutDataType	      "sfix(16)"
@@ -751,6 +731,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs"
+      SID		      2
       Position		      [435, 195, 465, 225]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -759,6 +740,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs1"
+      SID		      3
       Position		      [475, 325, 505, 355]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -767,6 +749,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs2"
+      SID		      4
       Position		      [470, 475, 500, 505]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -775,6 +758,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs3"
+      SID		      5
       Position		      [460, 565, 490, 595]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -783,6 +767,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs4"
+      SID		      6
       Position		      [865, 235, 895, 265]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -791,6 +776,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs5"
+      SID		      7
       Position		      [440, 120, 470, 150]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -799,6 +785,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs6"
+      SID		      8
       Position		      [905, 355, 935, 385]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -807,6 +794,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs7"
+      SID		      9
       Position		      [880, 620, 910, 650]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -815,6 +803,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs8"
+      SID		      10
       Position		      [960, 485, 990, 515]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -823,6 +812,7 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant"
+      SID		      11
       Position		      [50, 75, 80, 105]
       Value		      "-1:3"
       OutDataType	      "sfix(16)"
@@ -831,6 +821,7 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant1"
+      SID		      12
       Position		      [640, 560, 670, 590]
       Value		      "1:100"
       OutDataType	      "sfix(16)"
@@ -839,6 +830,7 @@ Model {
     Block {
       BlockType		      "M-S-Function"
       Name		      "CustomSave"
+      SID		      13
       Ports		      [1]
       Position		      [165, 66, 315, 114]
       FunctionName	      "SaveToWrkspceBLOML2"
@@ -847,6 +839,7 @@ Model {
     Block {
       BlockType		      Demux
       Name		      "Demux"
+      SID		      14
       Ports		      [1, 5]
       Position		      [145, 285, 155, 335]
       ShowName		      off
@@ -856,6 +849,7 @@ Model {
     Block {
       BlockType		      Demux
       Name		      "Demux1"
+      SID		      15
       Ports		      [1, 5]
       Position		      [145, 365, 155, 415]
       ShowName		      off
@@ -865,24 +859,28 @@ Model {
     Block {
       BlockType		      Fcn
       Name		      "Fcn"
+      SID		      16
       Position		      [700, 230, 760, 260]
       Expr		      "(2-u)/u"
     }
     Block {
       BlockType		      Fcn
       Name		      "Fcn1"
+      SID		      17
       Position		      [675, 360, 825, 390]
       Expr		      "(2-u+3*u^3)/(5*u*u+u^3)"
     }
     Block {
       BlockType		      Fcn
       Name		      "Fcn2"
+      SID		      18
       Position		      [685, 490, 905, 520]
       Expr		      "(2-exp(u)+3*log(u))/(log(u)+exp(u))"
     }
     Block {
       BlockType		      Gain
       Name		      "Gain"
+      SID		      19
       Position		      [195, 175, 225, 205]
       Gain		      "2"
       ParameterDataTypeMode   "Inherit via internal rule"
@@ -898,6 +896,7 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "Gain1"
+      SID		      20
       Position		      [775, 630, 805, 660]
       Gain		      "-1"
       ParameterDataTypeMode   "Inherit via internal rule"
@@ -913,10 +912,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LargeMatrix"
+      SID		      21
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 548, 785, 602]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(100)*2"
@@ -930,138 +931,161 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix1"
+      SID		      22
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [170, 30, 215, 50]
       BackgroundColor	      "red"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "> 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix10"
+      SID		      23
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [930, 625, 975, 645]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix11"
+      SID		      24
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [1010, 490, 1055, 510]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix2"
+      SID		      25
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [495, 200, 540, 220]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix3"
+      SID		      26
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [955, 360, 1000, 380]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix4"
+      SID		      27
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [525, 330, 570, 350]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix5"
+      SID		      28
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [520, 480, 565, 500]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix6"
+      SID		      29
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [510, 570, 555, 590]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix7"
+      SID		      30
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [820, 130, 865, 150]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix8"
+      SID		      31
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [915, 240, 960, 260]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Reference
       Name		      "LessOneMix9"
+      SID		      32
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [500, 125, 545, 145]
       BackgroundColor	      "green"
       ShowName		      off
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
     }
     Block {
       BlockType		      Math
       Name		      "Math\nFunction"
+      SID		      33
       Ports		      [1, 1]
       Position		      [705, 629, 755, 661]
       Operator		      "square"
@@ -1071,10 +1095,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta"
+      SID		      34
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 103, 775, 127]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1]"
@@ -1088,10 +1114,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta1"
+      SID		      35
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 138, 260, 162]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1105,10 +1133,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta2"
+      SID		      36
       Tag		      "PolyBlock"
       Ports		      [1, 5]
       Position		      [185, 213, 265, 267]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1122,10 +1152,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta3"
+      SID		      37
       Tag		      "PolyBlock"
       Ports		      [5, 5]
       Position		      [185, 283, 270, 337]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1139,10 +1171,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta4"
+      SID		      38
       Tag		      "PolyBlock"
       Ports		      [5, 1]
       Position		      [185, 363, 270, 417]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1156,10 +1190,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta5"
+      SID		      39
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 448, 270, 502]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1173,10 +1209,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta6"
+      SID		      40
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 548, 270, 602]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1190,10 +1228,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta7"
+      SID		      41
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 178, 775, 202]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1]"
@@ -1207,10 +1247,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta8"
+      SID		      42
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [665, 294, 840, 326]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1 ; 3]"
@@ -1224,10 +1266,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta9"
+      SID		      43
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [670, 423, 900, 457]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;inf ; -inf]"
@@ -1241,6 +1285,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux"
+      SID		      44
       Ports		      [5, 1]
       Position		      [315, 213, 320, 267]
       ShowName		      off
@@ -1250,6 +1295,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux1"
+      SID		      45
       Ports		      [5, 1]
       Position		      [315, 283, 320, 337]
       ShowName		      off
@@ -1259,6 +1305,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope1"
+      SID		      46
       Ports		      [1]
       Position		      [825, 54, 855, 86]
       Floating		      off
@@ -1276,6 +1323,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope10"
+      SID		      47
       Ports		      [1]
       Position		      [935, 559, 965, 591]
       Floating		      off
@@ -1294,6 +1342,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope11"
+      SID		      48
       Ports		      [1]
       Position		      [845, 689, 875, 721]
       Floating		      off
@@ -1312,6 +1361,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope12"
+      SID		      49
       Ports		      [1]
       Position		      [1015, 424, 1045, 456]
       Floating		      off
@@ -1330,6 +1380,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope2"
+      SID		      50
       Ports		      [1]
       Position		      [285, 134, 315, 166]
       Floating		      off
@@ -1348,6 +1399,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope3"
+      SID		      51
       Ports		      [1]
       Position		      [485, 224, 515, 256]
       Floating		      off
@@ -1366,6 +1418,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope4"
+      SID		      52
       Ports		      [1]
       Position		      [530, 264, 560, 296]
       Floating		      off
@@ -1384,6 +1437,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope5"
+      SID		      53
       Ports		      [1]
       Position		      [525, 414, 555, 446]
       Floating		      off
@@ -1402,6 +1456,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope6"
+      SID		      54
       Ports		      [1]
       Position		      [515, 509, 545, 541]
       Floating		      off
@@ -1420,6 +1475,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope7"
+      SID		      55
       Ports		      [1]
       Position		      [920, 174, 950, 206]
       Floating		      off
@@ -1438,6 +1494,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope8"
+      SID		      56
       Ports		      [1]
       Position		      [490, 149, 520, 181]
       Floating		      off
@@ -1456,11 +1513,12 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope9"
+      SID		      57
       Ports		      [1]
       Position		      [960, 294, 990, 326]
       Floating		      off
       Location		      [100, 320, 424, 559]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1474,6 +1532,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum"
+      SID		      58
       Ports		      [2, 1]
       Position		      [380, 230, 400, 250]
       ShowName		      off
@@ -1489,6 +1548,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum1"
+      SID		      59
       Ports		      [2, 1]
       Position		      [430, 270, 450, 290]
       ShowName		      off
@@ -1504,6 +1564,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum2"
+      SID		      60
       Ports		      [2, 1]
       Position		      [425, 420, 445, 440]
       ShowName		      off
@@ -1519,6 +1580,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum3"
+      SID		      61
       Ports		      [2, 1]
       Position		      [370, 515, 390, 535]
       ShowName		      off
@@ -1534,6 +1596,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum4"
+      SID		      62
       Ports		      [2, 1]
       Position		      [820, 180, 840, 200]
       ShowName		      off
@@ -1549,6 +1612,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum5"
+      SID		      63
       Ports		      [2, 1]
       Position		      [385, 180, 405, 200]
       ShowName		      off
@@ -1564,6 +1628,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum6"
+      SID		      64
       Ports		      [2, 1]
       Position		      [860, 300, 880, 320]
       ShowName		      off
@@ -1579,6 +1644,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum7"
+      SID		      65
       Ports		      [2, 1]
       Position		      [835, 565, 855, 585]
       ShowName		      off
@@ -1594,6 +1660,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum8"
+      SID		      66
       Ports		      [2, 1]
       Position		      [915, 430, 935, 450]
       ShowName		      off
@@ -1609,9 +1676,11 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "state"
+      SID		      67
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [130, 561, 170, 589]
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/state"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1623,14 +1692,16 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       init_val		      "0"
-      save_name		      "state"
+      save_name		      "BL_state"
     }
     Block {
       BlockType		      Reference
       Name		      "state1"
+      SID		      68
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [305, 511, 345, 539]
+      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/state"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1642,16 +1713,18 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       init_val		      "0"
-      save_name		      "state1"
+      save_name		      "BL_state1"
     }
     Block {
       BlockType		      Reference
       Name		      "violated"
+      SID		      69
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [890, 105, 935, 125]
       BackgroundColor	      "red"
-      SourceBlock	      "MPCMdlLib/Inequality constraint"
+      LibraryVersion	      "1.132"
+      SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "> 0"
     }
