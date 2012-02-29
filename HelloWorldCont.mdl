@@ -1,5 +1,5 @@
 Model {
-  Name			  "HelloWorld"
+  Name			  "HelloWorldCont"
   Version		  7.1
   MdlSubVersion		  0
   GraphicalInterface {
@@ -45,7 +45,7 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "serg"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Feb 29 15:06:18 2012"
+  LastModifiedDate	  "Wed Feb 29 15:06:33 2012"
   RTWModifiedTimeStamp	  0
   ModelVersionFormat	  "1.%<AutoIncrement:34>"
   ConfigurationManager	  "None"
@@ -122,8 +122,8 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
-	  Solver		  "FixedStepDiscrete"
-	  SolverName		  "FixedStepDiscrete"
+	  Solver		  "ode1"
+	  SolverName		  "ode1"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
 	  ZeroCrossAlgorithm	  "Non-adaptive"
@@ -521,6 +521,21 @@ Model {
       Interpolate	      on
     }
     Block {
+      BlockType		      Integrator
+      ExternalReset	      "none"
+      InitialConditionSource  "internal"
+      InitialCondition	      "0"
+      LimitOutput	      off
+      UpperSaturationLimit    "inf"
+      LowerSaturationLimit    "-inf"
+      ShowSaturationPort      off
+      ShowStatePort	      off
+      AbsoluteTolerance	      "auto"
+      IgnoreLimit	      off
+      ZeroCross		      on
+      ContinuousStateAttributes	"''"
+    }
+    Block {
       BlockType		      "M-S-Function"
       FunctionName	      "mlfile"
       DisplayMFileStacktrace  on
@@ -545,6 +560,23 @@ Model {
       InitialOutput	      "[]"
     }
     Block {
+      BlockType		      Scope
+      ModelBased	      off
+      TickLabels	      "OneTimeTick"
+      ZoomMode		      "on"
+      Grid		      "on"
+      TimeRange		      "auto"
+      YMin		      "-5"
+      YMax		      "5"
+      SaveToWorkspace	      off
+      SaveName		      "ScopeData"
+      LimitDataPoints	      on
+      MaxDataPoints	      "5000"
+      Decimation	      "1"
+      SampleInput	      off
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -562,13 +594,6 @@ Model {
       SimViewingDevice	      off
       DataTypeOverride	      "UseLocalSettings"
       MinMaxOverflowLogging   "UseLocalSettings"
-    }
-    Block {
-      BlockType		      UnitDelay
-      X0		      "0"
-      SampleTime	      "1"
-      StateMustResolveToSignalObject off
-      RTWStateStorageClass    "Auto"
     }
     Block {
       BlockType		      Constant
@@ -605,7 +630,7 @@ Model {
     FontAngle		    "normal"
   }
   System {
-    Name		    "HelloWorld"
+    Name		    "HelloWorldCont"
     Location		    [5, 292, 1019, 724]
     Open		    on
     ModelBrowserVisibility  off
@@ -640,7 +665,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[5, 157, 1019, 628]
+	Location		[-10, 163, 1004, 634]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -685,12 +710,47 @@ Model {
 	}
 	Block {
 	  BlockType		  Reference
+	  Name			  "Continuous state"
+	  Tag			  "OptState"
+	  Ports			  [1, 1]
+	  Position		  [975, 106, 1015, 134]
+	  SourceBlock		  "MPCMdlLib/Continuous state"
+	  SourceType		  ""
+	  ShowPortLabels	  "FromPortIcon"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  init_val		  "0.6"
+	  save_name		  "BL_System_Continuous_state"
+	}
+	Block {
+	  BlockType		  Reference
 	  Name			  "Cost functon"
 	  Tag			  "OptCost"
 	  Ports			  [1]
 	  Position		  [975, 238, 1030, 272]
 	  SourceBlock		  "MPCMdlLib/Cost functon"
 	  SourceType		  ""
+	}
+	Block {
+	  BlockType		  Scope
+	  Name			  "Scope"
+	  Ports			  [1]
+	  Position		  [945, 49, 975, 81]
+	  Floating		  off
+	  Location		  [188, 390, 512, 629]
+	  Open			  on
+	  NumInputPorts		  "1"
+	  List {
+	    ListType		    AxesTitles
+	    axes1		    "%<SignalLabel>"
+	  }
+	  DataFormat		  "StructureWithTime"
+	  SampleTime		  "0"
 	}
 	Block {
 	  BlockType		  Reference
@@ -708,25 +768,6 @@ Model {
 	  input_type		  "Scalar"
 	  output_type		  "Scalar"
 	  port_names		  "xk,uk"
-	}
-	Block {
-	  BlockType		  Reference
-	  Name			  "state"
-	  Tag			  "OptState"
-	  Ports			  [1, 1]
-	  Position		  [980, 106, 1020, 134]
-	  SourceBlock		  "MPCMdlLib/state"
-	  SourceType		  ""
-	  ShowPortLabels	  "FromPortIcon"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  init_val		  "1"
-	  save_name		  "BL_System_state"
 	}
 	Block {
 	  BlockType		  Reference
@@ -783,7 +824,7 @@ Model {
 	}
 	Block {
 	  BlockType		  Reference
-	  Name			  "xk1"
+	  Name			  "xdot"
 	  Tag			  "PolyBlock"
 	  Ports			  [2, 1]
 	  Position		  [440, 94, 550, 141]
@@ -791,7 +832,7 @@ Model {
 	  SourceBlock		  "MPCMdlLib/UserFriendly PolyBlock"
 	  SourceType		  ""
 	  A			  "[1 0; 0 1]"
-	  C			  "[0.9 1]"
+	  C			  "[-0.1 1]"
 	  gA			  "[0 0 ] "
 	  gC			  "1"
 	  input_type		  "Scalar"
@@ -799,33 +840,40 @@ Model {
 	  port_names		  "xk,uk"
 	}
 	Line {
-	  SrcBlock		  "xk1"
+	  SrcBlock		  "xdot"
 	  SrcPort		  1
-	  Points		  [10, 0]
-	  Branch {
-	    Points		    [5, 0; 0, 125]
-	    DstBlock		    "cost "
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [120, 0]
-	    Branch {
-	      DstBlock		      "state"
-	      DstPort		      1
-	    }
-	    Branch {
-	      Points		      [0, 40]
-	      DstBlock		      "state constraint"
-	      DstPort		      1
-	    }
-	  }
+	  DstBlock		  "Continuous state"
+	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "state"
+	  SrcBlock		  "Continuous state"
 	  SrcPort		  1
-	  Points		  [0, -90; -600, 0]
-	  DstBlock		  "xk1"
-	  DstPort		  1
+	  Points		  [0, -90; -190, 0]
+	  Branch {
+	    Points		    [-145, 0]
+	    Branch {
+	      Points		      [-260, 0]
+	      DstBlock		      "xdot"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [0, 130]
+	      Branch {
+		DstBlock		"state constraint"
+		DstPort			1
+	      }
+	      Branch {
+		Points			[0, 85]
+		DstBlock		"cost "
+		DstPort			1
+	      }
+	    }
+	  }
+	  Branch {
+	    Points		    [0, 35]
+	    DstBlock		    "Scope"
+	    DstPort		    1
+	  }
 	}
 	Line {
 	  SrcBlock		  "u"
@@ -834,7 +882,7 @@ Model {
 	  Branch {
 	    Points		    [275, 0]
 	    Branch {
-	      DstBlock		      "xk1"
+	      DstBlock		      "xdot"
 	      DstPort		      2
 	    }
 	    Branch {

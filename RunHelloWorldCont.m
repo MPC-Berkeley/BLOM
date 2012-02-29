@@ -3,11 +3,11 @@ clc
 mode = 'fmincon' ;
 
 
-open('HelloWorld');
+open('HelloWorldCont');
 
 %% Convert model to optimization problem
-[all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars, ex_vars] = ExtractModel(10);
-sim('HelloWorld');
+[all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars, ex_vars] = ExtractModel(10,1,'RK4');
+sim('HelloWorldCont');
 %% Print problem - just for display
 code = PrintProblem(all_names, AAs ,  Cs ,ineq_vars,cost_vars);
 for i=1:length(code)
@@ -46,7 +46,7 @@ for i=1:length(all_names)
         warning(['Var ' name ' not found in workspace']);
         continue;
     end
-    time = str2double(all_names{i}(idx(2)+2:end));
+    time = sscanf(all_names{i}(idx(2)+2:end),'%d');
 %     pr.x0(i) =  eval([ name '.signals.values(' num2str(time) ')']) ;
       port = str2double(all_names{i}(idx(1)+4:idx(2)-1));
     pr.x0(i) =  eval([ name '.signals.values(' num2str(time) ',' num2str(port) ')']) ; 
@@ -128,7 +128,7 @@ switch (mode)
 end
 %% plot the results
 subplot(211);
-plot(x(strmatch('BL_System_xk1.',all_names)))
+plot(x(strmatch('BL_System_Continuous_state.',all_names)))
 ylabel('X');
 subplot(212);
 plot(x(strmatch('BL_System_u',all_names)))

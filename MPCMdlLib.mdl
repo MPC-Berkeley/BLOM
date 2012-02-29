@@ -1,26 +1,11 @@
 Library {
   Name			  "MPCMdlLib"
-  Version		  7.4
+  Version		  7.1
   MdlSubVersion		  0
   SavedCharacterEncoding  "windows-1252"
   LibraryType		  "BlockLibrary"
   SaveDefaultBlockParams  on
-  ScopeRefreshTime	  0.035000
-  OverrideScopeRefreshTime on
-  DisableAllScopes	  off
-  MaxMDLFileLineLength	  120
-  Created		  "Wed Nov 30 11:59:58 2011"
-  Creator		  "Serg"
-  UpdateHistory		  "UpdateHistoryNever"
-  ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Serg"
-  ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Feb 28 18:38:00 2012"
-  RTWModifiedTimeStamp	  252355078
-  ModelVersionFormat	  "1.%<AutoIncrement:133>"
-  ConfigurationManager	  "None"
   SampleTimeColors	  off
-  SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "all"
   WideLines		  off
   ShowLineDimensions	  off
@@ -34,6 +19,9 @@ Library {
   SortedOrder		  off
   ExecutionContextIcon	  off
   ShowLinearizationAnnotations on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
   BlockNameDataTip	  off
   BlockParametersDataTip  off
   BlockDescriptionStringDataTip	off
@@ -41,6 +29,16 @@ Library {
   StatusBar		  on
   BrowserShowLibraryLinks off
   BrowserLookUnderMasks	  off
+  Created		  "Wed Nov 30 11:59:58 2011"
+  Creator		  "Serg"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "serg"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Wed Feb 29 11:47:42 2012"
+  RTWModifiedTimeStamp	  252416859
+  ModelVersionFormat	  "1.%<AutoIncrement:134>"
+  ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
   Profile		  off
@@ -49,13 +47,11 @@ Library {
   CovMetricSettings	  "dw"
   CovNameIncrementing	  off
   CovHtmlReporting	  on
-  CovForceBlockReductionOff on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeReport	  off
   CovReportOnPause	  on
   CovModelRefEnable	  "Off"
-  CovExternalEMLEnable	  off
   ExtModeBatchMode	  off
   ExtModeEnableFloating	  on
   ExtModeTrigType	  "manual"
@@ -79,447 +75,8 @@ Library {
   ExtModeAutoUpdateStatusClock on
   ShowModelReferenceBlockVersion off
   ShowModelReferenceBlockIO off
-  Array {
-    Type		    "Handle"
-    Dimension		    1
-    Simulink.ConfigSet {
-      $ObjectID		      1
-      Version		      "1.6.0"
-      Array {
-	Type			"Handle"
-	Dimension		8
-	Simulink.SolverCC {
-	  $ObjectID		  2
-	  Version		  "1.6.0"
-	  StartTime		  "0.0"
-	  StopTime		  "10.0"
-	  AbsTol		  "auto"
-	  FixedStep		  "auto"
-	  InitialStep		  "auto"
-	  MaxNumMinSteps	  "-1"
-	  MaxOrder		  5
-	  ZcThreshold		  "auto"
-	  ConsecutiveZCsStepRelTol "10*128*eps"
-	  MaxConsecutiveZCs	  "1000"
-	  ExtrapolationOrder	  4
-	  NumberNewtonIterations  1
-	  MaxStep		  "auto"
-	  MinStep		  "auto"
-	  MaxConsecutiveMinStep	  "1"
-	  RelTol		  "1e-3"
-	  SolverMode		  "SingleTasking"
-	  Solver		  "ode45"
-	  SolverName		  "ode45"
-	  ShapePreserveControl	  "DisableAll"
-	  ZeroCrossControl	  "UseLocalSettings"
-	  ZeroCrossAlgorithm	  "Nonadaptive"
-	  AlgebraicLoopSolver	  "TrustRegion"
-	  SolverResetMethod	  "Fast"
-	  PositivePriorityOrder	  off
-	  AutoInsertRateTranBlk	  off
-	  SampleTimeConstraint	  "Unconstrained"
-	  InsertRTBMode		  "Whenever possible"
-	}
-	Simulink.DataIOCC {
-	  $ObjectID		  3
-	  Version		  "1.6.0"
-	  Decimation		  "1"
-	  ExternalInput		  "[t, u]"
-	  FinalStateName	  "xFinal"
-	  InitialState		  "xInitial"
-	  LimitDataPoints	  on
-	  MaxDataPoints		  "1000"
-	  LoadExternalInput	  off
-	  LoadInitialState	  off
-	  SaveFinalState	  off
-	  SaveCompleteFinalSimState off
-	  SaveFormat		  "Array"
-	  SaveOutput		  on
-	  SaveState		  off
-	  SignalLogging		  on
-	  InspectSignalLogs	  off
-	  SaveTime		  on
-	  ReturnWorkspaceOutputs  off
-	  StateSaveName		  "xout"
-	  TimeSaveName		  "tout"
-	  OutputSaveName	  "yout"
-	  SignalLoggingName	  "logsout"
-	  OutputOption		  "RefineOutputTimes"
-	  OutputTimes		  "[]"
-	  ReturnWorkspaceOutputsName "out"
-	  Refine		  "1"
-	}
-	Simulink.OptimizationCC {
-	  $ObjectID		  4
-	  Version		  "1.6.0"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    7
-	    Cell		    "BooleansAsBitfields"
-	    Cell		    "PassReuseOutputArgsAs"
-	    Cell		    "PassReuseOutputArgsThreshold"
-	    Cell		    "ZeroExternalMemoryAtStartup"
-	    Cell		    "ZeroInternalMemoryAtStartup"
-	    Cell		    "OptimizeModelRefInitCode"
-	    Cell		    "NoFixptDivByZeroProtection"
-	    PropName		    "DisabledProps"
-	  }
-	  BlockReduction	  off
-	  BooleanDataType	  off
-	  ConditionallyExecuteInputs on
-	  InlineParams		  off
-	  UseIntDivNetSlope	  off
-	  InlineInvariantSignals  off
-	  OptimizeBlockIOStorage  on
-	  BufferReuse		  on
-	  EnhancedBackFolding	  off
-	  StrengthReduction	  off
-	  EnforceIntegerDowncast  on
-	  ExpressionFolding	  on
-	  BooleansAsBitfields	  off
-	  EnableMemcpy		  on
-	  MemcpyThreshold	  64
-	  PassReuseOutputArgsAs	  "Structure reference"
-	  ExpressionDepthLimit	  2147483647
-	  FoldNonRolledExpr	  on
-	  LocalBlockOutputs	  on
-	  RollThreshold		  5
-	  SystemCodeInlineAuto	  off
-	  StateBitsets		  off
-	  DataBitsets		  off
-	  UseTempVars		  off
-	  ZeroExternalMemoryAtStartup on
-	  ZeroInternalMemoryAtStartup on
-	  InitFltsAndDblsToZero	  off
-	  NoFixptDivByZeroProtection off
-	  EfficientFloat2IntCast  off
-	  EfficientMapNaN2IntZero on
-	  OptimizeModelRefInitCode off
-	  LifeSpan		  "inf"
-	  BufferReusableBoundary  on
-	  SimCompilerOptimization "Off"
-	  AccelVerboseBuild	  off
-	}
-	Simulink.DebuggingCC {
-	  $ObjectID		  5
-	  Version		  "1.6.0"
-	  RTPrefix		  "error"
-	  ConsistencyChecking	  "none"
-	  ArrayBoundsChecking	  "none"
-	  SignalInfNanChecking	  "none"
-	  SignalRangeChecking	  "none"
-	  ReadBeforeWriteMsg	  "UseLocalSettings"
-	  WriteAfterWriteMsg	  "UseLocalSettings"
-	  WriteAfterReadMsg	  "UseLocalSettings"
-	  AlgebraicLoopMsg	  "warning"
-	  ArtificialAlgebraicLoopMsg "warning"
-	  SaveWithDisabledLinksMsg "warning"
-	  SaveWithParameterizedLinksMsg	"none"
-	  CheckSSInitialOutputMsg on
-	  UnderspecifiedInitializationDetection	"Classic"
-	  MergeDetectMultiDrivingBlocksExec "none"
-	  CheckExecutionContextPreStartOutputMsg off
-	  CheckExecutionContextRuntimeOutputMsg	off
-	  SignalResolutionControl "TryResolveAllWithWarning"
-	  BlockPriorityViolationMsg "warning"
-	  MinStepSizeMsg	  "warning"
-	  TimeAdjustmentMsg	  "none"
-	  MaxConsecutiveZCsMsg	  "error"
-	  SolverPrmCheckMsg	  "none"
-	  InheritedTsInSrcMsg	  "warning"
-	  DiscreteInheritContinuousMsg "warning"
-	  MultiTaskDSMMsg	  "error"
-	  MultiTaskCondExecSysMsg "error"
-	  MultiTaskRateTransMsg	  "error"
-	  SingleTaskRateTransMsg  "none"
-	  TasksWithSamePriorityMsg "warning"
-	  SigSpecEnsureSampleTimeMsg "warning"
-	  CheckMatrixSingularityMsg "none"
-	  IntegerOverflowMsg	  "warning"
-	  Int32ToFloatConvMsg	  "warning"
-	  ParameterDowncastMsg	  "error"
-	  ParameterOverflowMsg	  "error"
-	  ParameterUnderflowMsg	  "none"
-	  ParameterPrecisionLossMsg "warning"
-	  ParameterTunabilityLossMsg "warning"
-	  FixptConstUnderflowMsg  "none"
-	  FixptConstOverflowMsg	  "none"
-	  FixptConstPrecisionLossMsg "none"
-	  UnderSpecifiedDataTypeMsg "none"
-	  UnnecessaryDatatypeConvMsg "none"
-	  VectorMatrixConversionMsg "none"
-	  InvalidFcnCallConnMsg	  "error"
-	  FcnCallInpInsideContextMsg "Use local settings"
-	  SignalLabelMismatchMsg  "none"
-	  UnconnectedInputMsg	  "warning"
-	  UnconnectedOutputMsg	  "warning"
-	  UnconnectedLineMsg	  "warning"
-	  SFcnCompatibilityMsg	  "none"
-	  UniqueDataStoreMsg	  "none"
-	  BusObjectLabelMismatch  "warning"
-	  RootOutportRequireBusObject "warning"
-	  AssertControl		  "UseLocalSettings"
-	  EnableOverflowDetection off
-	  ModelReferenceIOMsg	  "none"
-	  ModelReferenceVersionMismatchMessage "none"
-	  ModelReferenceIOMismatchMessage "none"
-	  ModelReferenceCSMismatchMessage "none"
-	  UnknownTsInhSupMsg	  "warning"
-	  ModelReferenceDataLoggingMessage "warning"
-	  ModelReferenceSymbolNameMessage "warning"
-	  ModelReferenceExtraNoncontSigs "error"
-	  StateNameClashWarn	  "warning"
-	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  StrictBusMsg		  "Warning"
-	  LoggingUnavailableSignals "error"
-	  BlockIODiagnostic	  "none"
-	}
-	Simulink.HardwareCC {
-	  $ObjectID		  6
-	  Version		  "1.6.0"
-	  ProdBitPerChar	  8
-	  ProdBitPerShort	  16
-	  ProdBitPerInt		  32
-	  ProdBitPerLong	  32
-	  ProdIntDivRoundTo	  "Undefined"
-	  ProdEndianess		  "Unspecified"
-	  ProdWordSize		  32
-	  ProdShiftRightIntArith  on
-	  ProdHWDeviceType	  "32-bit Generic"
-	  TargetBitPerChar	  8
-	  TargetBitPerShort	  16
-	  TargetBitPerInt	  32
-	  TargetBitPerLong	  32
-	  TargetShiftRightIntArith on
-	  TargetIntDivRoundTo	  "Undefined"
-	  TargetEndianess	  "Unspecified"
-	  TargetWordSize	  32
-	  TargetTypeEmulationWarnSuppressLevel 0
-	  TargetPreprocMaxBitsSint 32
-	  TargetPreprocMaxBitsUint 32
-	  TargetHWDeviceType	  "Specified"
-	  TargetUnknown		  on
-	  ProdEqTarget		  on
-	}
-	Simulink.ModelReferenceCC {
-	  $ObjectID		  7
-	  Version		  "1.6.0"
-	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
-	  CheckModelReferenceTargetMessage "error"
-	  ModelReferenceNumInstancesAllowed "Multi"
-	  ModelReferencePassRootInputsByReference on
-	  ModelReferenceMinAlgLoopOccurrences off
-	}
-	Simulink.SFSimCC {
-	  $ObjectID		  8
-	  Version		  "1.6.0"
-	  SFSimEnableDebug	  on
-	  SFSimOverflowDetection  on
-	  SFSimEcho		  on
-	  SimBlas		  on
-	  SimCtrlC		  on
-	  SimExtrinsic		  on
-	  SimIntegrity		  on
-	  SimUseLocalCustomCode	  off
-	  SimBuildMode		  "sf_incremental_build"
-	}
-	Simulink.RTWCC {
-	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  9
-	  Version		  "1.6.0"
-	  Array {
-	    Type		    "Cell"
-	    Dimension		    6
-	    Cell		    "IncludeHyperlinkInReport"
-	    Cell		    "GenerateTraceInfo"
-	    Cell		    "GenerateTraceReport"
-	    Cell		    "GenerateTraceReportSl"
-	    Cell		    "GenerateTraceReportSf"
-	    Cell		    "GenerateTraceReportEml"
-	    PropName		    "DisabledProps"
-	  }
-	  SystemTargetFile	  "grt.tlc"
-	  GenCodeOnly		  off
-	  MakeCommand		  "make_rtw"
-	  GenerateMakefile	  on
-	  TemplateMakefile	  "grt_default_tmf"
-	  GenerateReport	  off
-	  SaveLog		  off
-	  RTWVerbose		  on
-	  RetainRTWFile		  off
-	  ProfileTLC		  off
-	  TLCDebug		  off
-	  TLCCoverage		  off
-	  TLCAssert		  off
-	  ProcessScriptMode	  "Default"
-	  ConfigurationMode	  "Optimized"
-	  ConfigAtBuild		  off
-	  RTWUseLocalCustomCode	  off
-	  RTWUseSimCustomCode	  off
-	  IncludeHyperlinkInReport off
-	  LaunchReport		  off
-	  TargetLang		  "C"
-	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
-	  IncludeERTFirstTime	  off
-	  GenerateTraceInfo	  off
-	  GenerateTraceReport	  off
-	  GenerateTraceReportSl	  off
-	  GenerateTraceReportSf	  off
-	  GenerateTraceReportEml  off
-	  GenerateCodeInfo	  off
-	  RTWCompilerOptimization "Off"
-	  CheckMdlBeforeBuild	  "Off"
-	  Array {
-	    Type		    "Handle"
-	    Dimension		    2
-	    Simulink.CodeAppCC {
-	      $ObjectID		      10
-	      Version		      "1.6.0"
-	      Array {
-		Type			"Cell"
-		Dimension		19
-		Cell			"IgnoreCustomStorageClasses"
-		Cell			"IgnoreTestpoints"
-		Cell			"InsertBlockDesc"
-		Cell			"SFDataObjDesc"
-		Cell			"SimulinkDataObjDesc"
-		Cell			"DefineNamingRule"
-		Cell			"SignalNamingRule"
-		Cell			"ParamNamingRule"
-		Cell			"InlinedPrmAccess"
-		Cell			"CustomSymbolStr"
-		Cell			"CustomSymbolStrGlobalVar"
-		Cell			"CustomSymbolStrType"
-		Cell			"CustomSymbolStrField"
-		Cell			"CustomSymbolStrFcn"
-		Cell			"CustomSymbolStrFcnArg"
-		Cell			"CustomSymbolStrBlkIO"
-		Cell			"CustomSymbolStrTmpVar"
-		Cell			"CustomSymbolStrMacro"
-		Cell			"ReqsInCode"
-		PropName		"DisabledProps"
-	      }
-	      ForceParamTrailComments off
-	      GenerateComments	      on
-	      IgnoreCustomStorageClasses on
-	      IgnoreTestpoints	      off
-	      IncHierarchyInIds	      off
-	      MaxIdLength	      31
-	      PreserveName	      off
-	      PreserveNameWithParent  off
-	      ShowEliminatedStatement off
-	      IncAutoGenComments      off
-	      SimulinkDataObjDesc     off
-	      SFDataObjDesc	      off
-	      IncDataTypeInIds	      off
-	      MangleLength	      1
-	      CustomSymbolStrGlobalVar "$R$N$M"
-	      CustomSymbolStrType     "$N$R$M"
-	      CustomSymbolStrField    "$N$M"
-	      CustomSymbolStrFcn      "$R$N$M$F"
-	      CustomSymbolStrFcnArg   "rt$I$N$M"
-	      CustomSymbolStrBlkIO    "rtb_$N$M"
-	      CustomSymbolStrTmpVar   "$N$M"
-	      CustomSymbolStrMacro    "$R$N$M"
-	      DefineNamingRule	      "None"
-	      ParamNamingRule	      "None"
-	      SignalNamingRule	      "None"
-	      InsertBlockDesc	      off
-	      SimulinkBlockComments   on
-	      EnableCustomComments    off
-	      InlinedPrmAccess	      "Literals"
-	      ReqsInCode	      off
-	      UseSimReservedNames     off
-	    }
-	    Simulink.GRTTargetCC {
-	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      11
-	      Version		      "1.6.0"
-	      Array {
-		Type			"Cell"
-		Dimension		17
-		Cell			"GeneratePreprocessorConditionals"
-		Cell			"IncludeMdlTerminateFcn"
-		Cell			"CombineOutputUpdateFcns"
-		Cell			"SuppressErrorStatus"
-		Cell			"ERTCustomFileBanners"
-		Cell			"GenerateSampleERTMain"
-		Cell			"GenerateTestInterfaces"
-		Cell			"ModelStepFunctionPrototypeControlCompliant"
-		Cell			"CPPClassGenCompliant"
-		Cell			"MultiInstanceERTCode"
-		Cell			"PurelyIntegerCode"
-		Cell			"SupportNonFinite"
-		Cell			"SupportComplex"
-		Cell			"SupportAbsoluteTime"
-		Cell			"SupportContinuousTime"
-		Cell			"SupportNonInlinedSFcns"
-		Cell			"PortableWordSizes"
-		PropName		"DisabledProps"
-	      }
-	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
-	      TargetLibSuffix	      ""
-	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
-	      UtilityFuncGeneration   "Auto"
-	      ERTMultiwordTypeDef     "System defined"
-	      ERTMultiwordLength      256
-	      MultiwordLength	      2048
-	      GenerateFullHeader      on
-	      GenerateSampleERTMain   off
-	      GenerateTestInterfaces  off
-	      IsPILTarget	      off
-	      ModelReferenceCompliant on
-	      ParMdlRefBuildCompliant on
-	      CompOptLevelCompliant   on
-	      IncludeMdlTerminateFcn  on
-	      GeneratePreprocessorConditionals "Disable all"
-	      CombineOutputUpdateFcns off
-	      SuppressErrorStatus     off
-	      ERTFirstTimeCompliant   off
-	      IncludeFileDelimiter    "Auto"
-	      ERTCustomFileBanners    off
-	      SupportAbsoluteTime     on
-	      LogVarNameModifier      "rt_"
-	      MatFileLogging	      on
-	      MultiInstanceERTCode    off
-	      SupportNonFinite	      on
-	      SupportComplex	      on
-	      PurelyIntegerCode	      off
-	      SupportContinuousTime   on
-	      SupportNonInlinedSFcns  on
-	      SupportVariableSizeSignals off
-	      EnableShiftOperators    on
-	      ParenthesesLevel	      "Nominal"
-	      PortableWordSizes	      off
-	      ModelStepFunctionPrototypeControlCompliant off
-	      CPPClassGenCompliant    off
-	      AutosarCompliant	      off
-	      UseMalloc		      off
-	      ExtMode		      off
-	      ExtModeStaticAlloc      off
-	      ExtModeTesting	      off
-	      ExtModeStaticAllocSize  1000000
-	      ExtModeTransport	      0
-	      ExtModeMexFile	      "ext_comm"
-	      ExtModeIntrfLevel	      "Level1"
-	      RTWCAPISignals	      off
-	      RTWCAPIParams	      off
-	      RTWCAPIStates	      off
-	      GenerateASAP2	      off
-	    }
-	    PropName		    "Components"
-	  }
-	}
-	PropName		"Components"
-      }
-      Name		      "Configuration"
-      CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 400, 210, 1280, 840 ] "
-    }
-    PropName		    "ConfigurationSets"
-  }
   BlockDefaults {
+    Orientation		    "right"
     ForegroundColor	    "black"
     BackgroundColor	    "white"
     DropShadow		    off
@@ -529,26 +86,6 @@ Library {
     FontWeight		    "normal"
     FontAngle		    "normal"
     ShowName		    on
-    BlockRotation	    0
-    BlockMirror		    off
-  }
-  AnnotationDefaults {
-    HorizontalAlignment	    "center"
-    VerticalAlignment	    "middle"
-    ForegroundColor	    "black"
-    BackgroundColor	    "white"
-    DropShadow		    off
-    FontName		    "Helvetica"
-    FontSize		    10
-    FontWeight		    "normal"
-    FontAngle		    "normal"
-    UseDisplayTextAsClickCallback off
-  }
-  LineDefaults {
-    FontName		    "Helvetica"
-    FontSize		    9
-    FontWeight		    "normal"
-    FontAngle		    "normal"
   }
   BlockParameterDefaults {
     Block {
@@ -564,7 +101,6 @@ Library {
       BusObject		      "BusObject"
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
-      VarSizeSig	      "Inherit"
       SampleTime	      "-1"
       OutMin		      "[]"
       OutMax		      "[]"
@@ -572,12 +108,26 @@ Library {
       OutDataType	      "fixdt(1,16,0)"
       OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
+    }
+    Block {
+      BlockType		      Integrator
+      ExternalReset	      "none"
+      InitialConditionSource  "internal"
+      InitialCondition	      "0"
+      LimitOutput	      off
+      UpperSaturationLimit    "inf"
+      LowerSaturationLimit    "-inf"
+      ShowSaturationPort      off
+      ShowStatePort	      off
+      AbsoluteTolerance	      "auto"
+      IgnoreLimit	      off
+      ZeroCross		      on
+      ContinuousStateAttributes	"''"
     }
     Block {
       BlockType		      "M-S-Function"
@@ -599,7 +149,6 @@ Library {
       BusObject		      "BusObject"
       BusOutputAsStruct	      off
       PortDimensions	      "-1"
-      VarSizeSig	      "Inherit"
       SampleTime	      "-1"
       OutMin		      "[]"
       OutMax		      "[]"
@@ -607,12 +156,13 @@ Library {
       OutDataType	      "fixdt(1,16,0)"
       OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
       SignalType	      "auto"
       SamplingMode	      "auto"
-      SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Reference
     }
     Block {
       BlockType		      SubSystem
@@ -641,6 +191,24 @@ Library {
       RTWStateStorageClass    "Auto"
     }
   }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
   System {
     Name		    "MPCMdlLib"
     Location		    [448, 118, 898, 660]
@@ -657,16 +225,13 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    26
     Block {
       BlockType		      Reference
       Name		      "Bias"
-      SID		      1
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [35, 346, 115, 374]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1   ; 0  ]"
@@ -680,7 +245,6 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "Constraint"
-      SID		      2
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [225, 293, 280, 327]
@@ -699,14 +263,122 @@ Library {
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "normalized"
       MaskValueString	      "< 0"
     }
     Block {
+      BlockType		      SubSystem
+      Name		      "Continuous state"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [310, 36, 350, 64]
+      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))\n                                                          "
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskPromptString	      "Initial value|save_name"
+      MaskStyleString	      "edit,edit"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,off"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
+      MaskVariables	      "init_val=@1;save_name=&2;"
+      MaskDisplay	      "\nfprintf('1/s')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "0|vvmodel_state1"
+      MaskTabNameString	      ","
+      System {
+	Name			"Continuous state"
+	Location		[320, 369, 818, 669]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  Position		  [110, 103, 140, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  "M-S-Function"
+	  Name			  "CustomSave"
+	  Ports			  [1]
+	  Position		  [295, 25, 450, 65]
+	  FunctionName		  "SaveToWrkspceBLOML2"
+	  Parameters		  "name_to_save"
+	  MaskPromptString	  "Variabke name "
+	  MaskStyleString	  "edit"
+	  MaskTunableValueString  "on"
+	  MaskEnableString	  "on"
+	  MaskVisibilityString	  "on"
+	  MaskToolTipString	  "on"
+	  MaskVariables		  "name_to_save=@1;"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskIconUnits		  "autoscale"
+	  MaskValueString	  "save_name"
+	}
+	Block {
+	  BlockType		  Integrator
+	  Name			  "Integrator"
+	  Ports			  [1, 1]
+	  Position		  [220, 95, 250, 125]
+	  InitialCondition	  "init_val"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  Position		  [360, 103, 390, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "Integrator"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  Branch {
+	    Points		    [0, -65]
+	    DstBlock		    "CustomSave"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Out1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Integrator"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
       BlockType		      "M-S-Function"
       Name		      "Cost functon"
-      SID		      3
       Tag		      "OptCost"
       Ports		      [1]
       Position		      [230, 223, 285, 257]
@@ -716,13 +388,11 @@ Library {
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "normalized"
     }
     Block {
       BlockType		      "M-S-Function"
       Name		      "CustomSave"
-      SID		      4
       Ports		      [1]
       Position		      [200, 441, 330, 479]
       FunctionName	      "SaveToWrkspceBLOML2"
@@ -731,12 +401,10 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Delta"
-      SID		      5
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 109, 115, 136]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  0  ; 0 1 ]"
@@ -750,7 +418,6 @@ Library {
     Block {
       BlockType		      Demux
       Name		      "Demux"
-      SID		      6
       Ports		      [1, 2]
       Position		      [220, 371, 225, 409]
       ShowName		      off
@@ -760,7 +427,6 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "External Var"
-      SID		      7
       Tag		      "OptExternal"
       Ports		      [1, 1]
       Position		      [235, 159, 280, 181]
@@ -783,7 +449,6 @@ Library {
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "0"
       System {
@@ -804,7 +469,6 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In"
-	  SID			  8
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -813,17 +477,16 @@ Library {
 	Block {
 	  BlockType		  Reference
 	  Name			  "CustomSave"
-	  SID			  8
 	  Ports			  [1]
 	  Position		  [280, 30, 435, 70]
 	  SourceBlock		  "MPCMdlLib/state/CustomSave"
 	  SourceType		  "Unknown"
+	  SID			  "8"
 	  name_to_save		  "save_name"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out"
-	  SID			  10
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -848,12 +511,10 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Gain"
-      SID		      11
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [35, 286, 115, 314]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1   ]"
@@ -867,11 +528,9 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Inequality constraint"
-      SID		      12
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [370, 293, 425, 327]
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -879,7 +538,6 @@ Library {
     Block {
       BlockType		      SubSystem
       Name		      "Input var"
-      SID		      13
       Tag		      "OptInput"
       Ports		      [1, 1]
       Position		      [235, 97, 275, 123]
@@ -898,14 +556,15 @@ Library {
       MaskEnableString	      "on,off"
       MaskVisibilityString    "on,on"
       MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
       MaskVariables	      "step_ratio=@1;save_name=&2;"
       MaskDisplay	      "\nfprintf('Input')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "1|0"
+      MaskTabNameString	      ","
       System {
 	Name			"Input var"
 	Location		[520, 264, 1018, 564]
@@ -924,7 +583,6 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In"
-	  SID			  14
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -933,17 +591,16 @@ Library {
 	Block {
 	  BlockType		  Reference
 	  Name			  "CustomSave"
-	  SID			  14
 	  Ports			  [1]
 	  Position		  [185, 40, 340, 80]
 	  SourceBlock		  "MPCMdlLib/state/CustomSave"
 	  SourceType		  "Unknown"
+	  SID			  "14"
 	  name_to_save		  "save_name"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out"
-	  SID			  16
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -967,7 +624,6 @@ Library {
     Block {
       BlockType		      Mux
       Name		      "Mux"
-      SID		      17
       Ports		      [2, 1]
       Position		      [270, 371, 275, 409]
       ShowName		      off
@@ -977,15 +633,13 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "PolyBlock"
-      SID		      18
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [40, 429, 125, 471]
       BackgroundColor	      "lightBlue"
       FunctionName	      "Polyblock"
       Parameters	      "A, C , input_type, output_type "
-      MaskDescription	      "Function of the form p(x,y)=0.\ny is assumed to be m last variables, where m is size(C,1)"
-      "."
+      MaskDescription	      "Function of the form p(x,y)=0.\ny is assumed to be m last variables, where m is size(C,1)."
       MaskPromptString	      "A matrix|C matrix|Input as|Output as"
       MaskStyleString	      "edit,edit,popup(Scalar|Vector),popup(Scalar|Vector)"
       MaskTunableValueString  "off,off,off,off"
@@ -993,24 +647,23 @@ Library {
       MaskEnableString	      "on,on,on,on"
       MaskVisibilityString    "on,on,on,on"
       MaskToolTipString	      "on,on,on,on"
+      MaskVarAliasString      ",,,"
       MaskVariables	      "A=@1;C=@2;input_type=@3;output_type=@4;"
       MaskSelfModifiable      on
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "sparse([1 0 ; 0  1])|sparse([1 -1])|Scalar|Scalar"
+      MaskTabNameString	      ",,,"
     }
     Block {
       BlockType		      Reference
       Name		      "Product"
-      SID		      19
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 219, 115, 246]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  1  ]"
@@ -1024,12 +677,10 @@ Library {
     Block {
       BlockType		      Reference
       Name		      "Sum"
-      SID		      20
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [35, 164, 115, 191]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.132"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[1  0  ; 0 1 ]"
@@ -1043,60 +694,40 @@ Library {
     Block {
       BlockType		      "M-S-Function"
       Name		      "UserFriendly PolyBlock"
-      SID		      21
       Tag		      "PolyBlock"
       Ports		      [2, 1]
       Position		      [30, 26, 145, 64]
       BackgroundColor	      "lightBlue"
-      MoveFcn		      "                                     \nset_param(gcb,'A',get_param(gcb,'A'))\n                  "
-      "                   "
+      MoveFcn		      "                                     \nset_param(gcb,'A',get_param(gcb,'A'))\n                                     "
       FunctionName	      "Polyblock"
       Parameters	      "CombineFandG(A,C,gA, gC,'A'),CombineFandG(A,C,gA, gC,'C'), input_type, output_type"
-      MaskDescription	      "y=f(x)/g(x)\nWhere f and g are sum of polinomial and exponential terms, described by A an"
-      "d C matrices.\nExample: f=x1*exp(x3)+0.8*x1^3*x2\nA = [1  0  inf ;\n        3  1  0];\nC = [1   0.8];"
-      MaskPromptString	      "A matrix for f|C matrix for f|A matrix for g|C matrix for g|Input as|Output as|Input nam"
-      "es, comma separated"
+      MaskDescription	      "y=f(x)/g(x)\nWhere f and g are sum of polinomial and exponential terms, described by A and C matrices.\nExample: f=x1*exp(x3)+0.8*x1^3*x2\nA = [1  0  inf ;\n        3  1  0];\nC = [1   0.8];"
+      MaskPromptString	      "A matrix for f|C matrix for f|A matrix for g|C matrix for g|Input as|Output as|Input names, comma separated"
       MaskStyleString	      "edit,edit,edit,edit,popup(Scalar|Vector),popup(Scalar|Vector),edit"
       MaskTunableValueString  "off,off,off,off,off,off,on"
       MaskCallbackString      "||||||"
       MaskEnableString	      "on,on,on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on,on,on"
+      MaskVarAliasString      ",,,,,,"
       MaskVariables	      "A=@1;C=@2;gA=@3;gC=@4;input_type=@5;output_type=@6;port_names=&7;"
-      MaskInitialization      "\nCheckACSizes(A,C,gA,gC)\n\npos = get_param(gcb,'position');\nwidth = pos(3)-pos(1);\n"
-      "height = pos(4)-pos(2);\nletter_width = 5; % pixels\nletter_height = 15; % pixels\nmax_length = (width-15)/lette"
-      "r_width;\nmax_rows = max(1,floor((height-10)/letter_height));\n\nremain = port_names;\ni=0;\nport_names_str = {}"
-      ";\nwhile true\n   [str, remain] = strtok(remain,',');\n   if isempty(str),  break;  end\n   if i >= size(A,2)\n "
-      "      break\n   end\n   i = i+1;\n   port_names_str{i} = str;\n%   disp(sprintf('%s', str))\nend\n%port_names_st"
-      "r\n\nif (length(port_names_str) < size(A,2))\n    for i= length(port_names_str)+1: size(A,2)\n        port_names"
-      "_str{i} = ['x' num2str(i)];\n    end\nend\n\n\n\nnames = port_names_str;\n\nfull_name = [];\nfor i = 1:min(size("
-      "C,1),max_rows)\n    fname = CreatePolyFromMatrix(A,C(i,:),names,'low');\n    if (length(fname) > max_length-5)\n"
-      "        fname = 'f(x)';\n    end\n    \n    if (gC(1) == 1 && size(gA,1)==1 && sum(abs(gA(1,1:end)))==0)\n      "
-      "  name = sprintf('%s',fname);\n    else\n        gname = CreatePolyFromMatrix(gA,gC,names,'low');\n        name "
-      "= sprintf('(%s)/(%s)',fname,gname);\n        if (length(name) > max_length)\n            \n            gname = '"
-      "g(x)';\n            name = sprintf('(%s)/%s',fname,gname);\n        end\n    end\n    full_name = [full_name   n"
-      "ame  char(10)];\nend\n\n\nlabels = [ 'fprintf(full_name)' char(13) char(10) ];\nif input_type == 1\n    for idx "
-      "= 1:length(port_names_str)\n        thisLabel = sprintf('port_label(''input'',%d,''%s'')',idx,port_names_str{idx"
-      "});\n        labels = [labels thisLabel char(13) char(10)];\n    end\n    labels(end) = [];\nend\nset_param(gcb,"
-      "'MaskDisplay',labels);\n\n\n\n\n"
+      MaskInitialization      "\nCheckACSizes(A,C,gA,gC)\n\npos = get_param(gcb,'position');\nwidth = pos(3)-pos(1);\nheight = pos(4)-pos(2);\nletter_width = 5; % pixels\nletter_height = 15; % pixels\nmax_length = (width-15)/letter_width;\nmax_rows = max(1,floor((height-10)/letter_height));\n\nremain = port_names;\ni=0;\nport_names_str = {};\nwhile true\n   [str, remain] = strtok(remain,',');\n   if isempty(str),  break;  end\n   if i >= size(A,2)\n       break\n   end\n   i = i+1;\n   port_names_str{i} = str;\n%   disp(sprintf('%s', str))\nend\n%port_names_str\n\nif (length(port_names_str) < size(A,2))\n    for i= length(port_names_str)+1: size(A,2)\n        port_names_str{i} = ['x' num2str(i)];\n    end\nend\n\n\n\nnames = port_names_str;\n\nfull_name = [];\nfor i = 1:min(size(C,1),max_rows)\n    fname = CreatePolyFromMatrix(A,C(i,:),names,'low');\n    if (length(fname) > max_length-5)\n        fname = 'f(x)';\n    end\n    \n    if (gC(1) == 1 && size(gA,1)==1 && sum(abs(gA(1,1:end)))==0)\n        name = sprintf('%s',fname);\n    else\n        gname = CreatePolyFromMatrix(gA,gC,names,'low');\n        name = sprintf('(%s)/(%s)',fname,gname);\n        if (length(name) > max_length)\n            \n            gname = 'g(x)';\n            name = sprintf('(%s)/%s',fname,gname);\n        end\n    end\n    full_name = [full_name   name  char(10)];\nend\n\n\nlabels = [ 'fprintf(full_name)' char(13) char(10) ];\nif input_type == 1\n    for idx = 1:length(port_names_str)\n        thisLabel = sprintf('port_label(''input'',%d,''%s'')',idx,port_names_str{idx});\n        labels = [labels thisLabel char(13) char(10)];\n    end\n    labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\n\n\n\n"
       MaskDisplay	      "fprintf(full_name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "sparse([1  1 ])|sparse([1 ]) |[0 0 ] |1|Scalar|Scalar|x1,x2"
+      MaskTabNameString	      ",,,,,,"
     }
     Block {
       BlockType		      SubSystem
       Name		      "state"
-      SID		      22
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [235, 36, 275, 64]
-      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))\n                                    "
-      "                      "
+      InitFcn		      "set_param(getfullname(gcb),'save_name', GetBlockName(gcb))\n                                                          "
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -1111,14 +742,15 @@ Library {
       MaskEnableString	      "on,off"
       MaskVisibilityString    "on,on"
       MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
       MaskVariables	      "init_val=@1;save_name=&2;"
-      MaskDisplay	      "\nfprintf('state')"
+      MaskDisplay	      "\nfprintf('1/z')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
       MaskValueString	      "0|vvmodel_state1"
+      MaskTabNameString	      ","
       System {
 	Name			"state"
 	Location		[520, 391, 1018, 691]
@@ -1137,7 +769,6 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
-	  SID			  23
 	  Position		  [110, 103, 140, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -1146,7 +777,6 @@ Library {
 	Block {
 	  BlockType		  "M-S-Function"
 	  Name			  "CustomSave"
-	  SID			  24
 	  Ports			  [1]
 	  Position		  [295, 25, 450, 65]
 	  FunctionName		  "SaveToWrkspceBLOML2"
@@ -1161,14 +791,12 @@ Library {
 	  MaskIconFrame		  on
 	  MaskIconOpaque	  on
 	  MaskIconRotate	  "none"
-	  MaskPortRotate	  "default"
 	  MaskIconUnits		  "autoscale"
 	  MaskValueString	  "save_name"
 	}
 	Block {
 	  BlockType		  UnitDelay
 	  Name			  "Unit Delay"
-	  SID			  25
 	  Position		  [215, 93, 250, 127]
 	  X0			  "init_val"
 	  SampleTime		  "-1"
@@ -1176,7 +804,6 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
-	  SID			  26
 	  Position		  [360, 103, 390, 117]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
