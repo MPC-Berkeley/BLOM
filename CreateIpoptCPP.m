@@ -26,7 +26,7 @@ for j=1:length(cost_grad.AAs)
 end
 
 
-n = 100;
+n = min(2,800e3/length(idx_names));
 nnz_jac_g = 0;
 Hessian.Idx = sparse(length(idx_names),length(idx_names));
 Hessian.str = {};

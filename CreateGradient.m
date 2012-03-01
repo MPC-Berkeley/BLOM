@@ -19,7 +19,7 @@ for i = range % for all non zero variables
     grad.AAs{i} = sparse(size(A,1),size(A,2));
     grad.Cs{i} = sparse(1,size(C,2));
     grad.valid(i) = 1;
-    idx = find(A(:,i)');
+    idx = find(A(:,i)'.*C);
     for j=idx % 1:size(A,1) % for all terms
         if A(j,i) == 0
             continue;
