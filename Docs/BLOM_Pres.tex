@@ -153,27 +153,86 @@ dynamical nonlinear systems for optimization problems, especially MPC.
 
 \centering 
 \includegraphics[width = .7\textwidth]{HelloWorld}
-
 \begin {align}
 \min_{u_k,x_k}& \sum_k 0.5x_k^2 + 2u_k^2 \notag \\
-s.t.:&  -2 \leq u_k \leq 2 \ ; 0.5 \leq x_k \leq 1;x_{k+1}=0.9x_k+u_k
+s.t.:&  -2 \leq u_k \leq 2 \ ; 0.5 \leq x_k \leq 1\ ; x_{k+1}=0.9x_k+u_k \notag
 \end{align}
 
+
 \begin{itemize}
-\item Block library for Simulink:
-\begin{itemize}
-\item The functional block is a function of the form $\frac{f(x)}{g(x)}$,
-  where $f$ or $g$ are:  $f,g=\sum_i \prod_j
-v_{i,j}(x_i)$.  $v(x_i)$ can be $x^p$ for any $p \in \mathbb R$, $\exp(x)$ or
-$\log(x)$. 
-\item Constraint
-\item State
-\item Cost 
-\item Input/External variable modifiers
-\end{itemize}
+\item The \alert{Functional} block holds expression of the form $\frac{f(x)}{g(x)}$,
+   
+\item The \alert{Constraint} block marks variable as $\geq 0$ or $\leq 0$.  
+\item The continuous or discrete \alert{State} block.
+\item The \alert{Cost} block, accumulates cost variables.
+\item The \alert{Input/External} variable modifiers marks the control and the
+  external variables.
 \end{itemize}
 \end{frame}
-             
+
+\begin{frame}
+\frametitle{The functional block ''Polyblock''}
+\begin{itemize}
+\item Each polyblock is a polynomial-like function, that is described by two matrices, $A$ and $C$. $C$ holds the
+ term coefficients and $A$ defines the functions of variable to participate in
+ the term.
+\item  The polynomial-like function has the form: $f(x)=\sum_i \prod_j
+v_{i,j}(x_i)$.  $v(x_i) \in \left \{ \alert{x^p} _{ p \in \mathbb R}, \alert{ \exp(x)} ,
+\alert{\log(x)} \right \}$.
+\item Example:
+\begin{equation*}
+f(x) = 4 x_1^3 + 0.2 x_1^2 x_2^{0.7} - 0.8 x_1 \exp(x_3) + 0.5 \log( x_2)
+\label{eq:example_poly}
+\end{equation*}
+
+\begin{equation*}
+c = \left[\begin{array}{c} c_1 \\ c_2 \\ c_3 \\ c_4 \end{array}\right] 
+= \left[\begin{array}{c} 4 \\ 0.2 \\ -0.8 \\ 0.5 \end{array}\right] 
+A = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \inf  \\ 0 & -\inf & 0    \end{array}\right].
+\label{eq:example_sparserep}
+\end{equation*}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{BLOM work flow}
+\includegraphics[width=0.9\textwidth]{Flowdgrm}
+
+\begin{itemize}
+\item Create model using Simulink with BLOM library. Run and compare the model
+  to a reference data. 
+\item Translate to optimization problem: {\bf ExtractModel(steps,dt,'RK4');}
+\item Export the problem to a solver: e.g. {\bf CreateIpoptCPP }
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{BLOM status and features}
+\begin{enumerate}
+\item Discrete and continuous models.
+\item For continuous model, supports Euler, trapezoidal and RK4 discretization
+  (easily expandable).
+\item Full vector support.
+\item Model developing features: 
+\begin{itemize}
+\item Color coded constraint violations.
+\item Polyblocks display the user defined function.
+\item User defined port labeling. 
+\end{itemize}
+\item Export to IPOPT and fmincon solvers (more to come).
+\item Used in joined project with UTRC for large HVAC MPC problem (dynamical
+  model with 430 states, typically $\sim30K$ variables in solver). 
+\item High efficiency: with IPOPT the time of evaluation of callback functions
+  (objective, Jacobian, Hessian) is two order of magnitude smaller than the
+  solver time.
+\end{enumerate}
+
+
+
+\end{frame}
+
 \end{document}
 
 \endinput
