@@ -13,7 +13,7 @@ else
 end
 
 if (nargin < 3)
-    integ_method = 'Euler'
+    integ_method = 'Euler';
 end
 % First, get structure for one time step
 [all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep;
@@ -160,7 +160,7 @@ all_state_vars = all_state_vars(idx);
 
 return
 
-function [AAs, Cs, idx_to_stay , cost_vars, all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names)
+function [AAs, Cs, idx_to_stay , cost_vars, all_names,ineq_vars] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars)
 
 toremove_list = [];
 
@@ -179,7 +179,16 @@ for i=1:length(AAs)
             AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
 %             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
             toremove_list = [toremove_list to_remove ];
-            cost_vars(origin) = cost_vars(to_remove);
+            if (~cost_vars(origin))
+                cost_vars(origin) = cost_vars(to_remove);
+            elseif(cost_vars(to_remove))
+                warning('variable %d (%s) already marked with cost ! copy from %s .',origin,all_names{origin},all_names{to_remove});
+            end
+            if (~ineq_vars(origin))
+                ineq_vars(origin) = ineq_vars(to_remove);
+            elseif(ineq_vars(to_remove))
+                warning('variable %d (%s) already marked with inequality ! copy from %s .',origin,all_names{origin},all_names{to_remove});
+            end
             
         end
     end
@@ -276,7 +285,7 @@ for i=1:length(idx)
                 if (length(c_line) ~= 1)
                     error('Something is wrong,length(c_line) ~= 1');
                 end
-                new_func.Cs{i} = - vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
+                new_func.Cs{i} = -vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
                 to_remove_var = [to_remove_var idx(i)];
                 % if this is the only row in C, remove function,
                 if (size(Cs{last_used},1)==1)
@@ -562,7 +571,7 @@ ex_vars   = ex_vars(idx);
 prev_idx = [];
 while length(idx) ~= length(prev_idx)
     prev_idx = idx;
-    [AAs, Cs, idx , cost_vars,all_names] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names);
+    [AAs, Cs, idx , cost_vars,all_names,ineq_vars] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars);
     
     BlockHandle = BlockHandle(idx);
     InPort = InPort(idx);

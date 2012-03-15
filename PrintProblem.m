@@ -16,6 +16,6 @@ end
 
 for i = 1:length(ineq.AAs)
     for j=1:size(ineq.Cs{i},1)
-        str{end+1} = [ CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i}(j,:),all_names) ' > 0'] ;
+        str{end+1} = [ CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i}(j,:),all_names) ' < 0'] ;
     end
 end
