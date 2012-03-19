@@ -1,6 +1,4 @@
-function [cost_name costGrad_name eqconstr_name eqconstrGrad_name neqconstr_name neqconstrGrad_name ...
-          Aeq Beq A B ]...
-    =CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
+function CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
 
 
 n_eq = length(AAs);
@@ -8,14 +6,17 @@ n_ineq = length(ineq.AAs);
 i_fixed = n_eq+n_ineq+1;
 clear iAAs  iCs  tAAs tCs 
 
-for i = 1:length(all_names)
-    idx_names{i} = sprintf('x[%d]',i-1);
-end
 
-cost_grad = CreateGradient(cost.A,cost.C);
 
 code_generate = false;
 if (code_generate)
+    
+    for i = 1:length(all_names)
+        idx_names{i} = sprintf('x[%d]',i-1);
+    end
+    
+    cost_grad = CreateGradient(cost.A,cost.C);
+
     [AAs , Cs] = ConvertToSingleValue(AAs,Cs);
     [iAAs , iCs] = ConvertToSingleValue(ineq.AAs,ineq.Cs);
     % [tAAs , tCs] = ConvertToSingleValue(fixed.AAs,fixed.Cs);
@@ -120,6 +121,13 @@ if (code_generate)
     nnz_h_lag = SaveHessian(name,Hessian);
     CreateConstraints(name,idx_names,constr,i_fixed);
     n_constr = length(constr.AAs);
+    CreateCost(name,idx_names,cost);
+    
+    CreateCostGrad(name,idx_names,cost_grad);
+    Create_get_nlp_info(name,length(idx_names), n_constr ,nnz_jac_g,nnz_h_lag,n_ineq);
+    Create_get_bounds_info(name,length(idx_names),n_constr ,n_ineq,fixed,code_generate);
+    CreateConstructor(name,length(idx_names),length(fixed.AAs) );
+    Createget_starting_point(name,length(idx_names));
 else
 
   [jacobian_bool hessian_bool lambda_sparse_map] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost);
@@ -128,24 +136,28 @@ else
   SaveSparseMat(hessian_bool ,'HessianStruct.txt');
   SaveSparseMat(lambda_sparse_map ,'LambdaStruct.txt');
   
-  CreateJacobianCPP(name);
-  CreateHessianCPP(name)
+%   CreateJacobianCPP(name);
+%   CreateHessianCPP(name)
   nnz_jac_g = nnz(jacobian_bool);
   nnz_h_lag = nnz(hessian_bool);
-  CreateConstraintsCPP(name);
+  
+  CreateProblemParams(length(all_names), n_constr ,nnz_jac_g,nnz_h_lag,n_ineq,length(fixed.AAs));
+%   CreateConstraintsCPP(name);
 
 end
 
 
+function  CreateProblemParams(n, n_constr ,nnz_jac_g,nnz_h_lag,n_ineq,n_fixed)
 
-CreateCost(name,idx_names,cost);
+params  = fopen('params.dat','wt');
 
-CreateCostGrad(name,idx_names,cost_grad);
+fprintf( params,' %d %d %d %d %d %d \n',n,n_fixed,n_constr,nnz_jac_g,nnz_h_lag,n_ineq);
+fclose(params);
 
-Create_get_nlp_info(name,length(idx_names), n_constr ,nnz_jac_g,nnz_h_lag,n_ineq);
-Create_get_bounds_info(name,length(idx_names),n_constr ,n_ineq,fixed,code_generate);
-CreateConstructor(name,length(idx_names),length(fixed.AAs) );
- Createget_starting_point(name,length(idx_names));
+
+ 
+
+
 
 function Createget_starting_point(name,n)
 
