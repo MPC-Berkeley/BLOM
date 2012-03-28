@@ -18,8 +18,8 @@ if (size(gA,1) ~= size(gC,2))
     error(str);
 end
 
-if (size(gC,1) ~= 1)
-    str =[gcb ': g must be a scalar function'];
+if (size(gC,1) ~= 1 && size(gC,1) ~= size(C,1))
+    str =[gcb ': g must be a scalar function or equal dimension to f'];
     disp(str);
     error(str);
 end
