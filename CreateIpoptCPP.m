@@ -132,6 +132,8 @@ else
 
   [jacobian_bool hessian_bool lambda_sparse_map] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost);
   n_constr = size(jacobian_bool,1);
+  Create_get_bounds_info(name,length(all_names),n_constr ,n_ineq,fixed,code_generate);
+
   SaveSparseMat(jacobian_bool,'JacobianStruct.txt');
   SaveSparseMat(hessian_bool ,'HessianStruct.txt');
   SaveSparseMat(lambda_sparse_map ,'LambdaStruct.txt');
@@ -238,7 +240,7 @@ get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
 
 fixed_vars = sparse(1,n);
 for i=1:length(fixed.AAs)
-    fixed_vars(find(fixed.AAs{i}(1,:)))=i;
+    fixed_vars(find(fixed.AAs{i}(:,1)))=i;
 end
 
 if (full)

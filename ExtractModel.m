@@ -43,7 +43,18 @@ for t=1:n_time_steps
     end
     
     for i=1:length(all_names_single)
-        all_names{end+1} = [ all_names_single{i} '.' 't' num2str(t) ];
+        [name R] = strtok(all_names_single{i},';');
+        new_name ='';
+        while ~isempty(name)
+            if isempty(new_name)
+                new_name = [ name '.' 't' num2str(t) ];
+            else
+                new_name = [new_name ';' name '.' 't' num2str(t) ];
+            end
+                
+            [name R] = strtok(R,';');
+        end
+        all_names{end+1} = new_name;
     end
     ineq_vars((t-1)*n+(1:n)) =  ineq_vars_single;
     cost_vars((t-1)*n+(1:n)) =  cost_vars_single;
@@ -135,6 +146,10 @@ for i=1:length(idx)
             continue;
         end
         
+        for j = 1:length(next_vars)
+            all_names{idx(i)+(t-1)*n} = [all_names{idx(i)+(t-1)*n} ';' all_names{next_vars(j)}];
+        end
+
         AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,next_vars ); % just copy data, do not remove the column yet
         toremove_list = [toremove_list next_vars];
     end
@@ -177,6 +192,7 @@ for i=1:length(AAs)
                 continue;
             end
             AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
+            all_names{origin} = [all_names{origin} ';' all_names{to_remove}];
 %             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
             toremove_list = [toremove_list to_remove ];
             if (~cost_vars(origin))
