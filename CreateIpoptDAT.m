@@ -1,7 +1,7 @@
 function CreateIpoptDAT(name,fixed,x0)
 
 f = fopen([ name 'X0.dat'],'wt');
-fprintf(f,'%16.15e \n',x0);
+fprintf(f,'%.18g \n',x0);
 fclose(f);
 
 f = fopen([ name 'Fixed.dat'],'wt');
@@ -11,5 +11,5 @@ for i=1:length(fixed.AAs)
     Data(i) = fixed.Cs{i}(2);
 end
 
-fprintf(f,'%16.15e \n',Data);
+fprintf(f,'%.18g \n',Data);
 fclose(f);

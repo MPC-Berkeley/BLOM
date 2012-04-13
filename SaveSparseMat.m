@@ -10,5 +10,5 @@ if (data(end,end) == 0) % no last element
 end
 
 f = fopen(fname,'wt');
-fprintf(f,'%d %d %16.5f\n',data_dump);
+fprintf(f,'%d %d %.18g\n',data_dump);
 fclose(f);
