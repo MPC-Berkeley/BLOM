@@ -15,7 +15,11 @@ d = zeros(row,16);
 d(:,1:col) = abs(lower(s)) - '0';
 d = d + ('0'+10-'a').*(d>9);
 
-x = sum(uint64(d).*uint64(2.^(60:-4:0)),'native');
+if any(d(:) > 15) || any(d(:) < 0) 
+    error(message('MATLAB:hex2num:OutOfRange'))
+end
+
+x = sum(uint64(d(1:16)).*uint64(2.^(60:-4:0)),'native');
 if ~bitget(x,52) && all(bitget(x,53:63)) && any(bitget(x,1:51))
    warning(['Signaling NaN detected, leading mantissa bit may be modified. ' ...
       'Quiet NaNs are in the ranges 7ff8000000000000 to 7fffffffffffffff ' ...
