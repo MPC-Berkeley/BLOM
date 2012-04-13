@@ -6,14 +6,21 @@ function code = BLOM_FunctionCode(fcn)
 % else in BLOM to represent these functions and trigger special behavior
 % for function and gradient generation and evaluation.
 
+if nargin == 0
+   fcn = '';
+end
 switch fcn
    case 'exp'
       code = 2^64;
    case 'log'
       code = 2^65;
    otherwise
-      % output a vector listing all the exception code values
-      code = [2^64, 2^65];
+      if isempty(fcn)
+         % output a vector listing all the exception code values
+         code = [2^64, 2^65];
+      else
+         error(['Function ' fcn ' not recognized'])
+      end
 end
 
 
