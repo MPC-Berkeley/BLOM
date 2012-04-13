@@ -8,10 +8,18 @@ function code = BLOM_FunctionCode(fcn)
 
 switch fcn
    case 'exp'
-      code = 1000000;
+      code = 2^64;
    case 'log'
-      code = 1000001;
+      code = 2^65;
    otherwise
       % output a vector listing all the exception code values
-      code = [1000000, 1000001];
+      code = [2^64, 2^65];
 end
+
+
+% notes to self:
+% hex2num('43d74910d52d3051') is the largest double for which (1-eps/2)^x > 0
+% hex2num('43c62e42fefa39ef') is the largest double for which (1+eps)^x < inf
+% hex2num('c3d62e42fefa39ee') is the smallest double for which (1-eps/2)^x < inf
+% hex2num('c3c74910d52d3052') is the smallest double for which (1+eps)^x > 0
+
