@@ -19,7 +19,7 @@ end
 [all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep;
 
 %reverse the direction of state vars data : 
-state_vars = sparse(1,length(state_vars_tmp),0);
+state_vars = sparse(length(state_vars_tmp),1);
 for i= find(state_vars_tmp)
     state_vars(state_vars_tmp(i)) = i;
 end
@@ -33,7 +33,7 @@ all_names = {};
 AAs = {};
 Cs = {};
 
-ineq_vars = sparse(1,N,0);
+%ineq_vars = sparse(N,1);
 
 for t=1:n_time_steps
     for i=1:length(AAsingle)
@@ -47,28 +47,32 @@ for t=1:n_time_steps
         new_name ='';
         while ~isempty(name)
             if isempty(new_name)
-                new_name = [ name '.' 't' num2str(t) ];
+                new_name = [ name '.' 't' sprintf('%d',t) ];
             else
-                new_name = [new_name ';' name '.' 't' num2str(t) ];
+                new_name = [new_name ';' name '.' 't' sprintf('%d',t) ];
             end
-                
+            
             [name R] = strtok(R,';');
         end
         all_names{end+1} = new_name;
     end
-    ineq_vars((t-1)*n+(1:n)) =  ineq_vars_single;
-    cost_vars((t-1)*n+(1:n)) =  cost_vars_single;
-    in_vars  ((t-1)*n+(1:n)) =  in_vars_single;
-    ex_vars  ((t-1)*n+(1:n)) =  ex_vars_single;
-    all_state_vars  ((t-1)*n+(1:n)) =  state_vars;
+    %ineq_vars((t-1)*n+(1:n)) =  ineq_vars_single;
+    %cost_vars((t-1)*n+(1:n)) =  cost_vars_single;
+    %in_vars  ((t-1)*n+(1:n)) =  in_vars_single;
+    %ex_vars  ((t-1)*n+(1:n)) =  ex_vars_single;
+    %all_state_vars  ((t-1)*n+(1:n)) =  state_vars;
 end
-
+ineq_vars = repmat(ineq_vars_single,n_time_steps,1);
+cost_vars = repmat(cost_vars_single,n_time_steps,1);
+in_vars = repmat(in_vars_single,n_time_steps,1);
+ex_vars = repmat(ex_vars_single,n_time_steps,1);
+all_state_vars = repmat(state_vars,n_time_steps,1);
 
 if (discrete_sys)
     % introduce equality constraint at state variables between time steps
     % Calc degree of each state variable - propagate the history backwards for
     % pipe of state blocks
-    degree = sparse(1,length(state_vars),0);
+    degree = sparse(length(state_vars),1);
     for k=1:n_state_vars
         current = idx_state_vars(k);
         while (state_vars(current)~=0)
@@ -122,11 +126,11 @@ else % continous system
         Nprev = N;
         N = length(all_names);
         if (N > Nprev)
-            ineq_vars = [ineq_vars sparse(1, N - Nprev)];
-            cost_vars = [cost_vars sparse(1, N - Nprev)];
-            in_vars   = [in_vars sparse(1, N - Nprev)];
-            ex_vars   = [ex_vars sparse(1, N - Nprev)];
-            all_state_vars = [all_state_vars sparse(1, N - Nprev)];
+            ineq_vars = [ineq_vars; sparse(N - Nprev, 1)];
+            cost_vars = [cost_vars; sparse(N - Nprev, 1)];
+            in_vars   = [in_vars; sparse(N - Nprev, 1)];
+            ex_vars   = [ex_vars; sparse(N - Nprev, 1)];
+            all_state_vars = [all_state_vars; sparse(N - Nprev, 1)];
         end
         
         all_state_vars(n+1:N) = 0; % only initial conditions remains
@@ -134,6 +138,15 @@ else % continous system
     end
 
 end
+
+% put all the A's together, do the column manipulations all together
+AA_sizes = zeros(length(AAs),2);
+for i=1:length(AAs)
+   AA_sizes(i,:) = size(AAs{i});
+end
+AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
+AA_cat = vertcat(AAs{:});
+MoveEqualMatrix = speye(size(AA_cat,2));
 
 % filter out input variables that are fixed for more than one time step
 idx = find(in_vars_single(1:n) > 1 );
@@ -149,27 +162,38 @@ for i=1:length(idx)
         for j = 1:length(next_vars)
             all_names{idx(i)+(t-1)*n} = [all_names{idx(i)+(t-1)*n} ';' all_names{next_vars(j)}];
         end
-
-        AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,next_vars ); % just copy data, do not remove the column yet
+        
+        MoveEqualMatrix(next_vars, idx(i)+(t-1)*n) = 1;
+        %AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,next_vars ); % just copy data, do not remove the column yet
         toremove_list = [toremove_list next_vars];
     end
 end
 
-Ns = ones(1,N);
-Ns(toremove_list) = 0;
-idx = find(Ns);
+Ns = true(N,1);
+Ns(toremove_list) = false;
+%for i=1:length(AAs)
+%    AAs{i} = AAs{i}(:,Ns);
+%end
+
+all_names = all_names(Ns);
+ineq_vars = ineq_vars(Ns);
+cost_vars = cost_vars(Ns);
+in_vars   = in_vars(Ns);
+ex_vars   = ex_vars(Ns);
+all_state_vars = all_state_vars(Ns);
+
+AA_cat = AA_cat*MoveEqualMatrix;
+AA_cat = AA_cat(:,Ns);
+%AAs_old = AAs;
 for i=1:length(AAs)
-    AAs{i} = AAs{i}(:,idx);
+   % this un-concatenation step is expensive (but overall worth the
+   % vectorization speed benefit), it would be better to concatenate
+   % everything once and leave it that way
+   AAs{i} = AA_cat(AA_sizesofar(i)+1:AA_sizesofar(i+1),:);
 end
-
-all_names = {all_names{idx}};
-ineq_vars = ineq_vars(idx);
-cost_vars = cost_vars(idx);
-in_vars   = in_vars(idx);
-ex_vars   = ex_vars(idx);
-all_state_vars = all_state_vars(idx);
-
-
+%if ~isequal(AAs, AAs_old)
+%   disp('mismatch')
+%end
 
 [all_names, AAs ,  Cs, ineq , cost,in_vars,all_state_vars,ex_vars]=MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,all_state_vars,ex_vars);
 
@@ -277,8 +301,8 @@ new_func.AAs = {};
 new_func.Cs = {};
 
 idx = find(vars);
-usage_vec = zeros(size(idx));
-last_used_vec = zeros(size(idx));
+usage_vec = zeros(fliplr(size(idx)));
+last_used_vec = usage_vec;
 for j=1:length(AAs)
    usage_vec = usage_vec + any(AAs{j}(:,idx));
    last_used_vec(any(AAs{j}(:,idx))) = j;
@@ -340,7 +364,7 @@ for i=1:length(idx)
     end
     
     if (unfolded == 0) %  just use the existing variable
-        new_func.AAs{i} = sparse(1,length(all_names),0);
+        new_func.AAs{i} = sparse(1,length(all_names));
         new_func.AAs{i}(1,idx(i)) = 1;
         new_func.Cs{i} = vars(idx(i));
     end
@@ -545,25 +569,33 @@ end
 
 
 % Store step ratio of input vars
-in_vars = sparse(1,N,0);
+in_vars = sparse(N,1);
 for i= 1:length(in_blks)
     in_vars(IIs{length(blks) + length(mem_blks)+i}) = evalin('base',get_param(in_blks{i},'step_ratio'));
 end
 
 % Mark external vars
-ex_vars = sparse(1,N,0);
+ex_vars = sparse(N,1);
 for i= 1:length(ex_blks)
     ex_vars(IIs{length(blks) + length(mem_blks)+length(in_blks) + i}) = 1;
 end
 
 
 
-ineq_vars = sparse(1,N,0);
-cost_vars = sparse(1,N,0);
+ineq_vars = sparse(N,1);
+cost_vars = sparse(N,1);
+
+% put all the A's together, do the column manipulations all together
+AA_sizes = zeros(length(AAs),2);
+for i=1:length(AAs)
+   AA_sizes(i,:) = size(AAs{i});
+end
+AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
+AA_cat = vertcat(AAs{:});
+MoveEqualMatrix = speye(size(AA_cat,2));
 
 % second phase : eliminate equal variables
 toremove_list = [];
-
 for i=1:length(VarConnect) % all variables
     if ~isempty(VarConnect(i).DstBlock) % all outgoing variables
         for k = 1:length(VarConnect(i).DstBlock) % all destination blocks
@@ -574,7 +606,8 @@ for i=1:length(VarConnect) % all variables
            cost_idx = find(cost_handles == VarConnect(i).DstBlock(k)); % destination cost block
 
             if ~isempty(idx) % destination is a polyblock or state
-                AAs = MoveEqualVar(AAs,i,idx); % just copy data, do not remove the column yet
+                MoveEqualMatrix(idx, i) = 1;
+                %AAs = MoveEqualVar(AAs,i,idx); % just copy data, do not remove the column yet
                 toremove_list = [toremove_list idx];
             end
             if ~isempty(ineq_idx)
@@ -586,7 +619,14 @@ for i=1:length(VarConnect) % all variables
     end
 end
 
-
+AA_cat = AA_cat*MoveEqualMatrix;
+%AAs_old = AAs;
+for i=1:length(AAs)
+   AAs{i} = AA_cat(AA_sizesofar(i)+1:AA_sizesofar(i+1),:);
+end
+%if ~isequal(AAs, AAs_old)
+%   disp('mismatch')
+%end
 
 Ns = ones(1,N);
 Ns(toremove_list) = 0;
@@ -623,7 +663,7 @@ while length(idx) ~= length(prev_idx)
     cost_vars = cost_vars(idx);
 end
 
-state_vars = sparse(1,length(all_names),0);
+state_vars = sparse(length(all_names),1);
 
 % another loop to handle all state vars.
 for i=1:length(VarConnect)
@@ -651,17 +691,15 @@ end
 
 function [AAs,Cs,names] = RemoveVariable(AAs,Cs,names,vars_to_remove)
 
-
-stay_places = ones(1,length(names));
-stay_places(vars_to_remove) = 0;
-stay_idx= find(stay_places);
+stay_places = true(length(names),1);
+stay_places(vars_to_remove) = false;
 
 for i=1:length(AAs)
-    AAs{i} = AAs{i}(:,stay_idx);
+    AAs{i} = AAs{i}(:,stay_places);
 %     Cs{i} = Cs{i}; 
 end
 
-names = {names{stay_idx} };
+names = names(stay_places);
 
 
 
@@ -786,7 +824,8 @@ else
         
         % expand names
         for j=1:length(all_names_single)
-            all_names{end+1} = [ all_names_single{j} '.' 't' num2str(new_step/n+1) 'rk' num2str(i) ];
+            all_names{end+1} = [ all_names_single{j} '.' 't' ...
+               sprintf('%d',new_step/n+1) 'rk' sprintf('%d',i) ];
         end
 
         % connect all input and external vars to the original time step
@@ -820,12 +859,20 @@ for s=1:length(states) % -y_(n+1)
     C(s,length(states)+s) = -1;
 end
 
+%A_old = A;
+%C_old = C;
 for j=1:length(k_start) % h*sum(b_i * k_i)
-    for s=1:length(derivs) % k_j
-        A(end+1,derivs(s)+k_start(j))=1;
-        C(s,end+1) = ButcherTableau.b(j)*dt;
-    end
+    %for s=1:length(derivs) % k_j
+    %    A_old(end+1,derivs(s)+k_start(j))=1;
+    %    C_old(s,end+1) = ButcherTableau.b(j)*dt;
+    %end
+    A = [A; sparse(1:length(derivs), derivs + k_start(j), ...
+       ones(length(derivs),1), length(derivs), size(A,2))];
+    C = [C, ButcherTableau.b(j)*dt*speye(length(derivs))];
 end
+%if ~isequal(A,A_old) || ~isequal(C,C_old)
+%   disp('mismatch')
+%end
 
 AAs = {AAs{:} ,A};
 Cs = {Cs{:} ,C};

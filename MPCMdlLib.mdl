@@ -1155,7 +1155,7 @@ Library {
       ";\nwhile true\n   [str, remain] = strtok(remain,',');\n   if isempty(str),  break;  end\n   if i >= size(A,2)\n "
       "      break\n   end\n   i = i+1;\n   port_names_str{i} = str;\n%   disp(sprintf('%s', str))\nend\n%port_names_st"
       "r\n\nif (length(port_names_str) < size(A,2))\n    for i= length(port_names_str)+1: size(A,2)\n        port_names"
-      "_str{i} = ['x' num2str(i)];\n    end\nend\n\n\n\nnames = port_names_str;\n\nfull_name = [];\nfor i = 1:min(size("
+      "_str{i} = ['x' sprintf('%d',i)];\n    end\nend\n\n\n\nnames = port_names_str;\n\nfull_name = [];\nfor i = 1:min(size("
       "C,1),max_rows)\n    fname = CreatePolyFromMatrix(A,C(i,:),names,'low');\n    if (length(fname) > max_length-5)\n"
       "        fname = 'f(x)';\n    end\n    \n    if (gC(1) == 1 && size(gA,1)==1 && sum(abs(gA(1,1:end)))==0)\n      "
       "  name = sprintf('%s',fname);\n    else\n        if size(gC,1) == 1\n            gname = CreatePolyFromMatrix(gA"
