@@ -277,8 +277,18 @@ new_func.AAs = {};
 new_func.Cs = {};
 
 idx = find(vars);
+usage_vec = zeros(size(idx));
+last_used_vec = zeros(size(idx));
+for j=1:length(AAs)
+   usage_vec = usage_vec + any(AAs{j}(:,idx));
+   last_used_vec(any(AAs{j}(:,idx))) = j;
+end
+
 for i=1:length(idx)
-    usage =0;
+    usage = usage_vec(i);
+    last_used = last_used_vec(i);
+    %{
+    usage = 0;
     last_used = 0;
     for j=1:length(AAs)
         if sum(abs(AAs{j}(:,idx(i))))>0
@@ -286,6 +296,15 @@ for i=1:length(idx)
           last_used = j;
         end
     end
+    if usage ~= usage_vec(i) || last_used ~= last_used_vec(i)
+       i
+       usage
+       usage_vec(i)
+       last_used
+       last_used_vec(i)
+       disp('mismatch')
+    end
+    %}
     
     unfolded = 0;
     
@@ -305,6 +324,10 @@ for i=1:length(idx)
                 to_remove_var = [to_remove_var idx(i)];
                 % if this is the only row in C, remove function,
                 if (size(Cs{last_used},1)==1)
+                    % decrement remaining indices and usages
+                    last_used_vec = last_used_vec - 1;
+                    usage_vec = usage_vec - any(AAs{last_used}(:,idx));
+                   
                     AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
                     Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
                 else % remove only the row from C
