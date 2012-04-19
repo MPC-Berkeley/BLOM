@@ -647,9 +647,9 @@ for i=1:size(C,1)
         end
         vars = Arows(Arows_idx_start(j):Arows_idx_end(j),2)';
         p = Arows(Arows_idx_start(j):Arows_idx_end(j),3)';
-        if i >1 
-            jacobian(i-1,vars) = 1;
-        end
+        %if i >1 
+        %    jacobian(i-1,vars) = 1;
+        %end
         non_linear = find(p~=1);
         for nl = non_linear
             hessian(vars(nl),vars(nl)) = 1;
@@ -671,6 +671,10 @@ for i=1:size(C,1)
         end
     end
 end
+%if ~isequal(jacobian, (double(C(2:end,:)~=0)*double(A~=0))~=0)
+%   disp('mismatch')
+%end
+jacobian = (double(C(2:end,:)~=0)*double(A~=0))~=0;
 
 [TotalIdx] = find(hessian);
 
