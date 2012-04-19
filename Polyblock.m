@@ -422,23 +422,23 @@ function Outputs(block)
 
    
   nVarsIn =  size(A,2)-size(C,1);
-  X = zeros(1,nVarsIn);
-  for i=1:nVarsIn
-      if (InputType == 1)
-          X(i) = block.InputPort(i).Data; 
-      else
-          X(i) = block.InputPort(1).Data(i); 
+  X = zeros(nVarsIn,1);
+  if (InputType == 1)
+      for i=1:nVarsIn
+          X(i) = block.InputPort(i).Data;
       end
-          
+  else
+      X = block.InputPort(1).Data(1:nVarsIn);
   end
 
 
   % calc  y = -f/g
-  
+  %{
   for j=1:size(A,1)
       idxs{j} = full(find(A(j,1:nVarsIn)));
   end
 
+  y = zeros(size(C,1),1);
   for k = 1:size(C,1)
       f = 0;
       g = 0;
@@ -465,11 +465,45 @@ function Outputs(block)
           end
       end
       y(k) = -f/g;
-      if (OutputType == 1)
+  end
+  y_old = y;
+  %}
+  A = A(any(C,1),:); % remove unused terms
+  C = C(:,any(C,1));
+  Aoutput = A(:,nVarsIn+1:end); % rightmost columns of A correspond to output variables
+  if ~all(any(Aoutput,1))
+      % should have at least one nonzero term per output variable
+      warning('Solution not unique')
+  end
+  if any(nonzeros(Aoutput)~=1) || any(sum(Aoutput~=0, 2) > 1)
+      % but can't depend on more than one output in a single term, or nonlinear powers
+      error('Implicit nonlinearly defined output, behavior not defined in forward simulation')
+  end
+  output_dependent_terms = any(Aoutput,2); % these terms need to be in denominator
+  [Arows Acols Avals] = find(A);
+  inbool = (Acols <= nVarsIn); % input columns
+  vX = ones(size(Avals));
+  vX(inbool) = X(Acols(inbool)).^Avals(inbool); % powers of input variables
+  expbool = inbool & (Avals == inf);
+  vX(expbool) = exp(X(Acols(expbool))); % exponentials
+  logbool = inbool & (Avals == -inf);
+  vX(logbool) = log(X(Acols(logbool))); % logarithms
+  prods = ones(size(A,1),1);
+  for v = 1:length(Avals)
+      prods(Arows(v)) = prods(Arows(v)) * vX(v); % compute products for each term
+  end
+  y = -(C(:,~output_dependent_terms)*prods(~output_dependent_terms)) ./ ...
+      (C(:,output_dependent_terms)*prods(output_dependent_terms));
+  %if max(abs((y-y_old)./max(eps,eps((y+y_old)/2)))) > 16
+  %    disp('high reldiff')
+  %end
+  
+  if (OutputType == 1)
+      for k=1:size(C,1)
           block.OutputPort(k).Data = y(k);
-      else
-          block.OutputPort(1).Data(k) = y(k);
       end
+  else
+      block.OutputPort(1).Data = y;
   end
   
   return
