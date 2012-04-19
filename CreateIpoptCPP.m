@@ -586,7 +586,7 @@ fclose(feval_h_idx);
 
 
 function [jacobian hessian Lamda_sparse_map] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
-
+%{
 A = cost.A;
 C = cost.C;
 for i=1:length(ineq.AAs)
@@ -611,7 +611,13 @@ for i=1:length(AAs)
         size(A,1)+size(AAs{i},1),size(A,2));
 %     A = [A ; AAs{i}];
 end
-
+if ~isequal(A,vertcat(cost.A, ineq.AAs{:}, AAs{:})) || ...
+      ~isequal(C,blkdiag(cost.C, ineq.Cs{:}, Cs{:}))
+   disp('mismatch')
+end
+%}
+A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
+C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
 
        
 jacobian = spalloc(size(C,1)-1,size(A,2),size(C,1)*6);
