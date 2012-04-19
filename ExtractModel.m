@@ -29,7 +29,8 @@ idx_state_vars = find(state_vars);
 n_state_vars = length(idx_state_vars);
 N = size(AAsingle{1},2)*n_time_steps ; %-n_state_vars*(n_time_steps-1) ;
 n = size(AAsingle{1},2);
-all_names = {};
+%all_names_old = {};
+all_names = repmat(all_names_single,1,n_time_steps);
 AAs = {};
 Cs = {};
 
@@ -42,6 +43,11 @@ for t=1:n_time_steps
         Cs{end+1} = Csingle{i};
     end
     
+    all_names((t-1)*length(all_names_single) + (1:length(all_names_single))) = ...
+            strcat(strrep(all_names((t-1)*length(all_names_single) + ...
+            (1:length(all_names_single))), ';', ['.t' sprintf('%d',t) ';']), ...
+            repmat({['.t' sprintf('%d',t)]}, 1, length(all_names_single)));
+    %{
     for i=1:length(all_names_single)
         [name R] = strtok(all_names_single{i},';');
         new_name ='';
@@ -54,14 +60,18 @@ for t=1:n_time_steps
             
             [name R] = strtok(R,';');
         end
-        all_names{end+1} = new_name;
+        all_names_old{end+1} = new_name;
     end
+    %}
     %ineq_vars((t-1)*n+(1:n)) =  ineq_vars_single;
     %cost_vars((t-1)*n+(1:n)) =  cost_vars_single;
     %in_vars  ((t-1)*n+(1:n)) =  in_vars_single;
     %ex_vars  ((t-1)*n+(1:n)) =  ex_vars_single;
     %all_state_vars  ((t-1)*n+(1:n)) =  state_vars;
 end
+%if ~isequal(all_names,all_names_old)
+%   disp('mismatch')
+%end
 ineq_vars = repmat(ineq_vars_single,n_time_steps,1);
 cost_vars = repmat(cost_vars_single,n_time_steps,1);
 in_vars = repmat(in_vars_single,n_time_steps,1);
