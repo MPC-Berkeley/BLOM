@@ -120,11 +120,19 @@ private:
   MyNLP& operator=(const MyNLP&);
   Number * fixed;
   Number * x0;
+  int m_nnz_jac;
+  int m_nnz_hessian;
+  int m_n_fixed;
+  int m_n;
+  int m_m_ineq_constrs;
+  int m_m;
   
   CompRow_Mat_double m_A;
   CompRow_Mat_double m_C;
+  CompRow_Mat_double m_LambdaStruct;
   Coord_Mat_double m_JacobianStruct;
   Coord_Mat_double m_HessianStruct;
+  Coord_Mat_double m_FixedStruct;
   
   void ReadAandC();
 
@@ -135,6 +143,16 @@ private:
 
   void CalcHessianValues(Number values[],const Number x[],Number obj_factor,const Number* lambda);
   void GetHessianStruct(int iRow[],int jCol[]);
+  
+  void GetBounds_info(Index n, Number* x_l, Number* x_u,
+                            Index m, Number* g_l, Number* g_u);
+  
+  
+  double CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,const double x[]);
+  double CalcDerValue(CompRow_Mat_double& A, CompRow_Mat_double&  C, int f, const Number x[], int dvar);
+  double CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,const Number x[],int dvar1,int dvar2);
+
+
 
   //@}
 };

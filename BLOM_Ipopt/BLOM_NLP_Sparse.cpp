@@ -1,4 +1,6 @@
 #include "BLOM_NLP.hpp"
+#include <string.h>
+#include <math.h>
 
 double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,const double x[])
 {
@@ -23,22 +25,38 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 			 	else if (!isinf(p)) // non-integer power
 			 	{
 			 		tmp *=pow(x[A.col_ind(j)],p);
+                    if (isnan(tmp))
+                       printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
 			 	}
 			 	else if (isinf(p) == 1) //exp
 			 	{
 			 		tmp *= exp(x[A.col_ind(j)]);
+                    if (isinf(tmp))
+                        printf("BLOM_NLP_Sparse:exp overflow,j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
+                    if (isnan(tmp))
+                        printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
+
 			 	}
 			 	else
 			 	{
 			 		tmp *= log(x[A.col_ind(j)]);
 			 	}
-			 	
+                
+                if (isnan(tmp))
+                    printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f \n", j, x[A.col_ind(j)], p);
+
 			 }
 			 
 			 val += tmp;
 		
 	}
 	
+    if (isinf(val))
+        printf("BLOM_NLP_Sparse:val overflow, f=%d\n", f);
+    
+    if (isnan(val))
+        printf("BLOM_NLP_Sparse:val is nan number, f=%d\n", f);    
+    
 	return val;
 }
 
@@ -110,7 +128,13 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 			 val += tmp;
 		
 	}
-	
+    
+    if (isinf(val))
+        printf("BLOM_NLP_Sparse:der val overflow, f=%d\n", f);
+
+    if (isnan(val))
+        printf("BLOM_NLP_Sparse:der val is not normal number, f=%d\n", f);
+    
 	return val;
 }
 
@@ -199,7 +223,10 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
 			 val += tmp;
 		
 	}
-	
+    
+    if (isinf(val))
+        printf("BLOM_NLP_Sparse:dder val overflow, f=%d\n", f);
+    
 	return val;
 }
 
