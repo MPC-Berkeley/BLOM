@@ -1,7 +1,7 @@
 function vec = BLOM_ConvertStructToVector(all_names,data)
 
 
-vec = zeros(length(all_names),1);
+vec = nan*ones(length(all_names),1);
 for i=1:length(all_names)
     
     % for assignment from structure to a vector, any filed out of multiple
@@ -18,8 +18,12 @@ for i=1:length(all_names)
     else
         fname = base_name;
     end
-    vec(i) = data.(fname)(time_index ,port_number) ;
-    
+    if (isfield(data,fname))
+        if size(data.(fname),1) >= time_index  ...
+                && size(data.(fname),2) >= port_number
+            vec(i) = data.(fname)(time_index ,port_number) ;
+        end
+    end
     
     
 end

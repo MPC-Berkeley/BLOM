@@ -15,6 +15,10 @@ end
 if (nargin < 3)
     integ_method = 'Euler';
 end
+
+if strcmp(integ_method,'none')
+   discrete_sys = true;
+end
 % First, get structure for one time step
 [all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep;
 
