@@ -8,7 +8,7 @@ ModelSpec = BLOM_ExtractModel('HelloWorldCont',10,1,'Euler');
 RunResults = BLOM_RunModel(ModelSpec);
 
 
-SolverStruct = BLOM_ExportToSolver(ModelSpec,'fmincon');
+SolverStruct = BLOM_ExportToSolver(ModelSpec,'IPOPT');
 
 [OptGuess ExtVars InitialStates ] = BLOM_SplitResults(ModelSpec,RunResults);
 

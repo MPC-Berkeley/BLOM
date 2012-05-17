@@ -20,20 +20,24 @@ ResultsVec = zeros(length(ModelSpec.all_names),1);
 
 % very ugly : everything is done in the base workspace
 for i=1:length(ModelSpec.all_names)
-    idx = strfind(ModelSpec.all_names{i},'.');
+    vname = strtok(ModelSpec.all_names{i},';');
+    idx = strfind(vname,'.');
     if length(idx)~=2
         continue;
     end
-    name = ModelSpec.all_names{i}(1:idx(1)-1);
+    if length(idx)~=2
+        continue;
+    end
+    name = vname(1:idx(1)-1);
     % look for the variable in the base workspace
     if (isempty(evalin('base',['who(''' name ''')'])))
         warning(['Var ' name ' not found in base workspace']);
         continue;
     end
     % Time index 
-    time = str2double(ModelSpec.all_names{i}(idx(2)+2:end));
+    time = str2double(vname(idx(2)+2:end));
     % Variable index for vector variables
-    port = str2double(ModelSpec.all_names{i}(idx(1)+4:idx(2)-1));
+    port = str2double(vname(idx(1)+4:idx(2)-1));
     
     % Take the variable from the base workspace
     ResultsVec(i) =  evalin('base',[ name '.signals.values(' num2str(time) ',' num2str(port) ')']) ; 

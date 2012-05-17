@@ -17,40 +17,67 @@ if (nargin < 3)
     selector = zeros(size(vec));
 end
 
-base_name = cell(1,length(all_names));
-port_number = zeros(1,length(all_names));
-time_index = zeros(1,length(all_names));
+if (selector(1) == 0) % all names required
+    N = length(cell2mat( strfind(all_names,';'))) + length(all_names) ; % number of ';' is number of multiple names
+else
+    N = length(vec); % just the subset required
+end
+    
+
+base_name = cell(1,N);
+port_number = zeros(1,N);
+time_index = zeros(1,N);
+vec_idx    = zeros(1,N);
 
 k=1;
 for i=1:length(all_names)
-    [name R] = strtok(all_names{i},';');
-    name_local_idx = 1;
-    while ~isempty(name)
-
-        % if selection is enabled, and this is the required variable
-        if (selector(i) == 0 || ...
-                name_local_idx == selector(i))
-        
-            dot_idx = strfind(name,'.') ;
-            base_name{k} = name(1:dot_idx(1)-1);
-            port_number(k) = str2double(name(dot_idx(1)+4:dot_idx(2)-1));
-            time_index(k) = str2double(name(dot_idx(2)+2:end));
-            vec_idx(k) = i;
-            k =k+1;
-        end % else just move to the next token
-        name_local_idx  = name_local_idx  + 1;
-        [name R] = strtok(R,';');
+    fields = textscan(all_names{i},'BL_%sOut%dt%d','Delimiter','.;');
+    
+    for j=1:size(fields{1},1)
+        if selector(i) ~= 0  && j  ~= selector(i)
+            continue;
+        end
+        base_name{k} = fields{1}{j};
+        port_number(k) = fields{2}(j);
+        time_index(k) = fields{3}(j);
+        vec_idx(k) = i;
+        k =k+1;
     end
+%     [name R] = strtok(all_names{i},';');
+%     name_local_idx = 1;
+%     while ~isempty(name)
+% 
+%         % if selection is enabled, and this is the required variable
+%         if (selector(i) == 0 || ...
+%                 name_local_idx == selector(i))
+%         
+%             dot_idx = strfind(name,'.') ;
+%             base_name{k} = name(1:dot_idx(1)-1);
+%             port_number(k) = str2double(name(dot_idx(1)+4:dot_idx(2)-1));
+%             time_index(k) = str2double(name(dot_idx(2)+2:end));
+%             vec_idx(k) = i;
+%             k =k+1;
+%         end % else just move to the next token
+%         name_local_idx  = name_local_idx  + 1;
+%         [name R] = strtok(R,';');
+%     end
 end
+
+% trim the unused memory, if any
+base_name = base_name(1:k-1);
+port_number =port_number(1:k-1);
+time_index = time_index(1:k-1);
+vec_idx    = vec_idx(1:k-1);
+
 
 [names, I , J] = unique(base_name);
 
 
 for i=length(base_name):-1:1 % backward loop prevents reallocating
-    if strcmp(names{J(i)}(1:3),'BL_')
-        name = names{J(i)}(4:end);
-    else
+%     if strcmp(names{J(i)}(1:3),'BL_')
+%         name = names{J(i)}(4:end);
+%     else
         name = names{J(i)};
-    end
+%     end
     data.(name)(time_index(i) ,port_number(i)) = vec(vec_idx(i));
 end

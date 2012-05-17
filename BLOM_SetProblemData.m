@@ -52,7 +52,7 @@ switch (SolverStruct.solver)
             fixed.Cs{k}(1) = -1;
             fixed.Cs{k}(2) = vec(SolverStruct.fixed_idx(i)) ;
         end
-        CreateIpoptDAT(ModelSpec.name,fixed,x0);
+        CreateIpoptDAT('test',fixed,x0);
         
 %         SolverStruc
 end
