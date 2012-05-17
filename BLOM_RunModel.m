@@ -20,11 +20,9 @@ ResultsVec = zeros(length(ModelSpec.all_names),1);
 
 % very ugly : everything is done in the base workspace
 for i=1:length(ModelSpec.all_names)
-    vname = strtok(ModelSpec.all_names{i},';');
+    vname = ModelSpec.all_names{i};
+    vname = vname(1:min([length(vname), strfind(vname,';')-1]));
     idx = strfind(vname,'.');
-    if length(idx)~=2
-        continue;
-    end
     if length(idx)~=2
         continue;
     end
@@ -35,12 +33,12 @@ for i=1:length(ModelSpec.all_names)
         continue;
     end
     % Time index 
-    time = str2double(vname(idx(2)+2:end));
+    time = vname(idx(2)+2:end);
     % Variable index for vector variables
-    port = str2double(vname(idx(1)+4:idx(2)-1));
+    port = vname(idx(1)+4:idx(2)-1);
     
     % Take the variable from the base workspace
-    ResultsVec(i) =  evalin('base', sprintf('%s.signals.values(%d,%d)', ...
+    ResultsVec(i) =  evalin('base', sprintf('%s.signals.values(%s,%s)', ...
         name, time, port));
 end
 
