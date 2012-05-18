@@ -13,71 +13,60 @@ function data = BLOM_ConvertVectorToStruct(all_names,vec,selector)
 %               If equals zero (default), all entries are used.
 %   
 
+% convention should be 1-d vectors and cell-strings are column oriented
+if size(all_names,2) > 1
+    all_names = all_names';
+end
+if size(vec,2) > 1
+    vec = vec';
+end
 if (nargin < 3)
     selector = zeros(size(vec));
 end
-
-if (selector(1) == 0) % all names required
-    N = length(cell2mat( strfind(all_names,';'))) + length(all_names) ; % number of ';' is number of multiple names
-else
-    N = length(vec); % just the subset required
+if size(selector,2) > 1
+    selector = selector';
 end
-    
 
-base_name = cell(1,N);
-port_number = zeros(1,N);
-time_index = zeros(1,N);
-vec_idx    = zeros(1,N);
-
-k=1;
-for i=1:length(all_names)
-    fields = textscan(all_names{i},'BL_%sOut%dt%d','Delimiter','.;');
-    
-    for j=1:size(fields{1},1)
-        if selector(i) ~= 0  && j  ~= selector(i)
-            continue;
-        end
-        base_name{k} = fields{1}{j};
-        port_number(k) = fields{2}(j);
-        time_index(k) = fields{3}(j);
-        vec_idx(k) = i;
-        k =k+1;
+% number of ';' is number of multiple names
+num_terms = cellfun(@length, strfind(all_names,';')) + 1;
+terms_so_far = [0; cumsum(num_terms)];
+all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+if (selector(1) == 0)
+    % all names required
+    base_name = all_fields{1};
+    port_number = all_fields{2};
+    time_index = all_fields{3};
+    vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+    vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
+    multiterms = find(num_terms > 1); % multiples, should be fewer of these
+    for i = 1:length(multiterms)
+        vec_idx(terms_so_far(multiterms(i))+2 : ...
+            terms_so_far(multiterms(i)+1)) = multiterms(i);
     end
-%     [name R] = strtok(all_names{i},';');
-%     name_local_idx = 1;
-%     while ~isempty(name)
-% 
-%         % if selection is enabled, and this is the required variable
-%         if (selector(i) == 0 || ...
-%                 name_local_idx == selector(i))
-%         
-%             dot_idx = strfind(name,'.') ;
-%             base_name{k} = name(1:dot_idx(1)-1);
-%             port_number(k) = str2double(name(dot_idx(1)+4:dot_idx(2)-1));
-%             time_index(k) = str2double(name(dot_idx(2)+2:end));
-%             vec_idx(k) = i;
-%             k =k+1;
-%         end % else just move to the next token
-%         name_local_idx  = name_local_idx  + 1;
-%         [name R] = strtok(R,';');
-%     end
+else
+    % just a subset given by selector vector required
+    base_name = all_fields{1}(terms_so_far(1:end-1) + selector);
+    port_number = all_fields{2}(terms_so_far(1:end-1) + selector);
+    time_index = all_fields{3}(terms_so_far(1:end-1) + selector);
+    vec_idx = (1:length(vec))';
 end
 
-% trim the unused memory, if any
-base_name = base_name(1:k-1);
-port_number =port_number(1:k-1);
-time_index = time_index(1:k-1);
-vec_idx    = vec_idx(1:k-1);
-
-
-[names, I , J] = unique(base_name);
-
-
-for i=length(base_name):-1:1 % backward loop prevents reallocating
-%     if strcmp(names{J(i)}(1:3),'BL_')
-%         name = names{J(i)}(4:end);
-%     else
-        name = names{J(i)};
-%     end
-    data.(name)(time_index(i) ,port_number(i)) = vec(vec_idx(i));
+% populate the data structure one variable name at a time
+% goal is to set each matrix of (time, port) data in a vectorized way
+[sorted, index] = sort(base_name);
+% Could save a few steps here by doing sortrows(horzcat(base_name, ...
+% num2cell([port_number, time_index]))), but num2cell is really slow.
+% First sort by names, then find last occurrence of each name
+[names, I] = unique(sorted);
+I = [0; I];
+for i=1:length(names)
+    % now for each name, sortrows([port_number, time_index])
+    [ports_times_i order_i] = sortrows([port_number(index(I(i)+1:I(i+1))), ...
+        time_index(index(I(i)+1:I(i+1)))]);
+    port_numbers_i = unique(ports_times_i(:,1)); % list of port numbers
+    time_indices_i = unique(ports_times_i(:,2)); % list of time indices
+    % get data matrix in correct (time, port) order using output from sortrows
+    data_i = reshape(vec(vec_idx(index(I(i)+order_i))), ...
+        length(time_indices_i), length(port_numbers_i));
+    data.(names{i})(time_indices_i, port_numbers_i) = data_i; % set field of struct
 end
