@@ -16,9 +16,40 @@ function [RunResults ResultsVec]= BLOM_RunModel(ModelSpec,options)
 
 sim(ModelSpec.name,0:ModelSpec.dt:ModelSpec.dt*ModelSpec.horizon);
 
-ResultsVec = zeros(length(ModelSpec.all_names),1);
+num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1;
+terms_so_far = [0, cumsum(num_terms)];
+all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+base_name = all_fields{1}(terms_so_far(1:end-1) + 1); % only first name
+port_number = all_fields{2}(terms_so_far(1:end-1) + 1); % only first name
+time_index = all_fields{3}(terms_so_far(1:end-1) + 1); % only first name
 
+% convert from Simulink ToWS to BLOM vector one variable name at a time
+% goal is to copy each matrix of (time, port) data in a vectorized way
+[sorted, index] = sort(base_name);
+% First sort by names, then find last occurrence of each name
+[names, I] = unique(sorted);
+I = [0; I];
+
+ResultsVec = zeros(length(ModelSpec.all_names),1);
 % very ugly : everything is done in the base workspace
+for i=1:length(names)
+    % look for the variable in the base workspace
+    if (isempty(evalin('base',['who(''BL_' names{i} ''')'])))
+        warning(['Var BL_' names{i} ' not found in base workspace']);
+        continue;
+    end
+    data_i = evalin('base', ['BL_' names{i} '.signals.values']);
+    
+    % convert times and port #'s for this signal name into 1d indices
+    time_indices_i = time_index(index(I(i)+1:I(i+1)));
+    port_numbers_i = port_number(index(I(i)+1:I(i+1)));
+    inds_i = sub2ind(size(data_i), time_indices_i, port_numbers_i);
+    ResultsVec(index(I(i)+1:I(i+1))) = data_i(inds_i);
+end
+RunResults = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec);
+
+%{
+ResultsVec1 = zeros(length(ModelSpec.all_names),1);
 for i=1:length(ModelSpec.all_names)
     vname = ModelSpec.all_names{i};
     vname = vname(1:min([length(vname), strfind(vname,';')-1]));
@@ -40,7 +71,9 @@ for i=1:length(ModelSpec.all_names)
     %wsname = sprintf('%s.signals.values(%s,%s)', name, time, port);
     wsname = [name '.signals.values(' time ',' port ')'];
     % Take the variable from the base workspace
-    ResultsVec(i) = evalin('base', wsname);
+    ResultsVec1(i) = evalin('base', wsname);
 end
-
-RunResults = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec);
+if ~isequal(ResultsVec, ResultsVec1)
+    disp('mismatch')
+end
+%}
