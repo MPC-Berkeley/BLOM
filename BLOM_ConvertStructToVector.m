@@ -1,7 +1,36 @@
 function vec = BLOM_ConvertStructToVector(all_names,data)
 
+% number of ';' is number of multiple names
+num_terms = cellfun(@length, strfind(all_names,';')) + 1;
+terms_so_far = [0, cumsum(num_terms)];
+all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
+twoterms = find(num_terms == 2);
+vec_idx(terms_so_far(twoterms)+2) = twoterms; % 2nd of each
+multiterms = find(num_terms > 2); % multiples, should be fewer of these
+for i = 1:length(multiterms)
+    vec_idx(terms_so_far(multiterms(i))+2 : ...
+        terms_so_far(multiterms(i)+1)) = multiterms(i);
+end
+vec = nan(length(all_names),1);
+fnames = fieldnames(data);
+for i=1:length(fnames)
+    % find matching signals for this field name, but only for the time and
+    % port numbers that are saved in the data struct
+    matches = find(strcmp(fnames{i}, all_fields{1}) & ...
+        all_fields{2} <= size(data.(fnames{i}),2) & ...
+        all_fields{3} <= size(data.(fnames{i}),1));
+    % only use first signal for each match
+    matches = matches([true; diff(vec_idx(matches)) ~= 0]);
+    % for each field name, convert times and port #'s into 1d indices
+    inds_i = sub2ind(size(data.(fnames{i})), all_fields{3}(matches), ...
+        all_fields{2}(matches));
+    vec(vec_idx(matches)) = data.(fnames{i})(inds_i);
+end
 
-vec = nan*ones(length(all_names),1);
+%{
+vec1 = nan(length(all_names),1);
 for i=1:length(all_names)
     
     % for assignment from structure to a vector, any field out of multiple
@@ -31,10 +60,11 @@ for i=1:length(all_names)
 %     if (isfield(data,fname))
     if size(data.(fname),1) >= time_index  ...
             && size(data.(fname),2) >= port_number
-        vec(i) = data.(fname)(time_index ,port_number) ;
+        vec1(i) = data.(fname)(time_index ,port_number) ;
     end
-%     end
-    
-    
+%     end    
 end
-
+if ~isequalwithequalnans(vec, vec1)
+    disp('mismatch')
+end
+%}

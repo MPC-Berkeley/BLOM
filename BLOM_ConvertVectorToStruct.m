@@ -54,19 +54,15 @@ end
 % populate the data structure one variable name at a time
 % goal is to set each matrix of (time, port) data in a vectorized way
 [sorted, index] = sort(base_name);
-% Could save a few steps here by doing sortrows(horzcat(base_name, ...
-% num2cell([port_number, time_index]))), but num2cell is really slow.
 % First sort by names, then find last occurrence of each name
 [names, I] = unique(sorted);
 I = [0; I];
 for i=1:length(names)
-    % now for each name, sortrows([port_number, time_index])
-    [ports_times_i order_i] = sortrows([port_number(index(I(i)+1:I(i+1))), ...
-        time_index(index(I(i)+1:I(i+1)))]);
-    port_numbers_i = unique(ports_times_i(:,1)); % list of port numbers
-    time_indices_i = unique(ports_times_i(:,2)); % list of time indices
-    % get data matrix in correct (time, port) order using output from sortrows
-    data_i = reshape(vec(vec_idx(index(I(i)+order_i))), ...
-        length(time_indices_i), length(port_numbers_i));
-    data.(names{i})(time_indices_i, port_numbers_i) = data_i; % set field of struct
+    % convert times and port #'s for this signal name into 1d indices
+    time_indices_i = time_index(index(I(i)+1:I(i+1)));
+    port_numbers_i = port_number(index(I(i)+1:I(i+1)));
+    size_i = [max(time_indices_i), max(port_numbers_i)];
+    inds_i = sub2ind(size_i, time_indices_i, port_numbers_i);
+    data.(names{i}) = zeros(size_i); % preallocate - maybe this should be nan's?
+    data.(names{i})(inds_i) = vec(vec_idx(index(I(i)+1:I(i+1))));
 end
