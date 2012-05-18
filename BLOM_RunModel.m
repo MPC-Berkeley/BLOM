@@ -37,9 +37,10 @@ for i=1:length(ModelSpec.all_names)
     % Variable index for vector variables
     port = vname(idx(1)+4:idx(2)-1);
     
+    %wsname = sprintf('%s.signals.values(%s,%s)', name, time, port);
+    wsname = [name '.signals.values(' time ',' port ')'];
     % Take the variable from the base workspace
-    ResultsVec(i) =  evalin('base', sprintf('%s.signals.values(%s,%s)', ...
-        name, time, port));
+    ResultsVec(i) = evalin('base', wsname);
 end
 
 RunResults = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec);
