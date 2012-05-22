@@ -59,3 +59,20 @@ ModelSpec.in_vars = in_vars;
 ModelSpec.all_state_vars = all_state_vars;
 ModelSpec.ex_vars = ex_vars;
 
+% merge everything into one array
+ModelSpec.A = vertcat(cost.A, ineq.AAs{:});
+ModelSpec.ineq_start_A = size(cost.A,1)+1;
+ModelSpec.ineq_end_A = size(ModelSpec.A,1);
+ModelSpec.A = vertcat(ModelSpec.A, AAs{:});
+ModelSpec.eq_start_A = ModelSpec.ineq_end_A  +1;
+ModelSpec.eq_end_A = size(ModelSpec.A,1);
+
+
+ModelSpec.C = blkdiag(cost.C, ineq.Cs{:});
+ModelSpec.ineq_start_C = size(cost.C,1)+1;
+ModelSpec.ineq_end_C = size(ModelSpec.C,1);
+ModelSpec.C = blkdiag(ModelSpec.C, Cs{:});
+ModelSpec.eq_start_C = ModelSpec.ineq_end_C+1;
+ModelSpec.eq_end_C = size(ModelSpec.C,1);
+
+

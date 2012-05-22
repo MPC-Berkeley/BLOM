@@ -286,8 +286,11 @@ Cs  = { Cs{idx==1} };
 
 function [all_names, AAs ,  Cs, ineq , merged_cost,in_vars,state_vars,ex_vars]=  MoveEqToCostAndNeq(all_names, AAs ,  Cs , ineq_vars ,cost_vars,in_vars,state_vars,ex_vars)
 
-[cost, to_remove_var_cost ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,cost_vars);
-[ineq, to_remove_var_ineq ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,-ineq_vars); % minus is to handle definition of inequality
+% Exclude input and extern vars from eliminition:
+protected = in_vars | ex_vars;
+
+[cost, to_remove_var_cost ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,cost_vars,protected);
+[ineq, to_remove_var_ineq ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,-ineq_vars,protected); % minus is to handle definition of inequality
 
 [AAs,Cs,all_names_new] = RemoveVariable(AAs,Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
 [cost.AAs,cost.Cs] = RemoveVariable(cost.AAs,cost.Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
@@ -308,7 +311,9 @@ for i=1:length(cost.AAs)
 end
 
 
-function [new_func, to_remove_var ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,vars)
+function [new_func, to_remove_var ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,vars,protected)
+% Moves equlity constraints to inequality or cost, by removing variables
+% that serve only for inequality or cost.
 
 to_remove_var = [];
 new_func.AAs = {};
@@ -346,11 +351,22 @@ for i=1:length(idx)
     
     unfolded = 0;
     
-    if (usage == 1) % special calculation, only for cost purpose
+    if ((usage == 1) && (protected(idx(i))==0)) % the variable participates only in one function and serves for inequality or cost
+        if (isnan(last_used)) % the function was removed, need to search again
+            last_used = 0;
+            for j=1:length(AAs)
+                if any(AAs{j}(:,idx(i)))
+                    last_used = j;
+                    break ; % we know that there is only one usage.
+                end
+            end
+        end % if (isnan(last_used))
+
         % check if can be unfolded - no high powers or exponents
         powers = AAs{last_used}(:,idx(i));
         if max(powers)==1 && min(powers)>-1 && (sum(powers) == 1)
             term = find(powers);
+
             if (length(term) == 1) && (sum(AAs{last_used}(term,:)) == 1) % no other variables in the term
                 new_func.AAs{i} = AAs{last_used}([1:term-1 term+1:end],:);
                 % find where this term is used in C
@@ -363,8 +379,9 @@ for i=1:length(idx)
                 % if this is the only row in C, remove function,
                 if (size(Cs{last_used},1)==1)
                     % decrement remaining indices and usages
-                    last_used_vec = last_used_vec - 1;
-                    usage_vec = usage_vec - any(AAs{last_used}(:,idx));
+                    last_used_vec(last_used_vec == last_used) = NaN; % mark this function invalid, we"ll have to search again for the last function in use.
+                    last_used_vec(last_used_vec > last_used) = last_used_vec(last_used_vec > last_used) - 1; % decrement all functions after the removed
+                    usage_vec = usage_vec - any(AAs{last_used}(:,idx)); % whoever participated in this function, now has one usage less
                    
                     AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
                     Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
