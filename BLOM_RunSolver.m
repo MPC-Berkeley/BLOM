@@ -20,7 +20,8 @@ switch (SolverStruct.solver)
     case 'fmincon'
         ResultsVec = fmincon(SolverStruct.prData);
     case 'IPOPT'
-        ! ./BLOM_Ipopt/BLOM_NLP
+        ! chmod a+x RunBlomIpopt
+        ! ./RunBlomIpopt 
         ResultsVec = load('result.dat');
 end
 

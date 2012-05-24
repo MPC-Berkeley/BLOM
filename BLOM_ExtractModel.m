@@ -42,7 +42,7 @@ if(nargin < 5)
     options = [];
 end
 
-open_system(name); % TODO - replace it later to load_system, after got rid of gcs insid ExtractModel
+load_system(name); % TODO - replace it later to load_system, after got rid of gcs insid ExtractModel
 [all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(horizon,dt,integ_method);
 
 ModelSpec.name = name;
