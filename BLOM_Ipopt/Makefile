@@ -16,6 +16,9 @@ EXE = BLOM_NLP
 #           code that you wrote in order to define the problem statement
 OBJS =  BLOM_main.o BLOM_NLP_Sparse.o BLOM_NLP.o 
 
+# CHANGEME: Path to Ipopt
+IPOPTPATH = $(HOME)/Ipopt-3.10.1
+
 # CHANGEME: Additional libraries
 ADDLIBS = Sparse++/lib/libsparse.a Sparse++/lib/libspblas.a \
 					Sparse++/lib/libmv.a
@@ -35,16 +38,16 @@ CXX = g++
 CXXFLAGS = -O3 -pipe -DNDEBUG -pedantic-errors -Wparentheses -Wreturn-type -Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -Wno-unknown-pragmas -Wno-long-long   -DIPOPT_BUILD
 
 # additional C++ Compiler options for linking
-CXXLINKFLAGS =  -Wl,--rpath -Wl,/home/sergv/Ipopt-3.10.1/lib
+CXXLINKFLAGS =  -Wl,--rpath -Wl,$(IPOPTPATH)/lib
 
 # Include directories (we use the CYGPATH_W variables to allow compilation with Windows compilers)
-INCL = `PKG_CONFIG_PATH=/home/sergv/Ipopt-3.10.1/lib/pkgconfig:/home/sergv/Ipopt-3.10.1/share/pkgconfig: /usr/bin/pkg-config --cflags ipopt` $(ADDINCFLAGS)  
-#INCL = -I`$(CYGPATH_W) /home/sergv/Ipopt-3.10.1/include/coin`  $(ADDINCFLAGS)
+INCL = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --cflags ipopt` $(ADDINCFLAGS)  
+#INCL = -I`$(CYGPATH_W) $(IPOPTPATH)/include/coin`  $(ADDINCFLAGS)
 
 # Linker flags
-LIBS = `PKG_CONFIG_PATH=/home/sergv/Ipopt-3.10.1/lib/pkgconfig:/home/sergv/Ipopt-3.10.1/share/pkgconfig: /usr/bin/pkg-config --libs ipopt`
-##LIBS = -link -libpath:`$(CYGPATH_W) /home/sergv/Ipopt-3.10.1/lib` libipopt.lib -llapack -lblas -lm  -ldl
-#LIBS = -L/home/sergv/Ipopt-3.10.1/lib -lipopt -llapack -lblas -lm  -ldl
+LIBS = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --libs ipopt`
+##LIBS = -link -libpath:`$(CYGPATH_W) $(IPOPTPATH)/lib` libipopt.lib -llapack -lblas -lm  -ldl
+#LIBS = -L$(IPOPTPATH)/lib -lipopt -llapack -lblas -lm  -ldl
 
 # The following is necessary under cygwin, if native compilers are used
 CYGPATH_W = echo
