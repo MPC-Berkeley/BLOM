@@ -11,7 +11,8 @@
 #include "BLOM_NLP.hpp"
 
 #include <iostream>
-
+#include <time.h>
+#include <sys/stat.h>
 
 using namespace Ipopt;
 
@@ -29,6 +30,21 @@ int main(int argv, char* argc[])
   // Initialize the IpoptApplication and process the options
   ApplicationReturnStatus status;
 //  app->Options()->SetStringValue("derivative_test", "second-order");
+//  app->Options()->SetStringValue("print_user_options", "yes");
+//  app->Options()->SetStringValue("print_timing_statistics", "yes");
+//  app->Options()->SetStringValue("print_options_documentation", "yes");
+//  app->Options()->SetStringValue("replace_bounds", "yes");
+//  app->Options()->SetStringValue("inexact_algorithm", "yes");
+
+// get current time and set output_file option accordingly
+  time_t timenow = time(NULL);
+  struct tm * timestruct = localtime(&timenow);
+  char timechar[35];
+  strftime(timechar, 35, "./results/output_%y%m%d_%H%M%S.txt", timestruct);
+  struct stat st;
+  if (stat("./results/",&st) == 0) // if results folder exists, put output there
+    app->Options()->SetStringValue("output_file", timechar);
+
   
   status = app->Initialize();
   if (status != Solve_Succeeded) {
