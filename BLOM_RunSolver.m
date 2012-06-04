@@ -20,8 +20,19 @@ switch (SolverStruct.solver)
     case 'fmincon'
         ResultsVec = fmincon(SolverStruct.prData);
     case 'IPOPT'
-        ! chmod a+x RunBlomIpopt
-        ! ./RunBlomIpopt 
+
+        BLOM_dir = which('BLOM_RunSolver');
+        BLOM_dir = BLOM_dir(1:strfind(BLOM_dir,'BLOM_RunSolver.m')-1);
+        
+        BLOM_NLP_exe = [ BLOM_dir 'BLOM_Ipopt/BLOM_NLP' ];
+        if (~exist(BLOM_NLP_exe,'file'))
+            error(['BLOM_NLP not found at ' BLOM_NLP_exe '. Run BLOM_Setup.']);
+            SolverResult = [];
+            ResultsVec   = [];
+            return;
+        end
+        
+        res = system(BLOM_NLP_exe);
         ResultsVec = load('result.dat');
 end
 

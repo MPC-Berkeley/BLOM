@@ -17,11 +17,14 @@ EXE = BLOM_NLP
 OBJS =  BLOM_main.o BLOM_NLP_Sparse.o BLOM_NLP.o 
 
 # CHANGEME: Path to Ipopt
-IPOPTPATH = $(HOME)/Ipopt-3.10.1
+ifndef IPOPTPATH
+ IPOPTPATH = $(HOME)/Ipopt-3.10.1
+endif
 
 # CHANGEME: Additional libraries
-ADDLIBS = Sparse++/lib/libsparse.a Sparse++/lib/libspblas.a \
+SparseLibs = Sparse++/lib/libsparse.a Sparse++/lib/libspblas.a \
 					Sparse++/lib/libmv.a
+ADDLIBS = $(SparseLibs)
 
 # CHANGEME: Additional flags for compilation (e.g., include flags)
 ADDINCFLAGS = -I ../ '-DCOMPLEX=std::complex<double>' -I Sparse++/mv/include 
@@ -56,10 +59,13 @@ all: $(EXE)
 
 .SUFFIXES: .cpp .c .o .obj
 
-$(EXE): $(OBJS)
+$(EXE): $(OBJS) $(SparseLibs)
 	bla=;\
 	for file in $(OBJS); do bla="$$bla `$(CYGPATH_W) $$file`"; done; \
 	$(CXX) $(CXXLINKFLAGS) $(CXXFLAGS)  -o $@ $$bla $(LIBS) $(ADDLIBS)
+
+$(SparseLibs): 
+	cd Sparse++; make sp;
 
 clean:
 	rm -rf $(EXE) $(OBJS)

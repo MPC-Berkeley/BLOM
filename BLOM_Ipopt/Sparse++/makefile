@@ -36,7 +36,7 @@ error:
 	@echo "|                                                                 |"
 	@echo "+-----------------------------------------------------------------+"
 	
-all: sp test done
+all: sp done
 
 
 sp:
@@ -60,14 +60,14 @@ clean:
 	cd ./src; make clean;
 	cd ./spblas; make clean;
 	cd ./mv/src; make clean;
-	cd ./testing; make clean;
+#	cd ./testing; make clean;
 
 wipe:
 	/bin/rm -f out
 	cd ./src; make wipe;
 	cd ./spblas; make wipe;
 	cd ./mv/src; make wipe;
-	cd ./testing; make wipe;
+#	cd ./testing; make wipe;
 
 done:
 	@echo "  "
