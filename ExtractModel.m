@@ -22,11 +22,12 @@ end
 % First, get structure for one time step
 [all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep;
 
-%reverse the direction of state vars data : 
-state_vars = sparse(length(state_vars_tmp),1);
-for i= find(state_vars_tmp)
-    state_vars(state_vars_tmp(i)) = i;
-end
+% %reverse the direction of state vars data : 
+% state_vars = sparse(length(state_vars_tmp),1);
+% for i= find(state_vars_tmp)
+%     state_vars(state_vars_tmp(i)) = i;
+% end
+state_vars = state_vars_tmp;
 
 % duplicate for many time steps
 idx_state_vars = find(state_vars);
@@ -89,7 +90,7 @@ if (discrete_sys)
     degree = sparse(length(state_vars),1);
     for k=1:n_state_vars
         current = idx_state_vars(k);
-        while (state_vars(current)~=0)
+        while (state_vars(current)~=0) % traverse back the state dependency to resolve multistep delays
             current = state_vars(current);
             degree(idx_state_vars(k)) = degree(idx_state_vars(k))  +1;
         end
@@ -213,7 +214,7 @@ end
 
 return
 
-function [AAs, Cs, idx_to_stay , cost_vars, all_names,ineq_vars] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars)
+function [AAs, Cs, idx_to_stay , cost_vars, all_names,ineq_vars,state_vars_mat] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars,state_vars_mat)
 
 toremove_list = [];
 
@@ -244,6 +245,18 @@ for i=1:length(AAs)
                 warning('variable %d (%s) already marked with inequality ! copy from %s .',origin,all_names{origin},all_names{to_remove});
             end
             
+            % check for removing state variable
+            if (~any(state_vars_mat(origin,:)))
+                state_vars_mat(origin,:) = state_vars_mat(to_remove,:);
+            elseif any(state_vars_mat(to_remove,:))
+                warning('variable %d (%s) already is a state ! copy from %s .',origin,all_names{origin},all_names{to_remove});
+            end
+            
+            % check for removing state input variable
+            state_vars_mat(:,origin) = state_vars_mat(:,origin) + state_vars_mat(:,to_remove);
+
+            state_vars_mat(to_remove,:) = 0;
+            state_vars_mat(:,to_remove) = 0;
         end
     end
 end
@@ -251,7 +264,7 @@ end
 to_stay = ones(1,length(cost_vars));
 to_stay(toremove_list) = 0;
 idx_to_stay = find(to_stay);
-
+state_vars_mat = state_vars_mat(idx_to_stay,idx_to_stay);
 [AAs,Cs,all_names] = RemoveVariable(AAs,Cs,all_names,toremove_list);
 
 remove_functons  = [];
@@ -433,6 +446,11 @@ eval([gcs '([],[],[],''compile'');'])
 for i= 1:length(all_blks)
     
     connect{i} = get_param(all_blks{i},'PortConnectivity');
+    % dim has two important fields: Inport and Outport. The format is as
+    % following: lenght of the vector is 2 times number of in or out ports.
+    % Each vector is of the following format: [m1 n1 m2 n2 .... ] where m1
+    % is the number of columns of the first port and n1 is the number of
+    % rows of the first port. m is 1 for vector variables.
     dim{i}     = get_param(all_blks{i}, 'CompiledPortDimensions');
     if (i > length(blks)+length(mem_blks)+length(demuxes)+length(muxes))  % store only output port for other than polyblocks and states
         connect{i} = connect{i}(2);
@@ -592,7 +610,7 @@ for i=(length(blks)+length(mem_blks)+1):length(all_blks)
 end
 
 
-% exapnd functions to functions of all variables
+% expand functions to functions of all variables
 for i=1:length(blks)
     AAs{i} = sparse(size(As{i},1),N,0);
     AAs{i}(:,IIs{i}) = As{i};
@@ -625,7 +643,7 @@ AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
 AA_cat = vertcat(AAs{:});
 MoveEqualMatrix = speye(size(AA_cat,2));
 
-% second phase : eliminate equal variables
+% second phase : eliminate all inport variables and replace them by outport.
 toremove_list = [];
 for i=1:length(VarConnect) % all variables
     if ~isempty(VarConnect(i).DstBlock) % all outgoing variables
@@ -678,10 +696,30 @@ cost_vars = cost_vars(idx);
 in_vars   = in_vars(idx);
 ex_vars   = ex_vars(idx);
 
+state_vars_mat = sparse(length(all_names),length(all_names));
+% Detect all state vars.
+for i=1:length(VarConnect)
+    if ~isempty(VarConnect(i).DstBlock)
+        for k = 1:length(VarConnect(i).DstBlock)
+           mem_idx  = find(BlockHandle == VarConnect(i).DstBlock(k) ...
+                               & -InPort == VarConnect(i).DstPort(k)+1  ...
+                               & VarNum == VarNum(i) & BlockType == 2);
+            if ~isempty(mem_idx)
+                state_vars_mat(mem_idx,i) = 1 ; % state_vars_mat holds connectivity map.
+                % 1 at i,j index means that the state i depends on
+                % variable j
+            end
+        end
+    end
+end
+
+
+% Detect all identity constraints, such as muxes, demuxes and simple
+% polyblocks. Remove all duplicated variables.
 prev_idx = [];
 while length(idx) ~= length(prev_idx)
     prev_idx = idx;
-    [AAs, Cs, idx , cost_vars,all_names,ineq_vars] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars);
+    [AAs, Cs, idx , cost_vars,all_names,ineq_vars,state_vars_mat] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars,state_vars_mat);
     
     BlockHandle = BlockHandle(idx);
     InPort = InPort(idx);
@@ -692,25 +730,11 @@ while length(idx) ~= length(prev_idx)
     in_vars   = in_vars(idx);
     ex_vars   = ex_vars(idx);
     cost_vars = cost_vars(idx);
+%     state_vars = state_vars(idx);
 end
 
-state_vars = sparse(length(all_names),1);
-
-% another loop to handle all state vars.
-for i=1:length(VarConnect)
-    if ~isempty(VarConnect(i).DstBlock)
-        for k = 1:length(VarConnect(i).DstBlock)
-           mem_idx  = find(BlockHandle == VarConnect(i).DstBlock(k) ...
-                               & -InPort == VarConnect(i).DstPort(k)+1  ...
-                               & VarNum == VarNum(i) & BlockType == 2);
-            if ~isempty(mem_idx)
-                state_vars(i) =  mem_idx;
-            end
-        end
-    end
-end
-
-
+[i , j ,s] = find(state_vars_mat);
+state_vars = sparse(i, ones(size(i)) ,j,length(all_names),1);
 
 idx = find(ineq_vars);
 for i=1:length(idx)
