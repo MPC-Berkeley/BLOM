@@ -18,22 +18,22 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 			 for (int j=A_row ; j < A_row_end ; j ++ )
 			 {
 			 	double p = A.val(j);
-			 	if (floor(p)==p && p > 0 && !isinf(p)) // int
+			 	if (floor(p)==p && p > 0 && !std::isinf(p)) // int
 			 	{
 			 		for (; p--;  tmp*=x[A.col_ind(j)]);
 			 	}
-			 	else if (!isinf(p)) // non-integer power
+			 	else if (!std::isinf(p)) // non-integer power
 			 	{
 			 		tmp *=pow(x[A.col_ind(j)],p);
-                    if (isnan(tmp))
+                    if (std::isnan(tmp))
                        printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
 			 	}
-			 	else if (isinf(p) == 1) //exp
+			 	else if (std::isinf(p) == 1) //exp
 			 	{
 			 		tmp *= exp(x[A.col_ind(j)]);
-                    if (isinf(tmp))
+                    if (std::isinf(tmp))
                         printf("BLOM_NLP_Sparse:exp overflow,j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
-                    if (isnan(tmp))
+                    if (std::isnan(tmp))
                         printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
 
 			 	}
@@ -42,7 +42,7 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 			 		tmp *= log(x[A.col_ind(j)]);
 			 	}
                 
-                if (isnan(tmp))
+                if (std::isnan(tmp))
                     printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f \n", j, x[A.col_ind(j)], p);
 
 			 }
@@ -51,10 +51,10 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 		
 	}
 	
-    if (isinf(val))
+    if (std::isinf(val))
         printf("BLOM_NLP_Sparse:val overflow, f=%d\n", f);
     
-    if (isnan(val))
+    if (std::isnan(val))
         printf("BLOM_NLP_Sparse:val is nan number, f=%d\n", f);    
     
 	return val;
@@ -92,11 +92,11 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 			 	double p = A.val(j);
 			 	if (A.col_ind(j) == dvar)
 			 	{
-			 		if(!isinf(p))
+			 		if(!std::isinf(p))
 			 		{
 			 		   tmp *= p --;
 			 		}
-			 		else if (isinf(p) == -1) // log
+			 		else if (std::isinf(p) == -1) // log
 			 		{
 			 			tmp *= -1;
 			 			p=-1;
@@ -106,15 +106,15 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 			 		}
 			 		
 			 	}
-			 	if (floor(p)==p && p >= 0 && !isinf(p)) // int
+			 	if (floor(p)==p && p >= 0 && !std::isinf(p)) // int
 			 	{
 			 		for (; p--;  tmp*=x[A.col_ind(j)]);
 			 	}
-			 	else if (!isinf(p)) // non-integer power
+			 	else if (!std::isinf(p)) // non-integer power
 			 	{
 			 		tmp *=pow(x[A.col_ind(j)],p);
 			 	}
-			 	else if (isinf(p) == 1) //exp
+			 	else if (std::isinf(p) == 1) //exp
 			 	{
 			 		tmp *= exp(x[A.col_ind(j)]);
 			 	}
@@ -129,10 +129,10 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 		
 	}
     
-    if (isinf(val))
+    if (std::isinf(val))
         printf("BLOM_NLP_Sparse:der val overflow, f=%d\n", f);
 
-    if (isnan(val))
+    if (std::isnan(val))
         printf("BLOM_NLP_Sparse:der val is not normal number, f=%d\n", f);
     
 	return val;
@@ -186,11 +186,11 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
 			 	{
 				 	if (A.col_ind(j) == dvar)
 				 	{
-				 		if(!isinf(p))
+				 		if(!std::isinf(p))
 				 		{
 				 		   tmp *= p --;
 				 		}
-				 		else if (isinf(p) == -1) // log
+				 		else if (std::isinf(p) == -1) // log
 				 		{
 				 			tmp *= -1;
 				 			p=-1;
@@ -201,15 +201,15 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
 				 		
 				 	}
 			 	}
-			 	if (floor(p)==p && p >= 0 && !isinf(p)) // int
+			 	if (floor(p)==p && p >= 0 && !std::isinf(p)) // int
 			 	{
 			 		for (; p--;  tmp*=x[A.col_ind(j)]);
 			 	}
-			 	else if (!isinf(p)) // non-integer power
+			 	else if (!std::isinf(p)) // non-integer power
 			 	{
 			 		tmp *=pow(x[A.col_ind(j)],p);
 			 	}
-			 	else if (isinf(p) == 1) //exp
+			 	else if (std::isinf(p) == 1) //exp
 			 	{
 			 		tmp *= exp(x[A.col_ind(j)]);
 			 	}
@@ -224,7 +224,7 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
 		
 	}
     
-    if (isinf(val))
+    if (std::isinf(val))
         printf("BLOM_NLP_Sparse:dder val overflow, f=%d\n", f);
     
 	return val;
