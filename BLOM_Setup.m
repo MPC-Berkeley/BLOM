@@ -1,8 +1,11 @@
-function BLOM_Setup
+function BLOM_Setup(ipopt_dir)
+% Function to easily compile BLOM_NLP for the first time. If called with no
+% input arguments, use uigetdir (this will fail in a -nodisplay instance of
+% Matlab). Otherwise take first input argument as path to Ipopt.
 
-
-BLOM_dir = which('BLOM_setup');
-BLOM_dir = BLOM_dir(1:strfind(BLOM_dir,'BLOM_Setup.m')-1);
+% mfilename('fullpath') returns the entire path to this script
+% the first output of fileparts(ans) gives the path string, same as basename in unix
+BLOM_dir = fileparts(mfilename('fullpath'));
 
 
 switch (computer)
@@ -19,11 +22,12 @@ end
 
 
 if (build_ipopt)
-    ipopt_dir = uigetdir('','Pick an IPOPT folder that holds Lib directory, press cancel for no IPOPT');
-    if (ipopt_dir ~= 0)
+    if nargin==0
+        ipopt_dir = uigetdir('','Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT');
+    end
+    if (ipopt_dir ~= 0) && ~isempty(ipopt_dir)
         cur_dir = pwd;
-        cd(BLOM_dir);
-        cd('BLOM_Ipopt');
+        cd([BLOM_dir '/BLOM_Ipopt']);
         eval(['! make -f ' makefile ' all IPOPTPATH=' ipopt_dir]);
         
         if (~exist('BLOM_NLP','file'))
@@ -34,7 +38,7 @@ if (build_ipopt)
             disp('---------------------------------');
         end
         cd(cur_dir)
-        
-        
+    else
+        warning(['Invalid selection of ipopt_dir=' ipopt_dir])
     end
 end

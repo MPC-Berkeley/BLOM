@@ -20,11 +20,13 @@ switch (SolverStruct.solver)
     case 'fmincon'
         ResultsVec = fmincon(SolverStruct.prData);
     case 'IPOPT'
-
-        BLOM_dir = which('BLOM_RunSolver');
-        BLOM_dir = BLOM_dir(1:strfind(BLOM_dir,'BLOM_RunSolver.m')-1);
         
-        BLOM_NLP_exe = [ BLOM_dir 'BLOM_Ipopt/BLOM_NLP' ];
+        % mfilename('fullpath') returns the entire path to this script
+        % the first output of fileparts(ans) gives the path string,
+        % same as basename in unix
+        BLOM_dir = fileparts(mfilename('fullpath'));
+        
+        BLOM_NLP_exe = [ BLOM_dir '/BLOM_Ipopt/BLOM_NLP' ];
         if (~exist(BLOM_NLP_exe,'file'))
             error(['BLOM_NLP not found at ' BLOM_NLP_exe '. Run BLOM_Setup.']);
             SolverResult = [];
