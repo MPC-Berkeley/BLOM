@@ -23,7 +23,7 @@ switch (SolverStruct.solver)
         
         % mfilename('fullpath') returns the entire path to this script
         % the first output of fileparts(ans) gives the path string,
-        % same as basename in unix
+        % same as dirname in unix
         BLOM_dir = fileparts(mfilename('fullpath'));
         
         BLOM_NLP_exe = [ BLOM_dir '/BLOM_Ipopt/BLOM_NLP' ];

@@ -4,7 +4,7 @@ function BLOM_Setup(ipopt_dir)
 % Matlab). Otherwise take first input argument as path to Ipopt.
 
 % mfilename('fullpath') returns the entire path to this script
-% the first output of fileparts(ans) gives the path string, same as basename in unix
+% the first output of fileparts(ans) gives the path string, same as dirname in unix
 BLOM_dir = fileparts(mfilename('fullpath'));
 
 
