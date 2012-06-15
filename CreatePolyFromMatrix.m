@@ -58,11 +58,13 @@ if (~isempty(idx))
                 if (~(skip_mult && j ==1 ) )
                     str = [str  '*'];
                 end
-                if isinf(A(i,jA(j)))
-                    if A(i,jA(j)) > 0 % +inf
+                if any(A(i,jA(j)) == BLOM_FunctionCode)
+                    if A(i,jA(j)) == BLOM_FunctionCode('exp')
                         str = [str  'exp(' names{jA(j)} ')' ];
-                    else              % -inf
+                    elseif A(i,jA(j)) == BLOM_FunctionCode('log')
                         str = [str  'log(' names{jA(j)} ')' ];
+                    else
+                        error(['Unrecognized function code ' num2str(A(i,jA(j)))])
                     end
                 else % non integer power or negative
                     switch(target)

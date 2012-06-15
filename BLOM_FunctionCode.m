@@ -11,13 +11,13 @@ if nargin == 0
 end
 switch fcn
    case 'exp'
-      code = 2^64;
+      code = inf;
    case 'log'
-      code = 2^65;
+      code = -inf;
    otherwise
       if isempty(fcn)
          % output a vector listing all the exception code values
-         code = [2^64, 2^65];
+         code = [inf; -inf];
       else
          error(['Function ' fcn ' not recognized'])
       end

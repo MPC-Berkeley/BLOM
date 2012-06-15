@@ -24,18 +24,20 @@ for i = range % for all non zero variables
         if A(j,i) == 0
             continue;
         end
-        if ~isinf(A(j,i))  
+        if ~any(A(j,i) == BLOM_FunctionCode)
             grad.AAs{i}(j,:) = A(j,:);
             grad.AAs{i}(j,i) = grad.AAs{i}(j,i)-1;
             grad.Cs{i}(j) = C(j)*A(j,i);
         else
-            if (A(j,i) > 0 ) % exp
+            if (A(j,i) == BLOM_FunctionCode('exp') ) % exp
                 grad.AAs{i}(j,:) = A(j,:);
                 grad.Cs{i}(j) = C(j);
-            else  % log
+            elseif (A(j,i) == BLOM_FunctionCode('log') ) % log
                 grad.AAs{i}(j,:) = A(j,:);
                 grad.AAs{i}(j,i) = -1;
                 grad.Cs{i}(j) = C(j);
+            else
+                error(['Unrecognized function code ' num2str(A(j,i))])
             end
 
         end
