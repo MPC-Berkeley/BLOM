@@ -41,7 +41,7 @@ CXX = g++
 CXXFLAGS = -O3 -pipe -DNDEBUG -pedantic-errors -Wparentheses -Wreturn-type -Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -Wno-unknown-pragmas -Wno-long-long   -DIPOPT_BUILD
 
 # additional C++ Compiler options for linking
-CXXLINKFLAGS =  -Wl,--rpath -Wl,$(IPOPTPATH)/lib -Wl,-rpath,/usr/local/lib64
+CXXLINKFLAGS =  -Wl,--rpath -Wl,$(IPOPTPATH)/lib
 
 # Include directories (we use the CYGPATH_W variables to allow compilation with Windows compilers)
 INCL = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --cflags ipopt` $(ADDINCFLAGS)  
