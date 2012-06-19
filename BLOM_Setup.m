@@ -23,12 +23,27 @@ end
 
 if (build_ipopt)
     if nargin==0
+        disp('Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT')
         ipopt_dir = uigetdir('','Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT');
     end
-    if (ipopt_dir ~= 0) && ~isempty(ipopt_dir)
+    if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
         cur_dir = pwd;
         cd([BLOM_dir '/BLOM_Ipopt']);
-        eval(['! make -f ' makefile ' all IPOPTPATH=' ipopt_dir]);
+        system('make clean');
+        % Workaround for Macs, gfortran gets installed in /usr/local but Matlab
+        % doesn't have /usr/local on the path unless it's started from a terminal
+        [status result] = system('which gfortran');
+        if isequal(makefile, 'Makefile.mac') && isempty(result)
+            setenv('PATH',[getenv('PATH') pathsep '/usr/local/bin']);
+        end
+        if isequal(makefile, 'Makefile.mac')
+            [status result] = system('echo $(readlink $(which gfortran))');
+            result = [fileparts(fileparts(result)) '/lib'];
+            system(['make -f ' makefile ' all IPOPTPATH=' ipopt_dir ...
+                ' GFORTRANPATH=' result]);
+        else
+            system(['make -f ' makefile ' all IPOPTPATH=' ipopt_dir]);
+        end
         
         if (~exist('BLOM_NLP','file'))
             warning('Compilation of BLOM_NLP failed. Check the screen for errors');
