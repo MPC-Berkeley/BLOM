@@ -14,8 +14,14 @@ function [OptGuess ExtVars InitialStates ] = BLOM_SplitResults(ModelSpec,RunResu
 %   ExtVars     -   Structure with external variables.
 %   InitialStates-  Structure with initial state variables.
 
-ResultsVec = BLOM_ConvertStructToVector(ModelSpec.all_names,RunResults);
-
-OptGuess =  BLOM_GetStructOfOptGuess(ModelSpec,ResultsVec);
-ExtVars  = BLOM_GetStructOfExtVars(ModelSpec,ResultsVec);
-InitialStates =  BLOM_GetStructOfInitialStates(ModelSpec,ResultsVec);
+if nargin > 1
+    ResultsVec = BLOM_ConvertStructToVector(ModelSpec.all_names,RunResults);
+    
+    OptGuess =  BLOM_GetStructOfOptGuess(ModelSpec,ResultsVec);
+    ExtVars  = BLOM_GetStructOfExtVars(ModelSpec,ResultsVec);
+    InitialStates =  BLOM_GetStructOfInitialStates(ModelSpec,ResultsVec);
+else
+    OptGuess =  BLOM_GetStructOfOptGuess(ModelSpec);
+    ExtVars  = BLOM_GetStructOfExtVars(ModelSpec);
+    InitialStates =  BLOM_GetStructOfInitialStates(ModelSpec);
+end
