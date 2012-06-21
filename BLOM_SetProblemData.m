@@ -8,15 +8,26 @@ function SolverStruct =  BLOM_SetProblemData(SolverStruct,ModelSpec,OptGuess, Ex
 % Input:
 %   SolverStruct -  Solver description struct, created with BLOM_ExportToSolver.
 %   ModelSpec    -  Model structure generatated by BLOM_ExtractModel.
-%   OptGuess     -  Structure with variables for an initial guess.
-%   ExtVars      -  Structure with external variables.
-%   InitialStates-  Structure with initial state variables.
+%   OptGuess     -  Structure, or vector, with variables for an initial guess.
+%   ExtVars      -  Structure, or vector, with external variables.
+%   InitialStates-  Structure, or vector, with initial state variables.
 %   options      -  Options created by BLOM_optset function.
 
-
-vecExt = BLOM_ConvertStructToVector(ModelSpec.all_names,ExtVars) ;
-vecStates = BLOM_ConvertStructToVector(ModelSpec.all_names,InitialStates) ;
-x0 = BLOM_ConvertStructToVector(ModelSpec.all_names,OptGuess) ;
+if isstruct(ExtVars)
+    vecExt = BLOM_ConvertStructToVector(ModelSpec.all_names,ExtVars) ;
+else
+    vecExt = ExtVars;
+end
+if isstruct(InitialStates)
+    vecStates = BLOM_ConvertStructToVector(ModelSpec.all_names,InitialStates) ;
+else
+    vecStates = InitialStates;
+end
+if isstruct(OptGuess)
+    x0 = BLOM_ConvertStructToVector(ModelSpec.all_names,OptGuess) ;
+else
+    x0 = OptGuess;
+end
 
 switch (SolverStruct.solver)
     case 'fmincon'
