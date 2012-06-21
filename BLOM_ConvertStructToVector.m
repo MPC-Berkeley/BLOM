@@ -1,19 +1,26 @@
 function vec = BLOM_ConvertStructToVector(all_names,data)
 
-% number of ';' is number of multiple names
-num_terms = cellfun(@length, strfind(all_names,';')) + 1;
-terms_so_far = [0, cumsum(num_terms)];
-all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
-vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
-vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
-twoterms = find(num_terms == 2);
-vec_idx(terms_so_far(twoterms)+2) = twoterms; % 2nd of each
-multiterms = find(num_terms > 2); % multiples, should be fewer of these
-for i = 1:length(multiterms)
-    vec_idx(terms_so_far(multiterms(i))+2 : ...
-        terms_so_far(multiterms(i)+1)) = multiterms(i);
+if isstruct(all_names)
+    % can also input all_names_struct with precomputed vectorization info
+    all_fields = all_names.all_fields;
+    vec_idx = all_names.vec_idx;
+    vec = nan(length(all_names.terms_so_far)-1,1);
+else
+    % number of ';' is number of multiple names
+    num_terms = cellfun(@length, strfind(all_names,';')) + 1;
+    terms_so_far = [0, cumsum(num_terms)];
+    all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+    vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+    vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
+    twoterms = find(num_terms == 2);
+    vec_idx(terms_so_far(twoterms)+2) = twoterms; % 2nd of each
+    multiterms = find(num_terms > 2); % multiples, should be fewer of these
+    for i = 1:length(multiterms)
+        vec_idx(terms_so_far(multiterms(i))+2 : ...
+            terms_so_far(multiterms(i)+1)) = multiterms(i);
+    end
+    vec = nan(length(all_names),1);
 end
-vec = nan(length(all_names),1);
 fnames = fieldnames(data);
 for i=1:length(fnames)
     % find matching signals for this field name, but only for the time and

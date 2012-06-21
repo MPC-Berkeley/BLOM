@@ -39,4 +39,4 @@ switch (SolverStruct.solver)
 end
 
 
-SolverResult = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec);
+SolverResult = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec);

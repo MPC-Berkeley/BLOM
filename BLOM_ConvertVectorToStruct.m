@@ -14,36 +14,47 @@ function data = BLOM_ConvertVectorToStruct(all_names,vec,selector)
 %   
 
 % convention should be 1-d vectors and cell-strings are column oriented
-if size(all_names,2) > 1
-    all_names = all_names';
-end
 if size(vec,2) > 1
     vec = vec';
 end
 if (nargin < 3)
     selector = zeros(size(vec));
-end
-if size(selector,2) > 1
+elseif size(selector,2) > 1
     selector = selector';
 end
 
-% number of ';' is number of multiple names
-num_terms = cellfun(@length, strfind(all_names,';')) + 1;
-terms_so_far = [0; cumsum(num_terms)];
-all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
-if (selector(1) == 0)
-    % all names required
+if isstruct(all_names)
+    % can also input all_names_struct with precomputed vectorization info
+    terms_so_far = all_names.terms_so_far;
+    all_fields = all_names.all_fields;
+    vec_idx = all_names.vec_idx;
     base_name = all_fields{1};
     port_number = all_fields{2};
     time_index = all_fields{3};
-    vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
-    vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
-    multiterms = find(num_terms > 1); % multiples, should be fewer of these
-    for i = 1:length(multiterms)
-        vec_idx(terms_so_far(multiterms(i))+2 : ...
-            terms_so_far(multiterms(i)+1)) = multiterms(i);
-    end
 else
+    if size(all_names,2) > 1
+        all_names = all_names';
+    end
+    % number of ';' is number of multiple names
+    num_terms = cellfun(@length, strfind(all_names,';')) + 1;
+    terms_so_far = [0; cumsum(num_terms)];
+    all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+    if (selector(1) == 0)
+        % all names required
+        base_name = all_fields{1};
+        port_number = all_fields{2};
+        time_index = all_fields{3};
+        vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+        vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
+        multiterms = find(num_terms > 1); % multiples, should be fewer of these
+        for i = 1:length(multiterms)
+            vec_idx(terms_so_far(multiterms(i))+2 : ...
+                terms_so_far(multiterms(i)+1)) = multiterms(i);
+        end
+    end
+end
+
+if (selector(1) ~= 0)
     % just a subset given by selector vector required
     base_name = all_fields{1}(terms_so_far(1:end-1) + selector);
     port_number = all_fields{2}(terms_so_far(1:end-1) + selector);

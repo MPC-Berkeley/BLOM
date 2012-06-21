@@ -21,4 +21,4 @@ if (nargin < 2)
     ResultsVec = nan*vec;
 end
 
-EmptyOptGuess = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec,vec);
+EmptyOptGuess = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec,vec);

@@ -16,9 +16,11 @@ function [RunResults ResultsVec]= BLOM_RunModel(ModelSpec,options)
 
 sim(ModelSpec.name,0:ModelSpec.dt:ModelSpec.dt*ModelSpec.horizon);
 
-num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1;
-terms_so_far = [0, cumsum(num_terms)];
-all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+%num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1;
+%terms_so_far = [0, cumsum(num_terms)];
+%all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+terms_so_far = ModelSpec.all_names_struct.terms_so_far;
+all_fields = ModelSpec.all_names_struct.all_fields;
 base_name = all_fields{1}(terms_so_far(1:end-1) + 1); % only first name
 port_number = all_fields{2}(terms_so_far(1:end-1) + 1); % only first name
 time_index = all_fields{3}(terms_so_far(1:end-1) + 1); % only first name
@@ -46,7 +48,7 @@ for i=1:length(names)
     inds_i = sub2ind(size(data_i), time_indices_i, port_numbers_i);
     ResultsVec(index(I(i)+1:I(i+1))) = data_i(inds_i);
 end
-RunResults = BLOM_ConvertVectorToStruct(ModelSpec.all_names,ResultsVec);
+RunResults = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec);
 
 %{
 ResultsVec1 = zeros(length(ModelSpec.all_names),1);

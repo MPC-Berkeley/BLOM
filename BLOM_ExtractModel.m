@@ -75,4 +75,19 @@ ModelSpec.C = blkdiag(ModelSpec.C, Cs{:});
 ModelSpec.eq_start_C = ModelSpec.ineq_end_C+1;
 ModelSpec.eq_end_C = size(ModelSpec.C,1);
 
-
+% do vectorization of all_names ahead of time
+num_terms = cellfun(@length, strfind(all_names,';'))' + 1; % number of ';'
+terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
+all_fields = textscan([all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
+twoterms = find(num_terms == 2);
+vec_idx(terms_so_far(twoterms)+2) = twoterms; % 2nd of each
+multiterms = find(num_terms > 2); % multiples, should be fewer of these
+for i = 1:length(multiterms)
+    vec_idx(terms_so_far(multiterms(i))+2 : ...
+        terms_so_far(multiterms(i)+1)) = multiterms(i);
+end
+ModelSpec.all_names_struct.terms_so_far = terms_so_far;
+ModelSpec.all_names_struct.all_fields = all_fields;
+ModelSpec.all_names_struct.vec_idx = vec_idx;

@@ -14,17 +14,17 @@ function SolverStruct =  BLOM_SetProblemData(SolverStruct,ModelSpec,OptGuess, Ex
 %   options      -  Options created by BLOM_optset function.
 
 if isstruct(ExtVars)
-    vecExt = BLOM_ConvertStructToVector(ModelSpec.all_names,ExtVars) ;
+    vecExt = BLOM_ConvertStructToVector(ModelSpec.all_names_struct,ExtVars) ;
 else
     vecExt = ExtVars;
 end
 if isstruct(InitialStates)
-    vecStates = BLOM_ConvertStructToVector(ModelSpec.all_names,InitialStates) ;
+    vecStates = BLOM_ConvertStructToVector(ModelSpec.all_names_struct,InitialStates) ;
 else
     vecStates = InitialStates;
 end
 if isstruct(OptGuess)
-    x0 = BLOM_ConvertStructToVector(ModelSpec.all_names,OptGuess) ;
+    x0 = BLOM_ConvertStructToVector(ModelSpec.all_names_struct,OptGuess) ;
 else
     x0 = OptGuess;
 end
