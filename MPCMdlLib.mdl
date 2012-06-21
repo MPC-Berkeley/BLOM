@@ -1197,8 +1197,8 @@ Library {
       ");\n\nfull_name = BLOM_GetPolyBlockEquation(A,C,gA,gC,names,max_rows,max_length);\n\nlabels = [ 'fprintf(full_na"
       "me)' char(13) char(10) ];\nif input_type == 1\n    for idx = 1:length(names)\n        thisLabel = sprintf('port_"
       "label(''input'',%d,''%s'')',idx,names{idx});\n        labels = [labels thisLabel char(13) char(10)];\n    end\n "
-      "   labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\nhelp_name = BLOM_GetPolyBlockEquation(A,C,gA,"
-      "gC,names,1000,1000);\n\nset(gcbh,'MaskHelp',help_name);\n\n"
+      "   labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\nif strcmp(get_param(bdroot,'Open'),'on')\n   "
+      " help_name = BLOM_GetPolyBlockEquation(A,C,gA,gC,names,1000,1000);\n    set(gcbh,'MaskHelp',help_name);\nend\n"
       MaskDisplay	      "fprintf(full_name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
