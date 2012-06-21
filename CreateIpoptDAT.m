@@ -6,10 +6,10 @@ fclose(f);
 
 f = fopen([ name 'Fixed.dat'],'wt');
 
-Data = zeros(length(fixed.AAs),1);
-for i=1:length(fixed.AAs)
-    Data(i) = fixed.Cs{i}(2);
-end
+%Data = zeros(length(fixed.AAs),1);
+%for i=1:length(fixed.AAs)
+%    Data(i) = fixed.Cs{i}(2);
+%end
 
-fprintf(f,'%.18g \n',Data);
+fprintf(f,'%.18g \n',fixed);
 fclose(f);

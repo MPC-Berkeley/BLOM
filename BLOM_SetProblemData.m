@@ -56,6 +56,7 @@ switch (SolverStruct.solver)
         
         % use exactly the same variables mapping as stored in BLOM_ExportToSolver 
         % TODO: need to change this format (fixed.AAs{}) to something more efficient
+        %{
         for i=1:length(SolverStruct.fixed_idx)
             k = k+1;
             fixed.AAs{k} = sparse(length(ModelSpec.all_names),2);
@@ -63,7 +64,15 @@ switch (SolverStruct.solver)
             fixed.Cs{k}(1) = -1;
             fixed.Cs{k}(2) = vec(SolverStruct.fixed_idx(i)) ;
         end
-        CreateIpoptDAT('test',fixed,x0);
+        Data = zeros(length(fixed.AAs),1);
+        for i=1:length(fixed.AAs)
+            Data(i) = fixed.Cs{i}(2);
+        end
+        if ~isequal(Data, vec(SolverStruct.fixed_idx))
+            error('mismatch')
+        end
+        %}
+        CreateIpoptDAT('test',vec(SolverStruct.fixed_idx),x0);
         
 %         SolverStruc
 end
