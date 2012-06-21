@@ -97,7 +97,10 @@ if (discrete_sys)
     end
 
     toremove_list = [];
-
+    
+    % put all the A's together, do the column manipulations all together
+    AA_cat = {vertcat(AAs{:})};
+    
     for d=1:full(max(degree))
         for t=d+1:n_time_steps
             for k=1:n_state_vars
@@ -108,11 +111,16 @@ if (discrete_sys)
                 for i=2:d
                     source = state_vars(source);
                 end
-                AAs = MoveEqualVar(AAs,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet
+                %AAs = MoveEqualVar(AAs,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet
+                AA_cat = MoveEqualVar(AA_cat,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet 
                 toremove_list = [toremove_list idx_state_vars(k)+(t-1)*n];
             end
         end
     end
+    AA_cat = AA_cat{1}; % take back out of dummy cell array
+    %if ~isequal(AA_cat, vertcat(AAs{:}))
+    %    error('mismatch')
+    %end
 else % continous system
     % Discretize
     switch (integ_method)
@@ -151,16 +159,16 @@ else % continous system
         all_state_vars(n+1:N) = 0; % only initial conditions remains
         
     end
-
+    
+    % put all the A's together, do the column manipulations all together
+    AA_cat = vertcat(AAs{:});
 end
 
-% put all the A's together, do the column manipulations all together
 AA_sizes = zeros(length(AAs),2);
 for i=1:length(AAs)
-   AA_sizes(i,:) = size(AAs{i});
+    AA_sizes(i,:) = size(AAs{i});
 end
 AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
-AA_cat = vertcat(AAs{:});
 MoveEqualMatrix = speye(size(AA_cat,2));
 
 % filter out input variables that are fixed for more than one time step
