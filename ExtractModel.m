@@ -121,6 +121,12 @@ if (discrete_sys)
     %if ~isequal(AA_cat, vertcat(AAs{:}))
     %    error('mismatch')
     %end
+    
+    % all_state_vars (bad name btw) should only flag the initial conditions -
+    % multistep delays are showing up multiple times in discrete all_state_vars,
+    % which is leading to matrix-valued fields in InitialStates for those delayed
+    % states. This is misleading and could lead to unpredictable behavior
+    all_state_vars(n+1:N) = 0; % only initial conditions remain
 else % continous system
     % Discretize
     switch (integ_method)
