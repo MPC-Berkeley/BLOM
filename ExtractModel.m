@@ -101,16 +101,21 @@ if (discrete_sys)
     % put all the A's together, do the column manipulations all together
     AA_cat = {vertcat(AAs{:})};
     
-    for d=1:full(max(degree))
-        for t=d+1:n_time_steps
+    for d=1:full(max(degree)) % propagate delayed variables for all degrees of delay
+        for t=d+1:n_time_steps % start from the current delay.
             for k=1:n_state_vars
-                if degree(idx_state_vars(k)) ~= d
+                % elimination of variables with delay d only
+                if (t > (d+1)) && (degree(idx_state_vars(k)) ~= d)  
+                    continue;
+                elseif  (t == (d+1)) && (degree(idx_state_vars(k)) < d) % special case for the first time instances in the delay chain
                     continue;
                 end
                 source = state_vars(idx_state_vars(k));
-                for i=2:d
+                for i=2:d % find the real source variable, including multiple delays
                     source = state_vars(source);
                 end
+                % delete the delayed variable, and replace it with its
+                % source variable.
                 %AAs = MoveEqualVar(AAs,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet
                 AA_cat = MoveEqualVar(AA_cat,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet 
                 toremove_list = [toremove_list idx_state_vars(k)+(t-1)*n];
@@ -121,12 +126,6 @@ if (discrete_sys)
     %if ~isequal(AA_cat, vertcat(AAs{:}))
     %    error('mismatch')
     %end
-    
-    % all_state_vars (bad name btw) should only flag the initial conditions -
-    % multistep delays are showing up multiple times in discrete all_state_vars,
-    % which is leading to matrix-valued fields in InitialStates for those delayed
-    % states. This is misleading and could lead to unpredictable behavior
-    all_state_vars(n+1:N) = 0; % only initial conditions remain
 else % continous system
     % Discretize
     switch (integ_method)
