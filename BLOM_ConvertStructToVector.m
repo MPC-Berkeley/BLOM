@@ -28,6 +28,9 @@ for i=1:length(fnames)
     matches = find(strcmp(fnames{i}, all_fields{1}) & ...
         all_fields{2} <= size(data.(fnames{i}),2) & ...
         all_fields{3} <= size(data.(fnames{i}),1));
+    if isempty(matches)
+        error(['Could not find signal named ' fnames{i} ' in all_names'])
+    end
     % only use first signal for each match
     matches = matches([true; diff(vec_idx(matches)) ~= 0]);
     % for each field name, convert times and port #'s into 1d indices
