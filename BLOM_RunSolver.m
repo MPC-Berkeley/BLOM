@@ -27,6 +27,9 @@ switch (SolverStruct.solver)
         BLOM_dir = fileparts(mfilename('fullpath'));
         
         BLOM_NLP_exe = [ BLOM_dir '/BLOM_Ipopt/BLOM_NLP' ];
+        if ispc
+            BLOM_NLP_exe = [BLOM_NLP_exe '.exe'];
+        end
         if (~exist(BLOM_NLP_exe,'file'))
             error(['BLOM_NLP not found at ' BLOM_NLP_exe '. Run BLOM_Setup.']);
             SolverResult = [];
