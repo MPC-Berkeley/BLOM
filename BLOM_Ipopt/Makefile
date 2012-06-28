@@ -69,6 +69,7 @@ $(SparseLibs):
 
 clean:
 	rm -rf $(EXE) $(OBJS)
+	cd Sparse++; make wipe;
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCL) -c -o $@ $<
