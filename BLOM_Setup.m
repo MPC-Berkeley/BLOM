@@ -10,23 +10,52 @@ BLOM_dir = fileparts(mfilename('fullpath'));
 
 switch (computer)
     case {'PCWIN','PCWIN64'}
-        build_ipopt = false;        
+        which_shell = questdlg('MinGW or Cygwin?','','MinGW','Cygwin','');
     case  {'GLNX86','GLNXA64'}
-        build_ipopt = true; 
         makefile = 'Makefile';
     case {'MACI','MACI64'}
-        build_ipopt = true;
         makefile = 'Makefile.mac';
 end
 
 
-
-if (build_ipopt)
-    if nargin==0
-        disp('Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT')
-        ipopt_dir = uigetdir('','Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT');
-    end
-    if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
+if nargin==0
+    disp('Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT')
+    ipopt_dir = uigetdir('','Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT');
+end
+if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
+    if ispc
+        % Replace backslashes in BLOM and Ipopt paths with forward slashes
+        BLOM_dir = strrep(BLOM_dir, '\', '/');
+        ipopt_dir = strrep(ipopt_dir, '\', '/');
+        if strcmp(which_shell, 'MinGW')
+            shell_dir = 'MinGW\msys\1.0';
+            makefile = 'Makefile.mingw';
+        elseif strcmp(which_shell, 'Cygwin')
+            shell_dir = 'cygwin';
+            makefile = 'Makefile';
+            % Have to translate ipopt_dir into Cygwin /cygdrive/... format
+            ipopt_dir = ['`cygpath "' ipopt_dir '"`'];
+        else
+            error('Invalid selection of shell')
+        end
+        disp(['Identify ' shell_dir '\bin folder that contains sh.exe'])
+        shell_dir = uigetdir(['C:\' shell_dir '\bin'], ...
+            ['Identify ' shell_dir '\bin folder that contains sh.exe']);
+        if ~exist([shell_dir '\sh.exe'], 'file')
+            warning(['Invalid selection of shell_dir=' shell_dir])
+        else
+            system([shell_dir '\sh --login -c "cd ' BLOM_dir '/BLOM_Ipopt; ' ...
+                'make clean; make -f ' makefile ' all IPOPTPATH=' ipopt_dir '"']);
+            
+            if (~exist('BLOM_NLP.exe','file'))
+                warning('Compilation of BLOM_NLP.exe failed. Check the screen for errors');
+            else
+                disp('-------------------------------------');
+                disp('BLOM_NLP.exe was succesfully compiled');
+                disp('-------------------------------------');
+            end
+        end
+    else
         cur_dir = pwd;
         cd([BLOM_dir '/BLOM_Ipopt']);
         system('make clean');
@@ -53,7 +82,10 @@ if (build_ipopt)
             disp('---------------------------------');
         end
         cd(cur_dir)
-    else
-        warning(['Invalid selection of ipopt_dir=' ipopt_dir])
     end
+else
+    if ~ischar(ipopt_dir)
+        ipopt_dir = num2str(ipopt_dir);
+    end
+    warning(['Invalid selection of ipopt_dir=' ipopt_dir])
 end
