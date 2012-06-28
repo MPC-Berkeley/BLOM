@@ -58,7 +58,7 @@ Simulink \texttt{.mdl} library
 
 \subsection{Software requirements}
 
-Matlab and Simulink (any operating system)
+Matlab and Simulink
 
 \subsection{Used by}
 
@@ -67,7 +67,7 @@ Matlab and Simulink (any operating system)
 \item BLOM Simulink Model (section \ref{sec:BLOM_Simulink_Model})
 \end{itemize}
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 \begin{itemize}
 \item Some callback functions from BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
@@ -108,7 +108,7 @@ Matlab \texttt{.m} functions and scripts
 
 \subsection{Software requirements}
 
-Matlab and Simulink (any operating system)
+Matlab and Simulink
 
 \subsection{Used by}
 
@@ -117,12 +117,14 @@ Matlab and Simulink (any operating system)
 \item MPC execution function (section \ref{sec:MPC_Execution_Function})
 \end{itemize}
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 Subcomponents given below
 \begin{itemize}
 \item BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
 \item BLOM\_ExportToSolver (section \ref{sec:BLOM_ExportToSolver})
+\item BLOM\_SetProblemData (section \ref{sec:BLOM_SetProblemData})
+\item BLOM\_RunSolver (section \ref{sec:BLOM_RunSolver})
 \end{itemize}
 
 \subsection{Input data}
@@ -157,7 +159,7 @@ None
 
 \subsection{Software requirements}
 
-Matlab and Simulink (any operating system)
+Matlab and Simulink
 
 \subsection{Used by}
 
@@ -165,7 +167,7 @@ Matlab and Simulink (any operating system)
 \item BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
 \end{itemize}
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 \begin{itemize}
 \item BLOM Simulink Library (section \ref{sec:BLOM_Simulink_Library})
@@ -207,7 +209,7 @@ Run scripts and/or load data files
 
 \subsection{Software requirements}
 
-Matlab (any operating system)
+Matlab
 
 \subsection{Used by}
 
@@ -216,7 +218,7 @@ Matlab (any operating system)
 \item BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
 \end{itemize}
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 Should be self-contained
 
@@ -252,13 +254,13 @@ Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
 
 \subsection{Software requirements}
 
-Matlab and Simulink (any operating system)
+Matlab and Simulink
 
 \subsection{Used by}
 
 Manual MPC initialization process, only need to run once after any change to the structure of the BLOM Simulink Model (section \ref{sec:BLOM_Simulink_Model}) or parameter values in Model Initialization Data (section \ref{sec:Model_Initialization_Data}).
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 \begin{itemize}
 \item Other functions in BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
@@ -305,13 +307,13 @@ Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
 
 \subsection{Software requirements}
 
-Matlab (any operating system)
+Matlab
 
 \subsection{Used by}
 
 Manual MPC initialization process, only need to run once after any change to the structure of the BLOM Simulink Model (section \ref{sec:BLOM_Simulink_Model}) or parameter values in Model Initialization Data (section \ref{sec:Model_Initialization_Data}).
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 \begin{itemize}
 \item Other functions in BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
@@ -327,7 +329,9 @@ Manual MPC initialization process, only need to run once after any change to the
 
 \subsection{Output data}
 
-The following files, saved to the current directory from Matlab (we may modify these names/formats in the future)
+\begin{itemize}
+\item A Matlab structure (\texttt{SolverStruct}) indicating the solver being used, the model name, and the indices of the external and state variables
+\item The following files, saved to the current directory from Matlab (we may modify these names/formats in the future)
 \begin{itemize}
 \item \texttt{A.txt}, the consolidated polynomial power matrix for the entire problem in sparse triplet format
 \item \texttt{C.txt}, the consolidated polynomial coefficient matrix for the entire problem in sparse triplet format
@@ -338,20 +342,130 @@ The following files, saved to the current directory from Matlab (we may modify t
 \item \texttt{LambdaStruct.txt}, indicates which constraints contribute terms to each nonzero entry in the Lagrangian Hessian matrix
 \item \texttt{params.dat}, lists the problem dimensions (number of variables, number of constraints, number of nonzeros in Jacobian and Hessian matrices)
 \end{itemize}
+\end{itemize}
 
-% MAKE SEPARATE SECTIONS FOR BLOM\_SetProblemData and BLOM\_NLP executable
-% LEAVE MPC execution function as wrapper, and talks to closed loop implementation
-%\item MPC execution function (section \ref{sec:MPC_Execution_Function})
+\section{BLOM\_SetProblemData} \label{sec:BLOM_SetProblemData}
+
+\subsection{What it does}
+
+This function takes measured initial state values and predicted trajectories of external inputs in signal-named structure format and saves them to a data file (currently named \texttt{testFixed.dat}) in the current Matlab directory. This also saves a warm-start guess for the optimization algorithm starting point into a data file, currently named \texttt{testX0.dat}. This can be enhanced in the future with more sophisticated warm-start strategies.
+
+\subsection{How to obtain it}
+
+Included as a part of BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Where to put it}
+
+Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Programming language(s)}
+
+Matlab \texttt{.m} function
+
+\subsection{Installation steps}
+
+Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Software requirements}
+
+Matlab
+
+\subsection{Used by}
+
+\begin{itemize}
+\item MPC execution function (section \ref{sec:MPC_Execution_Function})
+\end{itemize}
+
+\subsection{Makes use of}
+
+\begin{itemize}
+\item Other functions in BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+\end{itemize}
+
+\subsection{Input data}
+
+\begin{itemize}
+\item Solver data (\texttt{SolverStruct} structure) from BLOM\_ExportToSolver (section \ref{sec:BLOM_ExportToSolver}) indicating the solver being used, the model name, and the indices of the external and state variables
+\item Optimization problem representation (\texttt{ModelSpec} structure) from BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
+\item Warm start data from solution of previous MPC iteration (or a starting guess for first MPC iteration)
+\item Predicted external input trajectories in signal-named structure format
+\item Initial state values in signal-named structure format
+\item BLOM options (TBD)
+\end{itemize}
+
+\subsection{Output data}
+
+The following files, saved to the current directory from Matlab (we may modify these names/formats in the future)
+\begin{itemize}
+\item \texttt{testX0.dat} containing the initial starting guess for the optimization algorithm
+\item \texttt{testFixed.dat} containing the values of the predicted external trajectories and initial states
+\end{itemize}
+
+\section{BLOM\_RunSolver} \label{sec:BLOM_RunSolver}
+
+\subsection{What it does}
+
+This is a Matlab wrapper to run the BLOM\_NLP executable (section \ref{sec:BLOM_NLP}) and return the optimization solution.
+
+\subsection{How to obtain it}
+
+Included as a part of BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Where to put it}
+
+Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Programming language(s)}
+
+Matlab \texttt{.m} function
+
+\subsection{Installation steps}
+
+Same as BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+
+\subsection{Software requirements}
+
+Matlab
+
+\subsection{Used by}
+
+\begin{itemize}
+\item MPC execution function (section \ref{sec:MPC_Execution_Function})
+\end{itemize}
+
+\subsection{Makes use of}
+
+\begin{itemize}
+\item Other functions in BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
+\item BLOM\_NLP executable (section \ref{sec:BLOM_NLP})
+\end{itemize}
+
+\subsection{Input data}
+
+\begin{itemize}
+\item Solver data (\texttt{SolverStruct} structure) from BLOM\_ExportToSolver (section \ref{sec:BLOM_ExportToSolver}) indicating the solver being used, the model name, and the indices of the external and state variables
+\item Optimization problem representation (\texttt{ModelSpec} structure) from BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
+\item BLOM options (TBD)
+\item \texttt{result.dat} file from BLOM\_NLP executable (section \ref{sec:BLOM_NLP}), containing the optimization solution vector
+\end{itemize}
+
+\subsection{Output data}
+
+\begin{itemize}
+\item \texttt{SolverResult} structure in signal-named structure format
+\item \texttt{ResultsVec} containing the raw optimization vector from \texttt{result.dat} 
+\end{itemize}
+
 \section{MPC execution function} \label{sec:MPC_Execution_Function}
 
 \subsection{What it does}
 
 This function is a simple wrapper to execute the MPC algorithm, with the following components:
-\begin{enumerate}
-\item BLOM\_SetProblemData takes measured initial state values and predicted trajectories of external inputs in signal-named structure format and saves them to a data file (currently named \texttt{testFixed.dat}) in the current Matlab directory. This also saves a warm-start guess for the optimization algorithm starting point into a data file, currently named \texttt{testX0.dat}. This can be enhanced in the future with more sophisticated warm-start strategies.
-\item BLOM\_RunSolver runs the BLOM\_NLP executable (section \ref{sec:BLOM_NLP}), then loads the optimization vector solution from the file \texttt{result.dat}
-\item BLOM\_GetStructOfInputVars converts the optimization vector solution into signal-named structure format of control variables
-\end{enumerate}
+\begin{itemize}
+\item BLOM\_SetProblemData (section \ref{sec:BLOM_SetProblemData})
+\item BLOM\_RunSolver (section \ref{sec:BLOM_RunSolver})
+\item BLOM\_GetStructOfInputVars extracts just the control input variables from the \texttt{ResultsVec} vector
+\end{itemize}
 
 \subsection{How to obtain it}
 
@@ -371,22 +485,28 @@ None
 
 \subsection{Software requirements}
 
-Matlab (Linux only, to run BLOM\_NLP executable)
+Matlab
 
 \subsection{Used by}
 
 Closed-loop MPC implementation to send and receive measurements and control setpoints to/from data acquisition system
 
-\subsection{Uses}
+\subsection{Makes use of}
 
 \begin{itemize}
-\item BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
-\item BLOM\_NLP executable (section \ref{sec:BLOM_NLP})
+\item BLOM\_SetProblemData (section \ref{sec:BLOM_SetProblemData})
+\item BLOM\_RunSolver (section \ref{sec:BLOM_RunSolver})
+\item BLOM\_GetStructOfInputVars, from the BLOM Matlab Library (section \ref{sec:BLOM_Matlab_Library})
 \end{itemize}
 
 \subsection{Input data}
 
 \begin{itemize}
+\item A matlab structure \texttt{model\_data} containing fields:
+\begin{itemize}
+\item \texttt{ModelSpec}, the optimization problem representation from BLOM\_ExtractModel (section \ref{sec:BLOM_ExtractModel})
+\item \texttt{SolverStruct}, the solver data from BLOM\_ExportToSolver (section \ref{sec:BLOM_ExportToSolver})
+\end{itemize}
 \item Initial state values in signal-named structure format
 \item Predicted external input trajectories in signal-named structure format
 \item Warm start data from solution of previous MPC iteration (or a starting guess for first MPC iteration)
@@ -394,16 +514,9 @@ Closed-loop MPC implementation to send and receive measurements and control setp
 
 \subsection{Output data}
 
-The following files, saved to the current directory from Matlab (we may modify these names/formats in the future)
 \begin{itemize}
-\item \texttt{testFixed.dat}
-\item \texttt{testFixed.dat}, the consolidated polynomial coefficient matrix for the entire problem in sparse triplet format
-\item \textless modelname\textgreater\texttt{get\_bounds\_info.cpp}, this contains almost nothing and I'm pretty sure it's not necessary any more
-\item \texttt{FixedStruct.txt}, this maps the indices of fixed variables into the larger optimization vector
-\item \texttt{JacobianStruct.txt}, the sparsity pattern (nonzero structure) of the constraint Jacobian matrix in sparse triplet format
-\item \texttt{HessianStruct.txt}, the sparsity pattern (nonzero structure) of the lower triangular part of the Lagrangian Hessian matrix in sparse triplet format
-\item \texttt{LambdaStruct.txt}, indicates which constraints contribute terms to each nonzero entry in the Lagrangian Hessian matrix
-\item \texttt{params.dat}, lists the problem dimensions (number of variables, number of constraints, number of nonzeros in Jacobian and Hessian matrices)
+\item A signal-named structure containing the optimal control variables
+\item 
 \end{itemize}
 
 \end{document}
