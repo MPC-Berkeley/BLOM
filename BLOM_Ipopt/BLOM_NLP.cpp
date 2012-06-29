@@ -21,6 +21,7 @@ MyNLP::MyNLP()
 	x0 = 0;
 	
     FILE * fdat = fopen("params.dat", "rt");
+    if (!fdat) { printf("Error: params.dat file not found\n"); exit(1);}
     fscanf(fdat," %d %d %d %d %d %d ",&m_n,&m_n_fixed,&m_m,&m_nnz_jac,&m_nnz_hessian,&m_m_ineq_constrs);
     fclose(fdat);
 
@@ -29,14 +30,14 @@ MyNLP::MyNLP()
     x0 = new Number[m_n] ;
     
     FILE * f = fopen("testFixed.dat", "rt");
-    if (!f) { printf("Fixed file not found"); exit(1);}
+    if (!f) { printf("Error: Fixed file not found\n"); exit(1);}
     for (int i=0; i < m_n_fixed ; i ++) { ;
     fscanf(f, "%lf ", &fixed[i]); }
     
     fclose(f);
     
     f = fopen("testX0.dat", "rt");
-    if (!f) { printf("X0 file not found"); exit(1);}
+    if (!f) { printf("Error: X0 file not found\n"); exit(1);}
     for (int i=0; i < m_n ; i ++) { ;
     fscanf(f, "%lf ", &x0[i]); }
     
