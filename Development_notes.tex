@@ -1,0 +1,54 @@
+% Should make this into a real Latex file at some point for better formatting.
+
+
+ExtractModel discussions:
+
+
+1) Find all Input, External, Constraint and Cost BLOM library blocks.
+2) Build cost and constraint dependency wire graph, starting from Constraint and Cost blocks and traverse backwards.
+    a)  BFS to find the graph.
+    b)  Recognize reaching non-BLOM inputs (user error).
+    c)  Format of the graph: Sparse connectivity matrix of all wires, 
+        store just the block handles.
+    d)  Each wire has a property whether optimization variables is
+            introduced for it for each derivative evaluation, 
+        intermediate major time step, initial time, final time.
+    e)  Store for each wire, if it is constrained, cost (discrete or continuous), 
+        input, external.
+3) Flatten the wires:
+    a)  "Fetch" all PolyBlocks data: variables from the base workspace 
+        or values from the dialog (just do evalin('base',get_param(h,'A')).
+    b)  Get all possible dimensions from the known PolyBlocks (with or without the Simulink "compile").
+    c)  Translate all supported Simulink blocks to PolyBlocks using the known dimensions.   
+    d)  Eliminate duplicate routing variables. 
+    e)  Combine all PolyBlocks to a large P and K matrices.
+    f)  Eliminate whatever is possible (constants, identity PolyBlocks, linearly dependent constraints, replicated P rows, unused terms).
+    g)  Propagate time property information using the processed P and K structure.    
+4) Create the whole problem:
+    a)  Introduce and duplicate all major time step variables, including their dependencies.
+    b)  Introduce and duplicate minor time steps variables and their dependencies.
+    c)  Link by the appropriate Butcher tableau values major and minor time steps variables.
+    d)  Add move blocking constraints.
+    e)  Eliminate whatever is possible.
+    f)  Mark external, input.
+    g)  Take care of cost.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Tony's folder structure ideas:
+
+Only put a handful of files in the base directory. An addpath script, a quickstart guide, any license/authors/etc stuff needed for distribution.
+
+The Simulink library (which should have a better name - how about BLOM_Sim_Lib.mdl?) and really important functions like BLOM_ExtractModel should be under Core (or some other "hey! important stuff is in here!" name)
+
+Docs, Examples, and Solvers are pretty self-explanatory. I was brainstorming about possible solvers we have thought about making interfaces for, maybe putting empty folders as notes will be good motivation :)
+The common folder under Solvers is for useful libraries/utilities like SparseLib++ that we might use across multiple solver interfaces.
+
+Utils should be things like BLOM_ConvertStructToVector and BLOM_ConvertVectorToStruct, any useful Matlab functions that are not super-important enough to put in Core (like BLOM_FunctionCode, BLOM_Get<...>, etc). We will probably write scripts for upgrading Simulink models to newer BLOM versions, fixing library links, modifying file formats, etc and should put those here.
+
+Callbacks is for Simulink callbacks that aren't useful enough to be Utils in their own right.
+
+Matrix is for the matrix-valued stuff, if we keep that around.
+
