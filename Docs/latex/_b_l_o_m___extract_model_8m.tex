@@ -1,0 +1,92 @@
+\hypertarget{_b_l_o_m___extract_model_8m}{\section{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m File Reference}
+\label{_b_l_o_m___extract_model_8m}\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+}
+
+
+B\-L\-O\-M 2.\-0 Outline based on what we discussed previously.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+function \hyperlink{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}{B\-L\-O\-M\-\_\-\-Extract\-Model} (in arg1, in arg2)
+\begin{DoxyCompactList}\small\item\em This function extracts a Simulink model and is the first step. \end{DoxyCompactList}\item 
+function \hyperlink{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}{find\-Blocks} (in arg1, in arg2)
+\begin{DoxyCompactList}\small\item\em Finds all Input, External, Constraint and Cost B\-L\-O\-M library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+B\-L\-O\-M 2.\-0 Outline based on what we discussed previously. 
+
+\subsection{Function Documentation}
+\hypertarget{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!B\-L\-O\-M\-\_\-\-Extract\-Model@{B\-L\-O\-M\-\_\-\-Extract\-Model}}
+\index{B\-L\-O\-M\-\_\-\-Extract\-Model@{B\-L\-O\-M\-\_\-\-Extract\-Model}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{B\-L\-O\-M\-\_\-\-Extract\-Model}]{\setlength{\rightskip}{0pt plus 5cm}function B\-L\-O\-M\-\_\-\-Extract\-Model (
+\begin{DoxyParamCaption}
+\item[{in}]{arg1, }
+\item[{in}]{arg2}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}
+
+
+This function extracts a Simulink model and is the first step. 
+
+Overview of B\-L\-O\-M Extract Model Structure
+\begin{DoxyItemize}
+\item Find all Input, External, Constraint and Cost B\-L\-O\-M library blocks.
+\item Build cost and constraint dependency wire graph, starting from Constraint and Cost blocks and traverse backwards.
+\begin{DoxyItemize}
+\item B\-F\-S to find the graph.
+\item Recognize reaching non-\/\-B\-L\-O\-M inputs (user error).
+\item Format of the graph\-: Sparse connectivity matrix of all wires, store just the block handles.
+\item Each wire has a property whether optimization variables is introduced for it for each derivative evaluation, intermediate major time step, initial time, final time.
+\item Store for each wire, if it is constrained, cost (discrete or continuous), input, external.
+\end{DoxyItemize}
+\item Flatten the wires\-:
+\begin{DoxyItemize}
+\item \char`\"{}\-Fetch\char`\"{} all Poly\-Blocks data\-: variables from the base workspace or values from the dialog (just do evalin('base',get\-\_\-param(h,'A')).
+\item Get all possible dimensions from the known Poly\-Blocks (with or without the Simulink \char`\"{}compile\char`\"{}).
+\item Translate all supported Simulink blocks to Poly\-Blocks using the known dimensions.
+\item Eliminate duplicate routing variables.
+\item Combine all Poly\-Blocks to a large P and K matrices.
+\item Eliminate whatever is possible (constants, identity Poly\-Blocks, linearly dependent constraints, replicated P rows, unused terms).
+\item Propagate time property information using the processed P and K structure.
+\end{DoxyItemize}
+\item Create the whole problem\-:
+\begin{DoxyItemize}
+\item Introduce and duplicate all major time step variables, including their dependencies.
+\item Introduce and duplicate minor time steps variables and their dependencies.
+\item Link by the appropriate Butcher tableau values major and minor time steps variables.
+\item Add move blocking constraints.
+\item Eliminate whatever is possible.
+\item Mark external, input.
+\item Take care of cost. 
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!find\-Blocks@{find\-Blocks}}
+\index{find\-Blocks@{find\-Blocks}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{find\-Blocks}]{\setlength{\rightskip}{0pt plus 5cm}function find\-Blocks (
+\begin{DoxyParamCaption}
+\item[{in}]{arg1, }
+\item[{in}]{arg2}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}
+
+
+Finds all Input, External, Constraint and Cost B\-L\-O\-M library. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg1} & First argument \\
+\hline
+{\em arg2} & Second argument\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em out1} & return value for the first output variable \\
+\hline
+{\em out2} & return value for the second output variable \\
+\hline
+\end{DoxyRetVals}
