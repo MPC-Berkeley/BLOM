@@ -64,5 +64,19 @@ end
 %> @retval out2 return value for the second output variable
 %======================================================================
 
-function [out] = findBlocks(arg1,arg2)
+function [out] = buildWireGraph(arg1,arg2)
 end
+
+%%
+%======================================================================
+%> @brief Finds all Input, External, Constraint and Cost BLOM library
+%blocks
+%>
+%> More detailed description of the problem.
+%>
+%> @param arg1 First argument
+%> @param arg2 Second argument
+%>
+%> @retval out1 return value for the first output variable
+%> @retval out2 return value for the second output variable
+%======================================================================

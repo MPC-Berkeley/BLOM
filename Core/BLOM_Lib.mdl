@@ -15,13 +15,13 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 17 10:36:15 2012"
-  RTWModifiedTimeStamp	  264421072
-  ModelVersionFormat	  "1.%<AutoIncrement:3>"
+  LastModifiedDate	  "Tue Jul 17 15:31:02 2012"
+  RTWModifiedTimeStamp	  264439849
+  ModelVersionFormat	  "1.%<AutoIncrement:12>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
-  LibraryLinkDisplay	  "none"
+  LibraryLinkDisplay	  "all"
   WideLines		  off
   ShowLineDimensions	  off
   ShowPortDataTypes	  off
@@ -552,44 +552,6 @@ Library {
   }
   BlockParameterDefaults {
     Block {
-      BlockType		      Constant
-      Value		      "1"
-      VectorParams1D	      on
-      SamplingMode	      "Sample based"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
-      LockScale		      off
-      SampleTime	      "inf"
-      FramePeriod	      "inf"
-    }
-    Block {
-      BlockType		      Gain
-      Gain		      "1"
-      Multiplication	      "Element-wise(K.*u)"
-      ParamMin		      "[]"
-      ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
-      ParamDataTypeStr	      "Inherit: Same as input"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Same as input"
-      LockScale		      off
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	on
-      SampleTime	      "-1"
-    }
-    Block {
       BlockType		      Inport
       Port		      "1"
       UseBusObject	      off
@@ -612,28 +574,6 @@ Library {
       Interpolate	      on
     }
     Block {
-      BlockType		      Outport
-      Port		      "1"
-      UseBusObject	      off
-      BusObject		      "BusObject"
-      BusOutputAsStruct	      off
-      PortDimensions	      "-1"
-      VarSizeSig	      "Inherit"
-      SampleTime	      "-1"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      DataType		      "auto"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: auto"
-      LockScale		      off
-      SignalType	      "auto"
-      SamplingMode	      "auto"
-      SourceOfInitialOutputValue "Dialog"
-      OutputWhenDisabled      "held"
-      InitialOutput	      "[]"
-    }
-    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -653,28 +593,12 @@ Library {
       MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
-      BlockType		      Sum
-      IconShape		      "rectangular"
-      Inputs		      "++"
-      CollapseMode	      "All dimensions"
-      CollapseDim	      "1"
-      InputSameDT	      on
-      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Same as first input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Same as first input"
-      LockScale		      off
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	on
-      SampleTime	      "-1"
+      BlockType		      Terminator
     }
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1033, 176, 1638, 831]
+    Location		    [16, 212, 621, 867]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -688,150 +612,13 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    12
+    SIDHighWatermark	    15
     Block {
       BlockType		      SubSystem
-      Name		      "Constraint"
-      SID		      12
-      Ports		      [1]
-      Position		      [395, 228, 455, 272]
-      BackgroundColor	      "lightBlue"
-      AncestorBlock	      "BLOM_Lib/Polyblock"
-      LibraryVersion	      "*1.1"
-      MinAlgLoopOccurrences   off
-      PropExecContextOutsideSubsystem off
-      RTWSystemCode	      "Auto"
-      FunctionWithSeparateData off
-      Opaque		      off
-      RequestExecContextInheritance off
-      MaskHideContents	      off
-      MaskPromptString	      "m|b"
-      MaskStyleString	      "edit,edit"
-      MaskTunableValueString  "on,on"
-      MaskCallbackString      "|"
-      MaskEnableString	      "on,on"
-      MaskVisibilityString    "on,on"
-      MaskToolTipString	      "on,on"
-      MaskVariables	      "m=@1;b=@2;"
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "physical"
-      MaskIconUnits	      "autoscale"
-      MaskValueString	      "0|0"
-      System {
-	Name			"Constraint"
-	Location		[1268, 409, 1508, 576]
-	Open			off
-	ModelBrowserVisibility	off
-	ModelBrowserWidth	200
-	ScreenColor		"white"
-	PaperOrientation	"landscape"
-	PaperPositionMode	"auto"
-	PaperType		"usletter"
-	PaperUnits		"inches"
-	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
-	TiledPageScale		1
-	ShowPageBoundaries	off
-	ZoomFactor		"100"
-	SIDHighWatermark	9
-	SIDPrevWatermark	9
-	Block {
-	  BlockType		  Inport
-	  Name			  "In1"
-	  SID			  8
-	  Position		  [25, 33, 55, 47]
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  Constant
-	  Name			  "Constant"
-	  SID			  5
-	  Position		  [105, 110, 135, 140]
-	  Value			  "b"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Gain
-	  Name			  "Gain"
-	  SID			  2
-	  Position		  [80, 25, 110, 55]
-	  Gain			  "m"
-	  ParameterDataTypeMode	  "Inherit via internal rule"
-	  ParameterDataType	  "fixdt(1, 16)"
-	  ParameterScaling	  "2^0"
-	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
-	  OutDataTypeMode	  "Inherit via internal rule"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Sum
-	  Name			  "Sum"
-	  SID			  4
-	  Ports			  [2, 1]
-	  Position		  [140, 30, 160, 50]
-	  ShowName		  off
-	  IconShape		  "round"
-	  Inputs		  "|++"
-	  InputSameDT		  off
-	  OutDataTypeMode	  "Inherit via internal rule"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Line {
-	  SrcBlock		  "Gain"
-	  SrcPort		  1
-	  DstBlock		  "Sum"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Constant"
-	  SrcPort		  1
-	  Points		  [10, 0]
-	  DstBlock		  "Sum"
-	  DstPort		  2
-	}
-	Line {
-	  SrcBlock		  "In1"
-	  SrcPort		  1
-	  DstBlock		  "Gain"
-	  DstPort		  1
-	}
-      }
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Discrete Cost"
-      SID		      11
-      Ports		      [1, 1]
-      Position		      [60, 132, 135, 208]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.1"
-      SourceBlock	      "BLOM_Lib/Polyblock"
-      SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      m			      "0"
-      b			      "0"
-    }
-    Block {
-      BlockType		      SubSystem
-      Name		      "Polyblock"
+      Name		      "Bound"
       SID		      7
-      Ports		      [1, 1]
-      Position		      [60, 27, 135, 103]
+      Ports		      [1]
+      Position		      [60, 27, 135, 73]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -840,23 +627,25 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskPromptString	      "m|b"
-      MaskStyleString	      "edit,edit"
-      MaskTunableValueString  "on,on"
-      MaskCallbackString      "|"
-      MaskEnableString	      "on,on"
-      MaskVisibilityString    "on,on"
-      MaskToolTipString	      "on,on"
-      MaskVariables	      "m=@1;b=@2;"
+      MaskDescription	      "Please specify the upper and lower bounds of this variable."
+      MaskPromptString	      "Lower Bound|Upper Bound|Do these bounds apply at the initial time step?|Do these bounds "
+      "apply at the final time step?|Do these bounds apply at all other time steps?"
+      MaskStyleString	      "edit,edit,checkbox,checkbox,checkbox"
+      MaskTunableValueString  "on,on,on,on,on"
+      MaskCallbackString      "||||"
+      MaskEnableString	      "on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on"
+      MaskVariables	      "lb=@1;ub=@2;initial_step=@3;final_step=@4;intermediate_step=@5;"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "physical"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "0|0"
+      MaskValueString	      "-inf|inf|on|on|on"
       System {
-	Name			"Polyblock"
-	Location		[1156, 387, 1396, 554]
+	Name			"Bound"
+	Location		[1156, 453, 1627, 860]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -877,76 +666,15 @@ Library {
 	  IconDisplay		  "Port number"
 	}
 	Block {
-	  BlockType		  Constant
-	  Name			  "Constant"
-	  SID			  5
-	  Position		  [105, 110, 135, 140]
-	  Value			  "b"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Gain
-	  Name			  "Gain"
-	  SID			  2
-	  Position		  [80, 25, 110, 55]
-	  Gain			  "m"
-	  ParameterDataTypeMode	  "Inherit via internal rule"
-	  ParameterDataType	  "fixdt(1, 16)"
-	  ParameterScaling	  "2^0"
-	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
-	  OutDataTypeMode	  "Inherit via internal rule"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Sum
-	  Name			  "Sum"
-	  SID			  4
-	  Ports			  [2, 1]
-	  Position		  [140, 30, 160, 50]
-	  ShowName		  off
-	  IconShape		  "round"
-	  Inputs		  "|++"
-	  InputSameDT		  off
-	  OutDataTypeMode	  "Inherit via internal rule"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
-	  SaturateOnIntegerOverflow off
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "Out1"
-	  SID			  9
-	  Position		  [185, 33, 215, 47]
-	  IconDisplay		  "Port number"
-	}
-	Line {
-	  SrcBlock		  "Gain"
-	  SrcPort		  1
-	  DstBlock		  "Sum"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Constant"
-	  SrcPort		  1
-	  Points		  [10, 0]
-	  DstBlock		  "Sum"
-	  DstPort		  2
+	  BlockType		  Terminator
+	  Name			  "Terminator"
+	  SID			  15
+	  Position		  [255, 30, 275, 50]
 	}
 	Line {
 	  SrcBlock		  "In1"
 	  SrcPort		  1
-	  DstBlock		  "Gain"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Sum"
-	  SrcPort		  1
-	  DstBlock		  "Out1"
+	  DstBlock		  "Terminator"
 	  DstPort		  1
 	}
       }
