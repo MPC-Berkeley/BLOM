@@ -31,52 +31,127 @@
 %>     -  Mark external, input.
 %>     -  Take care of cost.
 
-%> @section
-
 %======================================================================
 %> @brief This function extracts a Simulink model and is the first step
-%into converting it into an optimization problem
+%> into converting it into an optimization problem
 %>
-%> More detailed description of the problem.
+%> Examples:
+%>   ModelSpec = BLOM_ExportModel; 
+%>       Converts current active model.
 %>
-%> @param arg1 First argument
-%> @param arg2 Second argument
+%>   ModelSpec = BLOM_ExportModel('Sys',10,0.5);  
+%>       Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps.
+%>
+%>   ModelSpec = BLOM_ExportModel('Sys',10,0.5,);  
+%>       Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps, 
+%>       assuming discrete model.
+%>
+%>   ModelSpec = BLOM_ExportModel('Sys',10,0.5,'Trapez');  
+%>       Converts current model 'Sys', with a a time step of 0.5 sec ,10
+%>       time steps and trapezoidal discretization method.
+%>
+%> @param name name of the model to convert
+%> @param horizon integer number of steps in prediction horizon length, 1 if not
+%> supplied
+%> @param dt time step size [s], 1 if not supplied
+%> @param disc discretization method {'none,'Euler','Trapez','RK4'}
+%> @param options options created by BLOM_opset function
 %>
 %> @retval out1 return value for the first output variable
 %> @retval out2 return value for the second output variable
 %======================================================================
 
-function [out1,out2] = BLOM_ExtractModel(arg1,arg2)
-
+function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
+    [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name);
+    sourceHandles = searchSources(boundAndCostHandles,inputAndExternalHandles);
+    
+    % just a placeholder for ModelSpec so that MATLAB does not complain
+    ModelSpec = 1
 end
 
 %%
 %======================================================================
 %> @brief Finds all Input, External, Constraint and Cost BLOM library
-%blocks
+%> blocks
 %>
 %> More detailed description of the problem.
 %>
-%> @param arg1 First argument
-%> @param arg2 Second argument
+%> @param name Name of the simulink model
 %>
-%> @retval out1 return value for the first output variable
-%> @retval out2 return value for the second output variable
+%> @retval blockHandles handles of all the relevant blocks
 %======================================================================
 
-function [out] = buildWireGraph(arg1,arg2)
+function [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name)
+    % FindAll may not be the most efficient way to find the handles
+    boundAndCostHandles = [find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/Bound'); ...
+        find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/DiscreteCost')];
+    inputAndExternalHandles = ...
+        [...find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/InputFromWorkspace'); ...
+        find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/InputFromSimulink'); ...
+        ...find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/ExternalFromWorkspace'); ...
+        find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/ExternalFromSimulink')];
 end
 
 %%
 %======================================================================
-%> @brief Finds all Input, External, Constraint and Cost BLOM library
-%blocks
+%> @brief Find all connected source blocks using a breadth first search.
+%> Includes the handles already given.
 %>
 %> More detailed description of the problem.
 %>
-%> @param arg1 First argument
-%> @param arg2 Second argument
+%> @param handleArray the array of handles that you want to search
 %>
-%> @retval out1 return value for the first output variable
-%> @retval out2 return value for the second output variable
+%> @retval sourceHandles return all the handles connected to input handles
 %======================================================================
+
+function [sourceHandles] = searchSources(handleArray,varargin)
+    if ~isempty(varargin)
+        fromSimulink = varargin{1};
+    end
+    % i = current handle that we're looking at
+    i = 1;
+    sourceHandles = zeros(2,1);
+    % j is the index of the first zero
+    j = length(handleArray)+1;
+    sourceHandles(1:length(handleArray)) = handleArray;
+    while 1
+        if sourceHandles(i) == 0
+            % when this is true, all of the handles have been found
+            break
+        elseif any(fromSimulink==sourceHandles(i))
+            % if the current handle is equal to any of the external or input
+            % from simulink, then continue with the loop and do not look for
+            % more branches from that block
+            i = i+1;
+            continue
+        elseif i > length(sourceHandles)
+            break
+        elseif ~any(sourceHandles==0)
+            % if we reach the point where there's no more space for more
+            % handles, allocate more space
+            old = sourceHandles;
+            sourceHandles = zeros(length(sourceHandles)*2,1);
+            sourceHandles(1:length(old)) = old;
+        end
+        ports = get_param(sourceHandles(i),'PortConnectivity');
+        sHandles = [ports.SrcBlock];
+        newHandles = setdiff(sHandles,sourceHandles);
+        if (j+length(newHandles)-1) >= length(sourceHandles)
+            % if there's not enough space for the new handles, allocate more
+            % space
+            old = sourceHandles;
+            sourceHandles = zeros(length(sourceHandles)*2,1);
+            sourceHandles(1:length(old)) = old;
+        end
+        
+        if ~isempty(newHandles)
+            sourceHandles(j:(j+length(newHandles)-1)) = newHandles;
+            j = j + length(newHandles);
+        end
+        i = i + 1;
+    end
+    
+    if any(sourceHandles==0)
+        sourceHandles = sourceHandles(1:j-1);
+    end
+end
