@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jul 18 17:02:05 2012"
-  RTWModifiedTimeStamp	  264531723
-  ModelVersionFormat	  "1.%<AutoIncrement:29>"
+  LastModifiedDate	  "Thu Jul 19 11:39:03 2012"
+  RTWModifiedTimeStamp	  264598740
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -628,7 +628,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [315, 290, 887, 782]
+    Location		    [315, 312, 887, 804]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -859,7 +859,11 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskDescription	      "Read data values specified in matrix.."
+      MaskDescription	      "Read data values specified in matrix or structure format from MATLAB's workspace.\n\nMatr"
+      "ix format can be used only for one-dimensional signals. Each row of the matrix has a time stamp in the first col"
+      "umn and a vector containing the corresponding data sample in the subsequent column(s).\n\nStructure format can b"
+      "e used for either one-dimensional or multidimensional signals:\n    var.time=[TimeValues]\n    var.signals.value"
+      "s=[DataValues]\n    var.signals.dimensions=[DimValues]"
       MaskPromptString	      "Data:|Interpolation type"
       MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold)"
       MaskTunableValueString  "on,on"
@@ -1001,7 +1005,11 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskDescription	      "Read data values specified in matrix.."
+      MaskDescription	      "Read data values specified in matrix or structure format from MATLAB's workspace.\n\nMatr"
+      "ix format can be used only for one-dimensional signals. Each row of the matrix has a time stamp in the first col"
+      "umn and a vector containing the corresponding data sample in the subsequent column(s).\n\nStructure format can b"
+      "e used for either one-dimensional or multidimensional signals:\n    var.time=[TimeValues]\n    var.signals.value"
+      "s=[DataValues]\n    var.signals.dimensions=[DimValues]"
       MaskPromptString	      "Data:|Interpolation type"
       MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold)"
       MaskTunableValueString  "on,on"
