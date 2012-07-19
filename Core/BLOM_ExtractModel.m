@@ -126,12 +126,10 @@ function [sourceHandles] = searchSources(handleArray,varargin)
             continue
         elseif i > length(sourceHandles)
             break
-        elseif ~any(sourceHandles==0)
+        elseif ~sourceHandles(end)==0
             % if we reach the point where there's no more space for more
             % handles, allocate more space
-            old = sourceHandles;
-            sourceHandles = zeros(length(sourceHandles)*2,1);
-            sourceHandles(1:length(old)) = old;
+            sourceHandles = [sourceHandles; zeros(length(sourceHandles)*2,1)];
         end
         ports = get_param(sourceHandles(i),'PortConnectivity');
         sHandles = [ports.SrcBlock];
@@ -139,9 +137,7 @@ function [sourceHandles] = searchSources(handleArray,varargin)
         if (j+length(newHandles)-1) >= length(sourceHandles)
             % if there's not enough space for the new handles, allocate more
             % space
-            old = sourceHandles;
-            sourceHandles = zeros(length(sourceHandles)*2,1);
-            sourceHandles(1:length(old)) = old;
+            sourceHandles = [sourceHandles; zeros(length(sourceHandles)*2,1)];
         end
         
         if ~isempty(newHandles)
