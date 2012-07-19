@@ -63,10 +63,13 @@
 
 function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name);
-    sourceHandles = searchSources(boundAndCostHandles,inputAndExternalHandles);
+    [sourceHandles,stop] = searchSources(boundAndCostHandles,inputAndExternalHandles);
+    % FIX: should implement something that stops the code after analyzing
+    % all the blocks and finding an error in the structure of the model
+    
     
     % just a placeholder for ModelSpec so that MATLAB does not complain
-    ModelSpec = 1
+    ModelSpec = 1;
 end
 
 %%
@@ -100,11 +103,16 @@ end
 %> More detailed description of the problem.
 %>
 %> @param handleArray the array of handles that you want to search
+%> @param varargin the external and input from simulink handles. the
+%> sources of these blocks are not relevant to the optimization problem
 %>
 %> @retval sourceHandles return all the handles connected to input handles
+%> @retval stop if there are any unconnected blocks or blocks that BLOM
+%> does not support, this paramter gives a 1 to indicate true and 0 to
+%> indicate false
 %======================================================================
 
-function [sourceHandles] = searchSources(handleArray,varargin)
+function [sourceHandles,stop] = searchSources(handleArray,varargin)
     if ~isempty(varargin)
         fromSimulink = varargin{1};
     end
@@ -132,6 +140,8 @@ function [sourceHandles] = searchSources(handleArray,varargin)
             sourceHandles = [sourceHandles; zeros(length(sourceHandles)*2,1)];
         end
         ports = get_param(sourceHandles(i),'PortConnectivity');
+        % FIX: once we get all the handles, we will want to check whether
+        % or not BLOM will be able to process these blocks. 
         sHandles = [ports.SrcBlock];
         newHandles = setdiff(sHandles,sourceHandles);
         if (j+length(newHandles)-1) >= length(sourceHandles)
@@ -151,5 +161,9 @@ function [sourceHandles] = searchSources(handleArray,varargin)
         sourceHandles = sourceHandles(1:j-1);
     end
     %check if any handles are -1 and remove them
+    if any(sourceHandles==-1)
+        fprintf('One or more of the blocks are missing a connection\n');
+        stop = 1;
+    end
     sourceHandles = setdiff([-1],sourceHandles);
 end
