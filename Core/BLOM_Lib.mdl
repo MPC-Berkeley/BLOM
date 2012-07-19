@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jul 18 14:01:52 2012"
-  RTWModifiedTimeStamp	  264520907
-  ModelVersionFormat	  "1.%<AutoIncrement:23>"
+  LastModifiedDate	  "Wed Jul 18 17:02:05 2012"
+  RTWModifiedTimeStamp	  264531723
+  ModelVersionFormat	  "1.%<AutoIncrement:29>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -628,7 +628,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [860, 197, 1465, 852]
+    Location		    [315, 290, 887, 782]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -658,22 +658,22 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "Please specify the upper and lower bounds of this variable."
-      MaskPromptString	      "Lower Bound|Upper Bound|Do these bounds apply at the initial time step?|Do these bounds "
-      "apply at the final time step?|Do these bounds apply at all other time steps?"
+      MaskPromptString	      "Upper bound:|Lower bound:|Do these bounds apply at the initial time step?|Do these bound"
+      "s apply at the final time step?|Do these bounds apply at all other time steps?"
       MaskStyleString	      "edit,edit,checkbox,checkbox,checkbox"
       MaskTunableValueString  "on,on,on,on,on"
       MaskCallbackString      "||||"
       MaskEnableString	      "on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
-      MaskVariables	      "lb=@1;ub=@2;initial_step=@3;final_step=@4;intermediate_step=@5;"
+      MaskVariables	      "ub=@1;lb=@2;initial_step=@3;final_step=@4;intermediate_step=@5;"
       MaskDisplay	      "fprintf('Bound')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "physical"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "-inf|inf|on|on|on"
+      MaskValueString	      "inf|-inf|on|on|on"
       System {
 	Name			"Bound"
 	Location		[1156, 453, 1627, 860]
@@ -850,7 +850,7 @@ Library {
       Name		      "ExternalFromWorkspace"
       SID		      30
       Ports		      [0, 1]
-      Position		      [410, 114, 510, 156]
+      Position		      [410, 119, 510, 161]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -860,24 +860,24 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "Read data values specified in matrix.."
-      MaskPromptString	      "Data:|Sample time:|Interpolation type"
-      MaskStyleString	      "edit,edit,popup(Zero-Order Hold|First-Order Hold)"
-      MaskTunableValueString  "on,on,on"
-      MaskCallbackString      "||"
-      MaskEnableString	      "on,on,on"
-      MaskVisibilityString    "on,on,on"
-      MaskToolTipString	      "on,on,on"
-      MaskVariables	      "simin=@1;Ts=@2;interpType=@3;"
+      MaskPromptString	      "Data:|Interpolation type"
+      MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold)"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,on"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVariables	      "simin=@1;interpType=@2;"
       MaskDisplay	      "fprintf('External')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "simin|Ts|Zero-Order Hold"
+      MaskValueString	      "simin|Zero-Order Hold"
       System {
 	Name			"ExternalFromWorkspace"
-	Location		[433, 491, 931, 791]
+	Location		[433, 513, 931, 813]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -896,7 +896,7 @@ Library {
 	  SID			  31
 	  Position		  [185, 98, 250, 122]
 	  VariableName		  "simin"
-	  SampleTime		  "Ts"
+	  SampleTime		  "0"
 	  ZeroCross		  on
 	}
 	Block {
@@ -917,20 +917,11 @@ Library {
       }
     }
     Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace"
-      SID		      24
-      Position		      [65, 378, 130, 402]
-      VariableName	      "simin"
-      SampleTime	      "0"
-      ZeroCross		      on
-    }
-    Block {
       BlockType		      SubSystem
       Name		      "InputFromSimulink"
       SID		      20
       Ports		      [1, 1]
-      Position		      [260, 204, 360, 246]
+      Position		      [260, 179, 360, 221]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.762"
       MinAlgLoopOccurrences   off
@@ -1011,24 +1002,24 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "Read data values specified in matrix.."
-      MaskPromptString	      "Data:|Sample time:|Interpolation type"
-      MaskStyleString	      "edit,edit,popup(Zero-Order Hold|First-Order Hold)"
-      MaskTunableValueString  "on,on,on"
-      MaskCallbackString      "||"
-      MaskEnableString	      "on,on,on"
-      MaskVisibilityString    "on,on,on"
-      MaskToolTipString	      "on,on,on"
-      MaskVariables	      "simin=@1;Ts=@2;interpType=@3;"
+      MaskPromptString	      "Data:|Interpolation type"
+      MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold)"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,on"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVariables	      "simin=@1;interpType=@2;"
       MaskDisplay	      "fprintf('Input')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "simin|Ts|Zero-Order Hold"
+      MaskValueString	      "simin|Zero-Order Hold"
       System {
 	Name			"InputFromWorkspace"
-	Location		[433, 491, 931, 791]
+	Location		[433, 535, 931, 835]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1047,7 +1038,7 @@ Library {
 	  SID			  23
 	  Position		  [185, 98, 250, 122]
 	  VariableName		  "simin"
-	  SampleTime		  "Ts"
+	  SampleTime		  "0"
 	  ZeroCross		  on
 	}
 	Block {
