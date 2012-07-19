@@ -6,21 +6,21 @@ function code = BLOM_FunctionCode(fcn)
 % else in BLOM to represent these functions and trigger special behavior
 % for function and gradient generation and evaluation.
 
-if nargin == 0
-   fcn = '';
-end
-switch fcn
-   case 'exp'
-      code = inf;
-   case 'log'
-      code = -inf;
-   otherwise
-      if isempty(fcn)
-         % output a vector listing all the exception code values
-         code = [inf; -inf];
-      else
-         error(['Function ' fcn ' not recognized'])
-      end
+codes_struct.exp = inf;
+codes_struct.log = -inf;
+
+% vector of all code values:
+codes_struct.all_codes = [inf; -inf];
+
+if nargin == 0 || isempty(fcn)
+    % output a structure listing all the exception code values
+    code = codes_struct;
+else
+    if isfield(codes_struct, fcn)
+        code = codes_struct.(fcn);
+    else
+        error(['Function ' fcn ' not recognized'])
+    end
 end
 
 
