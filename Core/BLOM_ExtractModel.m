@@ -150,4 +150,6 @@ function [sourceHandles] = searchSources(handleArray,varargin)
     if any(sourceHandles==0)
         sourceHandles = sourceHandles(1:j-1);
     end
+    %check if any handles are -1 and remove them
+    sourceHandles = setdiff([-1],sourceHandles);
 end
