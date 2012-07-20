@@ -37,7 +37,7 @@ if ~strncmpi(formatstr, 'densevec', 8)
         cols = [0; cols];
         vals = [default_value; vals];
     end
-    if ~any(data(:,end)) || ~any(data(end,:))
+    if ~any(nondefault_elements(:,end)) || ~any(nondefault_elements(end,:))
         % append a default_value if last row or last column is empty
         rows = [rows; size(data, 1)];
         cols = [cols; size(data, 2)];
