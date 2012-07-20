@@ -25,8 +25,12 @@ if ~strncmpi(formatstr, 'densevec', 8)
         nondefault_elements = (data ~= default_value);
     end
     % find non-default rows, cols, vals for sparse mat/vec cases
-    [rows, cols] = find(nondefault_elements);
-    vals = full(data(sub2ind(size(data), rows, cols)));
+    if default_value == 0
+        [rows, cols, vals] = find(data);
+    else
+        [rows, cols] = find(nondefault_elements);
+        vals = full(data(sub2ind(size(data), rows, cols)));
+    end
     % force rows, cols, vals to be column vectors in case data is a row vector
     rows = reshape(rows, [], 1);
     cols = reshape(cols, [], 1);
@@ -59,11 +63,8 @@ switch lower(formatstr)
     case 'tripletmat_binary'
         % skip applies before writing each element for fwrite,
         % so need to write first element, then rest with skipping
-        fwrite(fid, rows(1), 'int');
-        fwrite(fid, rows(2:end), 'int', 12); % skip 12 bytes between row entries
-        fseek(fid, 4, -1); % 4 bytes from start of file
-        fwrite(fid, cols(1), 'int');
-        fwrite(fid, cols(2:end), 'int', 12); % skip 12 bytes between col entries
+        fwrite(fid, [rows(1); cols(1)], 'int');
+        fwrite(fid, [rows(2:end), cols(2:end)]', '2*int', 8); % skip 8 bytes between pairs of index entries
         frewind(fid);
         fwrite(fid, vals, 'double', 8); % skip 8 bytes between val entries
     case 'tripletmat_ascii'

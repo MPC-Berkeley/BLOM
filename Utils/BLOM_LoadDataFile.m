@@ -58,7 +58,7 @@ switch lower(formatstr)
         fseek(fid, 8, -1); % 8 bytes from start of file
         vals = fread(fid, inf, 'double', 8); % skip 8 bytes between val entries
     case 'tripletmat_ascii'
-        tripletdata = load(filename);
+        tripletdata = fscanf(fid, '%g', [3 inf])';
         rows = tripletdata(:,1);
         cols = tripletdata(:,2);
         vals = tripletdata(:,3);
