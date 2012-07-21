@@ -19,16 +19,17 @@ function [P,K] = BLOM_convert2PolyBlock(blockHandle)
     %% switch for different cases. hopefully able to compare numbers
     %% instead of strings
     switch blockType
-        
-        %% add/subtract 
-        case {'Sum','Add'}
+        case {'Sum','Add'} % add/subtract 
             % for n scalar inputs, P = eye(n), K = ones(1,n). for each ith
             % input that is subtracted, that index in K should equal -1
-            % instead.
-            P = 1;
-            K = 1;
+            % instead.  
+            portSize = get_param(blockHandle,'Ports');
+            P = eye(portSize(1));
+            K = ones(1,portSize(1)); 
             
-            
+            inputsToAdd = get_param(blockHandle,'Inputs');
+            subtract_indicies = inputsToAdd=='-';
+            K(subtract_indicies) = -1;
         %% absolute value (only for costs)    
         case 'Abs'
             
