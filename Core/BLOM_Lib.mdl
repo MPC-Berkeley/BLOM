@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Jul 19 11:39:03 2012"
-  RTWModifiedTimeStamp	  264598740
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Mon Jul 23 15:19:05 2012"
+  RTWModifiedTimeStamp	  264957521
+  ModelVersionFormat	  "1.%<AutoIncrement:37>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -628,7 +628,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [315, 312, 887, 804]
+    Location		    [1091, 383, 1660, 824]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -642,7 +642,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    38
+    SIDHighWatermark	    44
     Block {
       BlockType		      SubSystem
       Name		      "Bound"
@@ -658,8 +658,8 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "Please specify the upper and lower bounds of this variable."
-      MaskPromptString	      "Upper bound:|Lower bound:|Do these bounds apply at the initial time step?|Do these bound"
-      "s apply at the final time step?|Do these bounds apply at all other time steps?"
+      MaskPromptString	      "Upper bound:|Lower bound:|Apply at the initial time step?|Apply at the final time step?|"
+      "Apply at all other time steps?"
       MaskStyleString	      "edit,edit,checkbox,checkbox,checkbox"
       MaskTunableValueString  "on,on,on,on,on"
       MaskCallbackString      "||||"
@@ -676,7 +676,7 @@ Library {
       MaskValueString	      "inf|-inf|on|on|on"
       System {
 	Name			"Bound"
-	Location		[1156, 453, 1627, 860]
+	Location		[1156, 475, 1627, 882]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -781,7 +781,7 @@ Library {
       Name		      "ExternalFromSimulink"
       SID		      33
       Ports		      [1, 1]
-      Position		      [410, 179, 510, 221]
+      Position		      [410, 199, 510, 241]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -925,7 +925,7 @@ Library {
       Name		      "InputFromSimulink"
       SID		      20
       Ports		      [1, 1]
-      Position		      [260, 179, 360, 221]
+      Position		      [260, 199, 360, 241]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.762"
       MinAlgLoopOccurrences   off
@@ -951,7 +951,7 @@ Library {
       MaskValueString	      "Zero-Order Hold"
       System {
 	Name			"InputFromSimulink"
-	Location		[433, 469, 931, 769]
+	Location		[433, 513, 931, 813]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1027,7 +1027,7 @@ Library {
       MaskValueString	      "simin|Zero-Order Hold"
       System {
 	Name			"InputFromWorkspace"
-	Location		[433, 535, 931, 835]
+	Location		[906, 487, 1404, 787]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1060,6 +1060,79 @@ Library {
 	}
 	Line {
 	  SrcBlock		  "From\nWorkspace"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Polyblock"
+      SID		      41
+      Ports		      [1, 1]
+      Position		      [55, 190, 140, 250]
+      BackgroundColor	      "lightBlue"
+      ShowPortLabels	      "none"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskDescription	      "y = f(x)\nwhere f is a sum of polynomial and exponential terms, described by P and K matr"
+      "icies.\nExample: f=x1*exp(x3)+0.8x1^3*x2\nP = [1 0 BLOM_FunctionCode('exp');\n     3 1 0];\nK = [1 0.8];"
+      MaskPromptString	      "P matrix|K matrix|Input names, comma separated"
+      MaskStyleString	      "edit,edit,edit"
+      MaskTunableValueString  "on,on,on"
+      MaskCallbackString      "||"
+      MaskEnableString	      "on,on,on"
+      MaskVisibilityString    "on,on,on"
+      MaskToolTipString	      "on,on,on"
+      MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;"
+      MaskDisplay	      "fprintf('Polyblock')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "sparse([1 1])|sparse([1])|x1,x2"
+      System {
+	Name			"Polyblock"
+	Location		[448, 821, 628, 887]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  43
+	  Position		  [25, 28, 55, 42]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  42
+	  Position		  [125, 28, 155, 42]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
 	  SrcPort		  1
 	  DstBlock		  "Out1"
 	  DstPort		  1
