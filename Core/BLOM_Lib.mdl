@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Jul 23 17:42:15 2012"
-  RTWModifiedTimeStamp	  264966131
-  ModelVersionFormat	  "1.%<AutoIncrement:40>"
+  LastModifiedDate	  "Tue Jul 24 11:52:20 2012"
+  RTWModifiedTimeStamp	  265031538
+  ModelVersionFormat	  "1.%<AutoIncrement:51>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -642,13 +642,13 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    45
+    SIDHighWatermark	    61
     Block {
       BlockType		      SubSystem
       Name		      "Bound"
       SID		      7
       Ports		      [1]
-      Position		      [60, 27, 135, 73]
+      Position		      [60, 22, 135, 68]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -1070,8 +1070,8 @@ Library {
       BlockType		      SubSystem
       Name		      "Polyblock"
       SID		      41
-      Ports		      [1, 1]
-      Position		      [55, 190, 140, 250]
+      Ports		      [2, 1]
+      Position		      [55, 202, 140, 273]
       BackgroundColor	      "lightBlue"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
@@ -1083,24 +1083,26 @@ Library {
       MaskHideContents	      off
       MaskDescription	      "y = f(x)\nwhere f is a sum of polynomial and exponential terms, described by P and K matr"
       "icies.\nExample: f=x1*exp(x3)+0.8x1^3*x2\nP = [1 0 BLOM_FunctionCode('exp');\n     3 1 0];\nK = [1 0.8];"
-      MaskPromptString	      "P matrix|K matrix|Input names, comma separated"
-      MaskStyleString	      "edit,edit,edit"
-      MaskTunableValueString  "on,on,on"
-      MaskCallbackString      "||BLOM_polyblockChangeInputs(gcb)"
-      MaskEnableString	      "on,on,on"
-      MaskVisibilityString    "on,on,on"
-      MaskToolTipString	      "on,on,on"
-      MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;"
+      MaskPromptString	      "P matrix|K matrix|Input names, comma separated|Input(s) as scalar?|Output(s) as scalar?"
+      MaskStyleString	      "edit,edit,edit,checkbox,checkbox"
+      MaskTunableValueString  "on,on,on,on,on"
+      MaskCallbackString      "BLOM_polyblockChangeInputs(gcb)|BLOM_polyblockChangeInputs(gcb)|BLOM_polyblockChangeInp"
+      "uts(gcb)||"
+      MaskEnableString	      "on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on"
+      MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;inputScalar=@4;outputScalar=@5;"
       MaskDisplay	      "fprintf('Polyblock')"
+      MaskSelfModifiable      on
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "sparse([1 1])|sparse([1])|x1,x2"
+      MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[448, 843, 628, 909]
+	Location		[994, 634, 1254, 781]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1113,11 +1115,22 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
+	SIDHighWatermark	103
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
-	  SID			  43
-	  Position		  [25, 28, 55, 42]
+	  SID			  57
+	  Position		  [75, 73, 105, 87]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  84
+	  Position		  [35, 38, 65, 52]
+	  Port			  "2"
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
@@ -1125,17 +1138,11 @@ Library {
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
-	  SID			  42
-	  Position		  [125, 28, 155, 42]
+	  SID			  60
+	  Position		  [175, 33, 205, 47]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
-	}
-	Line {
-	  SrcBlock		  "In1"
-	  SrcPort		  1
-	  DstBlock		  "Out1"
-	  DstPort		  1
 	}
       }
     }
