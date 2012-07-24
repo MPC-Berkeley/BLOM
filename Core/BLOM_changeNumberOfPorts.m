@@ -2,7 +2,9 @@
 %> @brief callback function for Polyblock that changes the number of inputs
 %> to the block based on what the user specified
 %>
-%> More detailed description of the problem.
+%> In it's current state, this program assumes that all the inputs and
+%> outputs of the BLOM Library blocks have a standard naming convention,
+%> e.g. In1, In2,... and Out1, Out2...
 %>
 %> @param block usually gcb
 %> @param inputNum number of desired inputs. -1 if no change
