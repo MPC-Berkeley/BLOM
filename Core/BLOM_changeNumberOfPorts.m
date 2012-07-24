@@ -19,18 +19,18 @@ function BLOM_changeNumberOfPorts(block,inputNum,outputNum)
         if inputNum > currentNumInputs
             for i = (currentNumInputs+1):inputNum
                 % create new number of needed inports
-                block_name = [gcb '/In' num2str(i)];
+                block_name = [block '/In' num2str(i)];
                 add_block('simulink/Sources/In1',block_name)
             end
         elseif inputNum < currentNumInputs
-            for i = currentNumInputs:(inputNum+1)
+            for i = currentNumInputs:-1:(inputNum+1)
                 % delete unneccesary inports
-                currentBlock = [gcb '/In' num2str(i)];
+                currentBlock = [block '/In' num2str(i)];
                 delete_block(currentBlock);
             end
         else
-            % do nothing. Number of inports equals number of desired inports.
-            % This case should not be reached.
+            % do nothing. Number of inports equals number of desired
+            % inports.
         end
     end
     
@@ -39,17 +39,18 @@ function BLOM_changeNumberOfPorts(block,inputNum,outputNum)
         if outputNum > currentNumOutputs
             for i = (currentNumOutputs+1):outputNum
                 %create new number of needed outports
-                block_name = [gcb 'Out' num2str(i)];
-                add_block('simulink/Sources/Out1',block_name)
+                block_name = [block '/Out' num2str(i)];
+                add_block('simulink/Sinks/Out1',block_name)
             end
         elseif outputNum < currentNumOutputs
-            for i = currentNumOutputs:(outputNum+1)
+            for i = currentNumOutputs:-1:(outputNum+1)
                 % delete unnessary outports
-                currentBlock = [gcb '/Out' num2str(i)];
+                currentBlock = [block '/Out' num2str(i)];
+                delete_block(currentBlock);
             end
         else
             % do nothing. Number of outports equals number of desired
-            % outports. This should not be reached.
+            % outports.
         end
     end
 end
