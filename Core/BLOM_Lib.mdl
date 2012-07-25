@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jul 25 12:19:16 2012"
-  RTWModifiedTimeStamp	  265119554
-  ModelVersionFormat	  "1.%<AutoIncrement:65>"
+  LastModifiedDate	  "Wed Jul 25 14:19:19 2012"
+  RTWModifiedTimeStamp	  265126700
+  ModelVersionFormat	  "1.%<AutoIncrement:68>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1084,7 +1084,7 @@ Library {
       BlockType		      SubSystem
       Name		      "Polyblock"
       SID		      41
-      Ports		      [2, 4]
+      Ports		      [2, 1]
       Position		      [55, 222, 145, 298]
       BackgroundColor	      "lightBlue"
       ShowPortLabels	      "none"
@@ -1100,12 +1100,12 @@ Library {
       MaskPromptString	      "P matrix|K matrix|Input names, comma separated|Input(s) as scalar?|Output(s) as scalar?"
       MaskStyleString	      "edit,edit,edit,checkbox,checkbox"
       MaskTunableValueString  "on,on,on,on,on"
-      MaskCallbackString      "BLOM_polyblockChangeInputs(gcb)|BLOM_polyblockChangeInputs(gcb)|BLOM_polyblockChangeInp"
-      "uts(gcb)||"
+      MaskCallbackString      "||||"
       MaskEnableString	      "on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
       MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;inputScalar=@4;outputScalar=@5;"
+      MaskInitialization      "BLOM_polyblockChangeInputs(gcb)"
       MaskDisplay	      "fprintf('Polyblock')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
@@ -1116,7 +1116,7 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[1081, 707, 1467, 951]
+	Location		[1081, 751, 1467, 995]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1129,7 +1129,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	154
+	SIDHighWatermark	156
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
@@ -1142,7 +1142,7 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In2"
-	  SID			  142
+	  SID			  156
 	  Position		  [20, 68, 50, 82]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -1153,9 +1153,10 @@ Library {
 	  BlockType		  Demux
 	  Name			  "Demux"
 	  SID			  138
-	  Ports			  [1, 4]
-	  Position		  [280, 40, 285, 120]
+	  Ports			  [1, 1]
+	  Position		  [280, 40, 285, 60]
 	  ShowName		  off
+	  Outputs		  "1"
 	  DisplayOption		  "bar"
 	}
 	Block {
@@ -1173,36 +1174,6 @@ Library {
 	  Name			  "Out1"
 	  SID			  110
 	  Position		  [320, 38, 350, 52]
-	  IconDisplay		  "Port number"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "Out2"
-	  SID			  150
-	  Position		  [320, 68, 350, 82]
-	  Port			  "2"
-	  IconDisplay		  "Port number"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "Out3"
-	  SID			  152
-	  Position		  [320, 98, 350, 112]
-	  Port			  "3"
-	  IconDisplay		  "Port number"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "Out4"
-	  SID			  153
-	  Position		  [320, 128, 350, 142]
-	  Port			  "4"
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
@@ -1226,25 +1197,6 @@ Library {
 	  SrcPort		  1
 	  DstBlock		  "Mux"
 	  DstPort		  2
-	}
-	Line {
-	  SrcBlock		  "Demux"
-	  SrcPort		  2
-	  DstBlock		  "Out2"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Demux"
-	  SrcPort		  3
-	  Points		  [0, 15]
-	  DstBlock		  "Out3"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Demux"
-	  SrcPort		  4
-	  DstBlock		  "Out4"
-	  DstPort		  1
 	}
       }
     }
