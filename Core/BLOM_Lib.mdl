@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 24 11:52:20 2012"
-  RTWModifiedTimeStamp	  265031538
-  ModelVersionFormat	  "1.%<AutoIncrement:51>"
+  LastModifiedDate	  "Wed Jul 25 12:19:16 2012"
+  RTWModifiedTimeStamp	  265119554
+  ModelVersionFormat	  "1.%<AutoIncrement:65>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -552,6 +552,12 @@ Library {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
       BlockType		      FromWorkspace
       VariableName	      "simulink_input"
       SampleTime	      "-1"
@@ -580,6 +586,14 @@ Library {
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
     }
     Block {
       BlockType		      Outport
@@ -628,7 +642,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1000, 270, 1569, 711]
+    Location		    [1011, 139, 1580, 580]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -781,7 +795,7 @@ Library {
       Name		      "ExternalFromSimulink"
       SID		      33
       Ports		      [1, 1]
-      Position		      [410, 199, 510, 241]
+      Position		      [440, 104, 540, 146]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -850,7 +864,7 @@ Library {
       Name		      "ExternalFromWorkspace"
       SID		      30
       Ports		      [0, 1]
-      Position		      [410, 119, 510, 161]
+      Position		      [440, 24, 540, 66]
       BackgroundColor	      "lightBlue"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -925,7 +939,7 @@ Library {
       Name		      "InputFromSimulink"
       SID		      20
       Ports		      [1, 1]
-      Position		      [260, 199, 360, 241]
+      Position		      [290, 104, 390, 146]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.762"
       MinAlgLoopOccurrences   off
@@ -951,7 +965,7 @@ Library {
       MaskValueString	      "Zero-Order Hold"
       System {
 	Name			"InputFromSimulink"
-	Location		[433, 513, 931, 813]
+	Location		[433, 535, 931, 835]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -995,7 +1009,7 @@ Library {
       Name		      "InputFromWorkspace"
       SID		      17
       Ports		      [0, 1]
-      Position		      [260, 119, 360, 161]
+      Position		      [290, 24, 390, 66]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.762"
       MinAlgLoopOccurrences   off
@@ -1027,7 +1041,7 @@ Library {
       MaskValueString	      "simin|Zero-Order Hold"
       System {
 	Name			"InputFromWorkspace"
-	Location		[906, 487, 1404, 787]
+	Location		[906, 509, 1404, 809]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1070,8 +1084,8 @@ Library {
       BlockType		      SubSystem
       Name		      "Polyblock"
       SID		      41
-      Ports		      [2, 1]
-      Position		      [55, 202, 140, 273]
+      Ports		      [2, 4]
+      Position		      [55, 222, 145, 298]
       BackgroundColor	      "lightBlue"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
@@ -1102,8 +1116,8 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[994, 634, 1254, 781]
-	Open			off
+	Location		[1081, 707, 1467, 951]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1115,12 +1129,12 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	103
+	SIDHighWatermark	154
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
-	  SID			  57
-	  Position		  [75, 73, 105, 87]
+	  SID			  108
+	  Position		  [20, 38, 50, 52]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
@@ -1128,8 +1142,46 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In2"
-	  SID			  84
-	  Position		  [35, 38, 65, 52]
+	  SID			  142
+	  Position		  [20, 68, 50, 82]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux"
+	  SID			  138
+	  Ports			  [1, 4]
+	  Position		  [280, 40, 285, 120]
+	  ShowName		  off
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  SID			  125
+	  Ports			  [2, 1]
+	  Position		  [80, 40, 85, 80]
+	  ShowName		  off
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  110
+	  Position		  [320, 38, 350, 52]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out2"
+	  SID			  150
+	  Position		  [320, 68, 350, 82]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
@@ -1137,12 +1189,62 @@ Library {
 	}
 	Block {
 	  BlockType		  Outport
-	  Name			  "Out1"
-	  SID			  60
-	  Position		  [175, 33, 205, 47]
+	  Name			  "Out3"
+	  SID			  152
+	  Position		  [320, 98, 350, 112]
+	  Port			  "3"
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out4"
+	  SID			  153
+	  Position		  [320, 128, 350, 142]
+	  Port			  "4"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  DstBlock		  "Mux"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux"
+	  SrcPort		  1
+	  Points		  [0, -5]
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Demux"
+	  SrcPort		  2
+	  DstBlock		  "Out2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux"
+	  SrcPort		  3
+	  Points		  [0, 15]
+	  DstBlock		  "Out3"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux"
+	  SrcPort		  4
+	  DstBlock		  "Out4"
+	  DstPort		  1
 	}
       }
     }
