@@ -64,11 +64,11 @@
 function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name);
     [outportHandles,stop] = searchSources(boundAndCostHandles,inputAndExternalHandles);
-    lengthOutport = length(outportHandles);
     % FIX: should implement something that stops the code after analyzing
     % all the blocks and finding an error in the structure of the model
     
     %following code is to make sure searchSources works
+    lengthOutport = length(outportHandles);
     for i = 1:length(outportHandles);
         parent = get_param(outportHandles(i),'Parent');
         portType = get_param(outportHandles(i),'PortType');

@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jul 25 14:21:42 2012"
-  RTWModifiedTimeStamp	  265126901
-  ModelVersionFormat	  "1.%<AutoIncrement:69>"
+  LastModifiedDate	  "Thu Jul 26 17:01:28 2012"
+  RTWModifiedTimeStamp	  265222886
+  ModelVersionFormat	  "1.%<AutoIncrement:70>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1105,7 +1105,7 @@ Library {
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
       MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;inputScalar=@4;outputScalar=@5;"
-      MaskInitialization      "BLOM_polyblockChangeInputs(gcb)"
+      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb)"
       MaskDisplay	      "fprintf('Polyblock')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
