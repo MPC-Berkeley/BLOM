@@ -19,15 +19,15 @@ function BLOM_PolyblockChangeInputs(block)
     output_as_scalar = get_param(block,'outputScalar');
     if input_as_scalar
         if output_as_scalar
-            BLOM_changeNumberOfPorts(block,size(P,2)-size(K,1),size(K,1));
+            BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),size(K,1));
         else
-            BLOM_changeNumberOfPorts(block,size(P,2)-size(K,1),1);
+            BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),1);
         end
     else
         if output_as_scalar
-            BLOM_changeNumberOfPorts(block,1,size(K,1));
+            BLOM_ChangeNumberOfPorts(block,1,size(K,1));
         else
-            BLOM_changeNumberOfPorts(block,1,1);
+            BLOM_ChangeNumberOfPorts(block,1,1);
         end
     end
 end
