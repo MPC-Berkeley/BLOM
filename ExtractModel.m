@@ -1,4 +1,4 @@
-function [all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(n_time_steps,dt,integ_method)
+function [all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(n_time_steps,dt,integ_method,name)
 
 
 
@@ -16,11 +16,15 @@ if (nargin < 3)
     integ_method = 'Euler';
 end
 
+if (nargin < 4)
+    name = bdroot;
+end
+
 if strcmp(integ_method,'none')
    discrete_sys = true;
 end
 % First, get structure for one time step
-[all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep;
+[all_names_single,  AAsingle,  Csingle , state_vars_tmp , ineq_vars_single , cost_vars_single,in_vars_single, ex_vars_single, core_vars,core_functions ] = ExtractOnetimeStep(name);
 
 % %reverse the direction of state vars data : 
 % state_vars = sparse(length(state_vars_tmp),1);
@@ -435,25 +439,25 @@ end
 %==========================================================================
 
 function [all_names, AAs ,  Cs  , state_vars , ineq_vars ,cost_vars ,in_vars, ex_vars, core_vars,core_functions]...
-    = ExtractOnetimeStep
+    = ExtractOnetimeStep(name)
 
 
-blks = find_system(bdroot, 'Tag', 'PolyBlock');
-mem_blks = find_system(bdroot, 'Tag', 'OptState');
-in_blks = find_system(bdroot, 'Tag', 'OptInput');
-ex_blks = find_system(bdroot, 'Tag', 'OptExternal');
-demuxes = find_system(bdroot, 'BlockType', 'Demux');
-muxes = find_system(bdroot, 'BlockType', 'Mux');
+blks = find_system(name, 'Tag', 'PolyBlock');
+mem_blks = find_system(name, 'Tag', 'OptState');
+in_blks = find_system(name, 'Tag', 'OptInput');
+ex_blks = find_system(name, 'Tag', 'OptExternal');
+demuxes = find_system(name, 'BlockType', 'Demux');
+muxes = find_system(name, 'BlockType', 'Mux');
 
 
-cost_blks = find_system(bdroot, 'Tag', 'OptCost');
-ineq_blks = find_system(bdroot, 'Tag', 'InequalBlock');
+cost_blks = find_system(name, 'Tag', 'OptCost');
+ineq_blks = find_system(name, 'Tag', 'InequalBlock');
 
 % group all blocks. muxes and demuxes  will be treated as polyblocks later.
 all_blks = {blks{:}, demuxes{:} , muxes{:}, mem_blks{:}, in_blks{:}, ex_blks{:}  };
 
 % this is required for port dimension 
-eval([bdroot '([],[],[],''compile'');'])
+eval([name '([],[],[],''compile'');'])
 
 % Get all common block properties
 for i= 1:length(all_blks)
@@ -474,7 +478,7 @@ for i= 1:length(all_blks)
 end
 
 %required to unlock the diagram
-eval([bdroot '([],[],[],''term'');']);
+eval([name '([],[],[],''term'');']);
 
 % store all functions from polyblocks
 for i= 1:length(blks)

@@ -43,7 +43,7 @@ if(nargin < 5)
 end
 
 load_system(name); % TODO - replace it later to load_system, after got rid of gcs insid ExtractModel
-[all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(horizon,dt,integ_method);
+[all_names, AAs ,  Cs , ineq ,cost ,in_vars,all_state_vars,ex_vars] = ExtractModel(horizon,dt,integ_method,name);
 
 ModelSpec.name = name;
 ModelSpec.integ_method = integ_method;
