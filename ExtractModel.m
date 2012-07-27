@@ -438,22 +438,22 @@ function [all_names, AAs ,  Cs  , state_vars , ineq_vars ,cost_vars ,in_vars, ex
     = ExtractOnetimeStep
 
 
-blks = find_system(gcs, 'Tag', 'PolyBlock');
-mem_blks = find_system(gcs, 'Tag', 'OptState');
-in_blks = find_system(gcs, 'Tag', 'OptInput');
-ex_blks = find_system(gcs, 'Tag', 'OptExternal');
-demuxes = find_system(gcs, 'BlockType', 'Demux');
-muxes = find_system(gcs, 'BlockType', 'Mux');
+blks = find_system(bdroot, 'Tag', 'PolyBlock');
+mem_blks = find_system(bdroot, 'Tag', 'OptState');
+in_blks = find_system(bdroot, 'Tag', 'OptInput');
+ex_blks = find_system(bdroot, 'Tag', 'OptExternal');
+demuxes = find_system(bdroot, 'BlockType', 'Demux');
+muxes = find_system(bdroot, 'BlockType', 'Mux');
 
 
-cost_blks = find_system(gcs, 'Tag', 'OptCost');
-ineq_blks = find_system(gcs, 'Tag', 'InequalBlock');
+cost_blks = find_system(bdroot, 'Tag', 'OptCost');
+ineq_blks = find_system(bdroot, 'Tag', 'InequalBlock');
 
 % group all blocks. muxes and demuxes  will be treated as polyblocks later.
 all_blks = {blks{:}, demuxes{:} , muxes{:}, mem_blks{:}, in_blks{:}, ex_blks{:}  };
 
 % this is required for port dimension 
-eval([gcs '([],[],[],''compile'');'])
+eval([bdroot '([],[],[],''compile'');'])
 
 % Get all common block properties
 for i= 1:length(all_blks)
@@ -474,7 +474,7 @@ for i= 1:length(all_blks)
 end
 
 %required to unlock the diagram
-eval([gcs '([],[],[],''term'');']);
+eval([bdroot '([],[],[],''term'');']);
 
 % store all functions from polyblocks
 for i= 1:length(blks)
