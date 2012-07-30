@@ -23,7 +23,8 @@ function BLOM_ChangeNumberOfPorts(block,inputNum,outputNum)
         muxSource = [block '/Mux'];
         if inputNum > currentNumInputs
             if load == 0
-                % loads Simulink library to use
+                % loads Simulink library to use. FIX? If this is slow, may want
+                % to check if the simulink library is already loaded
                 load_system('Simulink')
                 load = 1;
             end
