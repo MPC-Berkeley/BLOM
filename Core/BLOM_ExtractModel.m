@@ -62,15 +62,17 @@
 %======================================================================
 
 function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
-    [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name);
-    [outportHandles,stop] = searchSources(boundAndCostHandles,inputAndExternalHandles);
+    [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
+    [outportHandles,boundStruct,stop] = searchSources(boundHandles,costHandles,inputAndExternalHandles);
     % FIX: should implement something that stops the code after analyzing
     % all the blocks and finding an error in the structure of the model
-    
+
     %following code is to make sure searchSources works
+    boundStruct.bound;
+    boundStruct.outportHandles;
     lengthOutport = length(outportHandles);
     for i = 1:length(outportHandles);
-        parent = get_param(outportHandles(i),'Parent');
+        parent = get_param(boundStruct.outportHandles(i),'Parent');
         portType = get_param(outportHandles(i),'PortType');
     end
     % just a placeholder for ModelSpec so that MATLAB does not complain
@@ -89,10 +91,10 @@ end
 %> @retval blockHandles handles of all the relevant blocks
 %======================================================================
 
-function [boundAndCostHandles,inputAndExternalHandles] = findBlocks(name)
+function [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name)
     % FindAll may not be the most efficient way to find the handles
-    boundAndCostHandles = [find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/Bound'); ...
-        find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/DiscreteCost')];
+    boundHandles = [find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/Bound')];
+    costHandles = [find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/DiscreteCost')];
     inputAndExternalHandles = ...
         [...find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/InputFromWorkspace'); ...
         find_system(name,'FindAll','on','ReferenceBlock','BLOM_Lib/InputFromSimulink'); ...
@@ -107,17 +109,21 @@ end
 %>
 %> More detailed description of the problem.
 %>
-%> @param handleArray the array of handles that you want to search
+%> @param handleArray the array of handles that you want to search. These
+%> are the block handles of the costs and constraints
 %> @param varargin the external and input from simulink handles. the
 %> sources of these blocks are not relevant to the optimization problem
 %>
 %> @retval sourceHandles return all the handles connected to input handles
 %> @retval stop if there are any unconnected blocks or blocks that BLOM
-%> does not support, this paramter gives a 1 to indicate true and 0 to
+%> does not support, this parameter gives a 1 to indicate true and 0 to
 %> indicate false
+%> @retval boundsStruct structure with fields: 1) outport handles found, 2)
+%> boolean true or false if it is connected to a bounds block
 %======================================================================
 
-function [outportHandles,stop] = searchSources(handleArray,varargin)
+function [outportHandles,boundStruct,stop] = ...
+    searchSources(boundHandles,costHandles,varargin)
     % only flag stop = 1 when there is a bad block
     stop = 0;
     if ~isempty(varargin)
@@ -144,8 +150,23 @@ function [outportHandles,stop] = searchSources(handleArray,varargin)
     % iZero is index of first zero
     iZero = 1;
     outportHandles = zeros(20,1);    
-    for i = 1:length(handleArray)
-        portH = get_param(handleArray(i),'PortHandles');
+    % get all outports connected to the bounds 
+    for i = 1:length(boundHandles)
+        portH = get_param(boundHandles(i),'PortHandles');
+        % costs and bounds should only have one inport and line
+        currentInport = portH.Inport;
+        [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
+            iZero);
+    end
+    
+    % create structure for bounds. fill entries up to iBounds with true.
+    % These are all the outportHandles found so far and must have a bound
+    iBounds = iZero-1;
+    boundStruct.bound = true(iBounds,1);
+    
+    % get all outports connected to costs
+    for i = 1:length(costHandles)
+        portH = get_param(costHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = portH.Inport;
         [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
@@ -205,9 +226,31 @@ function [outportHandles,stop] = searchSources(handleArray,varargin)
         fprintf('One or more of the blocks are missing a connection\n');
         stop = 1;
     end
-    outportHandles = setdiff(outportHandles,[-1]);
     
+    % FIX: need to find some way to remove all -1 handles. using setdiff
+    % with [-1] reorders all the outport handles and puts it in ascending
+    % order
+    % outportHandles = setdiff(outportHandles,[-1]);
+    
+    % update boundStruct with all the outport handles and boolean values
+    % for true and false
+    boundStruct.bound = [boundStruct.bound; false(length(outportHandles)-iBounds,1)];
+    boundStruct.outportHandles = outportHandles;
 end
+
+%======================================================================
+%> @brief From given inports, see which outports are relevant
+%>
+%> More detailed description of the problem.
+%>
+%> @param inports inports of current source
+%> @param existingOutports current outports found. used to check for
+%> redundancy
+%> @param iZero current index of the first zero 
+%>
+%> @retval outportHandles new outports found
+%> @retval iZero updates current index of the first zero
+%======================================================================
 
 function [outportHandles,iZero] = getOutports(inports,existingOutports,iZero)
     outportHandles = existingOutports;

@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Jul 26 17:01:28 2012"
-  RTWModifiedTimeStamp	  265222886
-  ModelVersionFormat	  "1.%<AutoIncrement:70>"
+  LastModifiedDate	  "Fri Jul 27 10:41:59 2012"
+  RTWModifiedTimeStamp	  265286518
+  ModelVersionFormat	  "1.%<AutoIncrement:71>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1129,7 +1129,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	156
+	SIDHighWatermark	158
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
@@ -1142,7 +1142,7 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In2"
-	  SID			  156
+	  SID			  158
 	  Position		  [20, 68, 50, 82]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
