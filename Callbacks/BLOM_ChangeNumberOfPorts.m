@@ -15,6 +15,8 @@
 function BLOM_ChangeNumberOfPorts(block,inputNum,outputNum)
     portInfo = get_param(block,'PortHandles');
     
+    % loads Simulink library to use
+    load_system('Simulink')
     if inputNum ~= -1
         % find number of inports
         currentNumInputs = length(portInfo.Inport);
