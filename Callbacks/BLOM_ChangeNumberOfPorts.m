@@ -15,13 +15,18 @@
 function BLOM_ChangeNumberOfPorts(block,inputNum,outputNum)
     portInfo = get_param(block,'PortHandles');
     
-    % loads Simulink library to use
-    load_system('Simulink')
+    % simulink has not been loaded yet
+    load = 0;
     if inputNum ~= -1
         % find number of inports
         currentNumInputs = length(portInfo.Inport);
         muxSource = [block '/Mux'];
         if inputNum > currentNumInputs
+            if load == 0
+                % loads Simulink library to use
+                load_system('Simulink')
+                load = 1;
+            end
             % make mux larger and have proper number of inports
             set_param(muxSource,'Inputs',sprintf('%d',inputNum));
             set_param(muxSource,'Position',[80 38 85 38+20*inputNum]);
@@ -55,6 +60,11 @@ function BLOM_ChangeNumberOfPorts(block,inputNum,outputNum)
         currentNumOutputs = length(portInfo.Outport);
         demuxSource = [block '/Demux'];
         if outputNum > currentNumOutputs
+            if load == 0
+                % loads Simulink library to use
+                load_system('Simulink')
+                load = 1;
+            end
             % make demux larger and have proper number of outports
             set_param(demuxSource,'Outputs',sprintf('%d',outputNum));
             set_param(demuxSource,'Position',[280 38 285 38+20*outputNum]);
