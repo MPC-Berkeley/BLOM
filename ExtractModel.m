@@ -491,15 +491,15 @@ end
 % represent demux as a identity function.
 for i= length(blks)+1:length(blks)+length(demuxes)
     
-    As{i}  = eye(dim{i}.Inport(2)*2);
-    Cs{i}  = [eye(dim{i}.Inport(2)) , -eye(dim{i}.Inport(2))];
+    As{i}  = speye(dim{i}.Inport(2)*2);
+    Cs{i}  = [speye(dim{i}.Inport(2)) , -speye(dim{i}.Inport(2))];
 end
 
 % represent mux as a identity function.
 for i= length(blks)+1+length(demuxes):length(blks)+length(demuxes)+length(muxes)
     
-    As{i}  = eye(dim{i}.Outport(2)*2);
-    Cs{i}  = [eye(dim{i}.Outport(2)) , -eye(dim{i}.Outport(2))];
+    As{i}  = speye(dim{i}.Outport(2)*2);
+    Cs{i}  = [speye(dim{i}.Outport(2)) , -speye(dim{i}.Outport(2))];
 end
 
 % from here muxes and demuxes are treated as polyblocks.
