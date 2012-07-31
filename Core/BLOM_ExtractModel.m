@@ -66,10 +66,15 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     [outportHandles,boundStruct,stop] = searchSources(boundHandles,costHandles,inputAndExternalHandles);
     % FIX: should implement something that stops the code after analyzing
     % all the blocks and finding an error in the structure of the model
-
+    if stop == 1
+        % break the code somehow?
+    end
+    
+    % find out which wires are relevant at which times
+    [timeStruct] = relevantTimes(outportHandles);
     %following code is to make sure searchSources works
-    boundStruct.bound;
-    boundStruct.outportHandles;
+    length(boundStruct.bound)
+    length(boundStruct.outportHandles)
     lengthOutport = length(outportHandles);
     for i = 1:length(outportHandles);
         parent = get_param(boundStruct.outportHandles(i),'Parent');
@@ -274,6 +279,26 @@ function [outportHandles,iZero] = getOutports(inports,existingOutports,iZero)
         outportHandles(iZero:(diffLength+iZero-1)) = diff;
         iZero = iZero + diffLength;
     end
+end
+
+%%
+%======================================================================
+%> @brief Creates struct that says which outports are relevant at which
+%> times
+%>
+%> More detailed description of the problem.
+%>
+%> @param outportHandles outportHandles found by searchSources
+%>
+%> @retval timeStruct structure with following fields. 1) outportHandles 2)
+%> majorTimeStep 3) minorTimeStep
+%======================================================================
+
+function [timeStruct] = relevantTimes(outportHandles)
+    timeStruct.outportHandles = outportHandles;
+    % FIX: actually check where the time steps are relevant
+    timeStruct.majorTimeStep = true(length(outportHandles),1);
+    timeStruct.minorTimeStep = true(length(outportHandles),1);
 end
 
 % function [sourceHandles,stop] = searchSources(handleArray,varargin)
