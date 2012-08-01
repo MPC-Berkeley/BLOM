@@ -1,12 +1,12 @@
 Model {
   Name			  "testBFS"
-  Version		  7.6
+  Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.14"
+    ComputedModelVersion    "1.19"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -16,7 +16,6 @@ Model {
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
   DataTypeOverride	  "UseLocalSettings"
-  DataTypeOverrideAppliesTo "AllNumericTypes"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
@@ -24,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Serg"
+  LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Jul 26 16:29:44 2012"
-  RTWModifiedTimeStamp	  265127510
-  ModelVersionFormat	  "1.%<AutoIncrement:14>"
+  LastModifiedDate	  "Tue Jul 31 21:25:35 2012"
+  RTWModifiedTimeStamp	  265670729
+  ModelVersionFormat	  "1.%<AutoIncrement:19>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -103,13 +102,13 @@ Model {
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      1
-      Version		      "1.10.0"
+      Version		      "1.6.0"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
 	  $ObjectID		  2
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
@@ -127,10 +126,8 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  SolverMode		  "Auto"
-	  ConcurrentTasks	  off
 	  Solver		  "ode45"
 	  SolverName		  "ode45"
-	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
 	  ZeroCrossAlgorithm	  "Nonadaptive"
@@ -143,7 +140,7 @@ Model {
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
 	  FinalStateName	  "xFinal"
@@ -158,7 +155,6 @@ Model {
 	  SaveOutput		  on
 	  SaveState		  off
 	  SignalLogging		  on
-	  DSMLogging		  on
 	  InspectSignalLogs	  off
 	  SaveTime		  on
 	  ReturnWorkspaceOutputs  off
@@ -166,7 +162,6 @@ Model {
 	  TimeSaveName		  "tout"
 	  OutputSaveName	  "yout"
 	  SignalLoggingName	  "logsout"
-	  DSMLoggingName	  "dsmout"
 	  OutputOption		  "RefineOutputTimes"
 	  OutputTimes		  "[]"
 	  ReturnWorkspaceOutputsName "out"
@@ -174,7 +169,7 @@ Model {
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  4
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    7
@@ -192,15 +187,14 @@ Model {
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
 	  UseIntDivNetSlope	  off
-	  UseSpecifiedMinMax	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
 	  EnhancedBackFolding	  off
 	  StrengthReduction	  off
+	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
 	  BooleansAsBitfields	  off
-	  BitfieldContainerType	  "uint_T"
 	  EnableMemcpy		  on
 	  MemcpyThreshold	  64
 	  PassReuseOutputArgsAs	  "Structure reference"
@@ -220,14 +214,13 @@ Model {
 	  EfficientMapNaN2IntZero on
 	  OptimizeModelRefInitCode off
 	  LifeSpan		  "inf"
-	  MaxStackSize		  "Inherit from target"
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  5
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
 	  ArrayBoundsChecking	  "none"
@@ -250,8 +243,6 @@ Model {
 	  MinStepSizeMsg	  "warning"
 	  TimeAdjustmentMsg	  "none"
 	  MaxConsecutiveZCsMsg	  "error"
-	  MaskedZcDiagnostic	  "warning"
-	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "none"
 	  InheritedTsInSrcMsg	  "warning"
 	  DiscreteInheritContinuousMsg "warning"
@@ -288,7 +279,6 @@ Model {
 	  AssertControl		  "UseLocalSettings"
 	  EnableOverflowDetection off
 	  ModelReferenceIOMsg	  "none"
-	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
 	  ModelReferenceVersionMismatchMessage "none"
 	  ModelReferenceIOMismatchMessage "none"
 	  ModelReferenceCSMismatchMessage "none"
@@ -298,30 +288,17 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "Warning"
-	  BusNameAdapt		  "WarnAndRepair"
-	  NonBusSignalsTreatedAsBus "none"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
-	  SFUnusedDataAndEventsDiag "warning"
-	  SFUnexpectedBacktrackingDiag "warning"
-	  SFInvalidInputDataAccessInChartInitDiag "warning"
-	  SFNoUnconditionalDefaultTransitionDiag "warning"
-	  SFTransitionOutsideNaturalParentDiag "warning"
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  6
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
 	  ProdBitPerInt		  32
 	  ProdBitPerLong	  32
-	  ProdBitPerFloat	  32
-	  ProdBitPerDouble	  64
-	  ProdBitPerPointer	  32
-	  ProdLargestAtomicInteger "Char"
-	  ProdLargestAtomicFloat  "None"
 	  ProdIntDivRoundTo	  "Undefined"
 	  ProdEndianess		  "Unspecified"
 	  ProdWordSize		  32
@@ -331,11 +308,6 @@ Model {
 	  TargetBitPerShort	  16
 	  TargetBitPerInt	  32
 	  TargetBitPerLong	  32
-	  TargetBitPerFloat	  32
-	  TargetBitPerDouble	  64
-	  TargetBitPerPointer	  32
-	  TargetLargestAtomicInteger "Char"
-	  TargetLargestAtomicFloat "None"
 	  TargetShiftRightIntArith on
 	  TargetIntDivRoundTo	  "Undefined"
 	  TargetEndianess	  "Unspecified"
@@ -349,22 +321,16 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  7
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
-	  EnableParallelModelReferenceBuilds off
-	  ParallelModelReferenceErrorOnInvalidPool on
-	  ParallelModelReferenceMATLABWorkerInit "None"
 	  ModelReferenceNumInstancesAllowed "Multi"
-	  PropagateVarSize	  "Infer from blocks in model"
 	  ModelReferencePassRootInputsByReference on
 	  ModelReferenceMinAlgLoopOccurrences off
-	  PropagateSignalLabelsOutOfModel off
-	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  8
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
@@ -373,13 +339,12 @@ Model {
 	  SimExtrinsic		  on
 	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
-	  SimParseCustomCode	  on
 	  SimBuildMode		  "sf_incremental_build"
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  9
-	  Version		  "1.10.0"
+	  Version		  "1.6.0"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    6
@@ -420,16 +385,14 @@ Model {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
-	  GenerateSLWebview	  off
 	  RTWCompilerOptimization "Off"
 	  CheckMdlBeforeBuild	  "Off"
-	  CustomRebuildMode	  "OnUpdate"
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      10
-	      Version		      "1.10.0"
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		19
@@ -466,7 +429,6 @@ Model {
 	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
-	      MATLABFcnDesc	      off
 	      IncDataTypeInIds	      off
 	      MangleLength	      1
 	      CustomSymbolStrGlobalVar "$R$N$M"
@@ -481,9 +443,7 @@ Model {
 	      ParamNamingRule	      "None"
 	      SignalNamingRule	      "None"
 	      InsertBlockDesc	      off
-	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
-	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InlinedPrmAccess	      "Literals"
 	      ReqsInCode	      off
@@ -492,7 +452,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      11
-	      Version		      "1.10.0"
+	      Version		      "1.6.0"
 	      Array {
 		Type			"Cell"
 		Dimension		16
@@ -520,7 +480,6 @@ Model {
 	      TargetFunctionLibrary   "ANSI_C"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
-	      ERTCodeCoverageTool     "None"
 	      ERTMultiwordLength      256
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
@@ -533,7 +492,6 @@ Model {
 	      IncludeMdlTerminateFcn  on
 	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
-	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
@@ -621,11 +579,14 @@ Model {
       SamplingMode	      "Sample based"
       OutMin		      "[]"
       OutMax		      "[]"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "fixdt(1,16,0)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
       LockScale		      off
       SampleTime	      "inf"
       FramePeriod	      "inf"
-      PreserveConstantTs      off
     }
     Block {
       BlockType		      Demux
@@ -657,6 +618,9 @@ Model {
       InputSameDT	      on
       OutMin		      "[]"
       OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Zero"
@@ -673,6 +637,9 @@ Model {
       AccumDataTypeStr	      "Inherit: Inherit via internal rule"
       OutMin		      "[]"
       OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
       OutDataTypeStr	      "Inherit: Same as first input"
       LockScale		      off
       RndMeth		      "Floor"
@@ -682,7 +649,6 @@ Model {
     Block {
       BlockType		      UnitDelay
       X0		      "0"
-      InputProcessing	      "Inherited"
       SampleTime	      "1"
       StateMustResolveToSignalObject off
       RTWStateStorageClass    "Auto"
@@ -690,7 +656,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [188, 124, 1487, 968]
+    Location		    [-6, 80, 1293, 924]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -704,57 +670,61 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "40"
+    SIDHighWatermark	    45
     Block {
       BlockType		      Sum
       Name		      "Add"
-      SID		      "13"
+      SID		      13
       Ports		      [4, 1]
       Position		      [385, 112, 420, 198]
       Inputs		      "++++"
       InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Add1"
-      SID		      "16"
+      SID		      16
       Ports		      [6, 1]
       Position		      [530, 155, 565, 285]
       Inputs		      "++-+++"
       InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Add2"
-      SID		      "33"
+      SID		      33
       Ports		      [2, 1]
       Position		      [820, 190, 855, 250]
       InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Sum
       Name		      "Add3"
-      SID		      "34"
+      SID		      34
       Ports		      [2, 1]
       Position		      [820, 311, 855, 384]
       InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      Reference
       Name		      "Bound"
-      SID		      "11"
+      SID		      11
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -765,7 +735,6 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       ub		      "inf"
       lb		      "-inf"
       initial_step	      on
@@ -775,11 +744,11 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "Bound1"
-      SID		      "19"
+      SID		      19
       Ports		      [1]
       Position		      [625, 242, 700, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -790,7 +759,6 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       ub		      "inf"
       lb		      "-inf"
       initial_step	      on
@@ -800,39 +768,39 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant"
-      SID		      "12"
+      SID		      12
       Position		      [60, 140, 90, 170]
     }
     Block {
       BlockType		      Constant
       Name		      "Constant1"
-      SID		      "18"
+      SID		      18
       Position		      [195, 390, 225, 420]
     }
     Block {
       BlockType		      Constant
       Name		      "Constant2"
-      SID		      "30"
+      SID		      30
       Position		      [340, 455, 370, 485]
       Value		      "1:2"
     }
     Block {
       BlockType		      Constant
       Name		      "Constant3"
-      SID		      "31"
+      SID		      31
       Position		      [340, 500, 370, 530]
       Value		      "4:5"
     }
     Block {
       BlockType		      Constant
       Name		      "Constant4"
-      SID		      "40"
+      SID		      40
       Position		      [225, 625, 255, 655]
     }
     Block {
       BlockType		      Demux
       Name		      "Demux"
-      SID		      "29"
+      SID		      29
       Ports		      [1, 2]
       Position		      [485, 461, 490, 499]
       ShowName		      off
@@ -842,11 +810,11 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "DiscreteCost"
-      SID		      "5"
+      SID		      5
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -857,7 +825,6 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       initial_step	      on
       final_step	      on
       intermediate_step	      on
@@ -865,11 +832,11 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "ExternalFromSimulink1"
-      SID		      "15"
+      SID		      15
       Ports		      [1, 1]
       Position		      [270, 384, 370, 426]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -880,17 +847,16 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       interpType	      "Zero-Order Hold"
     }
     Block {
       BlockType		      Reference
       Name		      "ExternalFromWorkspace"
-      SID		      "23"
+      SID		      23
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -901,18 +867,17 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       simin		      "simin"
       interpType	      "Zero-Order Hold"
     }
     Block {
       BlockType		      Reference
       Name		      "InputFromSimulink"
-      SID		      "7"
+      SID		      7
       Ports		      [1, 1]
       Position		      [125, 134, 225, 176]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -923,17 +888,16 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       interpType	      "Zero-Order Hold"
     }
     Block {
       BlockType		      Reference
       Name		      "InputFromWorkspace"
-      SID		      "22"
+      SID		      22
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.72"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -944,25 +908,24 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
       simin		      "simin"
       interpType	      "Zero-Order Hold"
     }
     Block {
       BlockType		      Integrator
       Name		      "Integrator"
-      SID		      "17"
+      SID		      17
       Ports		      [1, 1]
       Position		      [650, 150, 680, 180]
     }
     Block {
       BlockType		      Reference
       Name		      "Polyblock"
-      SID		      "26"
+      SID		      42
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.73"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -973,21 +936,20 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
-      polyP		      "sparse([1 1 0; 3 1 0])"
-      polyK		      "sparse([1 0.8; 1 1])"
-      polyInput		      "x1,x2"
+      P			      "sparse([1 1 0; 3 1 0])"
+      K			      "sparse([1 0.8; 1 1])"
+      inputs		      "x1,x2"
       inputScalar	      on
       outputScalar	      on
     }
     Block {
       BlockType		      Reference
       Name		      "Polyblock1"
-      SID		      "32"
+      SID		      45
       Ports		      [1, 1]
-      Position		      [585, 432, 675, 508]
+      Position		      [580, 432, 670, 508]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.73"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -998,46 +960,20 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
-      polyP		      "sparse([1 1 ; 3 1])"
-      polyK		      "sparse([1 0.8])"
-      polyInput		      "x1,x2"
-      inputScalar	      on
-      outputScalar	      on
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Polyblock2"
-      SID		      "36"
-      Ports		      [2, 2]
-      Position		      [310, 622, 400, 698]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
-      SourceBlock	      "BLOM_Lib/Polyblock"
-      SourceType	      ""
-      ShowPortLabels	      "none"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
-      polyP		      "sparse([1 1 0 1; 3 1 0 1])"
-      polyK		      "sparse([1 0.8; 1 1])"
-      polyInput		      "x1,x2"
+      P			      "sparse([1 1; 3 1])"
+      K			      "sparse([1 0.8])"
+      inputs		      "x1,x2"
       inputScalar	      on
       outputScalar	      on
     }
     Block {
       BlockType		      Reference
       Name		      "Polyblock3"
-      SID		      "37"
-      Ports		      [2, 1]
-      Position		      [625, 622, 715, 698]
+      SID		      44
+      Ports		      [2, 2]
+      Position		      [310, 622, 400, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.68"
+      LibraryVersion	      "1.73"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1048,39 +984,61 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      GeneratePreprocessorConditionals off
-      polyP		      "sparse([1 1 0 ; 3 1 1])"
-      polyK		      "sparse([1 0.8])"
-      polyInput		      "x1,x2"
+      P			      "sparse([1 0 1 0; 3 0 1 0])"
+      K			      "sparse([1 0.8; 1 1])"
+      inputs		      "x1,x2"
+      inputScalar	      on
+      outputScalar	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Polyblock4"
+      SID		      43
+      Ports		      [2, 1]
+      Position		      [625, 622, 715, 698]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.73"
+      SourceBlock	      "BLOM_Lib/Polyblock"
+      SourceType	      ""
+      ShowPortLabels	      "none"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      P			      "sparse([1 1 0; 3 1 0])"
+      K			      "sparse([1 0.8])"
+      inputs		      "x1,x2"
       inputScalar	      on
       outputScalar	      on
     }
     Block {
       BlockType		      Product
       Name		      "Product"
-      SID		      "28"
+      SID		      28
       Ports		      [4, 1]
       Position		      [435, 465, 460, 520]
       Inputs		      "4"
       InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      UnitDelay
       Name		      "Unit Delay"
-      SID		      "38"
+      SID		      38
       Position		      [540, 623, 575, 657]
-      InputProcessing	      "Elements as channels (sample based)"
       SampleTime	      "-1"
     }
     Block {
       BlockType		      UnitDelay
       Name		      "Unit Delay1"
-      SID		      "39"
+      SID		      39
       Position		      [545, 563, 580, 597]
       BlockMirror	      on
-      InputProcessing	      "Elements as channels (sample based)"
       SampleTime	      "-1"
     }
     Line {
@@ -1174,13 +1132,6 @@ Model {
       DstPort		      3
     }
     Line {
-      SrcBlock		      "Polyblock"
-      SrcPort		      2
-      Points		      [0, -20]
-      DstBlock		      "Add"
-      DstPort		      4
-    }
-    Line {
       SrcBlock		      "InputFromSimulink"
       SrcPort		      1
       Points		      [5, 0]
@@ -1267,11 +1218,11 @@ Model {
     Line {
       SrcBlock		      "Unit Delay"
       SrcPort		      1
-      DstBlock		      "Polyblock3"
+      DstBlock		      "Polyblock4"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock2"
+      SrcBlock		      "Polyblock3"
       SrcPort		      1
       DstBlock		      "Unit Delay"
       DstPort		      1
@@ -1284,31 +1235,38 @@ Model {
       DstPort		      3
     }
     Line {
-      SrcBlock		      "Polyblock2"
+      SrcBlock		      "Polyblock3"
       SrcPort		      2
-      DstBlock		      "Polyblock3"
+      DstBlock		      "Polyblock4"
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Polyblock3"
+      SrcBlock		      "Polyblock4"
       SrcPort		      1
       Points		      [50, 0]
-      Branch {
-	Points			[45, 0; 0, 60; -520, 0]
-	DstBlock		"Polyblock2"
-	DstPort			2
-      }
       Branch {
 	Points			[0, -115; -350, 0]
 	DstBlock		"Product"
 	DstPort			4
       }
+      Branch {
+	Points			[45, 0; 0, 60; -520, 0]
+	DstBlock		"Polyblock3"
+	DstPort			2
+      }
     }
     Line {
       SrcBlock		      "Constant4"
       SrcPort		      1
-      DstBlock		      "Polyblock2"
+      DstBlock		      "Polyblock3"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Polyblock"
+      SrcPort		      2
+      Points		      [0, -20]
+      DstBlock		      "Add"
+      DstPort		      4
     }
   }
 }
