@@ -1,4 +1,4 @@
-function [new old] = BLOM_UpdateOldIpoptDat(folder)
+function [new, old] = BLOM_UpdateOldIpoptDat(folder)
 % This function converts old-formulation Ipopt data files in the input
 % folder to new-formulation (all constraints as bounds) data files for
 % the TAO interface, and probably future versions of the Ipopt interface.
@@ -65,6 +65,8 @@ if skip_Fixed_and_X0
     new.n_lb = new.n_lb + new.n_fixed;
     new.n_ub = new.n_ub + new.n_fixed;
 end
+new.JacobianPattern = double(new.K(2:end,:)~=0)*double(new.P~=0) ~= 0;
+[new.HessianPattern, new.LambdaPattern] = BLOM_HessianPattern(new.P, new.K);
 
 % Now save the new format to data files
 params_file = fopen([folder filesep 'params.txt'], 'w+');
@@ -104,3 +106,37 @@ if ~skip_Fixed_and_X0
     BLOM_SaveDataFile(new.X0, [folder filesep 'X0.denseVec'], 'densevec_binary');
     %BLOM_SaveDataFile(new.X0, [folder filesep 'X0.txt'], 'densevec_ascii');
 end
+% Save Jacobian pattern to JacobianPattern.tripletMat
+BLOM_SaveDataFile(new.JacobianPattern, [folder filesep 'JacobianPattern.tripletMat'], 'tripletmat_binary');
+%BLOM_SaveDataFile(new.JacobianPattern, [folder filesep 'JacobianPattern.txt'], 'tripletmat_ascii');
+% Save Hessian pattern to HessianPattern.tripletMat
+BLOM_SaveDataFile(new.HessianPattern, [folder filesep 'HessianPattern.tripletMat'], 'tripletmat_binary');
+%BLOM_SaveDataFile(new.HessianPattern, [folder filesep 'HessianPattern.txt'], 'tripletmat_ascii');
+% Save Lambda pattern (which constraints contribute to which nonzeros in the Hessian) to LambdaPattern.tripletMat
+BLOM_SaveDataFile(new.LambdaPattern, [folder filesep 'LambdaPattern.tripletMat'], 'tripletmat_binary');
+%BLOM_SaveDataFile(new.LambdaPattern, [folder filesep 'LambdaPattern.txt'], 'tripletmat_ascii');
+
+% Extra stuff for plotting KKT matrices:
+%{
+Kold = [old.HessianStruct + old.HessianStruct', old.JacobianStruct'; ...
+    old.JacobianStruct, sparse(old.n_constr, old.n_constr)];
+pold = symrcm(Kold);
+Kbold = Kold(pold,pold);
+[Kbrold Kbcold] = find(Kbold);
+bwold = max(abs(Kbrold - Kbcold))
+Knew = [new.HessianPattern + new.HessianPattern', new.JacobianPattern'; ...
+    new.JacobianPattern, sparse(new.n_constr, new.n_constr)];
+pnew = symrcm(Knew);
+Kbnew = Knew(pnew,pnew);
+[Kbrnew Kbcnew] = find(Kbnew);
+bwnew = max(abs(Kbrnew - Kbcnew))
+figure
+subplot(221)
+spy(Kold)
+subplot(222)
+spy(Kbold)
+subplot(223)
+spy(Knew)
+subplot(224)
+spy(Kbnew)
+%}
