@@ -15,8 +15,7 @@
 %>         input, external.
 %> - Flatten the wires:
 %>     -  "Fetch" all PolyBlocks data: variables from the base workspace or values from the dialog (just do evalin('base',get_param(h,'A')).
-%>     -  Get all possible dimensions from the known PolyBlocks (with or without the Simulink 
-%> "compile").
+%>     -  Get all possible dimensions (with or without the Simulink "compile"). 
 %>     -  Translate all supported Simulink blocks to PolyBlocks using the known dimensions.   
 %>     -  Eliminate duplicate routing variables. 
 %>     -  Combine all PolyBlocks to a large P and K matrices.
@@ -41,7 +40,6 @@
 %>
 %>   ModelSpec = BLOM_ExportModel('Sys',10,0.5);  
 %>       Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps.
-%>
 %>   ModelSpec = BLOM_ExportModel('Sys',10,0.5,);  
 %>       Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps, 
 %>       assuming discrete model.
@@ -63,12 +61,20 @@
 
 function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
-    [outportHandles,boundStruct,stop] = searchSources(boundHandles,costHandles,inputAndExternalHandles);
+    [outportHandles,boundStruct,stop] = ...
+        searchSources(boundHandles,costHandles,inputAndExternalHandles);
     % FIX: should implement something that stops the code after analyzing
     % all the blocks and finding an error in the structure of the model
     if stop == 1
         % break the code somehow?
     end
+    
+    [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name);
+    blocks.names
+    blocks.handles
+    polyStruct.block
+    polyStruct.P
+    polyStruct.K
     
     % find out which wires are relevant at which times
     [timeStruct] = relevantTimes(outportHandles);
@@ -299,6 +305,60 @@ function [timeStruct] = relevantTimes(outportHandles)
     % FIX: actually check where the time steps are relevant
     timeStruct.majorTimeStep = true(length(outportHandles),1);
     timeStruct.minorTimeStep = true(length(outportHandles),1);
+end
+
+%%
+%======================================================================
+%> @brief From outport list, create three different structures needed for
+%> the optimization problem
+%>
+%> More detailed description of the problem.
+%>
+%> @param outportHandles outportHandles found by searchSources
+%>
+%> @retval timeStruct structure with following fields. 1) outportHandles 2)
+%> majorTimeStep 3) minorTimeStep
+%======================================================================
+
+function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
+    polyHandles = [find_system(name,'FindAll','on','ReferenceBlock',...
+        'BLOM_Lib/Polyblock')];
+    polyLength = length(polyHandles);
+    
+    % create structure to store P and K matricies
+    polyStruct.block = cell(polyLength,1);
+    polyStruct.P = cell(polyLength,1);
+    polyStruct.K = cell(polyLength,1);
+    polyIdx = 1;
+    
+    blocks.names = cell(length(outportHandles),1);
+    blocks.handles = zeros(length(outportHandles),1);
+    blockZero = 1;
+    for i = 1:length(outportHandles)
+        currentBlockName = get_param(outportHandles(i),'Parent');
+        currentBlockHandle = get_param(outportHandles(i),'ParentHandle');
+        if ~any(blocks.handles==currentBlockHandle)
+            % no duplicate blocks, add this block
+            blocks.names{blockZero} = currentBlockName;
+            blocks.handles(blockZero) = currentBlockHandle;
+            blockZero = blockZero+1;
+        end
+        
+        if any(polyHandles==currentBlockHandle)
+            % store P&K matricies if the current block is a polyblock
+            polyStruct.block{polyIdx} = blockZero-1;
+            polyStruct.P{polyIdx} = eval(get_param(currentBlockHandle,'P'));
+            polyStruct.K{polyIdx}= eval(get_param(currentBlockHandle,'K'));
+            polyIdx = polyIdx +1;
+        end
+        
+        % FIX: Get dimensions somehow
+        optimVar = 0;
+    end
+    
+    blocks.names = blocks.names(1:blockZero-1);
+    blocks.handles = blocks.handles(1:blockZero-1);
+
 end
 
 % function [sourceHandles,stop] = searchSources(handleArray,varargin)
