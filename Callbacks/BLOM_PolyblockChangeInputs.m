@@ -10,11 +10,11 @@
 
 function BLOM_PolyblockChangeInputs(block)
     % may want to keep this code to label ports on the block itself
-    params = get_param(block,'polyInput');
+    params = get_param(block,'inputs');
     paramSplit = regexp(params,',','split');
     
-    P = eval(get_param(block,'polyP'));
-    K = eval(get_param(block,'polyK'));
+    P = eval(get_param(block,'P'));
+    K = eval(get_param(block,'K'));
     input_as_scalar = get_param(block,'inputScalar');
     output_as_scalar = get_param(block,'outputScalar');
     if input_as_scalar
