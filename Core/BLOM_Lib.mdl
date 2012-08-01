@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jul 27 10:41:59 2012"
-  RTWModifiedTimeStamp	  265286518
-  ModelVersionFormat	  "1.%<AutoIncrement:71>"
+  LastModifiedDate	  "Tue Jul 31 18:41:48 2012"
+  RTWModifiedTimeStamp	  265660904
+  ModelVersionFormat	  "1.%<AutoIncrement:72>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -642,7 +642,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1011, 139, 1580, 580]
+    Location		    [1011, 161, 1580, 602]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -1104,7 +1104,7 @@ Library {
       MaskEnableString	      "on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
-      MaskVariables	      "polyP=@1;polyK=@2;polyInput=@3;inputScalar=@4;outputScalar=@5;"
+      MaskVariables	      "P=@1;K=@2;inputs=@3;inputScalar=@4;outputScalar=@5;"
       MaskInitialization      "BLOM_PolyblockChangeInputs(gcb)"
       MaskDisplay	      "fprintf('Polyblock')"
       MaskSelfModifiable      on
