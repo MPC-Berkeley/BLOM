@@ -70,8 +70,10 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     end
     
     % evaluate the model in order to get dimensions of all the outports
-    eval(['testBFS' '([],[],[],''compile'');']); 
+    eval([name '([],[],[],''compile'');']); 
     [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name);
+    % close model
+    eval([name '([],[],[],''term'');']);
 %     blocks.names
 %     blocks.handles
 %     polyStruct.block
@@ -318,6 +320,7 @@ end
 %> More detailed description of the problem.
 %>
 %> @param outportHandles outportHandles found by searchSources
+%> @param name name of model
 %>
 %> @retval timeStruct structure with following fields. 1) outportHandles 2)
 %> majorTimeStep 3) minorTimeStep
