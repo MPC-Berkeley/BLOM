@@ -69,17 +69,20 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         % break the code somehow?
     end
     
+    % evaluate the model in order to get dimensions of all the outports
+    eval(['testBFS' '([],[],[],''compile'');']); 
     [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name);
-    blocks.names
-    blocks.handles
-    polyStruct.block
-    polyStruct.P
-    polyStruct.K
-    
+%     blocks.names
+%     blocks.handles
+%     polyStruct.block
+%     polyStruct.P
+%     polyStruct.K
+    optimVar.block
+    optimVar.index
     % find out which wires are relevant at which times
     [timeStruct] = relevantTimes(outportHandles);
     %following code is to make sure searchSources works
-    length(boundStruct.bound)
+    length(blocks.handles)
     length(boundStruct.outportHandles)
     lengthOutport = length(outportHandles);
     for i = 1:length(outportHandles);
@@ -331,9 +334,15 @@ function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
     polyStruct.K = cell(polyLength,1);
     polyIdx = 1;
     
+    % structure for block names and handles
     blocks.names = cell(length(outportHandles),1);
     blocks.handles = zeros(length(outportHandles),1);
     blockZero = 1;
+    
+    % structure for optimization variables and handles
+    optimVar.block = zeros(length(outportHandles),1);
+    optimVar.index = zeros(length(outportHandles),1);
+    optimZero = 1;
     for i = 1:length(outportHandles)
         currentBlockName = get_param(outportHandles(i),'Parent');
         currentBlockHandle = get_param(outportHandles(i),'ParentHandle');
@@ -352,13 +361,28 @@ function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
             polyIdx = polyIdx +1;
         end
         
-        % FIX: Get dimensions somehow
-        optimVar = 0;
+        % get dimensions of each outport and for each parameter, store this
+        % in a structure
+        currentDim = get_param(outportHandles(i),'CompiledPortDimensions');
+        lengthOut = currentDim(1)*currentDim(2);
+        currentIndices = 1:lengthOut;
+        if (optimZero+lengthOut) > length(optimVar.block)
+            % if the current length of optimvar is not enough, double the
+            % size
+            optimVar.block = [optimVar.block; zeros(length(optimVar.block),1)];
+            optimVar.index = [optimVar.index; zeros(length(optimVar.index),1)];
+        end
+        % store the block and index
+        optimVar.block(optimZero:(optimZero+lengthOut-1)) = blockZero-1;
+        optimVar.index(optimZero:(optimZero+lengthOut-1)) = currentIndices;
+        optimZero = optimZero+lengthOut;
+        
     end
     
     blocks.names = blocks.names(1:blockZero-1);
     blocks.handles = blocks.handles(1:blockZero-1);
-
+    optimVar.block = optimVar.block(1:optimZero-1);
+    optimVar.index = optimVar.index(1:optimZero-1);
 end
 
 % function [sourceHandles,stop] = searchSources(handleArray,varargin)
