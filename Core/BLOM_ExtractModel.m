@@ -325,8 +325,11 @@ end
 %> @param outportHandles outportHandles found by searchSources
 %> @param name name of model
 %>
-%> @retval timeStruct structure with following fields. 1) outportHandles 2)
-%> majorTimeStep 3) minorTimeStep
+%> @retval optimVar structure with fields 1) index of block name 2) index
+%> of port or vector
+%> @retval polyStruct structure with fields 1) index of block name 2) P
+%> matrix 3) K matrix
+%> @retval blocks structure with fields 1) name of block 2) handle of block
 %======================================================================
 
 function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)

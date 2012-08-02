@@ -9,27 +9,38 @@ B\-L\-O\-M 2.\-0 Outline based on what we discussed previously.
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-function \hyperlink{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}{B\-L\-O\-M\-\_\-\-Extract\-Model} (in arg1, in arg2)
-\begin{DoxyCompactList}\small\item\em This function extracts a Simulink model and is the first step. \end{DoxyCompactList}\item 
-function \hyperlink{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}{find\-Blocks} (in arg1, in arg2)
-\begin{DoxyCompactList}\small\item\em Finds all Input, External, Constraint and Cost B\-L\-O\-M library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} \hyperlink{_b_l_o_m___extract_model_8m_aa41c3d9ad0d638b7f124e5eaf830c793}{B\-L\-O\-M\-\_\-\-Extract\-Model} (in name, in horizon, in dt, in integ\-\_\-method, in options)
+\begin{DoxyCompactList}\small\item\em This function extracts a Simulink model and is the first step into converting it into an optimization problem. \end{DoxyCompactList}\item 
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} \hyperlink{_b_l_o_m___extract_model_8m_a0af82f1120be6b9cf653e83e3cde7614}{find\-Blocks} (in name)
+\begin{DoxyCompactList}\small\item\em Finds all Input, External, Constraint and Cost B\-L\-O\-M library blocks. \end{DoxyCompactList}\item 
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} ()
+\begin{DoxyCompactList}\small\item\em Find all connected source blocks using a breadth first search. Includes the handles already given. \end{DoxyCompactList}\item 
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} \hyperlink{_b_l_o_m___extract_model_8m_abea4223c65326f3550b2e208e22c7922}{get\-Outports} (in inports, in existing\-Outports, in i\-Zero)
+\begin{DoxyCompactList}\small\item\em From given inports, see which outports are relevant. \end{DoxyCompactList}\item 
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} \hyperlink{_b_l_o_m___extract_model_8m_a9a089bf72361cf1b26261c4d2a928c56}{relevant\-Times} (in outport\-Handles)
+\begin{DoxyCompactList}\small\item\em Creates struct that says which outports are relevant at which times. \end{DoxyCompactList}\item 
+\hyperlink{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{function} \hyperlink{_b_l_o_m___extract_model_8m_ad8d1db4aa995cb8894c98eff6d4a6d22}{make\-Struct} (in outport\-Handles, in name)
+\begin{DoxyCompactList}\small\item\em From outport list, create three different structures needed for the optimization problem. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 B\-L\-O\-M 2.\-0 Outline based on what we discussed previously. 
 
 \subsection{Function Documentation}
-\hypertarget{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!B\-L\-O\-M\-\_\-\-Extract\-Model@{B\-L\-O\-M\-\_\-\-Extract\-Model}}
+\hypertarget{_b_l_o_m___extract_model_8m_aa41c3d9ad0d638b7f124e5eaf830c793}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!B\-L\-O\-M\-\_\-\-Extract\-Model@{B\-L\-O\-M\-\_\-\-Extract\-Model}}
 \index{B\-L\-O\-M\-\_\-\-Extract\-Model@{B\-L\-O\-M\-\_\-\-Extract\-Model}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
-\subsubsection[{B\-L\-O\-M\-\_\-\-Extract\-Model}]{\setlength{\rightskip}{0pt plus 5cm}function B\-L\-O\-M\-\_\-\-Extract\-Model (
+\subsubsection[{B\-L\-O\-M\-\_\-\-Extract\-Model}]{\setlength{\rightskip}{0pt plus 5cm}{\bf function} B\-L\-O\-M\-\_\-\-Extract\-Model (
 \begin{DoxyParamCaption}
-\item[{in}]{arg1, }
-\item[{in}]{arg2}
+\item[{in}]{name, }
+\item[{in}]{horizon, }
+\item[{in}]{dt, }
+\item[{in}]{integ\-\_\-method, }
+\item[{in}]{options}
 \end{DoxyParamCaption}
-)}}\label{_b_l_o_m___extract_model_8m_a58322899f312103388781cb726a27132}
+)}}\label{_b_l_o_m___extract_model_8m_aa41c3d9ad0d638b7f124e5eaf830c793}
 
 
-This function extracts a Simulink model and is the first step. 
+This function extracts a Simulink model and is the first step into converting it into an optimization problem. 
 
 Overview of B\-L\-O\-M Extract Model Structure
 \begin{DoxyItemize}
@@ -45,7 +56,7 @@ Overview of B\-L\-O\-M Extract Model Structure
 \item Flatten the wires\-:
 \begin{DoxyItemize}
 \item \char`\"{}\-Fetch\char`\"{} all Poly\-Blocks data\-: variables from the base workspace or values from the dialog (just do evalin('base',get\-\_\-param(h,'A')).
-\item Get all possible dimensions from the known Poly\-Blocks (with or without the Simulink \char`\"{}compile\char`\"{}).
+\item Get all possible dimensions (with or without the Simulink \char`\"{}compile\char`\"{}).
 \item Translate all supported Simulink blocks to Poly\-Blocks using the known dimensions.
 \item Eliminate duplicate routing variables.
 \item Combine all Poly\-Blocks to a large P and K matrices.
@@ -60,27 +71,25 @@ Overview of B\-L\-O\-M Extract Model Structure
 \item Add move blocking constraints.
 \item Eliminate whatever is possible.
 \item Mark external, input.
-\item Take care of cost. 
+\item Take care of cost. Examples\-: Model\-Spec = B\-L\-O\-M\-\_\-\-Export\-Model; Converts current active model.
 \end{DoxyItemize}
-\end{DoxyItemize}\hypertarget{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!find\-Blocks@{find\-Blocks}}
-\index{find\-Blocks@{find\-Blocks}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
-\subsubsection[{find\-Blocks}]{\setlength{\rightskip}{0pt plus 5cm}function find\-Blocks (
-\begin{DoxyParamCaption}
-\item[{in}]{arg1, }
-\item[{in}]{arg2}
-\end{DoxyParamCaption}
-)}}\label{_b_l_o_m___extract_model_8m_a942503d092dbcf90db8ef90969435f3f}
 
+Model\-Spec = B\-L\-O\-M\-\_\-\-Export\-Model('Sys',10,0.\-5); Converts current model 'Sys', with a a time step of 0.\-5 sec and 10 time steps. Model\-Spec = B\-L\-O\-M\-\_\-\-Export\-Model('Sys',10,0.\-5,); Converts current model 'Sys', with a a time step of 0.\-5 sec and 10 time steps, assuming discrete model.
 
-Finds all Input, External, Constraint and Cost B\-L\-O\-M library. 
-
-More detailed description of the problem.
+Model\-Spec = B\-L\-O\-M\-\_\-\-Export\-Model('Sys',10,0.\-5,'Trapez'); Converts current model 'Sys', with a a time step of 0.\-5 sec ,10 time steps and trapezoidal discretization method.
+\end{DoxyItemize}
 
 
 \begin{DoxyParams}{Parameters}
-{\em arg1} & First argument \\
+{\em name} & name of the model to convert \\
 \hline
-{\em arg2} & Second argument\\
+{\em horizon} & integer number of steps in prediction horizon length, 1 if not supplied \\
+\hline
+{\em dt} & time step size \mbox{[}s\mbox{]}, 1 if not supplied \\
+\hline
+{\em disc} & discretization method \{'none,'Euler','Trapez','R\-K4'\} \\
+\hline
+{\em options} & options created by B\-L\-O\-M\-\_\-opset function\\
 \hline
 \end{DoxyParams}
 
@@ -88,5 +97,141 @@ More detailed description of the problem.
 {\em out1} & return value for the first output variable \\
 \hline
 {\em out2} & return value for the second output variable \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{_b_l_o_m___extract_model_8m_a0af82f1120be6b9cf653e83e3cde7614}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!find\-Blocks@{find\-Blocks}}
+\index{find\-Blocks@{find\-Blocks}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{find\-Blocks}]{\setlength{\rightskip}{0pt plus 5cm}{\bf function} find\-Blocks (
+\begin{DoxyParamCaption}
+\item[{in}]{name}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_a0af82f1120be6b9cf653e83e3cde7614}
+
+
+Finds all Input, External, Constraint and Cost B\-L\-O\-M library blocks. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of the simulink model\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em block\-Handles} & handles of all the relevant blocks \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!function@{function}}
+\index{function@{function}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{function}]{\setlength{\rightskip}{0pt plus 5cm}function (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_ac2ffb26d6f42d3bbcd7847b0873403f4}
+
+
+Find all connected source blocks using a breadth first search. Includes the handles already given. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em handle\-Array} & the array of handles that you want to search. These are the block handles of the costs and constraints \\
+\hline
+{\em varargin} & the external and input from simulink handles. the sources of these blocks are not relevant to the optimization problem\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em source\-Handles} & return all the handles connected to input handles \\
+\hline
+{\em stop} & if there are any unconnected blocks or blocks that B\-L\-O\-M does not support, this parameter gives a 1 to indicate true and 0 to indicate false \\
+\hline
+{\em bounds\-Struct} & structure with fields\-: 1) outport handles found, 2) boolean true or false if it is connected to a bounds block \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{_b_l_o_m___extract_model_8m_abea4223c65326f3550b2e208e22c7922}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!get\-Outports@{get\-Outports}}
+\index{get\-Outports@{get\-Outports}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{get\-Outports}]{\setlength{\rightskip}{0pt plus 5cm}{\bf function} get\-Outports (
+\begin{DoxyParamCaption}
+\item[{in}]{inports, }
+\item[{in}]{existing\-Outports, }
+\item[{in}]{i\-Zero}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_abea4223c65326f3550b2e208e22c7922}
+
+
+From given inports, see which outports are relevant. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em inports} & inports of current source \\
+\hline
+{\em existing\-Outports} & current outports found. used to check for redundancy \\
+\hline
+{\em i\-Zero} & current index of the first zero\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em outport\-Handles} & new outports found \\
+\hline
+{\em i\-Zero} & updates current index of the first zero \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{_b_l_o_m___extract_model_8m_ad8d1db4aa995cb8894c98eff6d4a6d22}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!make\-Struct@{make\-Struct}}
+\index{make\-Struct@{make\-Struct}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{make\-Struct}]{\setlength{\rightskip}{0pt plus 5cm}{\bf function} make\-Struct (
+\begin{DoxyParamCaption}
+\item[{in}]{outport\-Handles, }
+\item[{in}]{name}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_ad8d1db4aa995cb8894c98eff6d4a6d22}
+
+
+From outport list, create three different structures needed for the optimization problem. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em outport\-Handles} & outport\-Handles found by search\-Sources \\
+\hline
+{\em name} & name of model\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em optim\-Var} & structure with fields 1) index of block name 2) index of port or vector \\
+\hline
+{\em poly\-Struct} & structure with fields 1) index of block name 2) P matrix 3) K matrix \\
+\hline
+{\em blocks} & structure with fields 1) name of block 2) handle of block \\
+\hline
+\end{DoxyRetVals}
+\hypertarget{_b_l_o_m___extract_model_8m_a9a089bf72361cf1b26261c4d2a928c56}{\index{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}!relevant\-Times@{relevant\-Times}}
+\index{relevant\-Times@{relevant\-Times}!BLOM_ExtractModel.m@{B\-L\-O\-M\-\_\-\-Extract\-Model.\-m}}
+\subsubsection[{relevant\-Times}]{\setlength{\rightskip}{0pt plus 5cm}{\bf function} relevant\-Times (
+\begin{DoxyParamCaption}
+\item[{in}]{outport\-Handles}
+\end{DoxyParamCaption}
+)}}\label{_b_l_o_m___extract_model_8m_a9a089bf72361cf1b26261c4d2a928c56}
+
+
+Creates struct that says which outports are relevant at which times. 
+
+More detailed description of the problem.
+
+
+\begin{DoxyParams}{Parameters}
+{\em outport\-Handles} & outport\-Handles found by search\-Sources\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyRetVals}{Return values}
+{\em time\-Struct} & structure with following fields. 1) outport\-Handles 2) major\-Time\-Step 3) minor\-Time\-Step \\
 \hline
 \end{DoxyRetVals}

@@ -89,29 +89,55 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a58322899f312103388781cb726a27132"><td class="memItemLeft" align="right" valign="top">function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#a58322899f312103388781cb726a27132">BLOM_ExtractModel</a> (in arg1, in arg2)</td></tr>
-<tr class="memdesc:a58322899f312103388781cb726a27132"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function extracts a Simulink model and is the first step.  <a href="#a58322899f312103388781cb726a27132"></a><br/></td></tr>
-<tr class="memitem:a942503d092dbcf90db8ef90969435f3f"><td class="memItemLeft" align="right" valign="top">function&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#a942503d092dbcf90db8ef90969435f3f">findBlocks</a> (in arg1, in arg2)</td></tr>
-<tr class="memdesc:a942503d092dbcf90db8ef90969435f3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds all Input, External, Constraint and Cost BLOM library.  <a href="#a942503d092dbcf90db8ef90969435f3f"></a><br/></td></tr>
+<tr class="memitem:aa41c3d9ad0d638b7f124e5eaf830c793"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#aa41c3d9ad0d638b7f124e5eaf830c793">BLOM_ExtractModel</a> (in name, in horizon, in dt, in integ_method, in options)</td></tr>
+<tr class="memdesc:aa41c3d9ad0d638b7f124e5eaf830c793"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function extracts a Simulink model and is the first step into converting it into an optimization problem.  <a href="#aa41c3d9ad0d638b7f124e5eaf830c793"></a><br/></td></tr>
+<tr class="memitem:a0af82f1120be6b9cf653e83e3cde7614"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#a0af82f1120be6b9cf653e83e3cde7614">findBlocks</a> (in name)</td></tr>
+<tr class="memdesc:a0af82f1120be6b9cf653e83e3cde7614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds all Input, External, Constraint and Cost BLOM library blocks.  <a href="#a0af82f1120be6b9cf653e83e3cde7614"></a><br/></td></tr>
+<tr class="memitem:ac2ffb26d6f42d3bbcd7847b0873403f4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> ()</td></tr>
+<tr class="memdesc:ac2ffb26d6f42d3bbcd7847b0873403f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find all connected source blocks using a breadth first search. Includes the handles already given.  <a href="#ac2ffb26d6f42d3bbcd7847b0873403f4"></a><br/></td></tr>
+<tr class="memitem:abea4223c65326f3550b2e208e22c7922"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#abea4223c65326f3550b2e208e22c7922">getOutports</a> (in inports, in existingOutports, in iZero)</td></tr>
+<tr class="memdesc:abea4223c65326f3550b2e208e22c7922"><td class="mdescLeft">&#160;</td><td class="mdescRight">From given inports, see which outports are relevant.  <a href="#abea4223c65326f3550b2e208e22c7922"></a><br/></td></tr>
+<tr class="memitem:a9a089bf72361cf1b26261c4d2a928c56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#a9a089bf72361cf1b26261c4d2a928c56">relevantTimes</a> (in outportHandles)</td></tr>
+<tr class="memdesc:a9a089bf72361cf1b26261c4d2a928c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates struct that says which outports are relevant at which times.  <a href="#a9a089bf72361cf1b26261c4d2a928c56"></a><br/></td></tr>
+<tr class="memitem:ad8d1db4aa995cb8894c98eff6d4a6d22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_b_l_o_m___extract_model_8m.html#ad8d1db4aa995cb8894c98eff6d4a6d22">makeStruct</a> (in outportHandles, in name)</td></tr>
+<tr class="memdesc:ad8d1db4aa995cb8894c98eff6d4a6d22"><td class="mdescLeft">&#160;</td><td class="mdescRight">From outport list, create three different structures needed for the optimization problem.  <a href="#ad8d1db4aa995cb8894c98eff6d4a6d22"></a><br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>BLOM 2.0 Outline based on what we discussed previously. </p>
 </div><hr/><h2>Function Documentation</h2>
-<a class="anchor" id="a58322899f312103388781cb726a27132"></a>
+<a class="anchor" id="aa41c3d9ad0d638b7f124e5eaf830c793"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">function BLOM_ExtractModel </td>
+          <td class="memname"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> BLOM_ExtractModel </td>
           <td>(</td>
           <td class="paramtype">in&#160;</td>
-          <td class="paramname"><em>arg1</em>, </td>
+          <td class="paramname"><em>name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">in&#160;</td>
-          <td class="paramname"><em>arg2</em>&#160;</td>
+          <td class="paramname"><em>horizon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>dt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>integ_method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -121,7 +147,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function extracts a Simulink model and is the first step. </p>
+<p>This function extracts a Simulink model and is the first step into converting it into an optimization problem. </p>
 <p>Overview of BLOM Extract Model Structure</p>
 <ul>
 <li>Find all Input, External, Constraint and Cost BLOM library blocks.</li>
@@ -135,7 +161,7 @@ Functions</h2></td></tr>
 </li>
 <li>Flatten the wires:<ul>
 <li>"Fetch" all PolyBlocks data: variables from the base workspace or values from the dialog (just do evalin('base',get_param(h,'A')).</li>
-<li>Get all possible dimensions from the known PolyBlocks (with or without the Simulink "compile").</li>
+<li>Get all possible dimensions (with or without the Simulink "compile").</li>
 <li>Translate all supported Simulink blocks to PolyBlocks using the known dimensions.</li>
 <li>Eliminate duplicate routing variables.</li>
 <li>Combine all PolyBlocks to a large P and K matrices.</li>
@@ -143,50 +169,27 @@ Functions</h2></td></tr>
 <li>Propagate time property information using the processed P and K structure.</li>
 </ul>
 </li>
-<li>Create the whole problem:<ul>
+<li><p class="startli">Create the whole problem:</p>
+<ul>
 <li>Introduce and duplicate all major time step variables, including their dependencies.</li>
 <li>Introduce and duplicate minor time steps variables and their dependencies.</li>
 <li>Link by the appropriate Butcher tableau values major and minor time steps variables.</li>
 <li>Add move blocking constraints.</li>
 <li>Eliminate whatever is possible.</li>
 <li>Mark external, input.</li>
-<li>Take care of cost. </li>
+<li>Take care of cost. Examples: ModelSpec = BLOM_ExportModel; Converts current active model.</li>
 </ul>
+<p class="startli">ModelSpec = BLOM_ExportModel('Sys',10,0.5); Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps. ModelSpec = BLOM_ExportModel('Sys',10,0.5,); Converts current model 'Sys', with a a time step of 0.5 sec and 10 time steps, assuming discrete model.</p>
+<p class="startli">ModelSpec = BLOM_ExportModel('Sys',10,0.5,'Trapez'); Converts current model 'Sys', with a a time step of 0.5 sec ,10 time steps and trapezoidal discretization method.</p>
 </li>
 </ul>
-
-</div>
-</div>
-<a class="anchor" id="a942503d092dbcf90db8ef90969435f3f"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">function findBlocks </td>
-          <td>(</td>
-          <td class="paramtype">in&#160;</td>
-          <td class="paramname"><em>arg1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">in&#160;</td>
-          <td class="paramname"><em>arg2</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Finds all Input, External, Constraint and Cost BLOM library. </p>
-<p>More detailed description of the problem.</p>
 <dl class="params"><dt>Parameters:</dt><dd>
   <table class="params">
-    <tr><td class="paramname">arg1</td><td>First argument </td></tr>
-    <tr><td class="paramname">arg2</td><td>Second argument</td></tr>
+    <tr><td class="paramname">name</td><td>name of the model to convert </td></tr>
+    <tr><td class="paramname">horizon</td><td>integer number of steps in prediction horizon length, 1 if not supplied </td></tr>
+    <tr><td class="paramname">dt</td><td>time step size [s], 1 if not supplied </td></tr>
+    <tr><td class="paramname">disc</td><td>discretization method {'none,'Euler','Trapez','RK4'} </td></tr>
+    <tr><td class="paramname">options</td><td>options created by BLOM_opset function</td></tr>
   </table>
   </dd>
 </dl>
@@ -200,10 +203,199 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0af82f1120be6b9cf653e83e3cde7614"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> findBlocks </td>
+          <td>(</td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds all Input, External, Constraint and Cost BLOM library blocks. </p>
+<p>More detailed description of the problem.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Name of the simulink model</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values:</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">blockHandles</td><td>handles of all the relevant blocks </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac2ffb26d6f42d3bbcd7847b0873403f4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">function </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find all connected source blocks using a breadth first search. Includes the handles already given. </p>
+<p>More detailed description of the problem.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handleArray</td><td>the array of handles that you want to search. These are the block handles of the costs and constraints </td></tr>
+    <tr><td class="paramname">varargin</td><td>the external and input from simulink handles. the sources of these blocks are not relevant to the optimization problem</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values:</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">sourceHandles</td><td>return all the handles connected to input handles </td></tr>
+    <tr><td class="paramname">stop</td><td>if there are any unconnected blocks or blocks that BLOM does not support, this parameter gives a 1 to indicate true and 0 to indicate false </td></tr>
+    <tr><td class="paramname">boundsStruct</td><td>structure with fields: 1) outport handles found, 2) boolean true or false if it is connected to a bounds block </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="abea4223c65326f3550b2e208e22c7922"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> getOutports </td>
+          <td>(</td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>inports</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>existingOutports</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>iZero</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>From given inports, see which outports are relevant. </p>
+<p>More detailed description of the problem.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inports</td><td>inports of current source </td></tr>
+    <tr><td class="paramname">existingOutports</td><td>current outports found. used to check for redundancy </td></tr>
+    <tr><td class="paramname">iZero</td><td>current index of the first zero</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values:</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">outportHandles</td><td>new outports found </td></tr>
+    <tr><td class="paramname">iZero</td><td>updates current index of the first zero </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad8d1db4aa995cb8894c98eff6d4a6d22"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> makeStruct </td>
+          <td>(</td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>outportHandles</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>From outport list, create three different structures needed for the optimization problem. </p>
+<p>More detailed description of the problem.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outportHandles</td><td>outportHandles found by searchSources </td></tr>
+    <tr><td class="paramname">name</td><td>name of model</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values:</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">optimVar</td><td>structure with fields 1) index of block name 2) index of port or vector </td></tr>
+    <tr><td class="paramname">polyStruct</td><td>structure with fields 1) index of block name 2) P matrix 3) K matrix </td></tr>
+    <tr><td class="paramname">blocks</td><td>structure with fields 1) name of block 2) handle of block </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a9a089bf72361cf1b26261c4d2a928c56"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_b_l_o_m___extract_model_8m.html#ac2ffb26d6f42d3bbcd7847b0873403f4">function</a> relevantTimes </td>
+          <td>(</td>
+          <td class="paramtype">in&#160;</td>
+          <td class="paramname"><em>outportHandles</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates struct that says which outports are relevant at which times. </p>
+<p>More detailed description of the problem.</p>
+<dl class="params"><dt>Parameters:</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outportHandles</td><td>outportHandles found by searchSources</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values:</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">timeStruct</td><td>structure with following fields. 1) outportHandles 2) majorTimeStep 3) minorTimeStep </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jul 16 2012 12:25:32 for BLOM 2.0 by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 2 2012 12:07:47 for BLOM 2.0 by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.1
 </small></address>
