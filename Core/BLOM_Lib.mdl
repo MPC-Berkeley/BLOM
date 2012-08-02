@@ -15,7 +15,7 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Aug  1 22:28:15 2012"
+  LastModifiedDate	  "Thu Aug  2 11:08:57 2012"
   RTWModifiedTimeStamp	  265760715
   ModelVersionFormat	  "1.%<AutoIncrement:77>"
   ConfigurationManager	  "none"
@@ -658,7 +658,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1108, 150, 1677, 591]
+    Location		    [286, 473, 855, 914]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -1132,8 +1132,8 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[1092, 664, 1478, 908]
-	Open			on
+	Location		[405, 664, 791, 908]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1170,7 +1170,7 @@ Library {
 	  Name			  "Constant"
 	  SID			  161
 	  Position		  [185, 28, 260, 72]
-	  Value			  "ones(1,2)"
+	  Value			  "ones(1,1)"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
