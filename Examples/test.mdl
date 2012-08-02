@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.12"
+    ComputedModelVersion    "1.13"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 31 21:30:10 2012"
-  RTWModifiedTimeStamp	  265671008
-  ModelVersionFormat	  "1.%<AutoIncrement:12>"
+  LastModifiedDate	  "Thu Aug  2 12:04:27 2012"
+  RTWModifiedTimeStamp	  265809866
+  ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -626,7 +626,7 @@ Model {
   }
   System {
     Name		    "test"
-    Location		    [121, 219, 1005, 723]
+    Location		    [121, 241, 1005, 745]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -640,7 +640,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    28
+    SIDHighWatermark	    29
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -676,7 +676,7 @@ Model {
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -700,7 +700,7 @@ Model {
       Ports		      [1]
       Position		      [605, 242, 680, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -740,7 +740,7 @@ Model {
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -762,7 +762,7 @@ Model {
       Ports		      [1, 1]
       Position		      [270, 384, 370, 426]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -782,7 +782,7 @@ Model {
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -803,7 +803,7 @@ Model {
       Ports		      [1, 1]
       Position		      [125, 134, 225, 176]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -823,7 +823,7 @@ Model {
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -846,12 +846,12 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "Polyblock1"
-      SID		      28
+      Name		      "Polyblock"
+      SID		      29
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.73"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -938,13 +938,13 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock1"
+      SrcBlock		      "Polyblock"
       SrcPort		      1
       DstBlock		      "Add"
       DstPort		      3
     }
     Line {
-      SrcBlock		      "Polyblock1"
+      SrcBlock		      "Polyblock"
       SrcPort		      2
       Points		      [5, 0]
       DstBlock		      "Add"
@@ -967,7 +967,7 @@ Model {
 	  DstPort		  1
 	}
 	Branch {
-	  DstBlock		  "Polyblock1"
+	  DstBlock		  "Polyblock"
 	  DstPort		  1
 	}
       }

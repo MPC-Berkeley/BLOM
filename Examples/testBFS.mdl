@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.19"
+    ComputedModelVersion    "1.22"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 31 21:25:35 2012"
-  RTWModifiedTimeStamp	  265670729
-  ModelVersionFormat	  "1.%<AutoIncrement:19>"
+  LastModifiedDate	  "Thu Aug  2 11:08:45 2012"
+  RTWModifiedTimeStamp	  265796625
+  ModelVersionFormat	  "1.%<AutoIncrement:22>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -656,7 +656,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [-6, 80, 1293, 924]
+    Location		    [634, 126, 1933, 970]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -670,7 +670,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    45
+    SIDHighWatermark	    49
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -724,7 +724,7 @@ Model {
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -748,7 +748,7 @@ Model {
       Ports		      [1]
       Position		      [625, 242, 700, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -814,7 +814,7 @@ Model {
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -836,7 +836,7 @@ Model {
       Ports		      [1, 1]
       Position		      [270, 384, 370, 426]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -856,7 +856,7 @@ Model {
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -877,7 +877,7 @@ Model {
       Ports		      [1, 1]
       Position		      [125, 134, 225, 176]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -897,7 +897,7 @@ Model {
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.72"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -921,11 +921,35 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "Polyblock"
-      SID		      42
+      SID		      47
+      Ports		      [2, 2]
+      Position		      [310, 622, 400, 698]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.77"
+      SourceBlock	      "BLOM_Lib/Polyblock"
+      SourceType	      ""
+      ShowPortLabels	      "none"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      P			      "sparse([1 1 0 1; 3 1 0 1])"
+      K			      "sparse([1 0.8; 1 1])"
+      inputs		      "0"
+      inputScalar	      on
+      outputScalar	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Polyblock2"
+      SID		      46
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.73"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -938,18 +962,42 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       P			      "sparse([1 1 0; 3 1 0])"
       K			      "sparse([1 0.8; 1 1])"
-      inputs		      "x1,x2"
+      inputs		      "0"
       inputScalar	      on
       outputScalar	      on
     }
     Block {
       BlockType		      Reference
-      Name		      "Polyblock1"
-      SID		      45
-      Ports		      [1, 1]
-      Position		      [580, 432, 670, 508]
+      Name		      "Polyblock3"
+      SID		      48
+      Ports		      [2, 1]
+      Position		      [625, 622, 715, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.73"
+      LibraryVersion	      "1.77"
+      SourceBlock	      "BLOM_Lib/Polyblock"
+      SourceType	      ""
+      ShowPortLabels	      "none"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      P			      "sparse([1 1 0; 3 1 0])"
+      K			      "sparse([1 0.8])"
+      inputs		      "0"
+      inputScalar	      on
+      outputScalar	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Polyblock5"
+      SID		      49
+      Ports		      [1, 1]
+      Position		      [585, 432, 675, 508]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.77"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -962,55 +1010,7 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       P			      "sparse([1 1; 3 1])"
       K			      "sparse([1 0.8])"
-      inputs		      "x1,x2"
-      inputScalar	      on
-      outputScalar	      on
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Polyblock3"
-      SID		      44
-      Ports		      [2, 2]
-      Position		      [310, 622, 400, 698]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.73"
-      SourceBlock	      "BLOM_Lib/Polyblock"
-      SourceType	      ""
-      ShowPortLabels	      "none"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 0 1 0; 3 0 1 0])"
-      K			      "sparse([1 0.8; 1 1])"
-      inputs		      "x1,x2"
-      inputScalar	      on
-      outputScalar	      on
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Polyblock4"
-      SID		      43
-      Ports		      [2, 1]
-      Position		      [625, 622, 715, 698]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.73"
-      SourceBlock	      "BLOM_Lib/Polyblock"
-      SourceType	      ""
-      ShowPortLabels	      "none"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 1 0; 3 1 0])"
-      K			      "sparse([1 0.8])"
-      inputs		      "x1,x2"
+      inputs		      "0"
       inputScalar	      on
       outputScalar	      on
     }
@@ -1126,7 +1126,7 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock"
+      SrcBlock		      "Polyblock2"
       SrcPort		      1
       DstBlock		      "Add"
       DstPort		      3
@@ -1148,7 +1148,7 @@ Model {
 	  DstPort		  1
 	}
 	Branch {
-	  DstBlock		  "Polyblock"
+	  DstBlock		  "Polyblock2"
 	  DstPort		  1
 	}
       }
@@ -1176,11 +1176,11 @@ Model {
     Line {
       SrcBlock		      "Demux"
       SrcPort		      1
-      DstBlock		      "Polyblock1"
+      DstBlock		      "Polyblock5"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock1"
+      SrcBlock		      "Polyblock5"
       SrcPort		      1
       Points		      [0, 110]
       DstBlock		      "Unit Delay1"
@@ -1218,11 +1218,11 @@ Model {
     Line {
       SrcBlock		      "Unit Delay"
       SrcPort		      1
-      DstBlock		      "Polyblock4"
+      DstBlock		      "Polyblock3"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock3"
+      SrcBlock		      "Polyblock"
       SrcPort		      1
       DstBlock		      "Unit Delay"
       DstPort		      1
@@ -1235,13 +1235,13 @@ Model {
       DstPort		      3
     }
     Line {
-      SrcBlock		      "Polyblock3"
+      SrcBlock		      "Polyblock"
       SrcPort		      2
-      DstBlock		      "Polyblock4"
+      DstBlock		      "Polyblock3"
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Polyblock4"
+      SrcBlock		      "Polyblock3"
       SrcPort		      1
       Points		      [50, 0]
       Branch {
@@ -1251,18 +1251,18 @@ Model {
       }
       Branch {
 	Points			[45, 0; 0, 60; -520, 0]
-	DstBlock		"Polyblock3"
+	DstBlock		"Polyblock"
 	DstPort			2
       }
     }
     Line {
       SrcBlock		      "Constant4"
       SrcPort		      1
-      DstBlock		      "Polyblock3"
+      DstBlock		      "Polyblock"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Polyblock"
+      SrcBlock		      "Polyblock2"
       SrcPort		      2
       Points		      [0, -20]
       DstBlock		      "Add"
