@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 31 18:41:48 2012"
-  RTWModifiedTimeStamp	  265660904
-  ModelVersionFormat	  "1.%<AutoIncrement:72>"
+  LastModifiedDate	  "Wed Aug  1 22:28:15 2012"
+  RTWModifiedTimeStamp	  265760715
+  ModelVersionFormat	  "1.%<AutoIncrement:77>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -552,6 +552,22 @@ Library {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "fixdt(1,16,0)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
+      LockScale		      off
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+    }
+    Block {
       BlockType		      Demux
       Outputs		      "4"
       DisplayOption	      "none"
@@ -642,7 +658,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1011, 161, 1580, 602]
+    Location		    [1108, 150, 1677, 591]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -1116,8 +1132,8 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[1081, 751, 1467, 995]
-	Open			off
+	Location		[1092, 664, 1478, 908]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1129,7 +1145,7 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	158
+	SIDHighWatermark	162
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
@@ -1142,10 +1158,19 @@ Library {
 	Block {
 	  BlockType		  Inport
 	  Name			  "In2"
-	  SID			  158
+	  SID			  160
 	  Position		  [20, 68, 50, 82]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant"
+	  SID			  161
+	  Position		  [185, 28, 260, 72]
+	  Value			  "ones(1,2)"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
@@ -1168,6 +1193,12 @@ Library {
 	  ShowName		  off
 	  Inputs		  "2"
 	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Terminator
+	  Name			  "Terminator"
+	  SID			  162
+	  Position		  [130, 50, 150, 70]
 	}
 	Block {
 	  BlockType		  Outport
@@ -1197,6 +1228,18 @@ Library {
 	  SrcPort		  1
 	  DstBlock		  "Mux"
 	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Constant"
+	  SrcPort		  1
+	  DstBlock		  "Demux"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Mux"
+	  SrcPort		  1
+	  DstBlock		  "Terminator"
+	  DstPort		  1
 	}
       }
     }
