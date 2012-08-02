@@ -30,4 +30,10 @@ function BLOM_PolyblockChangeInputs(block)
             BLOM_ChangeNumberOfPorts(block,1,1);
         end
     end
+    
+    %% following code just added for testing purposes. to be removed later.
+    constantName = [block '/Constant'];
+    K = eval(get_param(block,'K'));
+    valueString = ['ones(' num2str(length(K(:,1))) ',1)'];
+    set_param(constantName,'Value',valueString);
 end
