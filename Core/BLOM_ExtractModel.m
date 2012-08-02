@@ -60,6 +60,9 @@
 %======================================================================
 
 function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
+    % load system. does nothing if model is not open
+    load_system(name);
+
     [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
     [outportHandles,boundStruct,stop] = ...
         searchSources(boundHandles,costHandles,inputAndExternalHandles);
