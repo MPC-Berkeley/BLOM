@@ -1,0 +1,58 @@
+function J = BLOM_EvalJacobian(P, K, x)
+% This function evaluates the Jacobian of the PolyBlock function represented
+% by the exponent matrix P and coefficient matrix K, at the column vector x.
+% The Jacobian has as many rows as K, and as many columns as P. If the
+% first row of K represents the cost function, then the first row of the
+% output Jacobian represents the gradient of the cost function.
+
+P = P(any(K,1),:); % remove unused terms
+K = K(:,any(K,1));
+
+n = size(P,2); % number of variables
+r = size(P,1); % number of (used) polynomial terms
+
+[Pcols Prows Pvals] = find(P'); % transpose so nonzeros are in row-major order
+P_pattern = spones(P);
+nnz_P_per_row = sum(P_pattern, 2);
+nnz_P_prev_rows = [0; cumsum(full(nnz_P_per_row))];
+nonlinear_terms = find(any(P ~= P_pattern, 2) | (nnz_P_per_row > 1))';
+
+expbool = (Pvals == BLOM_FunctionCode('exp'));
+logbool = (Pvals == BLOM_FunctionCode('log'));
+
+vx = x(Pcols).^Pvals; % powers of input variables
+vx(expbool) = exp(x(Pcols(expbool))); % exponentials
+vx(logbool) = log(x(Pcols(logbool))); % logarithms
+
+vxderiv = Pvals.*(x(Pcols).^(Pvals - 1)); % derivatives of powers
+vxderiv(expbool) = vx(expbool); % derivatives of exponentials
+vxderiv(logbool) = 1./x(Pcols(logbool)); % derivatives of logarithms
+
+% construct Jacobian of vx product vector (same sparsity pattern as P)
+prodJacvals = ones(size(Pvals)); % for linear terms, this is 1
+for i=nonlinear_terms
+    j_range = (nnz_P_prev_rows(i) + 1 : nnz_P_prev_rows(i + 1));
+    vxrow = vx(j_range);
+    for j=j_range
+        factors = vxrow;
+        % replace value for variable j with its derivative
+        factors(j - nnz_P_prev_rows(i)) = vxderiv(j);
+        prodJacvals(j) = prod(factors);
+    end
+end
+
+J = K * sparse(Prows, Pcols, prodJacvals, r, n);
+
+%{
+% verification code using naive method
+prodJacvals1 = prodJacvals;
+for i=1:length(prodJacvals)
+    row = Prows(i);
+    row_start = nnz_P_prev_rows(row) + 1;
+    row_end = nnz_P_prev_rows(row + 1);
+    prodJacvals(i) = prod(vx(row_start:i-1)) * vxderiv(i) * prod(vx(i+1:row_end));
+end
+if ~isequal(prodJacvals, prodJacvals1)
+    error('mismatch')
+end
+%}
