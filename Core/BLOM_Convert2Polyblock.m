@@ -61,6 +61,17 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 scalLength = length(inportPlaces.scalar);
                 K = ones(vectLength,scalLength+vectLength);
                 K(:,(vectPlace:(vectLength+vectPlace-1))) = eye(vectLength);
+            elseif isempty(inportPlaces.scalar)
+                % all matricies/vectors. assumes that they are all the same
+                % size. add element wise
+                vectPlace = inportPlaces.matrix(1);
+                vectLength = prod(inportDim{vectPlace});
+                numVect = length(inports);
+                P = speye(vectLength*numVect);
+                K = zeros(vectLength,vectLength*numVect);
+                for i = 1:vectLength:(numVect*vectLength)
+                    K(:,(i:(i+vectLength-1))) = eye(vectLength);
+                end
             end
         %% absolute value (only for costs)    
         case 'Abs'
