@@ -77,13 +77,7 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name);
     % close model
     eval([name '([],[],[],''term'');']);
-%     blocks.names
-%     blocks.handles
-%     polyStruct.block
-%     polyStruct.P
-%     polyStruct.K
-    optimVar.block
-    optimVar.index
+    
     % find out which wires are relevant at which times
     [timeStruct] = relevantTimes(outportHandles);
     %following code is to make sure searchSources works
@@ -333,6 +327,8 @@ end
 %======================================================================
 
 function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
+    % evaluate model to get dimensions
+    eval([name '([],[],[],''compile'');']); 
     polyHandles = [find_system(name,'FindAll','on','ReferenceBlock',...
         'BLOM_Lib/Polyblock')];
     polyLength = length(polyHandles);
@@ -392,6 +388,8 @@ function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
     blocks.handles = blocks.handles(1:blockZero-1);
     optimVar.block = optimVar.block(1:optimZero-1);
     optimVar.index = optimVar.index(1:optimZero-1);
+    % close evaluation of models
+    eval([name '([],[],[],''term'');']);
 end
 
 % function [sourceHandles,stop] = searchSources(handleArray,varargin)
