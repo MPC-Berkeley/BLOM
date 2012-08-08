@@ -42,6 +42,8 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
     %% instead of strings
     switch blockType
         case {'Sum','Add'} % add/subtract
+            % FIX: add support for 'Sum' block. the one block that has
+            % default inputs on left and bottom and has a circle.
             inputsToAdd = get_param(blockHandle,'Inputs');
             subtract_indices = inputsToAdd=='-';
             if isempty(inportPlaces.matrix)
@@ -80,7 +82,6 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         col = col+vectLength;
                     end
                 end
-                K = sparse(K);
             elseif isempty(inportPlaces.scalar)
                 % all matricies/vectors. assumes that they are all the same
                 % size. add element wise
@@ -98,7 +99,6 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                     end
                     j = j+1;
                 end
-                K = sparse(K);
             elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
                 % more than 1 matrix/vector of the same size and one or
                 % more scalars
@@ -142,7 +142,31 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
         case {'Product','Divide'}
             % for n scalar inputs, P = ones(1,n), K = [1]. for each ith
             % input to be subtracted, that index in P should be equal -1
-            
+            mult_type = get_param(blockHandle,'Multiplication');
+            switch mult_type
+                case 'Element-wise(.*)'
+                    % element by element multiplication
+                    if isempty(inportPlaces.matrix)
+                        % all scalars
+                        P = ones(1,totalInputs);
+                        K = 1;
+                    elseif isempty(inportPlaces.scalar)
+                        % all vectors/matrices of same size. multiply
+                        % element wise
+                        vectPlace = inportPlaces.matrix(1);
+                        vectLength = prod(inportDim{vectPlace});
+                        numVect = length(inports);
+                        P = zeros(vectLength,vectLength*numVect);
+                        K = speye(vectLength);
+                        for i = 1:vectLength:(numVect*vectLength)
+                            P(:,(i:(i+vectLength-1))) = eye(vectLength);
+                        end
+                        P = sparse(P);
+                    end
+                case 'Matrix(*)'
+                    
+                    
+            end
         %% constant    
         case 'Constant'
             
@@ -167,6 +191,8 @@ end
 
 function [inportPlaces,totalInputs] = scalarVectIndex(dimCell)
     % gives indices of scalars and vector inports from dimensions
+    % totalInputs gives the total number of elements (each element of a
+    % matrix or vector adds to this number)
     inportPlaces.scalar = zeros(length(dimCell),1);
     inportPlaces.matrix = zeros(length(dimCell),1);
     scalarZero = 1;
