@@ -60,7 +60,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 scalLength = length(inportPlaces.scalar);
                 K = ones(vectLength,scalLength+vectLength);
                 col = 1;
-                for i = 1:totalInputs
+                for i = 1:length(inports)
                     if any(inportPlaces.scalar==i)
                         % current column is just the scalar input
                         if subtract_indices(i)
@@ -70,12 +70,12 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         col = col+1;
                     else
                         %current column is the beginning of the vector
-                        if subtract_indices(vectPlace)
+                        if subtract_indices(i)
                         % if the matrix/vector is being subtracted
-                            K(:,(vectPlace:(vectLength+vectPlace-1))) = -1*eye(vectLength);
+                            K(:,(col:(vectLength+col-1))) = -1*eye(vectLength);
                         else
                         % if it's being added
-                            K(:,(vectPlace:(vectLength+vectPlace-1))) = eye(vectLength);
+                            K(:,(col:(vectLength+col-1))) = eye(vectLength);
                         end
                         col = col+vectLength;
                     end
@@ -99,6 +99,40 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                     j = j+1;
                 end
                 K = sparse(K);
+            elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
+                % more than 1 matrix/vector of the same size and one or
+                % more scalars
+                vectPlace = inportPlaces.matrix(1);
+                vectIdx = 1;
+                vectLength = prod(inportDim{vectPlace});
+                numVect = length(inportPlaces.matrix);
+                P = speye(vectLength*numVect+length(inportPlaces.scalar));
+                K = ones(vectLength,vectLength*numVect+length(inportPlaces.scalar));
+                col = 1;
+                for i = 1:length(inports)
+                    if any(inportPlaces.scalar==i)
+                        % current column is just the scalar input
+                        if subtract_indices(i)
+                            % current column is subtracted
+                            K(:,col) = -1;
+                        end
+                        col = col+1;
+                    else
+                        %current column is the beginning of the vector
+                        if subtract_indices(i)
+                        % if the matrix/vector is being subtracted
+                            K(:,(col:(vectLength+col-1))) = -1*eye(vectLength);
+                        else
+                        % if it's being added
+                            K(:,(col:(vectLength+col-1))) = eye(vectLength);
+                        end
+                        col = col+vectLength;
+                    end
+                end
+            else
+                % most likely will not reach this case
+                P = [];
+                K = [];
             end
         %% absolute value (only for costs)    
         case 'Abs'
