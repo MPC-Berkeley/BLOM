@@ -103,7 +103,8 @@
 \institute[UC Berkeley]{UC Berkeley\\
   Department of Mechanical Engineering\\
   Berkeley, CA \\[1ex]
-  sergv@berkeley.edu, \hspace{1em}}
+  sergv@berkeley.edu, \hspace{1em}
+}
 
 %
 
@@ -224,14 +225,24 @@ A = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \inf  \\ 0 & 
 \item Export to IPOPT and fmincon solvers (more to come).
 \item Used in joined project with UTRC for large HVAC MPC problem (dynamical
   model with 430 states, typically $\sim30K$ variables in solver). 
-\item High efficiency: with IPOPT the time of evaluation of callback functions
-  (objective, Jacobian, Hessian) is two order of magnitude smaller than the
-  solver time.
+%\item High efficiency: with IPOPT the time of evaluation of callback functions
+%  (objective, Jacobian, Hessian) is two order of magnitude smaller than the
+%  solver time.
 \end{enumerate}
-
-
-
 \end{frame}
+
+\begin{frame}
+\frametitle{BLOM is fast}
+\begin{enumerate}
+\item Explicit evaluation of the Jacobian and the Hessian. 
+\item Jacobian and Hessian are usually very sparse, and they are evaluated according to the sparsity pattern, therefore, only the non-zero elements are computed.
+\item BLOM has an efficient C++ plug-in for IPOPT, that evaluates the cost, constraints and the aforementioned Jacobian and Hessian.
+\item When used with IPOPT, the solver is a standalone executable, no additional interfacing overhead is added.   
+\item When used with IPOPT, the time of cost, constraints, Jacobian and Hessian evaluation is typically less than 10\% of the total solver time. 
+\item The solver time is from  milliseconds for small problems to  minutes for tens of thousands variables sparse problems.
+\end{enumerate}
+\end{frame}
+
 
 \end{document}
 
