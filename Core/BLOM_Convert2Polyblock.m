@@ -80,6 +80,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         col = col+vectLength;
                     end
                 end
+                K = sparse(K);
             elseif isempty(inportPlaces.scalar)
                 % all matricies/vectors. assumes that they are all the same
                 % size. add element wise
@@ -88,9 +89,16 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 numVect = length(inports);
                 P = speye(vectLength*numVect);
                 K = zeros(vectLength,vectLength*numVect);
+                j = 1;
                 for i = 1:vectLength:(numVect*vectLength)
-                    K(:,(i:(i+vectLength-1))) = eye(vectLength);
+                    if subtract_indices(j)
+                        K(:,(i:(i+vectLength-1))) = -1*eye(vectLength);
+                    else
+                        K(:,(i:(i+vectLength-1))) = eye(vectLength);
+                    end
+                    j = j+1;
                 end
+                K = sparse(K);
             end
         %% absolute value (only for costs)    
         case 'Abs'
