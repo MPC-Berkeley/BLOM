@@ -26,7 +26,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
     
     % give port indices of vectors and scalars for inports
     [inportPlaces,totalInputs] = scalarVectIndex(inportDim);
-    
+    inportPlaces.matrix
 %     inportDim = array(length(inports),2);
 %     outportDim = array(length(outports),2);
 %     
@@ -42,17 +42,16 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
     %% instead of strings
     switch blockType
         case {'Sum','Add'} % add/subtract
+            inputsToAdd = get_param(blockHandle,'Inputs');
+            subtract_indices = inputsToAdd=='-';
             if isempty(inportPlaces.matrix)
                 % for n scalar inputs, P = eye(n), K = ones(1,n). for each ith
                 % input that is subtracted, that index in K should equal -1
                 % instead.  
-                portSize = length(totalInputs);
-                P = speye(portSize(1));
-                K = ones(1,portSize(1)); 
+                P = speye(totalInputs);
+                K = ones(1,totalInputs); 
 
-                inputsToAdd = get_param(blockHandle,'Inputs');
-                subtract_indicies = inputsToAdd=='-';
-                K(subtract_indicies) = -1;
+                K(subtract_indices) = -1;
             elseif length(inportPlaces.matrix) == 1 
                 % one matrix/vector and the rest scalars
                 P = eye(totalInputs);
@@ -60,7 +59,27 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 vectLength = prod(inportDim{vectPlace});
                 scalLength = length(inportPlaces.scalar);
                 K = ones(vectLength,scalLength+vectLength);
-                K(:,(vectPlace:(vectLength+vectPlace-1))) = eye(vectLength);
+                col = 1;
+                for i = 1:totalInputs
+                    if any(inportPlaces.scalar==i)
+                        % current column is just the scalar input
+                        if subtract_indices(i)
+                            % current column is subtracted
+                            K(:,col) = -1;
+                        end
+                        col = col+1;
+                    else
+                        %current column is the beginning of the vector
+                        if subtract_indices(vectPlace)
+                        % if the matrix/vector is being subtracted
+                            K(:,(vectPlace:(vectLength+vectPlace-1))) = -1*eye(vectLength);
+                        else
+                        % if it's being added
+                            K(:,(vectPlace:(vectLength+vectPlace-1))) = eye(vectLength);
+                        end
+                        col = col+vectLength;
+                    end
+                end
             elseif isempty(inportPlaces.scalar)
                 % all matricies/vectors. assumes that they are all the same
                 % size. add element wise
@@ -105,7 +124,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
 end
 
 function [inportPlaces,totalInputs] = scalarVectIndex(dimCell)
-    % gives indicies of scalars and vector inports from dimensions
+    % gives indices of scalars and vector inports from dimensions
     inportPlaces.scalar = zeros(length(dimCell),1);
     inportPlaces.matrix = zeros(length(dimCell),1);
     scalarZero = 1;
