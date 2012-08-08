@@ -103,8 +103,7 @@
 \institute[UC Berkeley]{UC Berkeley\\
   Department of Mechanical Engineering\\
   Berkeley, CA \\[1ex]
-  sergv@berkeley.edu, \hspace{1em}
-}
+  \{sergv, kelman\}@berkeley.edu \hspace{1em}}
 
 %
 
@@ -131,21 +130,21 @@
 \frametitle{What is BLOM ?}
 \begin{itemize}
 \item A language of modeling
-dynamical nonlinear systems for optimization problems, especially MPC.
+dynamical nonlinear systems for optimization problems, especially MPC
 \item Support for the following design phases:
 \begin{itemize}
-\item Developing the model with an intuitive block diagram.
-\item Forward simulation and validation of the model.
-\item Automatic export of the optimization problem to a solver. 
+\item Developing the model with an intuitive block diagram
+\item Forward simulation and validation of the model
+\item Automatic export of the optimization problem to a solver
 \end{itemize}
 \item Developed to handle non trivial problems
 \begin{itemize}
-\item C++ or Matlab code generation.
-\item Explicit evaluation of Jacobian and Hessian.
-\item Proven with problems of tens of thousands variables.
+\item C++ or Matlab code generation
+\item Explicit evaluation of Jacobian and Hessian
+\item Proven with problems of tens of thousands variables
 \end{itemize}
 \item Eliminates manual problem coding, eases maintenance and assures that the
-  same model used for optimization and for simulation.
+  same model used for optimization as for simulation
 \end{itemize}
 \end{frame}
 
@@ -161,25 +160,26 @@ s.t.:&  -2 \leq u_k \leq 2 \ ; 0.5 \leq x_k \leq 1\ ; x_{k+1}=0.9x_k+u_k \notag
 
 
 \begin{itemize}
-\item The \alert{Functional} block holds expression of the form $\frac{f(x)}{g(x)}$,
-   
-\item The \alert{Constraint} block marks variable as $\geq 0$ or $\leq 0$.  
-\item The continuous or discrete \alert{State} block.
-\item The \alert{Cost} block, accumulates cost variables.
+\item The \alert{Functional} block holds expression of the form $\frac{f(x)}{g(x)}$   
+\item The \alert{Constraint} block marks variable as $\geq 0$ or $\leq 0$
+\item The continuous or discrete \alert{State} block
+\item The \alert{Cost} block accumulates cost variables over horizon
 \item The \alert{Input/External} variable modifiers marks the control and the
-  external variables.
+  external variables
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{The functional block ''Polyblock''}
 \begin{itemize}
-\item Each polyblock is a polynomial-like function, that is described by two matrices, $A$ and $C$. $C$ holds the
- term coefficients and $A$ defines the functions of variable to participate in
- the term.
-\item  The polynomial-like function has the form: $f(x)=\sum_i \prod_j
-v_{i,j}(x_i)$.  $v(x_i) \in \left \{ \alert{x^p} _{ p \in \mathbb R}, \alert{ \exp(x)} ,
-\alert{\log(x)} \right \}$.
+\item Polynomial-like function described by two matrices
+\begin{itemize}
+\item $P$ defines exponents or special functions for each polynomial-like term
+\item $K$ specifies multiplier coefficients on those terms
+\end{itemize}
+\item Has the form $f_i(x)=\sum_k K_{ik} \prod_j
+v(x_j, P_{kj})$, where  $v(x, p) \in \left \{ x^p , \exp(x) ,
+\log(x), \text{etc} \right \}$
 \item Example:
 \begin{equation*}
 f(x) = 4 x_1^3 + 0.2 x_1^2 x_2^{0.7} - 0.8 x_1 \exp(x_3) + 0.5 \log( x_2)
@@ -187,9 +187,8 @@ f(x) = 4 x_1^3 + 0.2 x_1^2 x_2^{0.7} - 0.8 x_1 \exp(x_3) + 0.5 \log( x_2)
 \end{equation*}
 
 \begin{equation*}
-c = \left[\begin{array}{c} c_1 \\ c_2 \\ c_3 \\ c_4 \end{array}\right] 
-= \left[\begin{array}{c} 4 \\ 0.2 \\ -0.8 \\ 0.5 \end{array}\right] 
-A = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \inf  \\ 0 & -\inf & 0    \end{array}\right].
+K = \left[\begin{array}{cccc} 4 & 0.2 & -0.8 & 0.5 \end{array}\right] ,~
+P = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \exp  \\ 0 & \log & 0    \end{array}\right]
 \label{eq:example_sparserep}
 \end{equation*}
 \end{itemize}
@@ -201,8 +200,8 @@ A = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \inf  \\ 0 & 
 \includegraphics[width=0.9\textwidth]{Flowdgrm}
 
 \begin{itemize}
-\item Create model using Simulink with BLOM library. Run and compare the model
-  to a reference data. 
+\item Create model using Simulink with BLOM library
+\item Run and compare the model to reference data
 \item Translate to optimization problem: {\bf ExtractModel(steps,dt,'RK4');}
 \item Export the problem to a solver: e.g. {\bf CreateIpoptCPP }
 \end{itemize}
@@ -211,38 +210,52 @@ A = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \inf  \\ 0 & 
 
 \begin{frame}
 \frametitle{BLOM status and features}
-\begin{enumerate}
-\item Discrete and continuous models.
-\item For continuous model, supports Euler, trapezoidal and RK4 discretization
-  (easily expandable).
-\item Full vector support.
-\item Model developing features: 
 \begin{itemize}
-\item Color coded constraint violations.
-\item Polyblocks display the user defined function.
-\item User defined port labeling. 
+\item Discrete and continuous models
+\item For continuous model, supports Euler, trapezoidal and RK4 discretization
+  (easily expandable)
+\item Full vector support
+\item Model debugging features: 
+\begin{itemize}
+\item Color coded constraint violations
+\item Polyblocks display the user defined function
+\item User defined port labeling
 \end{itemize}
-\item Export to IPOPT and fmincon solvers (more to come).
-\item Used in joined project with UTRC for large HVAC MPC problem (dynamical
-  model with 430 states, typically $\sim30K$ variables in solver). 
-%\item High efficiency: with IPOPT the time of evaluation of callback functions
-%  (objective, Jacobian, Hessian) is two order of magnitude smaller than the
-%  solver time.
-\end{enumerate}
+\item Export to IPOPT and fmincon solvers (more to come)
+\item Used in joint project with UTRC for large HVAC MPC problem (dynamical
+  model with 430 states, typically $\sim30$k variables in solver)
+\item High efficiency: with IPOPT the function (objective, Jacobian, Hessian) evaluation typically takes less than 10\% of total solver time
+\item Solver time from milliseconds for small problems to minutes for sparse problems with tens of thousands of variables
+\end{itemize}
+
+
+
 \end{frame}
 
 \begin{frame}
-\frametitle{BLOM is fast}
+\frametitle{Why BLOM is efficient}
+\begin{itemize}
+\item Optimization algorithms require gradients, Jacobians, often Hessian
+\item Options for calculating gradients:
 \begin{enumerate}
-\item Explicit evaluation of the Jacobian and the Hessian. 
-\item Jacobian and Hessian are usually very sparse, and they are evaluated according to the sparsity pattern, therefore, only the non-zero elements are computed.
-\item BLOM has an efficient C++ plug-in for IPOPT, that evaluates the cost, constraints and the aforementioned Jacobian and Hessian.
-\item When used with IPOPT, the solver is a standalone executable, no additional interfacing overhead is added.   
-\item When used with IPOPT, the time of cost, constraints, Jacobian and Hessian evaluation is typically less than 10\% of the total solver time. 
-\item The solver time is from  milliseconds for small problems to  minutes for tens of thousands variables sparse problems.
+\item Finite differences: suffers from curse of dimensionality, inaccuracy
+\item Automatic differentiation: used by AMPL and some other modeling languages, may require explicit code generation which grows with problem size
+\item Problem representation in structured form: BLOM approach to \\
+give closed-form Jacobian and Hessian, nonlinearities must fit polynomial-like structure or implemented special functions \\
+(general enough for most practical nonlinear problems)
 \end{enumerate}
-\end{frame}
+\item Fully sparse concise nonlinear problem formulation
+\begin{itemize}
+\item Nonlinear functions represented implicitly: new variables introduced for function outputs, functional relationship enforced as equality constraint
+\item Leads to more optimization variables, but very sparse Jacobian, Hessian
+\end{itemize}
+\item Sparsity-preserving fixed-timestep discretizations of nonlinear continuous-time models
 
+\end{itemize}
+
+
+
+\end{frame}
 
 \end{document}
 
