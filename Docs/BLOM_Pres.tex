@@ -197,7 +197,7 @@ P = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \exp  \\ 0 & 
 
 \begin{frame}
 \frametitle{BLOM work flow}
-\includegraphics[width=0.9\textwidth]{Flowdgrm}
+\includegraphics[width=0.9\textwidth]{WorkFlowBlom}
 
 \begin{itemize}
 \item Create model using Simulink with BLOM library
@@ -224,8 +224,6 @@ P = \left[\begin{array}{ccc} 3 & 0 & 0  \\ 2 & 0.7 & 0  \\ 1 & 0 & \exp  \\ 0 & 
 \item Export to IPOPT and fmincon solvers (more to come)
 \item Used in joint project with UTRC for large HVAC MPC problem (dynamical
   model with 430 states, typically $\sim30$k variables in solver)
-\item High efficiency: with IPOPT the function (objective, Jacobian, Hessian) evaluation typically takes less than 10\% of total solver time
-\item Solver time from milliseconds for small problems to minutes for sparse problems with tens of thousands of variables
 \end{itemize}
 
 
@@ -252,10 +250,20 @@ give closed-form Jacobian and Hessian, nonlinearities must fit polynomial-like s
 \item Sparsity-preserving fixed-timestep discretizations of nonlinear continuous-time models
 
 \end{itemize}
+\end{frame}
 
-
+\begin{frame}
+\frametitle{Why BLOM is fast}
+\begin{itemize}
+\item Function evaluations with compiled problem-independent  code
+\item C++ interface to compiled IPOPT solver 
+results in standalone executable with low interfacing overhead
+\item High efficiency: with IPOPT the function (objective, Jacobian, Hessian) evaluation typically takes less than 10\% of total solver time
+\item Solver time from milliseconds for small problems to minutes for sparse problems with tens of thousands of variables
+\end{itemize}
 
 \end{frame}
+
 
 \end{document}
 
