@@ -229,15 +229,16 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             end
         %% constant    
         case 'Constant'
-            % returns the value itself with by making P and K identity matrices
             if isempty(inportPlaces.matrix)
                 P = 1;
-                K = 1;
+                % FIX: find right value for K
+                K = [];
             else
                 vectPlace = inportPlaces.matrix(1);
                 vectLength = prod(inportDim{vectPlace});
                 P = speye(vectLength);
-                K = speye(vectLength);
+                % FIX: find right value for K
+                K = [];
             end
         %% gain
         case 'Gain'
@@ -291,4 +292,27 @@ function [inportPlaces,totalInputs] = scalarVectIndex(dimCell)
         inportPlaces.matrix = [];
     end
     
+end
+
+function [P_real,K_real] = friendlyToReal(P,K,outportDim)
+    % converts the user-friendly P and K matrices to the proper P and K
+    % matrices
+    
+    total_outputs = 0;
+    % first figure out the number of outputs
+    for i = 1:length(outportDim)
+        total_outputs = total_outputs + prod(outportDim{i});
+    end
+    
+    [M_P,N_P] = size(P);
+    [M_K,N_K] = size(K);
+    
+    P_real = sparse(M_P+total_outputs,N_P+total_outputs);
+    K_real = sparse(M_K,N_P+total_outputs);
+    
+    P_real(1:M_P,1:N_P) = P;
+    K_real(1:M_K,1:N_K) = K;
+    
+    P_real( (M_P+1):end , (N_P+1):end ) = speye(total_outputs);
+    K_real( :, (N_P+1):end) = -1*speye(total_outputs);
 end
