@@ -103,7 +103,6 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 % more than 1 matrix/vector of the same size and one or
                 % more scalars
                 vectPlace = inportPlaces.matrix(1);
-                vectIdx = 1;
                 vectLength = prod(inportDim{vectPlace});
                 numVect = length(inportPlaces.matrix);
                 P = speye(vectLength*numVect+length(inportPlaces.scalar));
@@ -162,6 +161,26 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                             P(:,(i:(i+vectLength-1))) = eye(vectLength);
                         end
                         P = sparse(P);
+                    elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
+                        % one more more vectors/matrices and one more more
+                        % scalars. all the vectors/matrices are multiplied
+                        % element wise and all elements of the
+                        % vectors/matrices are multiplied by the scalars
+                        vectPlace = inportPlaces.matrix(1);
+                        vectLength = prod(inportDim{vectPlace});
+                        K = speye(vectLength);
+                        P = ones(vectLength,vectLength*length(inportPlaces.matrix)...
+                            +length(inportPlaces.scalar));
+                        col = 1;
+                        for i = 1:length(inports)
+                            if any(inportPlaces.matrix==i)
+                                % current column is the vector
+                                P(:,(col:(vectLength+col-1))) = eye(vectLength);
+                                col = col+vectLength;
+                            else
+                                col = col+1;
+                            end
+                        end
                     end
                 case 'Matrix(*)'
                     
