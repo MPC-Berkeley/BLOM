@@ -137,10 +137,20 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
         case 'Abs'
             
             
-        %% multiply/divide     
-        case {'Product','Divide'}
+        %% multiply/divide. Divide is the same block   
+        case 'Product' 
             % for n scalar inputs, P = ones(1,n), K = [1]. for each ith
             % input to be subtracted, that index in P should be equal -1
+            
+            % only_mult returns 1 if it is just multiplication. Returns 0 if
+            % there is division too
+            inputs = get_param(blockHandle,'Inputs');
+            digitInput = isstrprop(inputs,'digit');
+            division = any(digitInput==0);
+            if division
+                divide_indices = inputs=='/';
+            end
+            
             mult_type = get_param(blockHandle,'Multiplication');
             switch mult_type
                 case 'Element-wise(.*)'
@@ -149,6 +159,9 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         % all scalars
                         P = ones(1,totalInputs);
                         K = 1;
+                        if division
+                            P(divide_indices) = -1;
+                        end
                     elseif isempty(inportPlaces.scalar)
                         % all vectors/matrices of same size. multiply
                         % element wise
@@ -157,10 +170,19 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         numVect = length(inports);
                         P = zeros(vectLength,vectLength*numVect);
                         K = speye(vectLength);
+                        divide_index = 1;
                         for i = 1:vectLength:(numVect*vectLength)
-                            P(:,(i:(i+vectLength-1))) = eye(vectLength);
+                            if division
+                                if divide_indices(divide_index)
+                                    P(:,(i:(i+vectLength-1))) = -1*eye(vectLength);
+                                else
+                                    P(:,(i:(i+vectLength-1))) = eye(vectLength);
+                                end
+                            else
+                                P(:,(i:(i+vectLength-1))) = eye(vectLength);
+                            end
+                            divide_index = divide_index+1;
                         end
-                        P = sparse(P);
                     elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
                         % one more more vectors/matrices and one more more
                         % scalars. all the vectors/matrices are multiplied
@@ -172,23 +194,51 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                         P = ones(vectLength,vectLength*length(inportPlaces.matrix)...
                             +length(inportPlaces.scalar));
                         col = 1;
+                        divide_index = 1;
                         for i = 1:length(inports)
                             if any(inportPlaces.matrix==i)
                                 % current column is the vector
-                                P(:,(col:(vectLength+col-1))) = eye(vectLength);
-                                col = col+vectLength;
+                                if division
+                                    if divide_indices(divide_index)
+                                        P(:,(col:(vectLength+col-1))) = -1*eye(vectLength);
+                                    else
+                                        P(:,(col:(vectLength+col-1))) = eye(vectLength);
+                                    end
+                                    col = col+vectLength;
+                                    divide_index = divide_index+1;
+                                else
+                                    P(:,(col:(vectLength+col-1))) = eye(vectLength);
+                                    col = col+vectLength;
+                                end
                             else
+                                if division
+                                    if divide_indices(divide_index)
+                                        P(:,col) = -1;
+                                    end
+                                    divide_index=divide_index+1;
+                                end
                                 col = col+1;
                             end
                         end
+                        P = sparse(P);
                     end
                 case 'Matrix(*)'
-                    
-                    
+                    P = [];
+                    K = [];
+                    fprintf('Matrix multiplication currently not supported by BLOM\n');
             end
         %% constant    
         case 'Constant'
-            
+            % returns the value itself with by making P and K identity matrices
+            if isempty(inportPlaces.matrix)
+                P = 1;
+                K = 1;
+            else
+                vectPlace = inportPlaces.matrix(1);
+                vectLength = prod(inportDim{vectPlace});
+                P = speye(vectLength);
+                K = speye(vectLength);
+            end
         %% gain
         case 'Gain'
             
