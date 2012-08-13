@@ -250,22 +250,33 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             K = horzcat(K,-1*syepe(total_outputs));
         %% constant    
         case 'Constant'
-            P = vertcat(eye(total_outputs),zeros(1,total_outputs));
-            K = horzcat(-1*eye(total_outputs),zeros(total_outputs,1));
+            P = vertcat(speye(total_outputs),zeros(1,total_outputs));
+            K = horzcat(-1*speye(total_outputs),zeros(total_outputs,1));
             constVal = get_param(blockHandle,'Value');
             constVal = evalin('base',constVal);
             K(:,end) = constVal;
         %% gain
         case 'Gain'
-            
+            % FIX, currently no support for matrix multiplication
+            mult_type = get_param(blockHandle,'Multiplication');
+            switch mult_type
+                case 'Element-wise(K.*u)'
+                    P = speye(totalInputs*2);
+                    gain = evalin('base',get_param(blockHandle,'Gain'));
+                    K = horzcat(gain*speye(totalInputs),-1*speye(totalInputs));
+                otherwise
+                    P = [];
+                    K = [];
+                    fprintf('Matrix multiplication currently not supported by BLOM\n');
+            end
         %% bias
         case 'Bias'
-            P = eye(totalInputs*2+1);
+            P = speye(totalInputs*2+1);
             P(end) = 0;
             
             bias = evalin('base',get_param(blockHandle,'Bias'));
             
-            K = horzcat(eye(totalInputs),-1*eye(totalInputs),...
+            K = horzcat(speye(totalInputs),-1*eye(totalInputs),...
                 bias*ones(totalInputs,1));
         %% trigonometric function (currently not functional in polyblock)
         case 'Trigonometric Function'
