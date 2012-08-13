@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Aug  2 11:08:57 2012"
-  RTWModifiedTimeStamp	  265760715
-  ModelVersionFormat	  "1.%<AutoIncrement:77>"
+  LastModifiedDate	  "Mon Aug 13 16:40:56 2012"
+  RTWModifiedTimeStamp	  266776728
+  ModelVersionFormat	  "1.%<AutoIncrement:80>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -658,7 +658,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [286, 473, 855, 914]
+    Location		    [1063, 398, 1632, 839]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -1121,7 +1121,7 @@ Library {
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
       MaskVariables	      "P=@1;K=@2;inputs=@3;inputScalar=@4;outputScalar=@5;"
-      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb)"
+      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb,P,K,inputs,inputScalar,outputScalar)"
       MaskDisplay	      "fprintf('Polyblock')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
@@ -1132,8 +1132,8 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[405, 664, 791, 908]
-	Open			off
+	Location		[1010, 773, 1396, 1017]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1170,7 +1170,7 @@ Library {
 	  Name			  "Constant"
 	  SID			  161
 	  Position		  [185, 28, 260, 72]
-	  Value			  "ones(1,1)"
+	  Value			  "ones(size(K,1),1)"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
