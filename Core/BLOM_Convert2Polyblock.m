@@ -27,12 +27,16 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
     % figure out total number of outputs
     total_outputs = 0;
     for i = 1:length(outportDim)
-        total_outputs = total_outputs + prod(outportDim{i});
+        class_outportDim = outportDim;
+        if iscell(class_outportDim)
+            total_outputs = total_outputs + prod(outportDim{i});
+        else
+            total_outputs = prod(outportDim);
+        end
     end
     
     % give port indices of vectors and scalars for inports
     [inportPlaces,totalInputs] = scalarVectIndex(inportDim);
-    inportPlaces.matrix
 %     inportDim = array(length(inports),2);
 %     outportDim = array(length(outports),2);
 %     
@@ -246,23 +250,23 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             K = horzcat(K,-1*syepe(total_outputs));
         %% constant    
         case 'Constant'
-            if isempty(inportPlaces.matrix)
-                P = 1;
-                % FIX: find right value for K
-                K = [];
-            else
-                vectPlace = inportPlaces.matrix(1);
-                vectLength = prod(inportDim{vectPlace});
-                P = speye(vectLength);
-                % FIX: find right value for K
-                K = [];
-            end
+            P = vertcat(eye(total_outputs),zeros(1,total_outputs));
+            K = horzcat(-1*eye(total_outputs),zeros(total_outputs,1));
+            constVal = get_param(blockHandle,'Value');
+            constVal = evalin('base',constVal);
+            K(:,end) = constVal;
         %% gain
         case 'Gain'
             
         %% bias
         case 'Bias'
+            P = eye(totalInputs*2+1);
+            P(end) = 0;
             
+            bias = evalin('base',get_param(blockHandle,'Bias'));
+            
+            K = horzcat(eye(totalInputs),-1*eye(totalInputs),...
+                bias*ones(totalInputs,1));
         %% trigonometric function (currently not functional in polyblock)
         case 'Trigonometric Function'
             
@@ -285,18 +289,30 @@ function [inportPlaces,totalInputs] = scalarVectIndex(dimCell)
     scalarZero = 1;
     matrixZero = 1;
     totalInputs = 0;
-    for i = 1:length(dimCell);
-        if prod(dimCell{i}) == 1
-            inportPlaces.scalar(scalarZero) = i;
+    if iscell(dimCell)
+        for i = 1:length(dimCell);
+            if prod(dimCell{i}) == 1
+                inportPlaces.scalar(scalarZero) = i;
+                scalarZero = scalarZero+1;
+                totalInputs = totalInputs+1;
+            else
+                inportPlaces.matrix(matrixZero) = i;
+                matrixZero = matrixZero+1;
+                totalInputs = totalInputs + prod(dimCell{i});
+            end
+        end
+    else
+        if prod(dimCell) == 1
+            inportPlaces.scalar(scalarZero) = 1;
             scalarZero = scalarZero+1;
             totalInputs = totalInputs+1;
         else
-            inportPlaces.matrix(matrixZero) = i;
+            inportPlaces.matrix(matrixZero) = 1;
             matrixZero = matrixZero+1;
-            totalInputs = totalInputs + prod(dimCell{i});
+            totalInputs = totalInputs + prod(dimCell);
         end
     end
-    
+
     if scalarZero ~= 1
         inportPlaces.scalar = inportPlaces.scalar(1:(scalarZero-1));
     else
