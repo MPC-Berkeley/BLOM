@@ -8,23 +8,18 @@
 %>
 %======================================================================
 
-function BLOM_PolyblockChangeInputs(block)
+function BLOM_PolyblockChangeInputs(block,P,K,inputs,inputScalar,outputScalar)
     % may want to keep this code to label ports on the block itself
-    params = get_param(block,'inputs');
-    paramSplit = regexp(params,',','split');
+    paramSplit = regexp(inputs,',','split');
     
-    P = eval(get_param(block,'P'));
-    K = eval(get_param(block,'K'));
-    input_as_scalar = get_param(block,'inputScalar');
-    output_as_scalar = get_param(block,'outputScalar');
-    if input_as_scalar
-        if output_as_scalar
+    if inputScalar
+        if outputScalar
             BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),size(K,1));
         else
             BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),1);
         end
     else
-        if output_as_scalar
+        if outputScalar
             BLOM_ChangeNumberOfPorts(block,1,size(K,1));
         else
             BLOM_ChangeNumberOfPorts(block,1,1);
