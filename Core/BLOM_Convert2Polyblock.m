@@ -24,6 +24,12 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
     inportDim = get_param(inports,'CompiledPortDimensions');
     outportDim = get_param(outports,'CompiledPortDimensions');
     
+    % figure out total number of outputs
+    total_outputs = 0;
+    for i = 1:length(outportDim)
+        total_outputs = total_outputs + prod(outportDim{i});
+    end
+    
     % give port indices of vectors and scalars for inports
     [inportPlaces,totalInputs] = scalarVectIndex(inportDim);
     inportPlaces.matrix
@@ -133,6 +139,12 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 P = [];
                 K = [];
             end
+
+            % go from user friendly form of P and K to proper P and K
+            % matricies
+            P = blkdiag(P,speye(total_outputs));
+            K = horzcat(K,-1*syepe(total_outputs));
+            
         %% absolute value (only for costs)    
         case 'Abs'
             
@@ -227,6 +239,11 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                     K = [];
                     fprintf('Matrix multiplication currently not supported by BLOM\n');
             end
+            
+            % go from user friendly form of P and K to proper P and K
+            % matricies
+            P = blkdiag(P,speye(total_outputs));
+            K = horzcat(K,-1*syepe(total_outputs));
         %% constant    
         case 'Constant'
             if isempty(inportPlaces.matrix)
@@ -292,27 +309,4 @@ function [inportPlaces,totalInputs] = scalarVectIndex(dimCell)
         inportPlaces.matrix = [];
     end
     
-end
-
-function [P_real,K_real] = friendlyToReal(P,K,outportDim)
-    % converts the user-friendly P and K matrices to the proper P and K
-    % matrices
-    
-    total_outputs = 0;
-    % first figure out the number of outputs
-    for i = 1:length(outportDim)
-        total_outputs = total_outputs + prod(outportDim{i});
-    end
-    
-    [M_P,N_P] = size(P);
-    [M_K,N_K] = size(K);
-    
-    P_real = sparse(M_P+total_outputs,N_P+total_outputs);
-    K_real = sparse(M_K,N_P+total_outputs);
-    
-    P_real(1:M_P,1:N_P) = P;
-    K_real(1:M_K,1:N_K) = K;
-    
-    P_real( (M_P+1):end , (N_P+1):end ) = speye(total_outputs);
-    K_real( :, (N_P+1):end) = -1*speye(total_outputs);
 end
