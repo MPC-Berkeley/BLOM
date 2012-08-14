@@ -10,7 +10,7 @@
 
 function BLOM_PolyblockChangeInputs(block,P,K,inputs,inputScalar,outputScalar)
     % may want to keep this code to label ports on the block itself
-    paramSplit = regexp(inputs,',','split');
+    % paramSplit = regexp(inputs,',','split');
     
     if inputScalar
         if outputScalar
