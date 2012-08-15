@@ -358,13 +358,18 @@ function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
             blockZero = blockZero+1;
         end
         
+        polyStruct.block{polyIdx} = blockZero-1;
         if any(polyHandles==currentBlockHandle)
             % store P&K matricies if the current block is a polyblock
-            polyStruct.block{polyIdx} = blockZero-1;
             polyStruct.P{polyIdx} = eval(get_param(currentBlockHandle,'P'));
             polyStruct.K{polyIdx}= eval(get_param(currentBlockHandle,'K'));
-            polyIdx = polyIdx +1;
+        else
+            % store P and K matricies for the other blocks
+            [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
+            polyStruct.P{polyIdx} = P;
+            polyStruct.K{polyIdx}= K;
         end
+        polyIdx = polyIdx +1;
         
         % get dimensions of each outport and for each parameter, store this
         % in a structure
