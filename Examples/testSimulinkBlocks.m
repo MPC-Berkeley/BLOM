@@ -1,9 +1,12 @@
 % file to test simulink blocks with convert2polyblock function
 
 %% add blocks
-add2 = 2; %[0 0 0 0];
-add1 = 1;
-add3 = -3;
+add1 = [1 1 1];
+add2 = [1 2 2];
+add3 = [1 2 3];
+add4 = [9 9 9];
+add5 = 5;
+add6 = 6;
 
 testSimBlocks
 

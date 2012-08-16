@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.22"
+    ComputedModelVersion    "1.27"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Aug  2 11:08:45 2012"
-  RTWModifiedTimeStamp	  265796625
-  ModelVersionFormat	  "1.%<AutoIncrement:22>"
+  LastModifiedDate	  "Thu Aug 16 11:17:43 2012"
+  RTWModifiedTimeStamp	  267014043
+  ModelVersionFormat	  "1.%<AutoIncrement:27>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -595,6 +595,28 @@ Model {
       BusSelectionMode	      off
     }
     Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
       BlockType		      Integrator
       ExternalReset	      "none"
       InitialConditionSource  "internal"
@@ -608,6 +630,28 @@ Model {
       IgnoreLimit	      off
       ZeroCross		      on
       ContinuousStateAttributes	"''"
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      SourceOfInitialOutputValue "Dialog"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
     }
     Block {
       BlockType		      Product
@@ -626,6 +670,25 @@ Model {
       RndMeth		      "Zero"
       SaturateOnIntegerOverflow	on
       SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
       BlockType		      Sum
@@ -656,7 +719,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [634, 126, 1933, 970]
+    Location		    [688, 116, 1987, 960]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -670,7 +733,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    49
+    SIDHighWatermark	    74
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -724,7 +787,7 @@ Model {
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -748,7 +811,7 @@ Model {
       Ports		      [1]
       Position		      [625, 242, 700, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -793,9 +856,17 @@ Model {
     }
     Block {
       BlockType		      Constant
-      Name		      "Constant4"
-      SID		      40
-      Position		      [225, 625, 255, 655]
+      Name		      "Constant6"
+      SID		      52
+      Position		      [105, 560, 135, 590]
+      Value		      "4:5"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant7"
+      SID		      54
+      Position		      [105, 635, 135, 665]
+      Value		      "4:5"
     }
     Block {
       BlockType		      Demux
@@ -814,7 +885,7 @@ Model {
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -836,7 +907,7 @@ Model {
       Ports		      [1, 1]
       Position		      [270, 384, 370, 426]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -856,7 +927,7 @@ Model {
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -877,7 +948,7 @@ Model {
       Ports		      [1, 1]
       Position		      [125, 134, 225, 176]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -897,7 +968,7 @@ Model {
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -925,7 +996,7 @@ Model {
       Ports		      [2, 2]
       Position		      [310, 622, 400, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -949,7 +1020,7 @@ Model {
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -973,7 +1044,7 @@ Model {
       Ports		      [2, 1]
       Position		      [625, 622, 715, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -997,7 +1068,7 @@ Model {
       Ports		      [1, 1]
       Position		      [585, 432, 675, 508]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.77"
+      LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1025,6 +1096,148 @@ Model {
       OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem"
+      SID		      62
+      Ports		      [2, 1]
+      Position		      [190, 585, 230, 645]
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem"
+	Location		[1323, 599, 1648, 831]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  63
+	  Position		  [30, 98, 60, 112]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  64
+	  Position		  [90, 138, 120, 152]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant5"
+	  SID			  51
+	  Position		  [25, 25, 55, 55]
+	  Value			  "1:2"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant8"
+	  SID			  61
+	  Position		  [80, 175, 110, 205]
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Product1"
+	  SID			  50
+	  Ports			  [2, 1]
+	  Position		  [85, 65, 110, 120]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  UnitDelay
+	  Name			  "Unit Delay2"
+	  SID			  55
+	  Position		  [210, 128, 245, 162]
+	  SampleTime		  "-1"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "subadd1"
+	  SID			  53
+	  Ports			  [3, 1]
+	  Position		  [145, 129, 175, 161]
+	  Inputs		  "++-"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  65
+	  Position		  [270, 138, 300, 152]
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "subadd1"
+	  SrcPort		  1
+	  DstBlock		  "Unit Delay2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Product1"
+	  SrcPort		  1
+	  Points		  [15, 0]
+	  DstBlock		  "subadd1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant5"
+	  SrcPort		  1
+	  Points		  [0, 10; 10, 0]
+	  DstBlock		  "Product1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Constant8"
+	  SrcPort		  1
+	  Points		  [5, 0; 0, -35]
+	  DstBlock		  "subadd1"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Product1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "subadd1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Unit Delay2"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+      }
     }
     Block {
       BlockType		      UnitDelay
@@ -1256,8 +1469,9 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Constant4"
+      SrcBlock		      "Subsystem"
       SrcPort		      1
+      Points		      [30, 0; 0, 25]
       DstBlock		      "Polyblock"
       DstPort		      1
     }
@@ -1267,6 +1481,20 @@ Model {
       Points		      [0, -20]
       DstBlock		      "Add"
       DstPort		      4
+    }
+    Line {
+      SrcBlock		      "Constant6"
+      SrcPort		      1
+      Points		      [10, 0; 0, 25]
+      DstBlock		      "Subsystem"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant7"
+      SrcPort		      1
+      Points		      [0, -20]
+      DstBlock		      "Subsystem"
+      DstPort		      2
     }
   }
 }
