@@ -147,7 +147,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             % go from user friendly form of P and K to proper P and K
             % matricies
             P = blkdiag(P,speye(total_outputs));
-            K = horzcat(K,-1*syepe(total_outputs));
+            K = horzcat(K,-1*speye(total_outputs));
             
         %% absolute value (only for costs)    
         case 'Abs'
@@ -247,7 +247,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             % go from user friendly form of P and K to proper P and K
             % matricies
             P = blkdiag(P,speye(total_outputs));
-            K = horzcat(K,-1*syepe(total_outputs));
+            K = horzcat(K,-1*speye(total_outputs));
         %% constant    
         case 'Constant'
             P = vertcat(speye(total_outputs),zeros(1,total_outputs));
