@@ -83,9 +83,8 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     % find out which wires are relevant at which times
     [timeStruct] = relevantTimes(outportHandles);
     %following code is to make sure searchSources works
-    length(blocks.handles)
-    length(boundStruct.outportHandles)
-    lengthOutport = length(outportHandles);
+    fprintf('The Number of blocks is %.0f\n',length(blocks.handles))
+    fprintf('The Number of outports is %.0f\n',length(outportHandles))
     for i = 1:length(outportHandles);
         parent = get_param(boundStruct.outportHandles(i),'Parent')
         portType = get_param(outportHandles(i),'PortType');
@@ -244,6 +243,12 @@ function [outportHandles,boundStruct,stop] = ...
                     % connected
                     sourcePorts = get_param(parentOfBlock,'PortHandles');
                     sourceInports = [sourcePorts.Inport];
+                    % storing the inport itself is not important. what we
+                    % need to store is what is connected to the inport of
+                    % the subsystem
+                    outportHandles(iOut) = [];
+                    iOut = iOut-1;
+                    iZero = iZero-1;
                     if ~isempty(sourceInports)
                         [outportHandles,iZero] = getOutports(sourceInports,...
                             outportHandles,iZero);
