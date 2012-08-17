@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.27"
+    ComputedModelVersion    "1.30"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Aug 16 11:17:43 2012"
-  RTWModifiedTimeStamp	  267014043
-  ModelVersionFormat	  "1.%<AutoIncrement:27>"
+  LastModifiedDate	  "Thu Aug 16 18:09:28 2012"
+  RTWModifiedTimeStamp	  267040921
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -595,6 +595,15 @@ Model {
       BusSelectionMode	      off
     }
     Block {
+      BlockType		      From
+      IconDisplay	      "Tag"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      IconDisplay	      "Tag"
+    }
+    Block {
       BlockType		      Inport
       Port		      "1"
       UseBusObject	      off
@@ -719,7 +728,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [688, 116, 1987, 960]
+    Location		    [750, 118, 1707, 872]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -733,7 +742,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    74
+    SIDHighWatermark	    79
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -942,6 +951,36 @@ Model {
       interpType	      "Zero-Order Hold"
     }
     Block {
+      BlockType		      From
+      Name		      "From"
+      SID		      76
+      Position		      [560, 626, 600, 654]
+      GotoTag		      "A"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From1"
+      SID		      79
+      Position		      [220, 666, 260, 694]
+      GotoTag		      "B"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto"
+      SID		      75
+      Position		      [495, 625, 535, 655]
+      GotoTag		      "A"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto1"
+      SID		      78
+      Position		      [820, 645, 860, 675]
+      GotoTag		      "B"
+      TagVisibility	      "local"
+    }
+    Block {
       BlockType		      Reference
       Name		      "InputFromSimulink"
       SID		      7
@@ -1112,7 +1151,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[1323, 599, 1648, 831]
+	Location		[1323, 621, 1648, 853]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1243,7 +1282,7 @@ Model {
       BlockType		      UnitDelay
       Name		      "Unit Delay"
       SID		      38
-      Position		      [540, 623, 575, 657]
+      Position		      [435, 623, 470, 657]
       SampleTime	      "-1"
     }
     Block {
@@ -1429,12 +1468,6 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Unit Delay"
-      SrcPort		      1
-      DstBlock		      "Polyblock3"
-      DstPort		      1
-    }
-    Line {
       SrcBlock		      "Polyblock"
       SrcPort		      1
       DstBlock		      "Unit Delay"
@@ -1463,9 +1496,8 @@ Model {
 	DstPort			4
       }
       Branch {
-	Points			[45, 0; 0, 60; -520, 0]
-	DstBlock		"Polyblock"
-	DstPort			2
+	DstBlock		"Goto1"
+	DstPort			1
       }
     }
     Line {
@@ -1494,6 +1526,24 @@ Model {
       SrcPort		      1
       Points		      [0, -20]
       DstBlock		      "Subsystem"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Unit Delay"
+      SrcPort		      1
+      DstBlock		      "Goto"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From"
+      SrcPort		      1
+      DstBlock		      "Polyblock3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From1"
+      SrcPort		      1
+      DstBlock		      "Polyblock"
       DstPort		      2
     }
   }
