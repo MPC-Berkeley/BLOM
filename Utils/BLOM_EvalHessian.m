@@ -43,7 +43,8 @@ vxderiv = Pvals.*(x(Pcols).^(Pvals - 1)); % derivatives of powers
 vxderiv(expbool) = vx(expbool); % derivatives of exponentials
 vxderiv(logbool) = 1./x(Pcols(logbool)); % derivatives of logarithms
 
-vx2deriv = (Pvals-1).*Pvals.*(x(Pcols).^(Pvals - 2)); % 2nd derivatives of powers
+vx2deriv = (Pvals - 1).*Pvals.*(x(Pcols).^(Pvals - 2)); % 2nd derivatives of powers
+vx2deriv(Pvals == 1) = 0; % fix NaNs from linear powers at x = 0
 vx2deriv(expbool) = vx(expbool); % 2nd derivatives of exponentials
 vx2deriv(logbool) = -x(Pcols(logbool)).^(-2); % 2nd derivatives of logarithms
 
@@ -61,10 +62,13 @@ nnz_H_allterms = sum(nnz_P_per_row.*(nnz_P_per_row+1)/2) - nnz(P == 1);
 Ptrans = P'; % save transpose because getting a column
 % of a sparse matrix is much faster than getting a row
 
-% termHvals contains the nonzero values of each term's Hessian located according
-% to the overall Hessian sparsity pattern, and is of dimension nnz(H_pattern) by r
-termHvals = spalloc(nnz(H_pattern), r, nnz_H_allterms);
-% put the elements of termHvals in the correct places now that H_pattern is known
+% Hmap contains the nonzero values of each term's Hessian located according to
+% the overall Hessian sparsity pattern, and is of dimension nnz(H_pattern) by r
+Hmaprows = zeros(nnz_H_allterms, 1);
+Hmapcols = zeros(nnz_H_allterms, 1);
+Hmapvals = zeros(nnz_H_allterms, 1);
+Hmapend = 0;
+% put the elements of Hmap in the correct places now that H_pattern is known
 for i=nonlinear_terms
     term_nzinds = (nnz_P_prev_rows(i)+1 : nnz_P_prev_rows(i+1));
     term_vars = Pcols(term_nzinds);
@@ -82,13 +86,26 @@ for i=nonlinear_terms
         nextderiv(j) = vx2deriv_term(j); % 2nd derivative on diagonal
         for k=1:length(term_vars)
             % rows of this term's Hessian
-            elem_factors = factors;
-            elem_factors(k) = nextderiv(k); % mixed 2nd derivative
-            termHcolumn(term_vars(k)) = prod(elem_factors);
+            if nextderiv(k) == 0
+                termHcolumn(term_vars(k)) = 0;
+            else
+                elem_factors = factors;
+                elem_factors(k) = nextderiv(k); % mixed 2nd derivative
+                termHcolumn(term_vars(k)) = prod(elem_factors);
+            end
         end
-        termHvals(nnz_H_prev_cols(colj)+1 : nnz_H_prev_cols(colj+1), i) = ...
-            termHcolumn(H_pattern(:, colj));
+        termHcolreduced = termHcolumn(H_pattern(:, colj));
+        if any(termHcolreduced)
+            inds = find(termHcolreduced);
+            Hmaprange = Hmapend + 1 : Hmapend + length(inds);
+            Hmaprows(Hmaprange) = nnz_H_prev_cols(colj) + inds;
+            Hmapcols(Hmaprange) = i;
+            Hmapvals(Hmaprange) = termHcolreduced(inds);
+            Hmapend = Hmapend + length(inds);
+        end
     end
 end
-Hvals = termHvals * (K' * Lambda);
+Hmap = sparse(Hmaprows(1:Hmapend), Hmapcols(1:Hmapend), ...
+    Hmapvals(1:Hmapend), nnz(H_pattern), r);
+Hvals = Hmap * (K' * Lambda);
 H = sparse(Hrows, Hcols, Hvals, n, n);
