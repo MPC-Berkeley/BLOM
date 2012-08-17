@@ -190,6 +190,13 @@ function [outportHandles,boundStruct,stop] = ...
             iZero);
     end
     
+    % array of outport indices to remove at the end of search. for now, we
+    % want to remove the outports of From blocks. Do not want to remove it
+    % during the search to prevent finding it over again each time
+    removeOutport = zeros(10,1);
+    removeOutportZeroIndex = 1;
+    
+    
     % iOut is current handle we are looking at
 	iOut = 1;
     while 1
@@ -216,7 +223,6 @@ function [outportHandles,boundStruct,stop] = ...
         sourceType = get_param(sourceBlock,'BlockType');
         refBlock = get_param(sourceBlock,'ReferenceBlock');
         
-        
         if strcmp(sourceType,'SubSystem') && isempty(refBlock)
             % if the current block is a subsystem and not from BLOM, 
             % want to look under the subsystem and get the appropriate
@@ -224,6 +230,28 @@ function [outportHandles,boundStruct,stop] = ...
             sourceOutports = [sourcePorts.Outport];
             [outportHandles,iZero] = getOutports(sourceOutports,...
                 outportHandles,iZero,iOut); 
+        elseif strcmp(sourceType,'From')
+            % the current block is a from block, find goto block and see
+            % what is connected to the goto block
+            tag = get_param(sourceBlock,'GotoTag');
+            
+            % want to remove this outport later since all is does is route
+            % a signal
+            removeOutport(removeOutportZeroIndex) = iOut;
+            removeOutportZeroIndex = removeOutportZeroIndex + 1;
+            
+            if removeOutportZeroIndex==length(removeOutport)
+                removeOutport = [removeOutport; zeros(length(removeOutport),1)];
+            end
+            
+            % there should only be one goto block associated with this from
+            % block
+            gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
+            gotoPorts = get_param(gotoBlock{1},'PortHandles');
+            sourceInports = [gotoPorts.Inport];
+            [outportHandles,iZero] = getOutports(sourceInports,...
+                outportHandles,iZero);
+            
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
             % except look for what's connected. 
@@ -271,6 +299,14 @@ function [outportHandles,boundStruct,stop] = ...
         % found right here
         iOut = iOut+1;
     end
+    
+    % remove unwanted outports (e.g. from block outport)
+    if any(removeOutport==0)
+        removeOutport = removeOutport(1:(removeOutportZeroIndex-1));
+    end
+    outportHandles(removeOutport) = [];
+    iZero = iZero-removeOutportZeroIndex+1;
+    
     if any(outportHandles==0)
         outportHandles = outportHandles(1:iZero-1);
     end
@@ -320,10 +356,9 @@ function [outportHandles,iZero] = getOutports(inports,existingOutports,iZero,var
         currentOutport = existingOutports(iOut);
         % if there's a subsystem, inports is actually an array of the
         % outports
-        fprintf('I get here \n')
-        parent = get_param(currentOutport,'Parent')
-        index = inports==currentOutport
-        outportBlocks = find_system(parent,'regexp','on','BlockType','Outport')
+        parent = get_param(currentOutport,'Parent');
+        index = inports==currentOutport;
+        outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
         handle = get_param(outportBlocks{index},'Handle');
         portH = get_param(handle,'PortHandles');
         currentInport = [portH.Inport];
