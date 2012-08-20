@@ -230,6 +230,15 @@ function [outportHandles,boundStruct,stop] = ...
             sourceOutports = [sourcePorts.Outport];
             [outportHandles,iZero] = getOutports(sourceOutports,...
                 outportHandles,iZero,iOut); 
+            
+            % want to remove this outport later since all is does is route
+            % a signal
+            removeOutport(removeOutportZeroIndex) = iOut;
+            removeOutportZeroIndex = removeOutportZeroIndex + 1;
+            
+            if removeOutportZeroIndex==length(removeOutport)
+                removeOutport = [removeOutport; zeros(length(removeOutport),1)];
+            end
         elseif strcmp(sourceType,'From')
             % the current block is a from block, find goto block and see
             % what is connected to the goto block
