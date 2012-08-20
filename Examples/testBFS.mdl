@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.30"
+    ComputedModelVersion    "1.33"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Aug 16 18:09:28 2012"
-  RTWModifiedTimeStamp	  267040921
-  ModelVersionFormat	  "1.%<AutoIncrement:30>"
+  LastModifiedDate	  "Mon Aug 20 12:52:07 2012"
+  RTWModifiedTimeStamp	  267367926
+  ModelVersionFormat	  "1.%<AutoIncrement:33>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -728,7 +728,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [750, 118, 1707, 872]
+    Location		    [107, 51, 1150, 998]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -742,7 +742,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    79
+    SIDHighWatermark	    92
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -865,16 +865,9 @@ Model {
     }
     Block {
       BlockType		      Constant
-      Name		      "Constant6"
-      SID		      52
-      Position		      [105, 560, 135, 590]
-      Value		      "4:5"
-    }
-    Block {
-      BlockType		      Constant
-      Name		      "Constant7"
-      SID		      54
-      Position		      [105, 635, 135, 665]
+      Name		      "Constant8"
+      SID		      83
+      Position		      [210, 805, 240, 835]
       Value		      "4:5"
     }
     Block {
@@ -965,6 +958,20 @@ Model {
       GotoTag		      "B"
     }
     Block {
+      BlockType		      From
+      Name		      "From2"
+      SID		      91
+      Position		      [95, 566, 135, 594]
+      GotoTag		      "C"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From3"
+      SID		      92
+      Position		      [95, 636, 135, 664]
+      GotoTag		      "D"
+    }
+    Block {
       BlockType		      Goto
       Name		      "Goto"
       SID		      75
@@ -978,6 +985,22 @@ Model {
       SID		      78
       Position		      [820, 645, 860, 675]
       GotoTag		      "B"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto2"
+      SID		      89
+      Position		      [410, 775, 450, 805]
+      GotoTag		      "C"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto3"
+      SID		      90
+      Position		      [410, 830, 450, 860]
+      GotoTag		      "D"
       TagVisibility	      "local"
     }
     Block {
@@ -1151,7 +1174,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[1323, 621, 1648, 853]
+	Location		[1324, 644, 1649, 876]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1274,6 +1297,145 @@ Model {
 	  SrcBlock		  "Unit Delay2"
 	  SrcPort		  1
 	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem1"
+      SID		      85
+      Ports		      [1, 2]
+      Position		      [325, 775, 365, 835]
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem1"
+	Location		[307, 788, 647, 968]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  87
+	  Position		  [55, 123, 85, 137]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "sub_Constant4"
+	  SID			  81
+	  Position		  [25, 25, 55, 55]
+	  Value			  "4:5"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "sub_Constant5"
+	  SID			  82
+	  Position		  [25, 95, 55, 125]
+	  Value			  "4:5"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "sub_Polyblock1"
+	  SID			  84
+	  Ports			  [1, 2]
+	  Position		  [170, 77, 260, 153]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.80"
+	  SourceBlock		  "BLOM_Lib/Polyblock"
+	  SourceType		  ""
+	  ShowPortLabels	  "none"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  P			  "sparse([1 1 0; 3 1 0])"
+	  K			  "sparse([1 0.8; 1 1])"
+	  inputs		  "0"
+	  inputScalar		  on
+	  outputScalar		  on
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "sub_Product1"
+	  SID			  80
+	  Ports			  [3, 1]
+	  Position		  [110, 82, 135, 138]
+	  Inputs		  "3"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  86
+	  Position		  [285, 88, 315, 102]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out2"
+	  SID			  88
+	  Position		  [285, 128, 315, 142]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "sub_Constant4"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 50]
+	  DstBlock		  "sub_Product1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "sub_Constant5"
+	  SrcPort		  1
+	  DstBlock		  "sub_Product1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "sub_Product1"
+	  SrcPort		  1
+	  DstBlock		  "sub_Polyblock1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "sub_Polyblock1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "sub_Product1"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "sub_Polyblock1"
+	  SrcPort		  2
+	  DstBlock		  "Out2"
 	  DstPort		  1
 	}
       }
@@ -1515,14 +1677,14 @@ Model {
       DstPort		      4
     }
     Line {
-      SrcBlock		      "Constant6"
+      SrcBlock		      "From2"
       SrcPort		      1
-      Points		      [10, 0; 0, 25]
+      Points		      [10, 0; 0, 20]
       DstBlock		      "Subsystem"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Constant7"
+      SrcBlock		      "From3"
       SrcPort		      1
       Points		      [0, -20]
       DstBlock		      "Subsystem"
@@ -1545,6 +1707,26 @@ Model {
       SrcPort		      1
       DstBlock		      "Polyblock"
       DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Constant8"
+      SrcPort		      1
+      Points		      [50, 0; 0, -15]
+      DstBlock		      "Subsystem1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Subsystem1"
+      SrcPort		      1
+      DstBlock		      "Goto2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Subsystem1"
+      SrcPort		      2
+      Points		      [10, 0; 0, 25]
+      DstBlock		      "Goto3"
+      DstPort		      1
     }
   }
 }
