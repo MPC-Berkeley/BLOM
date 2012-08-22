@@ -102,7 +102,7 @@ if nargin > 2
             factors(j) = vxderiv_term(j); % derivative of this column
             nextderiv = vxderiv_term;
             nextderiv(j) = vx2deriv_term(j); % 2nd derivative on diagonal
-            for k=1:length(term_vars)
+            for k=j:length(term_vars)
                 % rows of this term's Hessian
                 if nextderiv(k) == 0
                     termHcolumn(term_vars(k)) = 0;

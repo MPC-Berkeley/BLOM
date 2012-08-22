@@ -66,7 +66,7 @@ if skip_Fixed_and_X0
     new.n_ub = new.n_ub + new.n_fixed;
 end
 new.JacobianPattern = double(new.K(2:end,:)~=0)*double(new.P~=0) ~= 0;
-[new.HessianPattern, new.LambdaPattern] = BLOM_HessianPattern(new.P, new.K);
+[new.HessianPattern, new.LambdaPattern] = BLOM_EvalHessian(new.P, new.K);
 
 % Now save the new format to data files
 params_file = fopen([folder filesep 'params.txt'], 'w+');
