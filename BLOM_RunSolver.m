@@ -19,6 +19,8 @@ function [ SolverResult  ResultsVec ]=  BLOM_RunSolver(SolverStruct,ModelSpec,op
 switch (SolverStruct.solver)
     case 'fmincon'
         ResultsVec = fmincon(SolverStruct.prData);
+    case 'linprog'
+        ResultsVec = linprog(SolverStruct.prData);
     case 'IPOPT'
         
         % mfilename('fullpath') returns the entire path to this script

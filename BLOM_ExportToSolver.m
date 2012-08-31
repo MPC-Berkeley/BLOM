@@ -61,4 +61,26 @@ switch (solver)
         SolverStruct.solver = solver;
         SolverStruct.name = ModelSpec.name;
         SolverStruct.fixed_idx = idx;
+    case 'linprog'
+        SolverStruct.solver = solver;
+        SolverStruct.name = ModelSpec.name;
+
+        
+        if BLOM_CheckIfLinear(ModelSpec.A) == false
+            warning('The model is not linear, will be linearized around x=0');
+        end
+        Jac       = BLOM_EvalJacobian(ModelSpec.A, ModelSpec.C , zeros(size(ModelSpec.A,2),1));
+        Constant  = BLOM_EvalPolyBlock(ModelSpec.A,ModelSpec.C, zeros(size(ModelSpec.A,2),1));
+        SolverStruct.pr.f = Jac(1,:);
+        SolverStruct.pr.Aineq  = Jac(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C,:);
+        SolverStruct.pr.bineq = -Constant(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C);
+        SolverStruct.pr.Aeq  = Jac(ModelSpec.eq_start_C:ModelSpec.eq_end_C,:);
+        SolverStruct.pr.beq = -Constant(ModelSpec.eq_start_C:ModelSpec.eq_end_C);
+        SolverStruct.pr.lb = [];
+        SolverStruct.pr.ub = [];
+        SolverStruct.pr.solver = 'linprog';
+        SolverStruct.pr.options = optimset;
+
+        
+        
 end

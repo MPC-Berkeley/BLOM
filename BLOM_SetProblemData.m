@@ -75,6 +75,23 @@ switch (SolverStruct.solver)
         CreateIpoptDAT('test',vec(SolverStruct.fixed_idx),x0);
         
 %         SolverStruc
+
+    case 'linprog'
+        SolverStruct.prData = SolverStruct.pr;
+        SolverStruct.prData.x0  = x0;
+        % fix external vars
+        idx = find(ModelSpec.ex_vars);
+        for i=1:length(idx)
+            SolverStruct.prData.Aeq(end+1,idx(i))=1;
+            SolverStruct.prData.beq(end+1) = vecExt(idx(i));
+        end
+        
+        % fix stare vars
+        idx = find(ModelSpec.all_state_vars);
+        for i=1:length(idx)
+            SolverStruct.prData.Aeq(end+1,idx(i))=1;
+            SolverStruct.prData.beq(end+1) = vecStates(idx(i));
+        end
 end
 
 
