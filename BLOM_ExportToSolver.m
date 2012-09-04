@@ -27,8 +27,8 @@ switch (solver)
         pr.bineq = B;
         pr.Aeq = Aeq;
         pr.beq = Beq;
-        pr.lb = [];
-        pr.ub = [];
+        pr.lb = -inf(size(ModelSpec.A,2),1);
+        pr.ub = inf(size(ModelSpec.A,2),1);
         pr.solver = 'fmincon';
         
         pr.options = optimset('GradObj','on','GradConstr','on','MaxIter',1000);
@@ -76,8 +76,8 @@ switch (solver)
         SolverStruct.pr.bineq = -Constant(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C);
         SolverStruct.pr.Aeq  = Jac(ModelSpec.eq_start_C:ModelSpec.eq_end_C,:);
         SolverStruct.pr.beq = -Constant(ModelSpec.eq_start_C:ModelSpec.eq_end_C);
-        SolverStruct.pr.lb = [];
-        SolverStruct.pr.ub = [];
+        SolverStruct.pr.lb = -inf(size(ModelSpec.A,2),1);
+        SolverStruct.pr.ub = inf(size(ModelSpec.A,2),1);
         SolverStruct.pr.solver = 'linprog';
         SolverStruct.pr.options = optimset;
 

@@ -34,19 +34,15 @@ switch (SolverStruct.solver)
         SolverStruct.prData = SolverStruct.pr;
         SolverStruct.prData.x0  = x0;
         % fix external vars
-        
-        idx = find(ModelSpec.ex_vars);
-        for i=1:length(idx)
-            SolverStruct.prData.Aeq(end+1,idx(i))=1;
-            SolverStruct.prData.beq(end+1) = vecExt(idx(i));
-        end
-        
-        % fix stare vars
-        idx = find(ModelSpec.all_state_vars);
-        for i=1:length(idx)
-            SolverStruct.prData.Aeq(end+1,idx(i))=1;
-            SolverStruct.prData.beq(end+1) = vecStates(idx(i));
-        end
+        SolverStruct.prData.lb(ModelSpec.ex_vars ~= 0) = ...
+            vecExt(ModelSpec.ex_vars ~= 0);
+        SolverStruct.prData.ub(ModelSpec.ex_vars ~= 0) = ...
+            vecExt(ModelSpec.ex_vars ~= 0);
+        % fix state vars
+        SolverStruct.prData.lb(ModelSpec.all_state_vars ~= 0) = ...
+            vecStates(ModelSpec.all_state_vars ~= 0);
+        SolverStruct.prData.ub(ModelSpec.all_state_vars ~= 0) = ...
+            vecStates(ModelSpec.all_state_vars ~= 0);
         
     case 'IPOPT'
         
@@ -80,18 +76,15 @@ switch (SolverStruct.solver)
         SolverStruct.prData = SolverStruct.pr;
         SolverStruct.prData.x0  = x0;
         % fix external vars
-        idx = find(ModelSpec.ex_vars);
-        for i=1:length(idx)
-            SolverStruct.prData.Aeq(end+1,idx(i))=1;
-            SolverStruct.prData.beq(end+1) = vecExt(idx(i));
-        end
-        
-        % fix stare vars
-        idx = find(ModelSpec.all_state_vars);
-        for i=1:length(idx)
-            SolverStruct.prData.Aeq(end+1,idx(i))=1;
-            SolverStruct.prData.beq(end+1) = vecStates(idx(i));
-        end
+        SolverStruct.prData.lb(ModelSpec.ex_vars ~= 0) = ...
+            vecExt(ModelSpec.ex_vars ~= 0);
+        SolverStruct.prData.ub(ModelSpec.ex_vars ~= 0) = ...
+            vecExt(ModelSpec.ex_vars ~= 0);
+        % fix state vars
+        SolverStruct.prData.lb(ModelSpec.all_state_vars ~= 0) = ...
+            vecStates(ModelSpec.all_state_vars ~= 0);
+        SolverStruct.prData.ub(ModelSpec.all_state_vars ~= 0) = ...
+            vecStates(ModelSpec.all_state_vars ~= 0);
 end
 
 
