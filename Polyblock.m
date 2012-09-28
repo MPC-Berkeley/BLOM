@@ -396,7 +396,7 @@ function WriteRTW(block)
    
 %endfunction
 
-function Outputs(block)
+function [y]=Outputs(block)
 
   A = block.DialogPrm(1).Data;
   C = block.DialogPrm(2).Data;
@@ -511,11 +511,11 @@ function Outputs(block)
 
 function Update(block)
 
-Outputs(block);
+y = Outputs(block);
 
 udata = get(gcbh,'UserData');
 val = udata{3};
-val(end+1,:) = block.OutputPort(1).Data;
+val(end+1,:) = y;
 udata{3} = val;
 set(gcbh,'UserData',udata);
 

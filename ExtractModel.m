@@ -778,6 +778,7 @@ names = names(stay_places);
 function[core_vars,core_functions]  = FindCoreModel(AAs,Cs,state_vars,ex_vars,in_vars,ineq_vars,cost_vars)
 
 core_vars = -1*ones(1,size(AAs{1},2));
+core_functions = struct;
 % core_vars(ineq_vars ~=0 ) = -1;
 
 core_vars(state_vars ~= 0) = 1e6;  % never remove state vars and derivatives
