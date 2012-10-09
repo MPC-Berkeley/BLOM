@@ -18,9 +18,9 @@ function [ SolverResult  ResultsVec ]=  BLOM_RunSolver(SolverStruct,ModelSpec,op
 
 switch (SolverStruct.solver)
     case 'fmincon'
-        ResultsVec = fmincon(SolverStruct.prData);
+        [ ResultsVec, FVAL,EXITFLAG] = fmincon(SolverStruct.prData);
     case 'linprog'
-        ResultsVec = linprog(SolverStruct.prData);
+        [ ResultsVec, FVAL,EXITFLAG] = linprog(SolverStruct.prData);
     case 'IPOPT'
         
         % mfilename('fullpath') returns the entire path to this script
@@ -39,9 +39,10 @@ switch (SolverStruct.solver)
             return;
         end
         
-        res = system(BLOM_NLP_exe);
+        EXITFLAG = system(BLOM_NLP_exe);
         ResultsVec = load('result.dat');
 end
 
 
 SolverResult = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec);
+SolverResult.SolverExitFlag = EXITFLAG;
