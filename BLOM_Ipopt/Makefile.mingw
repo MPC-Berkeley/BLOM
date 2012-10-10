@@ -50,7 +50,7 @@ INCL = -I`$(CYGPATH_W) $(IPOPTPATH)/include/coin`  $(ADDINCFLAGS)
 # Linker flags
 #LIBS = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --libs ipopt`
 ##LIBS = -link -libpath:`$(CYGPATH_W) $(IPOPTPATH)/lib` libipopt.lib -llapack -lblas -lm  -ldl
-LIBS = `sed -e 's/ -lmsvcrt / /g' $(IPOPTPATH)/share/coin/doc/Ipopt/ipopt_addlibs_c.txt`
+LIBS = -static `sed -e 's/ -lmsvcrt / /g' $(IPOPTPATH)/share/coin/doc/Ipopt/ipopt_addlibs_c.txt`
 
 # The following is necessary under cygwin, if native compilers are used
 CYGPATH_W = echo
