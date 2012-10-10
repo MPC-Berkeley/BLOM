@@ -10,7 +10,7 @@ BLOM_dir = fileparts(mfilename('fullpath'));
 
 switch (computer)
     case {'PCWIN','PCWIN64'}
-        which_shell = questdlg('MinGW or Cygwin?','','MinGW','Cygwin','');
+        which_shell = questdlg('MinGW or Cygwin?','','MinGW','Cygwin','MinGW');
     case  {'GLNX86','GLNXA64'}
         makefile = 'Makefile';
     case {'MACI','MACI64'}
