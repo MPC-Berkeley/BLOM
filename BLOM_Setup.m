@@ -7,17 +7,6 @@ function BLOM_Setup(ipopt_dir)
 % the first output of fileparts(ans) gives the path string, same as dirname in unix
 BLOM_dir = fileparts(mfilename('fullpath'));
 
-
-switch (computer)
-    case {'PCWIN','PCWIN64'}
-        which_shell = questdlg('MinGW or Cygwin?','','MinGW','Cygwin','MinGW');
-    case  {'GLNX86','GLNXA64'}
-        makefile = 'Makefile';
-    case {'MACI','MACI64'}
-        makefile = 'Makefile.mac';
-end
-
-
 if nargin==0
     disp('Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT')
     ipopt_dir = uigetdir('','Pick an IPOPT folder that holds lib directory, press cancel for no IPOPT');
@@ -27,12 +16,11 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
         % Replace backslashes in BLOM and Ipopt paths with forward slashes
         BLOM_dir = strrep(BLOM_dir, '\', '/');
         ipopt_dir = strrep(ipopt_dir, '\', '/');
+        which_shell = questdlg('MinGW or Cygwin?','','MinGW','Cygwin','MinGW');
         if strcmp(which_shell, 'MinGW')
             shell_dir = 'MinGW\msys\1.0';
-            makefile = 'Makefile.mingw';
         elseif strcmp(which_shell, 'Cygwin')
             shell_dir = 'cygwin';
-            makefile = 'Makefile';
             % Have to translate ipopt_dir into Cygwin /cygdrive/... format
             ipopt_dir = ['`cygpath "' ipopt_dir '"`'];
         else
@@ -45,7 +33,8 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
             warning(['Invalid selection of shell_dir=' shell_dir])
         else
             system([shell_dir '\sh --login -c "cd ' BLOM_dir '/BLOM_Ipopt; ' ...
-                'make clean; make -f ' makefile ' all IPOPTPATH=' ipopt_dir '"']);
+                ipopt_dir '/Ipopt/config.status --file=''Makefile Sparse++/makefile.def''; ' ...
+                'make clean; make all"']);
             
             if (~exist('BLOM_NLP.exe','file'))
                 warning('Compilation of BLOM_NLP.exe failed. Check the screen for errors');
@@ -58,21 +47,8 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
     else
         cur_dir = pwd;
         cd([BLOM_dir '/BLOM_Ipopt']);
-        system('make clean');
-        % Workaround for Macs, gfortran gets installed in /usr/local but Matlab
-        % doesn't have /usr/local on the path unless it's started from a terminal
-        [status result] = system('which gfortran');
-        if isequal(makefile, 'Makefile.mac') && isempty(result)
-            setenv('PATH',[getenv('PATH') pathsep '/usr/local/bin']);
-        end
-        if isequal(makefile, 'Makefile.mac')
-            [status result] = system('echo $(readlink $(which gfortran))');
-            result = [fileparts(fileparts(result)) '/lib'];
-            system(['make -f ' makefile ' all IPOPTPATH=' ipopt_dir ...
-                ' GFORTRANPATH=' result]);
-        else
-            system(['make -f ' makefile ' all IPOPTPATH=' ipopt_dir]);
-        end
+        system([ipopt_dir '/Ipopt/config.status --file="Makefile Sparse++/makefile.def"'])
+        system('make clean; make all');
         
         if (~exist('BLOM_NLP','file'))
             warning('Compilation of BLOM_NLP failed. Check the screen for errors');
@@ -81,6 +57,8 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
             disp('BLOM_NLP was succesfully compiled');
             disp('---------------------------------');
         end
+        %copyfile([matlabroot '/bin/' computer('arch') '/libmwma57.*'],'.')
+        %movefile(ls('libmwma57.*'),strrep(ls('libmwma57.*'),'libmwma57','libhsl'))
         cd(cur_dir)
     end
 else
