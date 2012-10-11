@@ -47,7 +47,7 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
     else
         cur_dir = pwd;
         cd([BLOM_dir '/BLOM_Ipopt']);
-        system([ipopt_dir '/Ipopt/config.status --file="Makefile Sparse++/makefile.def"'])
+        system([ipopt_dir '/Ipopt/config.status --file="Makefile Sparse++/makefile.def"']);
         system('make clean; make all');
         
         if (~exist('BLOM_NLP','file'))
