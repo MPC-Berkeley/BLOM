@@ -489,11 +489,13 @@ function [y]=Outputs(block)
   logbool = inbool & (Avals == BLOM_FunctionCode('log'));
   vX(logbool) = log(X(Acols(logbool))); % logarithms
   sinbool = inbool & (Avals == BLOM_FunctionCode('sin'));
-  vX(sinbool) = sin(X(Acols(sinbool))); % sinus
+  vX(sinbool) = sin(X(Acols(sinbool))); % sines
   cosbool = inbool & (Avals == BLOM_FunctionCode('cos'));
-  vX(cosbool) = cos(X(Acols(cosbool))); % cosinus
+  vX(cosbool) = cos(X(Acols(cosbool))); % cosines
   tanhbool = inbool & (Avals == BLOM_FunctionCode('tanh'));
-  vX(tanhbool) = tanh(X(Acols(tanhbool))); % tanh
+  vX(tanhbool) = tanh(X(Acols(tanhbool))); % hyperbolic tangents
+  atanbool = inbool & (Avals == BLOM_FunctionCode('atan'));
+  vX(atanbool) = atan(X(Acols(atanbool))); % arctangents
   
   prods = ones(size(A,1),1);
   for v = 1:length(Avals)

@@ -69,6 +69,8 @@ if (~isempty(idx))
                         str = [str  'cos(' names{jA(j)} ')' ];
                     elseif A(i,jA(j)) == BLOM_FunctionCode('tanh')
                         str = [str  'tanh(' names{jA(j)} ')' ];
+                    elseif A(i,jA(j)) == BLOM_FunctionCode('atan')
+                        str = [str  'atan(' names{jA(j)} ')' ];
                     else
                         error(['Unrecognized function code ' num2str(A(i,jA(j)))])
                     end

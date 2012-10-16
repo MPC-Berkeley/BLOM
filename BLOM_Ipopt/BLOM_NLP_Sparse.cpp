@@ -12,24 +12,30 @@ __inline double EvalSpecial(double tmp,const double p, const double * x,const in
         if (std::isnan(tmp))
             printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",idx,x[idx],exp(x[idx]));
     }
-    else if (p== BLOM_TYPE_LOG) //log
+    else if (p == BLOM_TYPE_LOG) //log
     {
         tmp *= log(x[idx]);
     }
-    else if (p== BLOM_TYPE_SIN) //sin
+    else if (p == BLOM_TYPE_SIN) //sin
     {
         tmp *= sin(x[idx]);
     }
-    else if (p== BLOM_TYPE_COS) //cos
+    else if (p == BLOM_TYPE_COS) //cos
     {
         tmp *= cos(x[idx]);
     }
-    else if (p== BLOM_TYPE_TANH) //tanh
+    else if (p == BLOM_TYPE_TANH) //tanh
     {
         tmp *= tanh(x[idx]);
     }
+    else if (p == BLOM_TYPE_ATAN) //atan
+    {
+        tmp *= atan(x[idx]);
+    }
     else
+    {
         printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+    }
     
     return tmp;
 }
@@ -125,33 +131,40 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
                     {
                         tmp *= p --;
                     }
-                    else if (p== BLOM_TYPE_EXP) //exp
+                    else if (p == BLOM_TYPE_EXP) //exp
                     {
                         // do nothing for exp
                         
                     }
-                    else if (p==  BLOM_TYPE_LOG) //log
+                    else if (p ==  BLOM_TYPE_LOG) //log
                     {
                         p=-1;
                         
                     }
-                    else if (p==  BLOM_TYPE_SIN) //sin
+                    else if (p ==  BLOM_TYPE_SIN) //sin
                     {
                         p = BLOM_TYPE_COS;
                     }
-                    else if (p== BLOM_TYPE_COS) //cos
+                    else if (p == BLOM_TYPE_COS) //cos
                     {
                         tmp *= -1;
                         p = BLOM_TYPE_SIN;
                     }
-                    else if (p== BLOM_TYPE_TANH) //tanh
+                    else if (p == BLOM_TYPE_TANH) //tanh
                     { // special treatment: evaluate it here:
                         double th = tanh(x[A.col_ind(j)]);
                         tmp *= 1 - th*th;
                         continue; // continue to the next variable
                     }
+                    else if (p == BLOM_TYPE_ATAN) //atan
+                    { // special treatment: evaluate it here:
+                        tmp *= 1/(x[A.col_ind(j)]*x[A.col_ind(j)] + 1);
+                        continue; // continue to the next variable
+                    }
                     else
+                    {
                         printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+                    }
                     
                     
                 }
@@ -245,43 +258,59 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                          {
                              tmp *= p --;
                          }
-                         else if (p==  BLOM_TYPE_EXP) //exp
+                         else if (p == BLOM_TYPE_EXP) //exp
                          {
                              // do nothing for exp
                          }
-                         else if (p== BLOM_TYPE_LOG) //log
+                         else if (p == BLOM_TYPE_LOG) //log
                          {
                              p=-1;
                          }
-                         else if (p==  BLOM_TYPE_SIN) //sin
+                         else if (p == BLOM_TYPE_SIN) //sin
                          {
                              p = BLOM_TYPE_COS;
                          }
-                         else if (p== BLOM_TYPE_COS) //cos
+                         else if (p == BLOM_TYPE_COS) //cos
                          {
                              tmp *= -1;
                              p = BLOM_TYPE_SIN;
                          }
-                         else if (p== BLOM_TYPE_TANH) //tanh
+                         else if (p == BLOM_TYPE_TANH) //tanh
                          { // special treatment: evaluate it here:
-                             if (dvar1==dvar2) // double derivative of tanh
+                             double th = tanh(x[A.col_ind(j)]);
+                             if (dvar1==dvar2) // 2nd derivative of tanh
                              {
                                  // the first time we are in dvar1
-                                 double th = tanh(x[A.col_ind(j)]);
                                  tmp *= -2*th*(1 - th*th);
                                  eval = false; // continue to the next variable
                                  break; // do not check the dvar2
                              }
                              else
                              {
-                                 double th = tanh(x[A.col_ind(j)]);
                                  tmp *= 1 - th*th;
                                  eval = false; // continue to the next variable
                              }
                          }
-                         
+                         else if (p == BLOM_TYPE_ATAN) //atan
+                         { // special treatment: evaluate it here:
+                             double xj = x[A.col_ind(j)];
+                             if (dvar1==dvar2) // 2nd derivative of atan
+                             {
+                                 // the first time we are in dvar1
+                                 tmp *= -2*xj/((xj*xj + 1)*(xj*xj + 1));
+                                 eval = false; // continue to the next variable
+                                 break; // do not check the dvar2
+                             }
+                             else
+                             {
+                                 tmp *= 1/(xj*xj + 1);
+                                 eval = false; // continue to the next variable
+                             }
+                         }
                          else
+                         {
                              printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+                         }
                      }
                  }
                  

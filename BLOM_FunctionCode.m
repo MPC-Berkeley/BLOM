@@ -7,26 +7,28 @@ function code = BLOM_FunctionCode(fcn)
 % for function and gradient generation and evaluation.
 
 if nargin == 0
-   fcn = '';
+    fcn = '';
 end
 switch fcn
-   case 'exp'
-      code = 1e20; 
-   case 'log'
-      code = 2e20;
+    case 'exp'
+        code = 1e20;
+    case 'log'
+        code = 2e20;
     case 'sin'
         code = 3e20;
     case 'cos'
         code = 4e20;
     case 'tanh'
         code = 5e20;
-   otherwise
-      if isempty(fcn)
-         % output a vector listing all the exception code values
-         code = (1:5)'*1e20;
-      else
-         error(['Function ' fcn ' not recognized'])
-      end
+    case 'atan'
+        code = 6e20;
+    otherwise
+        if isempty(fcn)
+            % output a column vector listing all the exception code values
+            code = (1:6)'*1e20;
+        else
+            error(['Function ' fcn ' not recognized'])
+        end
 end
 
 
