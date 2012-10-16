@@ -23,7 +23,7 @@ switch fcn
    otherwise
       if isempty(fcn)
          % output a vector listing all the exception code values
-         code = [1:5]*1e20;
+         code = (1:5)'*1e20;
       else
          error(['Function ' fcn ' not recognized'])
       end
