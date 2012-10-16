@@ -12,6 +12,7 @@ if 1 % sparse version
     sinbool  = (Pvals == BLOM_FunctionCode('sin'));
     cosbool  = (Pvals == BLOM_FunctionCode('cos'));
     tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
+    atanbool = (Pvals == BLOM_FunctionCode('atan'));
     
     vx = x(Pcols).^Pvals; % powers of input variables
     vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
@@ -19,6 +20,7 @@ if 1 % sparse version
     vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
     vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
     vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
+    vx(atanbool) = atan(x(Pcols(atanbool))); % arctangents
     
     prods = ones(size(P,1),1); % preallocate products vector
     for v = 1:length(Pvals)
@@ -31,6 +33,7 @@ else % dense version
     sinbool  = (P == BLOM_FunctionCode('sin'));
     cosbool  = (P == BLOM_FunctionCode('cos'));
     tanhbool = (P == BLOM_FunctionCode('tanh'));
+    atanbool = (P == BLOM_FunctionCode('atan'));
     
     vx = xrep.^P; % powers of input variables
     vx(expbool)  = exp(xrep(expbool)); % exponentials
@@ -38,6 +41,7 @@ else % dense version
     vx(sinbool)  = sin(xrep(sinbool)); % sines
     vx(cosbool)  = cos(xrep(cosbool)); % cosines
     vx(tanhbool) = tanh(xrep(tanhbool)); % hyperbolic tangents
+    vx(atanbool) = atan(xrep(atanbool)); % arctangents
     
     prods = prod(vx, 2); % compute products for each term
 end

@@ -12,6 +12,7 @@ codes_struct.log  = 2e20;
 codes_struct.sin  = 3e20;
 codes_struct.cos  = 4e20;
 codes_struct.tanh = 5e20;
+codes_struct.atan = 6e20;
 
 if nargin == 0
     % return vector of all code values

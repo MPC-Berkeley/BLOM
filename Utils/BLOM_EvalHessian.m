@@ -48,6 +48,7 @@ if nargin > 2
     sinbool  = (Pvals == BLOM_FunctionCode('sin'));
     cosbool  = (Pvals == BLOM_FunctionCode('cos'));
     tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
+    atanbool = (Pvals == BLOM_FunctionCode('atan'));
     
     vx = x(Pcols).^Pvals; % powers of input variables
     vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
@@ -55,6 +56,7 @@ if nargin > 2
     vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
     vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
     vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
+    vx(atanbool) = atan(x(Pcols(atanbool))); % arctangents
     
     vxderiv = Pvals.*(x(Pcols).^(Pvals - 1)); % derivatives of powers
     vxderiv(expbool)  = vx(expbool); % derivatives of exponentials
@@ -62,6 +64,7 @@ if nargin > 2
     vxderiv(sinbool)  = cos(x(Pcols(sinbool))); % derivatives of sines
     vxderiv(cosbool)  = -sin(x(Pcols(cosbool))); % derivatives of cosines
     vxderiv(tanhbool) = sech(x(Pcols(tanhbool))).^2; % derivatives of hyperbolic tangents
+    vxderiv(atanbool) = 1./(x(Pcols(atanbool)).^2 + 1); % derivatives of arctangents
     
     vx2deriv = (Pvals - 1).*Pvals.*(x(Pcols).^(Pvals - 2)); % 2nd derivatives of powers
     vx2deriv(Pvals == 1) = 0; % fix NaNs from linear powers at x = 0
@@ -70,6 +73,7 @@ if nargin > 2
     vx2deriv(sinbool)  = -vx(sinbool); % 2nd derivatives of sines
     vx2deriv(cosbool)  = -vx(cosbool); % 2nd derivatives of cosines
     vx2deriv(tanhbool) = -2*vx(tanhbool).*vxderiv(tanhbool); % 2nd derivatives of hyperbolic tangents
+    vx2deriv(atanbool) = -2*x(Pcols(atanbool)).*vxderiv(atanbool).^2; % 2nd derivatives of arctangents
 end
 
 % The Hessian pattern of each term is the outer product of the vector of
