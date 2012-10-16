@@ -17,16 +17,25 @@ nnz_P_per_row = sum(P_pattern, 2);
 nnz_P_prev_rows = [0; cumsum(full(nnz_P_per_row))];
 nonlinear_terms = find(any(P ~= P_pattern, 2) | (nnz_P_per_row > 1))';
 
-expbool = (Pvals == BLOM_FunctionCode('exp'));
-logbool = (Pvals == BLOM_FunctionCode('log'));
+expbool  = (Pvals == BLOM_FunctionCode('exp'));
+logbool  = (Pvals == BLOM_FunctionCode('log'));
+sinbool  = (Pvals == BLOM_FunctionCode('sin'));
+cosbool  = (Pvals == BLOM_FunctionCode('cos'));
+tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
 
 vx = x(Pcols).^Pvals; % powers of input variables
-vx(expbool) = exp(x(Pcols(expbool))); % exponentials
-vx(logbool) = log(x(Pcols(logbool))); % logarithms
+vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
+vx(logbool)  = log(x(Pcols(logbool))); % logarithms
+vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
+vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
+vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
 
 vxderiv = Pvals.*(x(Pcols).^(Pvals - 1)); % derivatives of powers
-vxderiv(expbool) = vx(expbool); % derivatives of exponentials
-vxderiv(logbool) = 1./x(Pcols(logbool)); % derivatives of logarithms
+vxderiv(expbool)  = vx(expbool); % derivatives of exponentials
+vxderiv(logbool)  = 1./x(Pcols(logbool)); % derivatives of logarithms
+vxderiv(sinbool)  = cos(x(Pcols(sinbool))); % derivatives of sines
+vxderiv(cosbool)  = -sin(x(Pcols(cosbool))); % derivatives of cosines
+vxderiv(tanhbool) = sech(x(Pcols(tanhbool))).^2; % derivatives of hyperbolic tangents
 
 % construct Jacobian of vx product vector (same sparsity pattern as P)
 prodJacvals = ones(size(Pvals)); % for linear terms, this is 1

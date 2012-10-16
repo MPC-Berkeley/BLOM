@@ -2,6 +2,39 @@
 #include <string.h>
 #include <math.h>
 
+__inline double EvalSpecial(double tmp,const double p, const double * x,const int idx )
+{
+    if (p == BLOM_TYPE_EXP) //exp
+    {
+        tmp *= exp(x[idx]);
+        if (std::isinf(tmp))
+            printf("BLOM_NLP_Sparse:exp overflow,j=%d, %f %f \n",idx,x[idx],exp(x[idx]));
+        if (std::isnan(tmp))
+            printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",idx,x[idx],exp(x[idx]));
+    }
+    else if (p== BLOM_TYPE_LOG) //log
+    {
+        tmp *= log(x[idx]);
+    }
+    else if (p== BLOM_TYPE_SIN) //sin
+    {
+        tmp *= sin(x[idx]);
+    }
+    else if (p== BLOM_TYPE_COS) //cos
+    {
+        tmp *= cos(x[idx]);
+    }
+    else if (p== BLOM_TYPE_TANH) //tanh
+    {
+        tmp *= tanh(x[idx]);
+    }
+    else
+        printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+    
+    return tmp;
+}
+
+
 double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,const double x[])
 {
 	int row = C.row_ptr(f);
@@ -18,30 +51,23 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 			 for (int j=A_row ; j < A_row_end ; j ++ )
 			 {
 			 	double p = A.val(j);
-			 	if (floor(p)==p && p > 0 && !std::isinf(p)) // int
-			 	{
-			 		for (; p--;  tmp*=x[A.col_ind(j)]);
-			 	}
-			 	else if (!std::isinf(p)) // non-integer power
-			 	{
-			 		tmp *=pow(x[A.col_ind(j)],p);
-                    if (std::isnan(tmp))
-                       printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
-			 	}
-			 	else if (std::isinf(p) == 1) //exp
-			 	{
-			 		tmp *= exp(x[A.col_ind(j)]);
-                    if (std::isinf(tmp))
-                        printf("BLOM_NLP_Sparse:exp overflow,j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
-                    if (std::isnan(tmp))
-                        printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",j,x[A.col_ind(j)],exp(x[A.col_ind(j)]));
-
-			 	}
-			 	else
-			 	{
-			 		tmp *= log(x[A.col_ind(j)]);
-			 	}
-                
+                if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                {
+                    if (floor(p)==p && p >= 0 ) // integer and non negative
+                    {
+                        for (; p--;  tmp*=x[A.col_ind(j)]);
+                    }
+                    else  // non-integer power
+                    {
+                        tmp *=pow(x[A.col_ind(j)],p);
+                        if (std::isnan(tmp))
+                            printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                    }
+                }
+			 	else 
+                {
+                    tmp = EvalSpecial(tmp,p,x,A.col_ind(j));
+                }
                 if (std::isnan(tmp))
                     printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f \n", j, x[A.col_ind(j)], p);
 
@@ -67,12 +93,14 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 	
 	double val = 0;
 	
-	for (int i =row ; i < row_end ; i ++)
+	for (int i =row ; i < row_end ; i ++) // Loop on sparse indices of the row - C coefficients
 	{
-			int A_row = A.row_ptr(C.col_ind(i));
-			int A_row_end = A.row_ptr(C.col_ind(i)+1);;
+            // fetch the associated row from A
+			int A_row = A.row_ptr(C.col_ind(i)); // begining of the current A row
+			int A_row_end = A.row_ptr(C.col_ind(i)+1); // end of the current A row
 			
-			double tmp = C.val(i);
+			double tmp = C.val(i); // initialize with coefficient value
+            // Check if dvar is present in this term
 			bool found=false;
 			 for (int j=A_row ; j < A_row_end ; j ++ )
 			 {
@@ -82,46 +110,71 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 			 		break;
 			 	}
 			 }
-			 if (!found)
+			 if (!found) // if this term does not include the dvar, the derivative is zero.
 			 {
-			 		continue;
-			 }
-			 	
-			 for (int j=A_row ; j < A_row_end ; j ++ )
-			 {
-			 	double p = A.val(j);
-			 	if (A.col_ind(j) == dvar)
-			 	{
-			 		if(!std::isinf(p))
-			 		{
-			 		   tmp *= p --;
-			 		}
-			 		else if (std::isinf(p) == -1) // log
-			 		{
-			 			tmp *= -1;
-			 			p=-1;
-			 		}
-			 		else // exp
-			 		{ // do nothing for exp
-			 		}
-			 		
-			 	}
-			 	if (floor(p)==p && p >= 0 && !std::isinf(p)) // int
-			 	{
-			 		for (; p--;  tmp*=x[A.col_ind(j)]);
-			 	}
-			 	else if (!std::isinf(p)) // non-integer power
-			 	{
-			 		tmp *=pow(x[A.col_ind(j)],p);
-			 	}
-			 	else if (std::isinf(p) == 1) //exp
-			 	{
-			 		tmp *= exp(x[A.col_ind(j)]);
-			 	}
-			 	else
-			 	{
-			 		tmp *= log(x[A.col_ind(j)]);
-			 	}
+                continue;
+             }
+            
+            // evaluate all term multipliers
+            for (int j=A_row ; j < A_row_end ; j ++ )
+            {
+                double p = A.val(j);
+                if (A.col_ind(j) == dvar) // special treatment for dvar
+                {
+                    if(p < BLOM_TYPE_EXP)
+                    {
+                        tmp *= p --;
+                    }
+                    else if (p== BLOM_TYPE_EXP) //exp
+                    {
+                        // do nothing for exp
+                        
+                    }
+                    else if (p==  BLOM_TYPE_LOG) //log
+                    {
+                        p=-1;
+                        
+                    }
+                    else if (p==  BLOM_TYPE_SIN) //sin
+                    {
+                        p = BLOM_TYPE_COS;
+                    }
+                    else if (p== BLOM_TYPE_COS) //cos
+                    {
+                        tmp *= -1;
+                        p = BLOM_TYPE_SIN;
+                    }
+                    else if (p== BLOM_TYPE_TANH) //tanh
+                    { // special treatment: evaluate it here:
+                        double th = tanh(x[A.col_ind(j)]);
+                        tmp *= 1 - th*th;
+                        continue; // continue to the next variable
+                    }
+                    else
+                        printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+                    
+                    
+                }
+
+                
+                
+                if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                {
+                    if (floor(p)==p && p >= 0 ) // integer and non negative
+                    {
+                        for (; p--;  tmp*=x[A.col_ind(j)]);
+                    }
+                    else  // non-integer power
+                    {
+                        tmp *=pow(x[A.col_ind(j)],p);
+                        if (std::isnan(tmp))
+                            printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                    }
+                }
+                else
+                {
+                    tmp = EvalSpecial(tmp,p,x,A.col_ind(j));
+                }
 			 	
 			 }
 			 
@@ -177,57 +230,92 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
 			 if (!found)
 			 {
 			 		continue;
-			 }
-			 	
-			 for (int j=A_row ; j < A_row_end ; j ++ )
-			 {
-			 	double p = A.val(j);
-			 	for (int k=0, dvar = dvar1; k<2; k++, dvar = dvar2)
-			 	{
-				 	if (A.col_ind(j) == dvar)
-				 	{
-				 		if(!std::isinf(p))
-				 		{
-				 		   tmp *= p --;
-				 		}
-				 		else if (std::isinf(p) == -1) // log
-				 		{
-				 			tmp *= -1;
-				 			p=-1;
-				 		}
-				 		else // exp
-				 		{ // do nothing for exp
-				 		}
-				 		
-				 	}
-			 	}
-			 	if (floor(p)==p && p >= 0 && !std::isinf(p)) // int
-			 	{
-			 		for (; p--;  tmp*=x[A.col_ind(j)]);
-			 	}
-			 	else if (!std::isinf(p)) // non-integer power
-			 	{
-			 		tmp *=pow(x[A.col_ind(j)],p);
-			 	}
-			 	else if (std::isinf(p) == 1) //exp
-			 	{
-			 		tmp *= exp(x[A.col_ind(j)]);
-			 	}
-			 	else
-			 	{
-			 		tmp *= log(x[A.col_ind(j)]);
-			 	}
-			 	
-			 }
-			 
-			 val += tmp;
-		
-	}
+             }
+             
+             for (int j=A_row ; j < A_row_end ; j ++ )
+             {
+                 double p = A.val(j);
+                 bool   eval = true;
+                 
+                 for (int k=0, dvar = dvar1; k<2; k++, dvar = dvar2) // check both derivatives
+                 { // Apply the derivative each time dvar is found
+                     if (A.col_ind(j) == dvar)
+                     {
+                         if(p < BLOM_TYPE_EXP)
+                         {
+                             tmp *= p --;
+                         }
+                         else if (p==  BLOM_TYPE_EXP) //exp
+                         {
+                             // do nothing for exp
+                         }
+                         else if (p== BLOM_TYPE_LOG) //log
+                         {
+                             p=-1;
+                         }
+                         else if (p==  BLOM_TYPE_SIN) //sin
+                         {
+                             p = BLOM_TYPE_COS;
+                         }
+                         else if (p== BLOM_TYPE_COS) //cos
+                         {
+                             tmp *= -1;
+                             p = BLOM_TYPE_SIN;
+                         }
+                         else if (p== BLOM_TYPE_TANH) //tanh
+                         { // special treatment: evaluate it here:
+                             if (dvar1==dvar2) // double derivative of tanh
+                             {
+                                 // the first time we are in dvar1
+                                 double th = tanh(x[A.col_ind(j)]);
+                                 tmp *= -2*th*(1 - th*th);
+                                 eval = false; // continue to the next variable
+                                 break; // do not check the dvar2
+                             }
+                             else
+                             {
+                                 double th = tanh(x[A.col_ind(j)]);
+                                 tmp *= 1 - th*th;
+                                 eval = false; // continue to the next variable
+                             }
+                         }
+                         
+                         else
+                             printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
+                     }
+                 }
+                 
+                 
+                 if (eval) { // evalutate if was not evaluted before, such as tanh.
+                     if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                     {
+                         if (floor(p)==p && p >= 0 ) // integer and non negative
+                         {
+                             for (; p--;  tmp*=x[A.col_ind(j)]);
+                         }
+                         else  // non-integer power
+                         {
+                             tmp *=pow(x[A.col_ind(j)],p);
+                             if (std::isnan(tmp))
+                                 printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                         }
+                     }
+                     else
+                     {
+                         tmp = EvalSpecial(tmp,p,x,A.col_ind(j));
+                     }
+                 }
+                 
+             }
+             
+             val += tmp;
+             
+    }
     
     if (std::isinf(val))
         printf("BLOM_NLP_Sparse:dder val overflow, f=%d\n", f);
     
-	return val;
+    return val;
 }
 
 

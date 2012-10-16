@@ -36,6 +36,16 @@ for i = range % for all non zero variables
                 grad.AAs{i}(j,:) = A(j,:);
                 grad.AAs{i}(j,i) = -1;
                 grad.Cs{i}(j) = C(j);
+            elseif (A(j,i) == BLOM_FunctionCode('sin') ) % 
+                grad.AAs{i}(j,:) = A(j,:);
+                grad.AAs{i}(j,i) = BLOM_FunctionCode('cos');
+                grad.Cs{i}(j) = C(j);
+            elseif (A(j,i) == BLOM_FunctionCode('cos') ) % 
+                grad.AAs{i}(j,:) = BLOM_FunctionCode('sin');
+                grad.AAs{i}(j,i) = -1;
+                grad.Cs{i}(j) = -C(j);
+            elseif (A(j,i) == BLOM_FunctionCode('tanh') ) % 
+                    error(['tanh is unsupported for gradient generation ' ])
             else
                 error(['Unrecognized function code ' num2str(A(j,i))])
             end

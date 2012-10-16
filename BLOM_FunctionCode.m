@@ -11,13 +11,19 @@ if nargin == 0
 end
 switch fcn
    case 'exp'
-      code = inf;
+      code = 1e20; 
    case 'log'
-      code = -inf;
+      code = 2e20;
+    case 'sin'
+        code = 3e20;
+    case 'cos'
+        code = 4e20;
+    case 'tanh'
+        code = 5e20;
    otherwise
       if isempty(fcn)
          % output a vector listing all the exception code values
-         code = [inf; -inf];
+         code = [1:5]*1e20;
       else
          error(['Function ' fcn ' not recognized'])
       end

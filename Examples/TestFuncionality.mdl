@@ -1,12 +1,12 @@
 Model {
   Name			  "TestFuncionality"
-  Version		  7.3
+  Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.27"
+    ComputedModelVersion    "1.30"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -18,15 +18,16 @@ Model {
   DataTypeOverride	  "UseLocalSettings"
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
+  MaxMDLFileLineLength	  120
   Created		  "Thu Jan 12 15:40:57 2012"
   Creator		  "serg"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "vichik"
+  LastModifiedBy	  "Serg"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Mar 28 09:40:32 2012"
-  RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:27>"
+  LastModifiedDate	  "Mon Oct 15 16:06:22 2012"
+  RTWModifiedTimeStamp	  272217976
+  ModelVersionFormat	  "1.%<AutoIncrement:30>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -64,6 +65,7 @@ Model {
   CovMetricSettings	  "dw"
   CovNameIncrementing	  off
   CovHtmlReporting	  on
+  CovForceBlockReductionOff on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
   CovCumulativeVarName	  "covCumulativeData"
@@ -135,7 +137,6 @@ Model {
 	  AutoInsertRateTranBlk	  off
 	  SampleTimeConstraint	  "Unconstrained"
 	  InsertRTBMode		  "Whenever possible"
-	  SignalSizeVariationType "Allow only fixed size"
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  3
@@ -156,12 +157,14 @@ Model {
 	  SignalLogging		  on
 	  InspectSignalLogs	  off
 	  SaveTime		  on
+	  ReturnWorkspaceOutputs  off
 	  StateSaveName		  "xout"
 	  TimeSaveName		  "tout"
 	  OutputSaveName	  "yout"
 	  SignalLoggingName	  "logsout"
 	  OutputOption		  "RefineOutputTimes"
 	  OutputTimes		  "[]"
+	  ReturnWorkspaceOutputsName "out"
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
@@ -180,6 +183,7 @@ Model {
 	  BooleanDataType	  on
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
+	  UseIntDivNetSlope	  off
 	  InlineInvariantSignals  off
 	  OptimizeBlockIOStorage  on
 	  BufferReuse		  on
@@ -187,6 +191,7 @@ Model {
 	  StrengthReduction	  off
 	  EnforceIntegerDowncast  on
 	  ExpressionFolding	  on
+	  BooleansAsBitfields	  off
 	  EnableMemcpy		  on
 	  MemcpyThreshold	  64
 	  PassReuseOutputArgsAs	  "Structure reference"
@@ -252,6 +257,9 @@ Model {
 	  ParameterUnderflowMsg	  "none"
 	  ParameterPrecisionLossMsg "warning"
 	  ParameterTunabilityLossMsg "warning"
+	  FixptConstUnderflowMsg  "none"
+	  FixptConstOverflowMsg	  "none"
+	  FixptConstPrecisionLossMsg "none"
 	  UnderSpecifiedDataTypeMsg "none"
 	  UnnecessaryDatatypeConvMsg "none"
 	  VectorMatrixConversionMsg "none"
@@ -276,6 +284,7 @@ Model {
 	  ModelReferenceSymbolNameMessage "warning"
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
+	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  StrictBusMsg		  "Warning"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
@@ -323,6 +332,9 @@ Model {
 	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
 	  SimBlas		  on
+	  SimCtrlC		  on
+	  SimExtrinsic		  on
+	  SimIntegrity		  on
 	  SimUseLocalCustomCode	  off
 	  SimBuildMode		  "sf_incremental_build"
 	}
@@ -417,6 +429,7 @@ Model {
 	      CustomSymbolStrType     "$N$R$M"
 	      CustomSymbolStrField    "$N$M"
 	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrFcnArg   "rt$I$N$M"
 	      CustomSymbolStrBlkIO    "rtb_$N$M"
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
@@ -471,6 +484,7 @@ Model {
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
 	      IncludeMdlTerminateFcn  on
+	      GeneratePreprocessorConditionals "Disable all"
 	      CombineOutputUpdateFcns off
 	      SuppressErrorStatus     off
 	      ERTFirstTimeCompliant   off
@@ -485,6 +499,7 @@ Model {
 	      PurelyIntegerCode	      off
 	      SupportContinuousTime   on
 	      SupportNonInlinedSFcns  on
+	      SupportVariableSizeSignals off
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
 	      PortableWordSizes	      off
@@ -638,6 +653,9 @@ Model {
       LockScale		      off
       RndMeth		      "Floor"
       SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
     }
     Block {
       BlockType		      Mux
@@ -686,7 +704,7 @@ Model {
   }
   System {
     Name		    "TestFuncionality"
-    Location		    [0, 82, 1386, 917]
+    Location		    [2, 78, 1678, 970]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -700,9 +718,11 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
+    SIDHighWatermark	    80
     Block {
       BlockType		      Constant
       Name		      "500b"
+      SID		      1
       Position		      [575, 100, 605, 130]
       Value		      "399"
       OutDataType	      "sfix(16)"
@@ -711,6 +731,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs"
+      SID		      2
       Position		      [435, 195, 465, 225]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -719,6 +740,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs1"
+      SID		      3
       Position		      [475, 325, 505, 355]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -727,6 +749,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs2"
+      SID		      4
       Position		      [470, 475, 500, 505]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -735,6 +758,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs3"
+      SID		      5
       Position		      [460, 565, 490, 595]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -743,6 +767,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs4"
+      SID		      6
       Position		      [865, 235, 895, 265]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -751,6 +776,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs5"
+      SID		      7
       Position		      [440, 120, 470, 150]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -759,6 +785,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs6"
+      SID		      8
       Position		      [905, 355, 935, 385]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -767,6 +794,7 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs7"
+      SID		      9
       Position		      [880, 620, 910, 650]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -775,7 +803,17 @@ Model {
     Block {
       BlockType		      Abs
       Name		      "Abs8"
+      SID		      10
       Position		      [960, 485, 990, 515]
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Abs
+      Name		      "Abs9"
+      SID		      73
+      Position		      [420, 715, 450, 745]
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
       SaturateOnIntegerOverflow	off
@@ -783,6 +821,7 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant"
+      SID		      11
       Position		      [50, 75, 80, 105]
       Value		      "-1:3"
       OutDataType	      "sfix(16)"
@@ -791,6 +830,7 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant1"
+      SID		      12
       Position		      [640, 560, 670, 590]
       Value		      "1:100"
       OutDataType	      "sfix(16)"
@@ -799,7 +839,8 @@ Model {
     Block {
       BlockType		      Constant
       Name		      "Constant2"
-      Position		      [80, 680, 110, 710]
+      SID		      13
+      Position		      [600, 800, 630, 830]
       Value		      "1:5"
       OutDataType	      "sfix(16)"
       OutScaling	      "2^0"
@@ -807,6 +848,7 @@ Model {
     Block {
       BlockType		      "M-S-Function"
       Name		      "CustomSave"
+      SID		      14
       Ports		      [1]
       Position		      [165, 66, 315, 114]
       FunctionName	      "SaveToWrkspceBLOML2"
@@ -815,6 +857,7 @@ Model {
     Block {
       BlockType		      Demux
       Name		      "Demux"
+      SID		      15
       Ports		      [1, 5]
       Position		      [145, 285, 155, 335]
       ShowName		      off
@@ -824,6 +867,7 @@ Model {
     Block {
       BlockType		      Demux
       Name		      "Demux1"
+      SID		      16
       Ports		      [1, 5]
       Position		      [145, 365, 155, 415]
       ShowName		      off
@@ -833,24 +877,35 @@ Model {
     Block {
       BlockType		      Fcn
       Name		      "Fcn"
+      SID		      17
       Position		      [700, 230, 760, 260]
       Expr		      "(2-u)/u"
     }
     Block {
       BlockType		      Fcn
       Name		      "Fcn1"
+      SID		      18
       Position		      [675, 360, 825, 390]
       Expr		      "(2-u+3*u^3)/(5*u*u+u^3)"
     }
     Block {
       BlockType		      Fcn
       Name		      "Fcn2"
+      SID		      19
       Position		      [685, 490, 905, 520]
       Expr		      "(2-exp(u)+3*log(u))/(log(u)+exp(u))"
     }
     Block {
+      BlockType		      Fcn
+      Name		      "Fcn3"
+      SID		      74
+      Position		      [145, 720, 365, 750]
+      Expr		      "(2-sin(u)+3*cos(u))/(tanh(u)+cos(u))"
+    }
+    Block {
       BlockType		      Gain
       Name		      "Gain"
+      SID		      20
       Position		      [195, 175, 225, 205]
       Gain		      "2"
       ParameterDataTypeMode   "Inherit via internal rule"
@@ -866,6 +921,7 @@ Model {
     Block {
       BlockType		      Gain
       Name		      "Gain1"
+      SID		      21
       Position		      [775, 630, 805, 660]
       Gain		      "-1"
       ParameterDataTypeMode   "Inherit via internal rule"
@@ -881,10 +937,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LargeMatrix"
+      SID		      22
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 535, 800, 605]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(100)*2"
@@ -898,11 +956,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix1"
+      SID		      23
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [170, 30, 215, 50]
       BackgroundColor	      "red"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "> 0"
@@ -910,11 +970,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix10"
+      SID		      24
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [930, 625, 975, 645]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -922,11 +984,27 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix11"
+      SID		      25
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [1010, 490, 1055, 510]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "LessOneMix12"
+      SID		      75
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [470, 720, 515, 740]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -934,11 +1012,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix2"
+      SID		      26
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [495, 200, 540, 220]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -946,11 +1026,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix3"
+      SID		      27
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [955, 360, 1000, 380]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -958,11 +1040,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix4"
+      SID		      28
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [525, 330, 570, 350]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -970,11 +1054,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix5"
+      SID		      29
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [520, 480, 565, 500]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -982,11 +1068,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix6"
+      SID		      30
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [515, 570, 560, 590]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -994,11 +1082,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix7"
+      SID		      31
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [820, 130, 865, 150]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -1006,11 +1096,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix8"
+      SID		      32
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [915, 240, 960, 260]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -1018,11 +1110,13 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "LessOneMix9"
+      SID		      33
       Tag		      "InequalBlock"
       Ports		      [1]
       Position		      [500, 125, 545, 145]
       BackgroundColor	      "green"
       ShowName		      off
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/Constraint"
       SourceType	      ""
       CompareSign	      "< 0"
@@ -1030,6 +1124,7 @@ Model {
     Block {
       BlockType		      Math
       Name		      "Math\nFunction"
+      SID		      34
       Ports		      [1, 1]
       Position		      [705, 629, 755, 661]
       Operator		      "square"
@@ -1039,10 +1134,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta"
+      SID		      35
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 103, 775, 127]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1]"
@@ -1056,10 +1153,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta1"
+      SID		      36
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 138, 260, 162]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1073,10 +1172,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta10"
+      SID		      37
       Tag		      "PolyBlock"
       Ports		      [1, 1]
-      Position		      [185, 652, 400, 738]
+      Position		      [705, 772, 920, 858]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1089,11 +1190,32 @@ Model {
     }
     Block {
       BlockType		      Reference
+      Name		      "MaxDelta11"
+      SID		      76
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [130, 653, 360, 687]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[0  ;BLOM_FunctionCode('sin') ; BLOM_FunctionCode('cos')]"
+      C			      "[2 -1 3]"
+      gA		      "[BLOM_FunctionCode('tanh'); BLOM_FunctionCode('cos')]"
+      gC		      "[1 1]"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "u"
+    }
+    Block {
+      BlockType		      Reference
       Name		      "MaxDelta2"
+      SID		      38
       Tag		      "PolyBlock"
       Ports		      [1, 5]
       Position		      [185, 213, 265, 267]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1107,10 +1229,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta3"
+      SID		      39
       Tag		      "PolyBlock"
       Ports		      [5, 5]
       Position		      [185, 283, 270, 337]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1124,10 +1248,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta4"
+      SID		      40
       Tag		      "PolyBlock"
       Ports		      [5, 1]
       Position		      [185, 363, 270, 417]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1141,10 +1267,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta5"
+      SID		      41
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 448, 270, 502]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1158,10 +1286,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta6"
+      SID		      42
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [185, 532, 265, 618]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "eye(5)"
@@ -1175,10 +1305,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta7"
+      SID		      43
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [700, 178, 775, 202]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1]"
@@ -1192,10 +1324,12 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta8"
+      SID		      44
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [665, 294, 840, 326]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
       A			      "[0  ;1 ; 3]"
@@ -1209,15 +1343,17 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "MaxDelta9"
+      SID		      45
       Tag		      "PolyBlock"
       Ports		      [1, 1]
       Position		      [670, 423, 900, 457]
       BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
       SourceType	      ""
-      A			      "[0  ;inf ; -inf]"
+      A			      "[0  ;BLOM_FunctionCode('exp') ; BLOM_FunctionCode('log')]"
       C			      "[2 -1 3]"
-      gA		      "[-inf; inf]"
+      gA		      "[BLOM_FunctionCode('log'); BLOM_FunctionCode('exp')]"
       gC		      "[1 1]"
       input_type	      "Scalar"
       output_type	      "Scalar"
@@ -1226,6 +1362,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux"
+      SID		      46
       Ports		      [5, 1]
       Position		      [315, 213, 320, 267]
       ShowName		      off
@@ -1235,6 +1372,7 @@ Model {
     Block {
       BlockType		      Mux
       Name		      "Mux1"
+      SID		      47
       Ports		      [5, 1]
       Position		      [315, 283, 320, 337]
       ShowName		      off
@@ -1242,8 +1380,31 @@ Model {
       DisplayOption	      "bar"
     }
     Block {
+      BlockType		      Reference
+      Name		      "Ramp"
+      SID		      80
+      Ports		      [0, 1]
+      Position		      [35, 695, 65, 725]
+      LibraryVersion	      "1.762"
+      SourceBlock	      "simulink/Sources/Ramp"
+      SourceType	      "Ramp"
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      slope		      "1"
+      start		      "0"
+      X0		      "-2"
+      VectorParams1D	      on
+    }
+    Block {
       BlockType		      Scope
       Name		      "Scope1"
+      SID		      48
       Ports		      [1]
       Position		      [825, 54, 855, 86]
       Floating		      off
@@ -1261,6 +1422,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope10"
+      SID		      49
       Ports		      [1]
       Position		      [935, 559, 965, 591]
       Floating		      off
@@ -1279,6 +1441,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope11"
+      SID		      50
       Ports		      [1]
       Position		      [845, 689, 875, 721]
       Floating		      off
@@ -1297,6 +1460,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope12"
+      SID		      51
       Ports		      [1]
       Position		      [1015, 424, 1045, 456]
       Floating		      off
@@ -1315,11 +1479,12 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope13"
+      SID		      52
       Ports		      [1]
-      Position		      [515, 674, 545, 706]
+      Position		      [1035, 794, 1065, 826]
       Floating		      off
       Location		      [599, 341, 1586, 917]
-      Open		      on
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1332,7 +1497,27 @@ Model {
     }
     Block {
       BlockType		      Scope
+      Name		      "Scope14"
+      SID		      77
+      Ports		      [1]
+      Position		      [475, 654, 505, 686]
+      Floating		      off
+      Location		      [100, 320, 424, 559]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "10"
+      SaveName		      "ScopeData13"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
       Name		      "Scope2"
+      SID		      53
       Ports		      [1]
       Position		      [285, 134, 315, 166]
       Floating		      off
@@ -1351,6 +1536,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope3"
+      SID		      54
       Ports		      [1]
       Position		      [485, 224, 515, 256]
       Floating		      off
@@ -1369,6 +1555,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope4"
+      SID		      55
       Ports		      [1]
       Position		      [530, 264, 560, 296]
       Floating		      off
@@ -1387,6 +1574,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope5"
+      SID		      56
       Ports		      [1]
       Position		      [525, 414, 555, 446]
       Floating		      off
@@ -1405,6 +1593,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope6"
+      SID		      57
       Ports		      [1]
       Position		      [515, 509, 545, 541]
       Floating		      off
@@ -1423,6 +1612,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope7"
+      SID		      58
       Ports		      [1]
       Position		      [920, 174, 950, 206]
       Floating		      off
@@ -1441,6 +1631,7 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope8"
+      SID		      59
       Ports		      [1]
       Position		      [490, 149, 520, 181]
       Floating		      off
@@ -1459,11 +1650,12 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope9"
+      SID		      60
       Ports		      [1]
       Position		      [960, 294, 990, 326]
       Floating		      off
-      Location		      [1368, 428, 1692, 667]
-      Open		      on
+      Location		      [1351, 428, 1675, 667]
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1477,6 +1669,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum"
+      SID		      61
       Ports		      [2, 1]
       Position		      [380, 230, 400, 250]
       ShowName		      off
@@ -1492,6 +1685,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum1"
+      SID		      62
       Ports		      [2, 1]
       Position		      [430, 270, 450, 290]
       ShowName		      off
@@ -1507,6 +1701,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum2"
+      SID		      63
       Ports		      [2, 1]
       Position		      [425, 420, 445, 440]
       ShowName		      off
@@ -1522,6 +1717,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum3"
+      SID		      64
       Ports		      [2, 1]
       Position		      [370, 515, 390, 535]
       ShowName		      off
@@ -1537,6 +1733,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum4"
+      SID		      65
       Ports		      [2, 1]
       Position		      [820, 180, 840, 200]
       ShowName		      off
@@ -1552,6 +1749,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum5"
+      SID		      66
       Ports		      [2, 1]
       Position		      [385, 180, 405, 200]
       ShowName		      off
@@ -1567,6 +1765,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum6"
+      SID		      67
       Ports		      [2, 1]
       Position		      [860, 300, 880, 320]
       ShowName		      off
@@ -1582,6 +1781,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum7"
+      SID		      68
       Ports		      [2, 1]
       Position		      [835, 565, 855, 585]
       ShowName		      off
@@ -1597,6 +1797,7 @@ Model {
     Block {
       BlockType		      Sum
       Name		      "Sum8"
+      SID		      69
       Ports		      [2, 1]
       Position		      [915, 430, 935, 450]
       ShowName		      off
@@ -1610,11 +1811,42 @@ Model {
       SaturateOnIntegerOverflow	off
     }
     Block {
+      BlockType		      Sum
+      Name		      "Sum9"
+      SID		      78
+      Ports		      [2, 1]
+      Position		      [375, 660, 395, 680]
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|+-"
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "must be violated"
+      SID		      72
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [920, 105, 965, 125]
+      BackgroundColor	      "red"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
       BlockType		      Reference
       Name		      "state"
+      SID		      70
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [130, 561, 170, 589]
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/state"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1631,9 +1863,11 @@ Model {
     Block {
       BlockType		      Reference
       Name		      "state1"
+      SID		      71
       Tag		      "OptState"
       Ports		      [1, 1]
       Position		      [305, 511, 345, 539]
+      LibraryVersion	      "1.138"
       SourceBlock	      "MPCMdlLib/state"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1646,17 +1880,6 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       init_val		      "0"
       save_name		      "BL_state1"
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "violated"
-      Tag		      "InequalBlock"
-      Ports		      [1]
-      Position		      [890, 105, 935, 125]
-      BackgroundColor	      "red"
-      SourceBlock	      "MPCMdlLib/Constraint"
-      SourceType	      ""
-      CompareSign	      "> 0"
     }
     Line {
       SrcBlock		      "Constant"
@@ -1728,7 +1951,7 @@ Model {
       SrcPort		      1
       Points		      [10, 0]
       Branch {
-	DstBlock		"violated"
+	DstBlock		"must be violated"
 	DstPort			1
       }
       Branch {
@@ -2264,6 +2487,53 @@ Model {
       SrcPort		      1
       DstBlock		      "MaxDelta10"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Sum9"
+      SrcPort		      1
+      Points		      [5, 0]
+      Branch {
+	DstBlock		"Scope14"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Abs9"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Abs9"
+      SrcPort		      1
+      DstBlock		      "LessOneMix12"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Fcn3"
+      SrcPort		      1
+      Points		      [15, 0]
+      DstBlock		      "Sum9"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "MaxDelta11"
+      SrcPort		      1
+      DstBlock		      "Sum9"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Ramp"
+      SrcPort		      1
+      Points		      [20, 0; 0, -5]
+      Branch {
+	Points			[0, -35]
+	DstBlock		"MaxDelta11"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 30]
+	DstBlock		"Fcn3"
+	DstPort			1
+      }
     }
   }
 }

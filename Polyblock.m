@@ -488,6 +488,13 @@ function [y]=Outputs(block)
   vX(expbool) = exp(X(Acols(expbool))); % exponentials
   logbool = inbool & (Avals == BLOM_FunctionCode('log'));
   vX(logbool) = log(X(Acols(logbool))); % logarithms
+  sinbool = inbool & (Avals == BLOM_FunctionCode('sin'));
+  vX(sinbool) = sin(X(Acols(sinbool))); % sinus
+  cosbool = inbool & (Avals == BLOM_FunctionCode('cos'));
+  vX(cosbool) = cos(X(Acols(cosbool))); % cosinus
+  tanhbool = inbool & (Avals == BLOM_FunctionCode('tanh'));
+  vX(tanhbool) = tanh(X(Acols(tanhbool))); % tanh
+  
   prods = ones(size(A,1),1);
   for v = 1:length(Avals)
       prods(Arows(v)) = prods(Arows(v)) * vX(v); % compute products for each term

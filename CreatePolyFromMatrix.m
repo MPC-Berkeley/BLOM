@@ -47,7 +47,7 @@ if (~isempty(idx))
         
         
         for j = 1:length(jA)
-            if (A(i,jA(j)) > 0 && mod(A(i,jA(j)),1) == 0  ) % integer power
+            if (A(i,jA(j)) > 0 && mod(A(i,jA(j)),1) == 0 && A(i,jA(j)) <  min(BLOM_FunctionCode)    ) % integer power
                 for k = 1:A(i,jA(j))
                     if (~(skip_mult && j ==1 && k ==1) )
                         str = [str  '*'];
@@ -63,6 +63,12 @@ if (~isempty(idx))
                         str = [str  'exp(' names{jA(j)} ')' ];
                     elseif A(i,jA(j)) == BLOM_FunctionCode('log')
                         str = [str  'log(' names{jA(j)} ')' ];
+                    elseif A(i,jA(j)) == BLOM_FunctionCode('sin')
+                        str = [str  'sin(' names{jA(j)} ')' ];
+                    elseif A(i,jA(j)) == BLOM_FunctionCode('cos')
+                        str = [str  'cos(' names{jA(j)} ')' ];
+                    elseif A(i,jA(j)) == BLOM_FunctionCode('tanh')
+                        str = [str  'tanh(' names{jA(j)} ')' ];
                     else
                         error(['Unrecognized function code ' num2str(A(i,jA(j)))])
                     end

@@ -34,9 +34,19 @@ using namespace Ipopt;
  *       -1 <= x1 <= 1
  *
  */
+
+#define BLOM_TYPE_EXP (1e20)
+#define BLOM_TYPE_LOG (2e20)
+#define BLOM_TYPE_SIN (3e20)
+#define BLOM_TYPE_COS (4e20)
+#define BLOM_TYPE_TANH (5e20)
+
+
 class MyNLP : public TNLP
 {
 public:
+
+    
   /** default constructor */
   MyNLP();
 
