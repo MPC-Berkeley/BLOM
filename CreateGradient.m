@@ -41,8 +41,8 @@ for i = range % for all non zero variables
                 grad.AAs{i}(j,i) = BLOM_FunctionCode('cos');
                 grad.Cs{i}(j) = C(j);
             elseif (A(j,i) == BLOM_FunctionCode('cos') ) % cos
-                grad.AAs{i}(j,:) = BLOM_FunctionCode('sin');
-                grad.AAs{i}(j,i) = -1;
+                grad.AAs{i}(j,:) = A(j,:);
+                grad.AAs{i}(j,i) = BLOM_FunctionCode('sin');
                 grad.Cs{i}(j) = -C(j);
             elseif (A(j,i) == BLOM_FunctionCode('tanh') ) % tanh
                 error('tanh is unsupported for gradient generation')
