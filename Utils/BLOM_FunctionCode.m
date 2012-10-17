@@ -15,23 +15,21 @@ codes_struct.tanh = 5e20;
 codes_struct.atan = 6e20;
 
 if nargin == 0
-    % return vector of all code values
-    code = cellfun(@(s) codes_struct.(s), fieldnames(codes_struct));
+    fcn = '';
+end
+if isfield(codes_struct, fcn)
+    code = codes_struct.(fcn);
 else
-    if isfield(codes_struct, fcn)
-        code = codes_struct.(fcn);
+    if isempty(fcn) || strcmpi(fcn,'all_codes')
+        % return vector of all code values
+        code = cellfun(@(s) codes_struct.(s), fieldnames(codes_struct));
+    elseif strcmpi(fcn,'codes_struct')
+        % return structure, including new field for vector of all codes
+        codes_struct.all_codes = cellfun(@(s) codes_struct.(s), ...
+            fieldnames(codes_struct));
+        code = codes_struct;
     else
-        if isempty(fcn) || strcmpi(fcn,'all_codes')
-            % return vector of all code values
-            code = cellfun(@(s) codes_struct.(s), fieldnames(codes_struct));
-        elseif strcmpi(fcn,'codes_struct')
-            % return structure, including new field for vector of all codes
-            codes_struct.all_codes = cellfun(@(s) codes_struct.(s), ...
-                fieldnames(codes_struct));
-            code = codes_struct;
-        else
-            error(['Function ' fcn ' not recognized'])
-        end
+        error(['Function ' fcn ' not recognized'])
     end
 end
 
