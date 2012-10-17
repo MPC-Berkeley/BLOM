@@ -4,31 +4,33 @@ function code = BLOM_FunctionCode(fcn)
 % argument, a string representing the desired function such as 'exp',
 % 'log', etc. The output is a scalar double value that is used everywhere
 % else in BLOM to represent these functions and trigger special behavior
-% for function and gradient generation and evaluation.
+% for function and gradient generation and evaluation. If no inputs are
+% given, outputs a vector of all recognized exception code values.
+
+codes_struct.exp  = 1e20;
+codes_struct.log  = 2e20;
+codes_struct.sin  = 3e20;
+codes_struct.cos  = 4e20;
+codes_struct.tanh = 5e20;
+codes_struct.atan = 6e20;
 
 if nargin == 0
     fcn = '';
 end
-switch fcn
-    case 'exp'
-        code = 1e20;
-    case 'log'
-        code = 2e20;
-    case 'sin'
-        code = 3e20;
-    case 'cos'
-        code = 4e20;
-    case 'tanh'
-        code = 5e20;
-    case 'atan'
-        code = 6e20;
-    otherwise
-        if isempty(fcn)
-            % output a column vector listing all the exception code values
-            code = (1:6)'*1e20;
-        else
-            error(['Function ' fcn ' not recognized'])
-        end
+if isfield(codes_struct, fcn)
+    code = codes_struct.(fcn);
+else
+    if isempty(fcn) || strcmpi(fcn,'all_codes')
+        % return vector of all code values
+        code = cellfun(@(s) codes_struct.(s), fieldnames(codes_struct));
+    elseif strcmpi(fcn,'codes_struct')
+        % return structure, including new field for vector of all codes
+        codes_struct.all_codes = cellfun(@(s) codes_struct.(s), ...
+            fieldnames(codes_struct));
+        code = codes_struct;
+    else
+        error(['Function ' fcn ' not recognized'])
+    end
 end
 
 

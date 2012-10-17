@@ -1,5 +1,10 @@
 function str = CreatePolyFromMatrix(A,C,names,precision,target)
 
+persistent BLOM_FunctionCodes
+if isempty(BLOM_FunctionCodes)
+    BLOM_FunctionCodes = BLOM_FunctionCode('codes_struct');
+end
+
 if (nargin < 4)
     precision = 'high';
 end
@@ -43,11 +48,8 @@ if (~isempty(idx))
             end
         end
         
-        
-        
-        
         for j = 1:length(jA)
-            if (A(i,jA(j)) > 0 && mod(A(i,jA(j)),1) == 0 && A(i,jA(j)) <  min(BLOM_FunctionCode)    ) % integer power
+            if (A(i,jA(j)) > 0 && mod(A(i,jA(j)),1) == 0 && A(i,jA(j)) <  min(BLOM_FunctionCodes.all_codes)    ) % integer power
                 for k = 1:A(i,jA(j))
                     if (~(skip_mult && j ==1 && k ==1) )
                         str = [str  '*'];
@@ -58,18 +60,18 @@ if (~isempty(idx))
                 if (~(skip_mult && j ==1 ) )
                     str = [str  '*'];
                 end
-                if any(A(i,jA(j)) == BLOM_FunctionCode)
-                    if A(i,jA(j)) == BLOM_FunctionCode('exp')
+                if any(A(i,jA(j)) == BLOM_FunctionCodes.all_codes)
+                    if A(i,jA(j)) == BLOM_FunctionCodes.exp
                         str = [str  'exp(' names{jA(j)} ')' ];
-                    elseif A(i,jA(j)) == BLOM_FunctionCode('log')
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.log
                         str = [str  'log(' names{jA(j)} ')' ];
-                    elseif A(i,jA(j)) == BLOM_FunctionCode('sin')
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.sin
                         str = [str  'sin(' names{jA(j)} ')' ];
-                    elseif A(i,jA(j)) == BLOM_FunctionCode('cos')
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.cos
                         str = [str  'cos(' names{jA(j)} ')' ];
-                    elseif A(i,jA(j)) == BLOM_FunctionCode('tanh')
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.tanh
                         str = [str  'tanh(' names{jA(j)} ')' ];
-                    elseif A(i,jA(j)) == BLOM_FunctionCode('atan')
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.atan
                         str = [str  'atan(' names{jA(j)} ')' ];
                     else
                         error(['Unrecognized function code ' num2str(A(i,jA(j)))])

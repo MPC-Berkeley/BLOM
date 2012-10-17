@@ -398,6 +398,11 @@ function WriteRTW(block)
 
 function [y]=Outputs(block)
 
+  persistent BLOM_FunctionCodes
+  if isempty(BLOM_FunctionCodes)
+      BLOM_FunctionCodes = BLOM_FunctionCode('codes_struct');
+  end
+
   A = block.DialogPrm(1).Data;
   C = block.DialogPrm(2).Data;
   InputType = block.DialogPrm(3).Data;
@@ -484,17 +489,17 @@ function [y]=Outputs(block)
   inbool = (Acols <= nVarsIn); % input columns
   vX = ones(size(Avals));
   vX(inbool) = X(Acols(inbool)).^Avals(inbool); % powers of input variables
-  expbool = inbool & (Avals == BLOM_FunctionCode('exp'));
+  expbool = inbool & (Avals == BLOM_FunctionCodes.exp);
   vX(expbool) = exp(X(Acols(expbool))); % exponentials
-  logbool = inbool & (Avals == BLOM_FunctionCode('log'));
+  logbool = inbool & (Avals == BLOM_FunctionCodes.log);
   vX(logbool) = log(X(Acols(logbool))); % logarithms
-  sinbool = inbool & (Avals == BLOM_FunctionCode('sin'));
+  sinbool = inbool & (Avals == BLOM_FunctionCodes.sin);
   vX(sinbool) = sin(X(Acols(sinbool))); % sines
-  cosbool = inbool & (Avals == BLOM_FunctionCode('cos'));
+  cosbool = inbool & (Avals == BLOM_FunctionCodes.cos);
   vX(cosbool) = cos(X(Acols(cosbool))); % cosines
-  tanhbool = inbool & (Avals == BLOM_FunctionCode('tanh'));
+  tanhbool = inbool & (Avals == BLOM_FunctionCodes.tanh);
   vX(tanhbool) = tanh(X(Acols(tanhbool))); % hyperbolic tangents
-  atanbool = inbool & (Avals == BLOM_FunctionCode('atan'));
+  atanbool = inbool & (Avals == BLOM_FunctionCodes.atan);
   vX(atanbool) = atan(X(Acols(atanbool))); % arctangents
   
   prods = ones(size(A,1),1);
