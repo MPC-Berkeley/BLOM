@@ -36,15 +36,21 @@ int main(int argv, char* argc[])
 //  app->Options()->SetStringValue("replace_bounds", "yes");
 //  app->Options()->SetStringValue("inexact_algorithm", "yes");
 
-// get current time and set output_file option accordingly
-  time_t timenow = time(NULL);
-  struct tm * timestruct = localtime(&timenow);
-  char timechar[35];
-  strftime(timechar, 35, "./results/output_%y%m%d_%H%M%S.txt", timestruct);
   struct stat st;
-  if (stat("./results/",&st) == 0) // if results folder exists, put output there
+  //printf("stat(./results/) = %d \n", stat("./results/",&st));
+  stat("./results",&st);
+  //printf("./results st.st_mode = %d \n", st.st_mode);
+  //stat("./A.txt",&st);
+  //printf("./A.txt st.st_mode = %d \n", st.st_mode);
+  if (S_ISDIR(st.st_mode)) // if results folder exists, put output there
+  {
+    // get current time and set output_file option accordingly
+    time_t timenow = time(NULL);
+    struct tm * timestruct = localtime(&timenow);
+    char timechar[35];
+    strftime(timechar, 35, "./results/output_%y%m%d_%H%M%S.txt", timestruct);
     app->Options()->SetStringValue("output_file", timechar);
-
+  }
   
   status = app->Initialize();
   if (status != Solve_Succeeded) {
