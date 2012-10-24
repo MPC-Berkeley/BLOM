@@ -1,4 +1,5 @@
-function [ SolverResult  ResultsVec ]=  BLOM_RunSolver(SolverStruct,ModelSpec,options)
+function [ SolverResult, ResultsVec, ResultInfo ] = ...
+    BLOM_RunSolver(SolverStruct,ModelSpec,options)
 %
 %   [ SolverResult  ResultsVec ]=
 %   BLOM_RunSolver(SolverStruct,ModelSpec,options)
@@ -45,4 +46,4 @@ end
 
 
 SolverResult = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec);
-SolverResult.SolverExitFlag = EXITFLAG;
+ResultInfo.SolverExitFlag = EXITFLAG;
