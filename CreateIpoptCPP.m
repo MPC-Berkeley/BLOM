@@ -585,7 +585,7 @@ fclose(feval_h_val);
 fclose(feval_h_idx);
 
 
-function [jacobian hessian Lamda_sparse_map] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
+function [jacobian hessian LambdaMap] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
 %{
 A = cost.A;
 C = cost.C;
@@ -620,16 +620,16 @@ A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
 C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
 
        
-jacobian = spalloc(size(C,1)-1,size(A,2),size(C,1)*6);
-hessian = spalloc(size(A,2),size(A,2),size(A,2));
-Lambda_map_idx = [];
-Lambda_map_constr = [];
+%jacobian = spalloc(size(C,1)-1,size(A,2),size(C,1)*6);
+%hessian = spalloc(size(A,2),size(A,2),size(A,2));
+%Lambda_map_idx = [];
+%Lambda_map_constr = [];
 
  SaveSparseMat(A,'A.txt');
  SaveSparseMat(C,'C.txt');
 
 % translate A to row compact form
-
+%{
 [Arows, Arows_idx_start,Arows_idx_end] = RowCompact(A);
 [Crows, Crows_idx_start,Crows_idx_end] = RowCompact(C);
 
@@ -671,11 +671,14 @@ for i=1:size(C,1)
         end
     end
 end
+hessian_old = hessian;
+%}
 %if ~isequal(jacobian, (double(C(2:end,:)~=0)*double(A~=0))~=0)
 %   disp('mismatch')
 %end
 jacobian = (double(C(2:end,:)~=0)*double(A~=0))~=0;
-
+[hessian, LambdaMap] = BLOM_EvalHessian(A, C);
+%{
 [TotalIdx] = find(hessian);
 
 
@@ -684,7 +687,12 @@ idx = 1:length(TotalIdx);
 [TotalIdxSorted III ] = sort(TotalIdx);
 idx = idx(III);
 Lamda_sparse_map = sparse(Lambda_map_constr,idx(J),ones(1,length(Lambda_map_constr)),size(C,1),length(idx));
-
+if ~isequal(hessian, hessian_old)
+    disp('Hessian mismatch')
+elseif ~isequal(LambdaMap, spones(Lamda_sparse_map))
+    disp('LambdaMap mismatch')
+end
+%}
 % Lamda_sparse_map = spalloc(size(C,1),nnz(hessian),nnz(hessian)*2);
 % for i=1:size(Lamda_sparse_map,1)
 %     [IIlamda] = find(Lambda_map{i});
