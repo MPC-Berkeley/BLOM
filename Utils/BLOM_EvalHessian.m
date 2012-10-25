@@ -80,7 +80,8 @@ end
 % nonzeros in that term with itself, except that the diagonal is only
 % nonzero if the exponent for that variable is not equal to 1
 H_pattern = spones(tril(P_pattern'*P_pattern)); % just lower triangular part
-H_pattern = spdiags(any(P ~= P_pattern, 1)', 0, H_pattern);
+H_diag = any(P ~= P_pattern, 1)';
+H_pattern = spdiags(H_diag, 0, H_pattern);
 if nargin == 2 && nargout == 1
     % just return Hessian sparsity pattern
     H = H_pattern;
@@ -158,7 +159,7 @@ else
         for j=1:length(term_vars)
             % columns of this term's Hessian
             colj = term_vars(j);
-            if H_pattern(colj, colj)
+            if H_diag(colj)
                 prev = termHcolumn(colj);
                 termHcolumn(colj) = termHdiagonals(colj, i);
                 termHcolreduced = termHcolumn(H_pattern(:, colj));
