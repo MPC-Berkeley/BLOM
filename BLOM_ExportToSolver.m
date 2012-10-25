@@ -48,6 +48,7 @@ switch (solver)
                 
     case 'IPOPT'
         idx = find(ModelSpec.ex_vars~=0 | ModelSpec.all_state_vars~=0 );
+        %{
         k=0;
         for i=1:length(idx)
             k = k+1;
@@ -56,6 +57,16 @@ switch (solver)
             fixed.Cs{k}(1) = -1;
             fixed.Cs{k}(2) = nan;
         end
+        fixed_old = fixed;
+        %}
+        fixed.AAs = repmat({spalloc(length(ModelSpec.all_names),2,1)}, 1, length(idx));
+        for i=1:length(idx)
+            fixed.AAs{i}(idx(i),1)=1;
+        end
+        fixed.Cs = repmat({[-1 nan]}, 1, length(idx));
+        %if ~isequalwithequalnans(fixed, fixed_old)
+        %    warning('mismatch in fixed struct')
+        %end
         
         CreateIpoptCPP(ModelSpec.name,ModelSpec.all_names, ModelSpec.AAs ,  ModelSpec.Cs , ModelSpec.ineq,fixed,ModelSpec.cost);
         SolverStruct.solver = solver;
