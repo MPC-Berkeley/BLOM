@@ -67,6 +67,7 @@ switch (solver)
         %if ~isequalwithequalnans(fixed, fixed_old)
         %    warning('mismatch in fixed struct')
         %end
+        fixed.idx = idx;
         
         CreateIpoptCPP(ModelSpec.name,ModelSpec.all_names, ModelSpec.AAs ,  ModelSpec.Cs , ModelSpec.ineq,fixed,ModelSpec.cost);
         SolverStruct.solver = solver;

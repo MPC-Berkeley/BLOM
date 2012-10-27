@@ -4,7 +4,7 @@ function CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
 n_eq = length(AAs);
 n_ineq = length(ineq.AAs);
 i_fixed = n_eq+n_ineq+1;
-clear iAAs  iCs  tAAs tCs 
+%clear iAAs  iCs  tAAs tCs 
 
 
 
@@ -236,15 +236,18 @@ fclose(get_nlp_info);
 function Create_get_bounds_info(name,n,m,ineq_length,fixed,full)
 
 
-get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
-
-fixed_vars = sparse(1,n);
-for i=1:length(fixed.AAs)
-    fixed_vars(find(fixed.AAs{i}(:,1)))=i;
+if isfield(fixed,'idx')
+    fixed_vars = sparse(fixed.idx, 1, 1:length(fixed.idx), n, 1);
+else
+    fixed_vars = sparse(n,1);
+    for i=1:length(fixed.AAs)
+        fixed_vars(find(fixed.AAs{i}(:,1)))=i;
+    end
 end
 
 if (full)
-    
+    get_bounds_info  = fopen([name 'get_bounds_info.cpp'],'wt');
+    %fprintf(get_bounds_info,'GetBounds_info(n,  x_l,  x_u,m,g_l, g_u);\n');
     
     for i=1:n
         if (fixed_vars(i) ~= 0)
@@ -266,12 +269,11 @@ if (full)
         fprintf(get_bounds_info,'g_l[%d] = 0;\n', i-1);
         fprintf(get_bounds_info,'g_u[%d] = 0;\n', i-1);
     end
-
+    
+    fclose(get_bounds_info);
 else
-    fprintf(get_bounds_info,'GetBounds_info(n,  x_l,  x_u,m,g_l, g_u);\n');
-    SaveSparseMat(fixed_vars,'FixedStruct.txt');
+    SaveSparseMat(fixed_vars','FixedStruct.txt');
 end
-fclose(get_bounds_info);
 
 function CreateCost(name,names,cost)
 
