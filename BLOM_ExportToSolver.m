@@ -69,7 +69,30 @@ switch (solver)
         %end
         fixed.idx = idx;
         
-        CreateIpoptCPP(ModelSpec.name,ModelSpec.all_names, ModelSpec.AAs ,  ModelSpec.Cs , ModelSpec.ineq,fixed,ModelSpec.cost);
+        AAs = repmat({[]}, 1, length(ModelSpec.AAs));
+        Cs = repmat({[]}, 1, length(ModelSpec.Cs));
+        AAs{1} = ModelSpec.A(ModelSpec.eq_start_A:ModelSpec.eq_end_A, :);
+        Cs{1} = ModelSpec.C(ModelSpec.eq_start_C:ModelSpec.eq_end_C, ...
+            ModelSpec.eq_start_A:ModelSpec.eq_end_A);
+        ineq.AAs = repmat({[]}, 1, length(ModelSpec.ineq.AAs));
+        ineq.Cs = repmat({[]}, 1, length(ModelSpec.ineq.Cs));
+        ineq.AAs{1} = ModelSpec.A(ModelSpec.ineq_start_A:ModelSpec.ineq_end_A, :);
+        ineq.Cs{1} = ModelSpec.C(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C, ...
+            ModelSpec.ineq_start_A:ModelSpec.ineq_end_A);
+        %{
+        if ~isequal(vertcat(AAs{:}), vertcat(ModelSpec.AAs{:}))
+            warning('mismatch in AAs')
+        elseif ~isequal(blkdiag(Cs{:}), blkdiag(ModelSpec.Cs{:}))
+            warning('mismatch in Cs')
+        elseif ~isequal(vertcat(ineq.AAs{:}), vertcat(ModelSpec.ineq.AAs{:}))
+            warning('mismatch in ineq.AAs')
+        elseif ~isequal(blkdiag(ineq.Cs{:}), blkdiag(ModelSpec.ineq.Cs{:}))
+            warning('mismatch in ineq.Cs')
+        end
+        %}
+        
+        CreateIpoptCPP(ModelSpec.name, ModelSpec.all_names, AAs, Cs, ...
+            ineq, fixed, ModelSpec.cost);
         SolverStruct.solver = solver;
         SolverStruct.name = ModelSpec.name;
         SolverStruct.fixed_idx = idx;

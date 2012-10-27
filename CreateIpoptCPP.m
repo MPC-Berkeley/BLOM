@@ -618,8 +618,16 @@ if ~isequal(A,vertcat(cost.A, ineq.AAs{:}, AAs{:})) || ...
    disp('mismatch')
 end
 %}
-A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
-C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
+if all(cellfun(@isempty,ineq.AAs(2:end))) && all(cellfun(@isempty,AAs(2:end)))
+    A = vertcat(cost.A, ineq.AAs{1}, AAs{1});
+else
+    A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
+end
+if all(cellfun(@isempty,ineq.Cs(2:end))) && all(cellfun(@isempty,Cs(2:end)))
+    C = blkdiag(cost.C, ineq.Cs{1}, Cs{1});
+else
+    C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
+end
 
        
 %jacobian = spalloc(size(C,1)-1,size(A,2),size(C,1)*6);

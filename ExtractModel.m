@@ -233,12 +233,24 @@ return
 
 function [AAs, Cs, idx_to_stay , cost_vars, all_names,ineq_vars,state_vars_mat] = EliminateIdentityConstraints(AAs,Cs,cost_vars,all_names,ineq_vars,state_vars_mat)
 
+% put all the A's together, do the column manipulations all together
+AA_sizes = zeros(length(AAs),2);
+for i=1:length(AAs)
+   AA_sizes(i,:) = size(AAs{i});
+end
+AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
+AA_cat = {vertcat(AAs{:})};
+
 toremove_list = [];
 
 for i=1:length(AAs)
     for j=1:size(Cs{i},1) % for all output variables
         C = Cs{i}(j,:);
-        A = AAs{i}(C~=0,:);
+        A = AA_cat{1}(AA_sizesofar(i)+1:AA_sizesofar(i+1),:);
+        A = A(C~=0,:);
+        %if ~isequal(A, AAs{i}(C~=0,:))
+        %    warning('mismatch in A for i=%d, j=%d',i,j)
+        %end
         if (sum(C)==0 && (max(C) == 1) && (min(C) == -1) ...
                 && (size(A,1) ==2) && (max(A(:))==1 )&&(sum(A(:))==2 ) ...
                 && (length(find(A(1,:))~=0)==1) && (length(find(A(2,:))~=0)==1) )
@@ -247,7 +259,8 @@ for i=1:length(AAs)
             if ~isempty(find(origin==toremove_list,1)) % handle the case that the origin variable is already removed
                 continue;
             end
-            AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
+            %AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
+            AA_cat = MoveEqualVar(AA_cat,origin,to_remove); % just copy data, do not remove the column yet
             all_names{origin} = [all_names{origin} ';' all_names{to_remove}];
 %             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
             toremove_list = [toremove_list to_remove ];
@@ -282,7 +295,15 @@ to_stay = ones(1,length(cost_vars));
 to_stay(toremove_list) = 0;
 idx_to_stay = find(to_stay);
 state_vars_mat = state_vars_mat(idx_to_stay,idx_to_stay);
-[AAs,Cs,all_names] = RemoveVariable(AAs,Cs,all_names,toremove_list);
+%[AAs_old,Cs,all_names_old] = RemoveVariable(AAs,Cs,all_names,toremove_list);
+[AA_cat,Cs,all_names] = RemoveVariable(AA_cat,Cs,all_names,toremove_list);
+
+for i=1:length(AAs)
+   AAs{i} = AA_cat{1}(AA_sizesofar(i)+1:AA_sizesofar(i+1),:);
+end
+%if ~isequal(AAs, AAs_old)
+%    warning('mismatch in AAs')
+%end
 
 remove_functons  = [];
 for i=1:length(AAs)
@@ -550,24 +571,22 @@ for i=1:length(blks)
 
     k=0;
     for in = 1:length(dim{i}.Inport)/2
-        for j=1:dim{i}.Inport(in*2)
-            k=k+1;
-            VarConnect(N+k) = connect{i}(in);
-            VarNum(N+k) = j;
-            InPort(N+k) = in;
-            BlockHandle(N+k) = handles(i);
-            BlockType(N+k)=1;
-        end
+        j=1:dim{i}.Inport(in*2);
+        VarConnect(N+j+k) = connect{i}(in);
+        VarNum(N+j+k) = j;
+        InPort(N+j+k) = in;
+        BlockHandle(N+j+k) = handles(i);
+        BlockType(N+j+k)=1;
+        k=k+j(end);
     end
     for out = 1:length(dim{i}.Outport)/2
-        for j=1:dim{i}.Outport(out*2)
-            k=k+1;
-            VarConnect(N+k) = connect{i}(length(dim{i}.Inport)/2+out);
-            VarNum(N+k) = j;
-            InPort(N+k) = -out;
-            BlockHandle(N+k) = handles(i);
-            BlockType(N+k)=1;
-        end
+        j=1:dim{i}.Outport(out*2);
+        VarConnect(N+j+k) = connect{i}(length(dim{i}.Inport)/2+out);
+        VarNum(N+j+k) = j;
+        InPort(N+j+k) = -out;
+        BlockHandle(N+j+k) = handles(i);
+        BlockType(N+j+k)=1;
+        k=k+j(end);
     end
     %     all_names{N+size(As{i},2)} = sprintf('%s.Out%d',names{i},1);
     N = N + size(As{i},2);
@@ -614,14 +633,13 @@ for i=(length(blks)+length(mem_blks)+1):length(all_blks)
     end
     k=0;
     for out = 1:length(dim{i}.Outport)/2
-        for j=1:dim{i}.Outport(out*2)
-            k=k+1;
-            VarConnect(N+k) = connect{i}(out);
-            VarNum(N+k) = j;
-            InPort(N+k) = -out;
-            BlockHandle(N+k) = handles(i);
-            BlockType(N+k)=3;
-        end
+        j=1:dim{i}.Outport(out*2);
+        VarConnect(N+j+k) = connect{i}(out);
+        VarNum(N+j+k) = j;
+        InPort(N+j+k) = -out;
+        BlockHandle(N+j+k) = handles(i);
+        BlockType(N+j+k)=3;
+        k=k+j(end);
     end
     N = N + dim{i}.Outport(2);
 end
