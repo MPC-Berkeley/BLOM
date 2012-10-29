@@ -374,8 +374,9 @@ idx = find(vars);
 usage_vec = zeros(fliplr(size(idx)));
 last_used_vec = usage_vec;
 for j=1:length(AAs)
-   usage_vec = usage_vec + any(AAs{j}(:,idx));
-   last_used_vec(any(AAs{j}(:,idx))) = j;
+    usage_j = any(AAs{j}(:,idx));
+    usage_vec = usage_vec + usage_j;
+    last_used_vec(usage_j) = j;
 end
 
 for i=1:length(idx)
@@ -419,25 +420,35 @@ for i=1:length(idx)
             term = find(powers);
 
             if (length(term) == 1) && (sum(AAs{last_used}(term,:)) == 1) % no other variables in the term
-                new_func.AAs{i} = AAs{last_used}([1:term-1 term+1:end],:);
+                %new_func.AAs{i} = AAs{last_used}([1:term-1 term+1:end],:);
+                new_func.AAs{i} = AAs{last_used};
+                new_func.AAs{i}(term, :) = [];
                 % find where this term is used in C
                 c_line = find(Cs{last_used}(:,term));
                 if (length(c_line) ~= 1)
                     error('Something is wrong,length(c_line) ~= 1');
                 end
-                new_func.Cs{i} = -vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
+                line_vals = Cs{last_used}(c_line, :);
+                denom = line_vals(term);
+                line_vals(term) = [];
+                %new_func.Cs{i} = -vars(idx(i))*Cs{last_used}(c_line,[1:term-1 term+1:end])/Cs{last_used}(c_line,term);
+                new_func.Cs{i} = -vars(idx(i))*line_vals/denom;
                 to_remove_var = [to_remove_var idx(i)];
                 % if this is the only row in C, remove function,
                 if (size(Cs{last_used},1)==1)
                     % decrement remaining indices and usages
                     last_used_vec(last_used_vec == last_used) = NaN; % mark this function invalid, we"ll have to search again for the last function in use.
-                    last_used_vec(last_used_vec > last_used) = last_used_vec(last_used_vec > last_used) - 1; % decrement all functions after the removed
+                    decrement_inds = (last_used_vec > last_used);
+                    last_used_vec(decrement_inds) = last_used_vec(decrement_inds) - 1; % decrement all functions after the removed
                     usage_vec = usage_vec - any(AAs{last_used}(:,idx)); % whoever participated in this function, now has one usage less
                    
-                    AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
-                    Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
+                    %AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
+                    %Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
+                    AAs(last_used) = [];
+                    Cs(last_used) = [];
                 else % remove only the row from C
-                    Cs{last_used} =  Cs{last_used}( [1:c_line-1 c_line+1:end],:);
+                    %Cs{last_used} =  Cs{last_used}( [1:c_line-1 c_line+1:end],:);
+                    Cs{last_used}(c_line, :) = [];
                 end
                     
                 unfolded = 1;

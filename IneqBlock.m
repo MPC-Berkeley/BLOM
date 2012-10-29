@@ -368,21 +368,14 @@ else
 end
 obj = gcbh;
 violation_count = get_param(obj,'UserData');
-this_cycle_violation = 0;
 
-for i=1:length(block.InputPort(1).Data)
-
-    if ( block.InputPort(1).Data(i)*sign < 0 )
-        violation_count = violation_count + 1;
-        set_param(obj,'UserData',violation_count);
-        this_cycle_violation = 1;
-
-    end
-end
+this_cycle_violations = (block.InputPort(1).Data*sign < 0);
+violation_count = violation_count + sum(this_cycle_violations);
 
 if violation_count == 0
     set(gcbh,'BackgroundColor','green');
-elseif this_cycle_violation == 1
+elseif any(this_cycle_violations)
+    set_param(obj,'UserData',violation_count);
     set(gcbh,'BackgroundColor','red');
 else
     set(gcbh,'BackgroundColor','orange');
