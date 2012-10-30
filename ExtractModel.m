@@ -341,6 +341,7 @@ function [all_names, AAs ,  Cs, ineq , merged_cost,in_vars,state_vars,ex_vars]= 
 protected = in_vars | ex_vars;
 
 [cost, to_remove_var_cost ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,cost_vars,protected);
+protected  = protected | any(vertcat(cost.AAs{:}))'; % protect the cost variables, so they do not get removed
 [ineq, to_remove_var_ineq ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,-ineq_vars,protected); % minus is to handle definition of inequality
 
 [AAs,Cs,all_names_new] = RemoveVariable(AAs,Cs,all_names, [to_remove_var_ineq to_remove_var_cost]);
@@ -363,7 +364,7 @@ end
 
 
 function [new_func, to_remove_var ,all_names, AAs ,  Cs] =  ExtractVars(all_names, AAs ,  Cs ,vars,protected)
-% Moves equlity constraints to inequality or cost, by removing variables
+% Moves equality constraints to inequality or cost, by removing variables
 % that serve only for inequality or cost.
 
 to_remove_var = [];
