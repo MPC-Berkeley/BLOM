@@ -37,19 +37,24 @@ switch lower(SolverStruct.solver)
         % same as dirname in unix
         BLOM_dir = fileparts(mfilename('fullpath'));
         
-        BLOM_NLP_exe = [ BLOM_dir '/BLOM_Ipopt/BLOM_NLP' ];
+        BLOM_NLP_exe = fullfile(BLOM_dir,'BLOM_Ipopt','BLOM_NLP');
         if ispc
             BLOM_NLP_exe = [BLOM_NLP_exe '.exe'];
         end
         if (~exist(BLOM_NLP_exe,'file'))
             error(['BLOM_NLP not found at ' BLOM_NLP_exe '. Run BLOM_Setup.']);
-            SolverResult = [];
-            ResultsVec   = [];
-            return;
         end
-        
+        result_filename = fullfile(pwd,'result.dat');
+        if exist(result_filename,'file')
+            delete(result_filename) % delete any previous results file
+        end
         EXITFLAG = system(BLOM_NLP_exe);
-        ResultsVec = load('result.dat');
+        if exist(result_filename,'file')
+            ResultsVec = load(result_filename);
+        else
+            error('%s did not execute successfully, \n exit flag was %d', ...
+                BLOM_NLP_exe, EXITFLAG)
+        end
 end
 
 
