@@ -12,7 +12,7 @@ function SolverStruct = BLOM_ExportToSolver(ModelSpec,solver,options)
 %
 
 
-switch (solver)
+switch lower(solver)
     case 'fmincon'
 
         [cost_name costGrad_name eqconstr_name eqconstrGrad_name neqconstr_name neqconstrGrad_name ...
@@ -31,8 +31,16 @@ switch (solver)
         pr.ub = inf(size(ModelSpec.A,2),1);
         pr.solver = 'fmincon';
         
-        pr.options = optimset('GradObj','on','GradConstr','on','MaxIter',1000);
-
+        pr.options = optimset('GradObj', 'on', ...
+            'GradConstr', 'on', ...
+            'MaxIter', 3000, ...
+            'Display', 'iter');
+        try
+            % interior-point fmincon algorithm is much better than the
+            % default, but only available in Matlab R2008a and newer
+            pr.options = optimset(pr.options, 'Algorithm', 'interior-point');
+        catch
+        end
 
         SolverStruct.solver = solver;
         SolverStruct.pr  = pr;
@@ -46,7 +54,7 @@ switch (solver)
 % %             end
 %         end
                 
-    case 'IPOPT'
+    case 'ipopt'
         idx = find(ModelSpec.ex_vars~=0 | ModelSpec.all_state_vars~=0 );
         %{
         k=0;

@@ -9,7 +9,7 @@ function [ SolverResult, ResultsVec, ResultInfo ] = ...
 % Input:
 %   SolverStruct - Solver description struct, created with BLOM_ExportToSolver.
 %   ModelSpec -    Model structure generatated by BLOM_ExtractModel.
-%   options   -    options created by BLOM_optset function.
+%   options   -    options structure created by BLOM_optset or optimset function.
 %
 % Output:
 %   SolverResult -  Structure with fields according to ModelSpec, holding
@@ -17,12 +17,20 @@ function [ SolverResult, ResultsVec, ResultInfo ] = ...
 %   ResultsVec -    Vector with the same results    
 
 
-switch (SolverStruct.solver)
+switch lower(SolverStruct.solver)
     case 'fmincon'
+        if nargin > 2
+            SolverStruct.prData.options = optimset( ...
+                SolverStruct.prData.options, options);
+        end
         [ ResultsVec, FVAL,EXITFLAG] = fmincon(SolverStruct.prData);
     case 'linprog'
+        if nargin > 2
+            SolverStruct.prData.options = optimset( ...
+                SolverStruct.prData.options, options);
+        end
         [ ResultsVec, FVAL,EXITFLAG] = linprog(SolverStruct.prData);
-    case 'IPOPT'
+    case 'ipopt'
         
         % mfilename('fullpath') returns the entire path to this script
         % the first output of fileparts(ans) gives the path string,

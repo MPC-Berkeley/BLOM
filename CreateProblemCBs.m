@@ -110,11 +110,11 @@ if ~iscell(str)
     str = {str};
 end
 
-MinimumMatrixSizeForSpare = 40;
+MinimumMatrixSizeForSparse = 40;
 
-if size(str,1)*size(str,2) == 1  
+if numel(str) == 1  
     % do not initialize
-elseif size(str,1)*size(str,2) > MinimumMatrixSizeForSpare 
+elseif all(size(str) > 1) && numel(str) > MinimumMatrixSizeForSparse 
     % sparse
     fprintf(f,'y = sparse(%d,%d,0);\n\n',size(str,2),size(str,1));
 else

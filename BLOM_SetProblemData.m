@@ -29,7 +29,7 @@ else
     x0 = OptGuess;
 end
 
-switch (SolverStruct.solver)
+switch lower(SolverStruct.solver)
     case 'fmincon'
         SolverStruct.prData = SolverStruct.pr;
         SolverStruct.prData.x0  = x0;
@@ -44,7 +44,7 @@ switch (SolverStruct.solver)
         SolverStruct.prData.ub(ModelSpec.all_state_vars ~= 0) = ...
             vecStates(ModelSpec.all_state_vars ~= 0);
         
-    case 'IPOPT'
+    case 'ipopt'
         
         vec = vecExt;
         vec(~isnan(vecStates)) = vecStates(~isnan(vecStates)); % merge states and external
