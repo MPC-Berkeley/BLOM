@@ -1,10 +1,10 @@
-function [ SolverResult, ResultsVec, ResultInfo ] = ...
-    BLOM_RunSolver(SolverStruct,ModelSpec,options)
+function [SolverResult, ResultsVec, ResultInfo] = ...
+    BLOM_RunSolver(SolverStruct, ModelSpec, options)
 %
-%   [ SolverResult  ResultsVec ]=
-%   BLOM_RunSolver(SolverStruct,ModelSpec,options)
+%   [SolverResult, ResultsVec, ResultInfo] =
+%   BLOM_RunSolver(SolverStruct, ModelSpec, options)
 %
-%   Runs the solver and returns the solution .
+%   Runs the optimization solver and returns the solution.
 %
 % Input:
 %   SolverStruct - Solver description struct, created with BLOM_ExportToSolver.
@@ -13,8 +13,10 @@ function [ SolverResult, ResultsVec, ResultInfo ] = ...
 %
 % Output:
 %   SolverResult -  Structure with fields according to ModelSpec, holding
-%                   the solver results. 
-%   ResultsVec -    Vector with the same results    
+%                   the solver results.
+%   ResultsVec -    Vector with the same results
+%   ResultInfo -    structure containing additional output information
+%                   from the optimization solver
 
 
 switch lower(SolverStruct.solver)
@@ -23,13 +25,13 @@ switch lower(SolverStruct.solver)
             SolverStruct.prData.options = optimset( ...
                 SolverStruct.prData.options, options);
         end
-        [ ResultsVec, FVAL,EXITFLAG] = fmincon(SolverStruct.prData);
+        [ResultsVec, FVAL, EXITFLAG] = fmincon(SolverStruct.prData);
     case 'linprog'
         if nargin > 2
             SolverStruct.prData.options = optimset( ...
                 SolverStruct.prData.options, options);
         end
-        [ ResultsVec, FVAL,EXITFLAG] = linprog(SolverStruct.prData);
+        [ResultsVec, FVAL, EXITFLAG] = linprog(SolverStruct.prData);
     case 'ipopt'
         
         % mfilename('fullpath') returns the entire path to this script
@@ -44,6 +46,12 @@ switch lower(SolverStruct.solver)
         if (~exist(BLOM_NLP_exe,'file'))
             error(['BLOM_NLP not found at ' BLOM_NLP_exe '. Run BLOM_Setup.']);
         end
+        if nargin > 2
+            CreateIpoptOptionsFile(options) % subfunction, see below
+        elseif exist(fullfile(pwd,'ipopt.opt'),'file')
+            fprintf('Note: existing options file at %s is being used', ...
+                fullfile(pwd,'ipopt.opt'));
+        end
         result_filename = fullfile(pwd,'result.dat');
         if exist(result_filename,'file')
             delete(result_filename) % delete any previous results file
@@ -57,6 +65,35 @@ switch lower(SolverStruct.solver)
         end
 end
 
-
 SolverResult = BLOM_ConvertVectorToStruct(ModelSpec.all_names_struct,ResultsVec);
 ResultInfo.SolverExitFlag = EXITFLAG;
+
+
+function CreateIpoptOptionsFile(options)
+if nargin == 0 || ~isstruct(options)
+    warning('Blank or non-structure options input is being ignored.')
+    return
+end
+options_file = fopen('ipopt.opt', 'w');
+if ~isfield(options, 'print_user_options')
+    % default: print the options being used
+    options.print_user_options = 'yes';
+end
+fnames = fieldnames(options);
+for i=1:length(fnames)
+    val = options.(fnames{i});
+    if ischar(val) && ~isempty(val)
+        fprintf(options_file, '%s %s\n', fnames{i}, val);
+    elseif isnumeric(val)
+        if numel(val) == 1 && val == floor(val) % scalar integer
+            fprintf(options_file, '%s %ld\n', fnames{i}, val);
+        elseif numel(val) == 1 % scalar floating-point
+            fprintf(options_file, '%s %.17g\n', fnames{i}, val);
+        elseif ~isempty(val)
+            warning('Ignoring option %s with non-scalar value', fnames{i})
+        end
+    elseif ~isempty(val)
+        warning('Ignoring option %s with non-string, non-numeric value', fnames{i})
+    end
+end
+fclose(options_file);
