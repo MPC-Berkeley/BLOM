@@ -49,7 +49,7 @@ switch lower(SolverStruct.solver)
         if nargin > 2
             CreateIpoptOptionsFile(options) % subfunction, see below
         elseif exist(fullfile(pwd,'ipopt.opt'),'file')
-            fprintf('Note: existing options file at %s is being used', ...
+            fprintf('NOTE: Existing options file at\n      %s\n      is being used.\n', ...
                 fullfile(pwd,'ipopt.opt'));
         end
         result_filename = fullfile(pwd,'result.dat');
