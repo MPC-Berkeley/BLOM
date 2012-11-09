@@ -64,37 +64,41 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     load_system(name);
     % evaluate model to get dimensions
     eval([name '([],[],[],''compile'');']); 
+    try
+        [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
+        [outportHandles,boundStruct,block,optimVar,stop] = ...
+            searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
+        % FIX: should implement something that stops the code after analyzing
+        % all the blocks and finding an error in the structure of the model
+        if stop == 1
+            % break the code somehow?
+        end
 
-    [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
-    [outportHandles,boundStruct,block,optimVar,stop] = ...
-        searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
-    % FIX: should implement something that stops the code after analyzing
-    % all the blocks and finding an error in the structure of the model
-    if stop == 1
-        % break the code somehow?
+        % find out which wires are relevant at which times
+        %[timeStruct] = relevantTimes(outportHandles);
+
+        %following code is to make sure searchSources works
+        fprintf('The Number of blocks is %.0f\n',length(block.handles))
+        fprintf('The Number of outports is %.0f\n',length(outportHandles))
+        for i = 1:length(outportHandles);
+            parent = get_param(boundStruct.outportHandles(i),'Parent')
+            portType = get_param(outportHandles(i),'PortType');
+        end
+
+        fprintf('\n\n\n Here we have the stored data from block\n\n\n');
+
+        for i = 1:length(block.handles);
+            someBlock = block.names{i}
+        end
+
+        % just a placeholder for ModelSpec so that MATLAB does not complain
+        ModelSpec = 1;
+        % close evaluation of models
+    catch err
+        rethrow(err)
     end
-    
-    % find out which wires are relevant at which times
-    %[timeStruct] = relevantTimes(outportHandles);
-    
-    %following code is to make sure searchSources works
-    fprintf('The Number of blocks is %.0f\n',length(block.handles))
-    fprintf('The Number of outports is %.0f\n',length(outportHandles))
-    for i = 1:length(outportHandles);
-        parent = get_param(boundStruct.outportHandles(i),'Parent')
-        portType = get_param(outportHandles(i),'PortType');
-    end
-    
-    fprintf('\n\n\n Here we have the stored data from block\n\n\n');
-    
-    for i = 1:length(block.handles);
-        someBlock = block.names{i}
-    end
-    
-    % just a placeholder for ModelSpec so that MATLAB does not complain
-    ModelSpec = 1;
-    % close evaluation of models
     eval([name '([],[],[],''term'');']);
+    
 end
 
 %%
@@ -226,7 +230,7 @@ function [outportHandles,boundStruct,block,optimVar,stop] = ...
     removeOutportZeroIndex = 1;
     
     
-    % iOut is current handle we are looking at
+    % iOut is current outport handle we are looking at
 	iOut = 1;
     while 1
         if outportHandles(iOut) == 0
@@ -263,7 +267,7 @@ function [outportHandles,boundStruct,block,optimVar,stop] = ...
             sourceOutports = [sourcePorts.Outport];
             [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
                 updateVars(sourceOutports,outportHandles,iZero,...
-                optimVar,optimZero,block,blockZero,1,iOut,sourcePorts);
+                optimVar,optimZero,block,blockZero,3,iOut,sourcePorts);
             
             % want to remove this outport later since all is does is route
             % a signal
@@ -294,7 +298,7 @@ function [outportHandles,boundStruct,block,optimVar,stop] = ...
             sourceInports = [gotoPorts.Inport];
             [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                optimVar,optimZero,block,blockZero,1,iOut,sourcePorts);
+                optimVar,optimZero,block,blockZero,2,iOut,sourcePorts);
             
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
@@ -364,6 +368,13 @@ function [outportHandles,boundStruct,block,optimVar,stop] = ...
         stop = 1;
     end
     
+    % remove empty and 0 entries in blocks
+    for field={'names', 'P','K','inputs','outportHandles','dimensions',...
+            'sourceOutports'}
+        block.(field{1}) = block.(field{1})(1:(blockZero-1));
+    end
+    block.handles = block.handles(1:(blockZero-1));
+    
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
     % order
@@ -416,9 +427,9 @@ function [outportHandles,iZero,optimVar,optimZero,block,blockZero] =...
         % if the size of block equals the blockZero, need to double to
         % length of block
         if blockZero == length(block.handles)
-            for field={'name', 'P','K','inputs','outportHandles','dimensions',...
+            for field={'names', 'P','K','inputs','outportHandles','dimensions',...
                     'sourceOutports'}
-                    block.(field{1}) = [strarr.(field{1}); cell(blockZero,1)];
+                    block.(field{1}) = [block.(field{1}); cell(blockZero,1)];
             end
             block.handles = [block.handles; zeros(blockZero,1)];
         end
@@ -426,7 +437,7 @@ function [outportHandles,iZero,optimVar,optimZero,block,blockZero] =...
         if ~any(block.handles==currentBlockHandle)
             % no duplicate blocks, add this block
             currentBlockName = get_param(currentOutport,'Parent');
-            block.names{blockZero} = currentBlockName
+            block.names{blockZero} = currentBlockName;
             block.handles(blockZero) = currentBlockHandle;
             if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
                 % store P&K matricies if the current block is a polyblock
@@ -449,41 +460,38 @@ function [outportHandles,iZero,optimVar,optimZero,block,blockZero] =...
         end
     end
     
+    if state == 3
+        currentOutport = existingOutports(iOut);
+        % if there's a subsystem, inports is actually an array of the
+        % outports
+        parent = get_param(currentOutport,'Parent');
+        index = inports==currentOutport;
+        outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
+        handle = get_param(outportBlocks{index},'Handle');
+        portH = get_param(handle,'PortHandles');
+        inports = [portH.Inport];
+    end
+        
     
-    switch state
-        case 3 % current block is a subsystem
-            currentOutport = existingOutports(iOut);
-            % if there's a subsystem, inports is actually an array of the
-            % outports
-            parent = get_param(currentOutport,'Parent');
-            index = inports==currentOutport;
-            outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
-            handle = get_param(outportBlocks{index},'Handle');
-            portH = get_param(handle,'PortHandles');
-            currentInport = [portH.Inport];
-            [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
-                iZero);
-        otherwise
-            for i = 1:length(inports);
-                currentLine = get_param(inports(i),'Line');
-                % this gives the all the outports connected to this line
-                currentOutports = get_param(currentLine,'SrcPorthandle');
-                outLength = length(currentOutports);
-                % in case outportHandles is too short 
-                if outLength > length(outportHandles)-iZero+1;
-                    if outlength > length(outportHandles)
-                        outportHandles = [outportHandles; zeros(outLength*2,1)];
-                    else
-                        outportHandles = [outportHandles; ...
-                            zeros(length(outportHandles),1)];
-                    end
-                end
-
-                diff = setdiff(currentOutports,outportHandles);
-                diffLength = length(diff);
-                outportHandles(iZero:(diffLength+iZero-1)) = diff;
-                iZero = iZero + diffLength;
+    for i = 1:length(inports);
+        currentLine = get_param(inports(i),'Line');
+        % this gives the all the outports connected to this line
+        currentOutports = get_param(currentLine,'SrcPorthandle');
+        outLength = length(currentOutports);
+        % in case outportHandles is too short 
+        if outLength > length(outportHandles)-iZero+1;
+            if outlength > length(outportHandles)
+                outportHandles = [outportHandles; zeros(outLength*2,1)];
+            else
+                outportHandles = [outportHandles; ...
+                    zeros(length(outportHandles),1)];
             end
+        end
+
+        diff = setdiff(currentOutports,outportHandles);
+        diffLength = length(diff);
+        outportHandles(iZero:(diffLength+iZero-1)) = diff;
+        iZero = iZero + diffLength;
     end
     
 end
