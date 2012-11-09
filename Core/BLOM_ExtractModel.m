@@ -66,7 +66,7 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     eval([name '([],[],[],''compile'');']); 
 
     [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
-    [outportHandles,boundStruct,stop] = ...
+    [outportHandles,boundStruct,block,optimVar,stop] = ...
         searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
     % FIX: should implement something that stops the code after analyzing
     % all the blocks and finding an error in the structure of the model
@@ -74,21 +74,23 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         % break the code somehow?
     end
     
-    % evaluate the model in order to get dimensions of all the outports
-    eval([name '([],[],[],''compile'');']); 
-    [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name);
-    % close model
-    eval([name '([],[],[],''term'');']);
-    
     % find out which wires are relevant at which times
-    [timeStruct] = relevantTimes(outportHandles);
+    %[timeStruct] = relevantTimes(outportHandles);
+    
     %following code is to make sure searchSources works
-    fprintf('The Number of blocks is %.0f\n',length(blocks.handles))
+    fprintf('The Number of blocks is %.0f\n',length(block.handles))
     fprintf('The Number of outports is %.0f\n',length(outportHandles))
     for i = 1:length(outportHandles);
         parent = get_param(boundStruct.outportHandles(i),'Parent')
         portType = get_param(outportHandles(i),'PortType');
     end
+    
+    fprintf('\n\n\n Here we have the stored data from block\n\n\n');
+    
+    for i = 1:length(block.handles);
+        someBlock = block.names{i}
+    end
+    
     % just a placeholder for ModelSpec so that MATLAB does not complain
     ModelSpec = 1;
     % close evaluation of models
@@ -130,7 +132,8 @@ end
 %> @param varargin the external and input from simulink handles. the
 %> sources of these blocks are not relevant to the optimization problem
 %>
-%> @retval sourceHandles return all the handles connected to input handles
+%> @retval outportHandles returns an array of the outport handles found
+%> from BFS search
 %> @retval stop if there are any unconnected blocks or blocks that BLOM
 %> does not support, this parameter gives a 1 to indicate true and 0 to
 %> indicate false
@@ -138,7 +141,7 @@ end
 %> boolean true or false if it is connected to a bounds block
 %======================================================================
 
-function [outportHandles,boundStruct,stop] = ...
+function [outportHandles,boundStruct,block,optimVar,stop] = ...
     searchSources(boundHandles,costHandles,varargin)
     % only flag stop = 1 when there is a bad block
     stop = 0;
@@ -161,19 +164,44 @@ function [outportHandles,boundStruct,stop] = ...
 
     end
     
+    initialSize = 20;
+    
+    optimZero = 1; % index of first optimVar zero
+    % optimVar stores information for every optimization variable
+    optimVar.block = zeros(initialSize,1); % the index of the block
+    optimVar.outportNum = zeros(initialSize,1); % outport number
+    optimVar.outportHandle = zeros(initialSize,1); % handle of specific outport
+    optimVar.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1
+    optimVar.bounds = cell(initialSize,1); % store the bounds of each variable. will be an array stored in each cell element
+    optimVar.cost = cell(initialSize,1);
+    optimVar.time = cell(initialSize,1);
+    optimVar.sameOpt = cell(initialSize,1); % a list of indices for duplicate variables
+    
+    blockZero = 1; % index of first block zero
+    % block stores information about each block
+    block.names = cell(initialSize,1); % name of block
+    block.handles = zeros(initialSize,1); % handle of block
+    block.P = cell(initialSize,1); % P matrix of block, if relevant
+    block.K = cell(initialSize,1); % K matrix of block, if relevant
+    block.inputs = cell(initialSize,1); % inputs of each block
+    block.outportHandles = cell(initialSize,1); %all outport handles of block
+    block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
+    block.sourceOutports = cell(initialSize,1); % source outport handles
+    
     % find all lines connected to costs and bounds and then get outport
-    % ports from there
+    % ports from there. fill in optimVar and block structures as necessary
     
     % iZero is index of first zero
     iZero = 1;
-    outportHandles = zeros(20,1);    
+    outportHandles = zeros(initialSize,1);    
     % get all outports connected to the bounds 
     for i = 1:length(boundHandles)
         portH = get_param(boundHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = portH.Inport;
-        [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
-            iZero);
+        [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+            updateVars(currentInport,outportHandles,iZero,...
+            optimVar,optimZero,block,blockZero,1,iZero,portH);
     end
     
     % create structure for bounds. fill entries up to iBounds with true.
@@ -186,8 +214,9 @@ function [outportHandles,boundStruct,stop] = ...
         portH = get_param(costHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = portH.Inport;
-        [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
-            iZero);
+        [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+            updateVars(currentInport,outportHandles,iZero,...
+            optimVar,optimZero,block,blockZero,1,iZero,portH);
     end
     
     % array of outport indices to remove at the end of search. for now, we
@@ -223,13 +252,18 @@ function [outportHandles,boundStruct,stop] = ...
         sourceType = get_param(sourceBlock,'BlockType');
         refBlock = get_param(sourceBlock,'ReferenceBlock');
         
+        %take into consideration if this block has been found before
+        block.name{blockZero} = sourceBlock;
+        block.handle(blockZero) = get_param(sourceBlock,'Handle');
+        
         if strcmp(sourceType,'SubSystem') && isempty(refBlock)
             % if the current block is a subsystem and not from BLOM, 
             % want to look under the subsystem and get the appropriate
             % blocks there
             sourceOutports = [sourcePorts.Outport];
-            [outportHandles,iZero] = getOutports(sourceOutports,...
-                outportHandles,iZero,iOut); 
+            [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                updateVars(sourceOutports,outportHandles,iZero,...
+                optimVar,optimZero,block,blockZero,1,iOut,sourcePorts);
             
             % want to remove this outport later since all is does is route
             % a signal
@@ -258,16 +292,18 @@ function [outportHandles,boundStruct,stop] = ...
             gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
             gotoPorts = get_param(gotoBlock{1},'PortHandles');
             sourceInports = [gotoPorts.Inport];
-            [outportHandles,iZero] = getOutports(sourceInports,...
-                outportHandles,iZero);
+            [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                optimVar,optimZero,block,blockZero,1,iOut,sourcePorts);
             
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
             % except look for what's connected. 
             % FIX: check to see which inports affect which outports. Not
             % all inports may be relevant
-            [outportHandles,iZero] = getOutports(sourceInports,...
-                outportHandles,iZero);
+            [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                optimVar,optimZero,block,blockZero,2,iOut,sourcePorts);
         elseif isempty(sourceInports)
             % if there are no inports, no need to search this outport
             % anymore. However, if the block is an inport of a subsystem,
@@ -287,8 +323,9 @@ function [outportHandles,boundStruct,stop] = ...
                     iOut = iOut-1;
                     iZero = iZero-1;
                     if ~isempty(sourceInports)
-                        [outportHandles,iZero] = getOutports(sourceInports,...
-                            outportHandles,iZero);
+                        [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                            updateVars(sourceInports,outportHandles,iZero,...
+                            optimVar,optimZero,block,blockZero,2,iOut,sourcePorts);
                     else
                         iOut = iOut+1;
                         continue
@@ -301,8 +338,9 @@ function [outportHandles,boundStruct,stop] = ...
         else
             % in the case of one inport, it must affect the outport, so
             % find the relevant outports
-            [outportHandles,iZero] = getOutports(sourceInports,...
-                outportHandles,iZero);
+            [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                optimVar,optimZero,block,blockZero,2,iOut,sourcePorts);
         end
         % FIX: should check to see if BLOM supports the blocks that is
         % found right here
@@ -338,7 +376,8 @@ function [outportHandles,boundStruct,stop] = ...
 end
 
 %======================================================================
-%> @brief From given inports, see which outports are relevant
+%> @brief From given inports, see which outports are relevant. Also, given
+%> the current outport, populate the block and optimVar structures
 %>
 %> More detailed description of the problem.
 %>
@@ -351,50 +390,102 @@ end
 %> @retval iZero updates current index of the first zero
 %======================================================================
 
-function [outportHandles,iZero] = getOutports(inports,existingOutports,iZero,varargin)
+function [outportHandles,iZero,optimVar,optimZero,block,blockZero] =...
+    updateVars(inports,existingOutports,iZero,optimVar,optimZero,...
+    block,blockZero,state,varargin)
+
     outportHandles = existingOutports;
-    if ~isempty(varargin)
+    % if the current state is a subsystem, do special case for subsystem
+    if state == 3
         % the current block is a subsystem
-        iOut = varargin{1};
         subsys = true;
     else
         subsys = false;
     end
     
-    if subsys
+    if ~isempty(varargin)
+        iOut = varargin{1};
+        sourcePorts = varargin{2};
+    end
+    
+    if state ~= 1 % not looking at bounds or costs
         currentOutport = existingOutports(iOut);
-        % if there's a subsystem, inports is actually an array of the
-        % outports
-        parent = get_param(currentOutport,'Parent');
-        index = inports==currentOutport;
-        outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
-        handle = get_param(outportBlocks{index},'Handle');
-        portH = get_param(handle,'PortHandles');
-        currentInport = [portH.Inport];
-        [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
-            iZero);
-    else
-        for i = 1:length(inports);
-            currentLine = get_param(inports(i),'Line');
-            % this gives the all the outports connected to this line
-            currentOutports = get_param(currentLine,'SrcPorthandle');
-            outLength = length(currentOutports);
-            % in case outportHandles is too short 
-            if outLength > length(outportHandles)-iZero+1;
-                if outlength > length(outportHandles)
-                    outportHandles = [outportHandles; zeros(outLength*2,1)];
-                else
-                    outportHandles = [outportHandles; ...
-                        zeros(length(outportHandles),1)];
-                end
+        currentBlockHandle = get_param(currentOutport,'ParentHandle');
+        referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
+
+        % if the size of block equals the blockZero, need to double to
+        % length of block
+        if blockZero == length(block.handles)
+            for field={'name', 'P','K','inputs','outportHandles','dimensions',...
+                    'sourceOutports'}
+                    block.(field{1}) = [strarr.(field{1}); cell(blockZero,1)];
+            end
+            block.handles = [block.handles; zeros(blockZero,1)];
+        end
+
+        if ~any(block.handles==currentBlockHandle)
+            % no duplicate blocks, add this block
+            currentBlockName = get_param(currentOutport,'Parent');
+            block.names{blockZero} = currentBlockName
+            block.handles(blockZero) = currentBlockHandle;
+            if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
+                % store P&K matricies if the current block is a polyblock
+                block.P{blockZero} = eval(get_param(currentBlockHandle,'P'));
+                block.K{blockZero}= eval(get_param(currentBlockHandle,'K'));
+            else
+                % store P and K matricies for the other blocks
+                [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
+                block.P{blockZero} = P;
+                block.K{blockZero}= K;
             end
 
-            diff = setdiff(currentOutports,outportHandles);
-            diffLength = length(diff);
-            outportHandles(iZero:(diffLength+iZero-1)) = diff;
-            iZero = iZero + diffLength;
+            if isempty(block.outportHandles{blockZero})
+                block.outportHandles{blockZero} = zeros(length(sourcePorts.Outport),1);
+            end
+            % FIX: POPULATE OUTPORT HANDLES
+
+            % increase the index of block by one
+            blockZero = blockZero+1;
         end
     end
+    
+    
+    switch state
+        case 3 % current block is a subsystem
+            currentOutport = existingOutports(iOut);
+            % if there's a subsystem, inports is actually an array of the
+            % outports
+            parent = get_param(currentOutport,'Parent');
+            index = inports==currentOutport;
+            outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
+            handle = get_param(outportBlocks{index},'Handle');
+            portH = get_param(handle,'PortHandles');
+            currentInport = [portH.Inport];
+            [outportHandles,iZero] = getOutports(currentInport,outportHandles,...
+                iZero);
+        otherwise
+            for i = 1:length(inports);
+                currentLine = get_param(inports(i),'Line');
+                % this gives the all the outports connected to this line
+                currentOutports = get_param(currentLine,'SrcPorthandle');
+                outLength = length(currentOutports);
+                % in case outportHandles is too short 
+                if outLength > length(outportHandles)-iZero+1;
+                    if outlength > length(outportHandles)
+                        outportHandles = [outportHandles; zeros(outLength*2,1)];
+                    else
+                        outportHandles = [outportHandles; ...
+                            zeros(length(outportHandles),1)];
+                    end
+                end
+
+                diff = setdiff(currentOutports,outportHandles);
+                diffLength = length(diff);
+                outportHandles(iZero:(diffLength+iZero-1)) = diff;
+                iZero = iZero + diffLength;
+            end
+    end
+    
 end
 
 %%
@@ -427,11 +518,12 @@ end
 %> @param outportHandles outportHandles found by searchSources
 %> @param name name of model
 %>
-%> @retval optimVar structure with fields 1) index of block name 2) index
-%> of port or vector
-%> @retval polyStruct structure with fields 1) index of block name 2) P
-%> matrix 3) K matrix
+%> @retval optimVar structure with fields 1) index of block name 2) outport
+%> # 3) outport handle 4) Index of outport 5) bounds 6) Cost 7) time 8)
+%> list of indices for each optimization variable
 %> @retval blocks structure with fields 1) name of block 2) handle of block
+%> 3) P 4) K 5) inputs, optimVar indices 6) outputs, optimvar indices 7)
+%> all outport handles 8) dimensions 9) all source outport handles 
 %======================================================================
 
 function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
@@ -501,58 +593,3 @@ function [optimVar,polyStruct,blocks] = makeStruct(outportHandles,name)
     optimVar.index = optimVar.index(1:optimZero-1);
 end
 
-% function [sourceHandles,stop] = searchSources(handleArray,varargin)
-%     if ~isempty(varargin)
-%         fromSimulink = varargin{1};
-%     end
-%     % i = current handle that we're looking at
-%     i = 1;
-%     sourceHandles = zeros(2,1);
-%     % j is the index of the first zero
-%     j = length(handleArray)+1;
-%     sourceHandles(1:length(handleArray)) = handleArray;
-%     while 1
-%         if sourceHandles(i) == 0
-%             % when this is true, all of the handles have been found
-%             break
-%         elseif any(fromSimulink==sourceHandles(i))
-%             % if the current handle is equal to any of the external or input
-%             % from simulink, then continue with the loop and do not look for
-%             % more branches from that block
-%             i = i+1;
-%             continue
-%         elseif i > length(sourceHandles)
-%             break
-%         elseif ~sourceHandles(end)==0
-%             % if we reach the point where there's no more space for more
-%             % handles, allocate more space
-%             sourceHandles = [sourceHandles; zeros(length(sourceHandles)*2,1)];
-%         end
-%         ports = get_param(sourceHandles(i),'PortConnectivity');
-%         % FIX: once we get all the handles, we will want to check whether
-%         % or not BLOM will be able to process these blocks. 
-%         sHandles = [ports.SrcBlock];
-%         newHandles = setdiff(sHandles,sourceHandles);
-%         if (j+length(newHandles)-1) >= length(sourceHandles)
-%             % if there's not enough space for the new handles, allocate more
-%             % space
-%             sourceHandles = [sourceHandles; zeros(length(sourceHandles)*2,1)];
-%         end
-%         
-%         if ~isempty(newHandles)
-%             sourceHandles(j:(j+length(newHandles)-1)) = newHandles;
-%             j = j + length(newHandles);
-%         end
-%         i = i + 1;
-%     end
-%     
-%     if any(sourceHandles==0)
-%         sourceHandles = sourceHandles(1:j-1);
-%     end
-%     %check if any handles are -1 and remove them
-%     if any(sourceHandles==-1)
-%         fprintf('One or more of the blocks are missing a connection\n');
-%         stop = 1;
-%     end
-%     sourceHandles = setdiff([-1],sourceHandles);
-% end
