@@ -260,23 +260,31 @@ function [outportHandles,boundStruct,block,optimVar,stop] = ...
         block.name{blockZero} = sourceBlock;
         block.handle(blockZero) = get_param(sourceBlock,'Handle');
         
-        if strcmp(sourceType,'SubSystem') && isempty(refBlock)
-            % if the current block is a subsystem and not from BLOM, 
-            % want to look under the subsystem and get the appropriate
-            % blocks there
-            sourceOutports = [sourcePorts.Outport];
-            [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
-                updateVars(sourceOutports,outportHandles,iZero,...
-                optimVar,optimZero,block,blockZero,3,iOut,sourcePorts);
-            
-            % want to remove this outport later since all is does is route
-            % a signal
-            removeOutport(removeOutportZeroIndex) = iOut;
-            removeOutportZeroIndex = removeOutportZeroIndex + 1;
-            
-            if removeOutportZeroIndex==length(removeOutport)
-                removeOutport = [removeOutport; zeros(length(removeOutport),1)];
+        if strcmp(sourceType,'SubSystem')
+            if isempty(refBlock)
+                % if the current block is a subsystem and not from BLOM, 
+                % want to look under the subsystem and get the appropriate
+                % blocks there
+                sourceOutports = [sourcePorts.Outport];
+                [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                    updateVars(sourceOutports,outportHandles,iZero,...
+                    optimVar,optimZero,block,blockZero,3,iOut,sourcePorts);
+
+                % want to remove this outport later since all is does is route
+                % a signal
+                removeOutport(removeOutportZeroIndex) = iOut;
+                removeOutportZeroIndex = removeOutportZeroIndex + 1;
+
+                if removeOutportZeroIndex==length(removeOutport)
+                    removeOutport = [removeOutport; zeros(length(removeOutport),1)];
+                end
+            elseif strcmp(refBlock(1:8),'BLOM_Lib')
+                % subsystem that's a BLOM block
+                [outportHandles,iZero,optimVar,optimZero,block,blockZero] = ...
+                    updateVars(sourceInports,outportHandles,iZero,...
+                    optimVar,optimZero,block,blockZero,2,iOut,sourcePorts);
             end
+                
         elseif strcmp(sourceType,'From')
             % the current block is a from block, find goto block and see
             % what is connected to the goto block
