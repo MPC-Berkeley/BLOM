@@ -486,6 +486,23 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     
 end
 
+%======================================================================
+%> @brief update allVars structure 
+%>
+%> More detailed description of the problem.
+%>
+%> @param allVars allVars structure
+%> @param allVarsZero current index of first zero of allVars
+%> @param blockZero current index of first zero of block structure. used to
+%> figure out which block the outport is from
+%> @param currentOutport outport that you want to add information for
+%> @param state lets the function know how to populate allVars. current
+%> states are 'bound', 'cost'
+%>
+%> @retval allVars allVars structure
+%> @retval allVarsZero updated index of first zero of allVarsZero
+%======================================================================
+
 function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
     blockZero,currentOutport,state,varargin)
 %this function populates allVars structure
@@ -517,6 +534,20 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
         end
     end
 end
+
+%======================================================================
+%> @brief given block structure and outport, populate the relevant fields
+%> of block
+%>
+%> More detailed description of the problem.
+%>
+%> @param block block structure
+%> @param blockZero current index of first zero of block
+%> @param currentOutport outport that you want to add information for
+%>
+%> @retval block block structure
+%> @retval blockZero updated index of first zero of block
+%======================================================================
 
 function [block,blockZero] = updateBlock(block,blockZero,currentOutport)
 %this function populates block using currentOutport information
