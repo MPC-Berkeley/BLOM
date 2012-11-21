@@ -177,9 +177,9 @@ function [outportHandles,boundStruct,block,allVars,stop] = ...
     allVars.outportHandle = zeros(initialSize,1); % handle of specific outport
     allVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
     allVars.optVarIdx = zeros(initialSize,1); % points to the true optimization variable. (will usually point to itself, otherwise, some "true" variable)
+    allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -inf
-    allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.time = cell(initialSize,1);
     
     blockZero = 1; % index of first block zero
@@ -514,7 +514,30 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
         lengthOut = dimension(1)*dimension(2);
         currentIndices = 1:lengthOut;
         portNumber = get_param(currentOutport,'PortNumber');
-        % FIX: Add something here to make allVars bigger if needed
+        
+        % update the size of allVars as necessary
+        newLength = allVarsZero+lengthOut;
+        oldLength = length(allVars.block);
+        if newLength >= oldLength
+            if newLength >= 2*oldLength
+            % new entries greater than twice the old length
+                for field={'block', 'outportNum','outportHandle','outportIndex',...
+                        'optVarIdx','cost'}
+                        allVars.(field{1}) = [allVars.(field{1}); zeros(newLength*2,1)];
+                end
+                allVars.upperBound = [allVars.upperBound; inf*ones(newLength*2,1)];
+                allVars.lowerBound = [allVars.lowerBound; -inf*ones(newLength*2,1)];
+                allVars.time = [allVars.time; cell(newLength*2,1)];
+            else % double the length of all fields in allVars
+                for field={'block', 'outportNum','outportHandle','outportIndex',...
+                        'optVarIdx','cost'}
+                        allVars.(field{1}) = [allVars.(field{1}); zeros(oldLength,1)];
+                end
+                allVars.upperBound = [allVars.upperBound; inf*ones(oldLength,1)];
+                allVars.lowerBound = [allVars.lowerBound; -inf*ones(oldLength,1)];
+                allVars.time = [allVars.time; cell(oldLength,1)];
+            end
+        end
         
         allVars.block(allVarsZero:(allVarsZero+lengthOut-1)) = blockZero-1;
         allVars.outportNum(allVarsZero:(allVarsZero+lengthOut-1)) = portNumber;
