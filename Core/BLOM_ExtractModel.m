@@ -66,7 +66,7 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     eval([name '([],[],[],''compile'');']); 
     try
         [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
-        [outportHandles,boundStruct,block,allVars,stop] = ...
+        [block,allVars,stop] = ...
             searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
         % FIX: should implement something that stops the code after analyzing
         % all the blocks and finding an error in the structure of the model
@@ -79,10 +79,11 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
 
         %following code is to make sure searchSources works
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
-        fprintf('The Number of outports is %.0f\n',length(outportHandles))
-        for i = 1:length(outportHandles);
-            parent = get_param(boundStruct.outportHandles(i),'Parent')
-            portType = get_param(outportHandles(i),'PortType');
+        fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
+        for i = 1:length(allVars.outportHandle);
+            allVars.outportHandle(i)
+            parent = get_param(allVars.outportHandle(i),'Parent')
+            portType = get_param(allVars.outportHandle(i),'PortType');
         end
 
         fprintf('\n\n\n Here we have the stored data from block\n\n\n');
@@ -145,8 +146,7 @@ end
 %> boolean true or false if it is connected to a bounds block
 %======================================================================
 
-function [outportHandles,boundStruct,block,allVars,stop] = ...
-    searchSources(boundHandles,costHandles,varargin)
+function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
     % only flag stop = 1 when there is a bad block
     stop = 0;
     if ~isempty(varargin)
@@ -386,15 +386,19 @@ function [outportHandles,boundStruct,block,allVars,stop] = ...
     end
     block.handles = block.handles(1:(blockZero-1));
     
+    % remove empty and 0 entries in allVars
+    for field={'block', 'outportNum','outportHandle','outportIndex',...
+        'optVarIdx','cost'}
+        allVars.(field{1}) = allVars.(field{1})(1:(allVarsZero-1));
+    end
+    allVars.upperBound = allVars.upperBound(1:(allVarsZero-1));
+    allVars.lowerBound = allVars.lowerBound(1:(allVarsZero-1));
+    allVars.time = allVars.time(1:(allVarsZero-1));
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
     % order
     % outportHandles = setdiff(outportHandles,[-1]);
     
-    % update boundStruct with all the outport handles and boolean values
-    % for true and false
-    boundStruct.bound = [boundStruct.bound; false(length(outportHandles)-iBounds,1)];
-    boundStruct.outportHandles = outportHandles;
 end
 
 %======================================================================
@@ -461,7 +465,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         case 'bound'
             % bound case. for all the outports found here, include the
             % bounds for these
-            state = 'bound';
+            allVarsState = 'bound';
             boundHandle = varargin{3};
             lowerBound = eval(get_param(boundHandle,'lb'));
             upperBound = eval(get_param(boundHandle,'ub'));
@@ -470,7 +474,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             for currentOutport = outportsFound
                 [block,blockZero] = updateBlock(block,blockZero,currentOutport);
                 [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                    blockZero,currentOutport,state,lowerBound,upperBound);
+                    blockZero,currentOutport,allVarsState,lowerBound,upperBound);
             end
             
         case 'cost'
@@ -478,9 +482,11 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         otherwise 
             % not looking at bounds or costs
             currentOutport = existingOutports(iOut);
-            
+            allVarsState = 'normal';
             %update block structure
             [block,blockZero] = updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    blockZero,currentOutport,allVarsState);
     end
         
     
@@ -504,11 +510,10 @@ end
 %======================================================================
 
 function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-    blockZero,currentOutport,state,varargin)
+    blockZero,currentOutport,allVarsState,varargin)
 %this function populates allVars structure
 %state can be 'bound', 'cost' 
-
-    if ~any(allVars.outportHandle==currentOutport)
+    if sum(any(allVars.outportHandle==currentOutport)) == 0
         %only add outports which haven't been looked at
         dimension = get_param(currentOutport,'CompiledPortDimensions');
         lengthOut = dimension(1)*dimension(2);
@@ -544,7 +549,7 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
         allVars.outportIndex(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
         
-        switch state
+        switch allVarsState
             case 'bound'
                 lowerBound = varargin{1};
                 upperBound = varargin{2};
@@ -555,6 +560,8 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
             case 'normal'
                 % do nothing
         end
+        
+        allVarsZero = allVarsZero+lengthOut;
     end
 end
 
@@ -589,6 +596,7 @@ function [block,blockZero] = updateBlock(block,blockZero,currentOutport)
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
         currentBlockName = get_param(currentOutport,'Parent');
+        sourcePorts = get_param(currentBlockName,'PortHandles');
         block.names{blockZero} = currentBlockName;
         block.handles(blockZero) = currentBlockHandle;
         if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
