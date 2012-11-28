@@ -67,7 +67,7 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
                     {
                         tmp *=pow(x[A.col_ind(j)],p);
                         if (std::isnan(tmp))
-                            printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                            printf("BLOM_NLP_Sparse:tmp is nan, j=%d, var  %d, %f %f %f\n", j,A.col_ind(j), x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
                     }
                 }
 			 	else 
@@ -75,7 +75,7 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
                     tmp = EvalSpecial(tmp,p,x,A.col_ind(j));
                 }
                 if (std::isnan(tmp))
-                    printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f \n", j, x[A.col_ind(j)], p);
+                    printf("BLOM_NLP_Sparse:tmp is nan, j=%d,var  %d, %f %f \n", j,A.col_ind(j), x[A.col_ind(j)], p);
 
 			 }
 			 
@@ -181,7 +181,7 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
                     {
                         tmp *=pow(x[A.col_ind(j)],p);
                         if (std::isnan(tmp))
-                            printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                            printf("BLOM_NLP_Sparse:CalcDerValue: tmp is nan, j=%d, var  %d, %f %f %f\n", j,A.col_ind(j), x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
                     }
                 }
                 else
@@ -326,7 +326,7 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                          {
                              tmp *=pow(x[A.col_ind(j)],p);
                              if (std::isnan(tmp))
-                                 printf("BLOM_NLP_Sparse:tmp is nan, j=%d, %f %f %f\n", j, x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
+                                 printf("BLOM_NLP_Sparse:CalcDoubleDerValue: tmp is nan, j=%d, var %d, %f %f %f\n", j,A.col_ind(j), x[A.col_ind(j)], p,pow(x[A.col_ind(j)],p));
                          }
                      }
                      else
@@ -457,6 +457,102 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
         x_l[i] =-1.0e19;
         x_u[i] =+1.0e19;
     }
+   
+    // Add variable boundaries for trivial linear constraints
+    for (int i=1; i <= m_m  ; i ++) // Do inequalities first, because if the same variable appears in equality and inequality, the equality shoud prevail.
+    {
+//        printf("i=%d ,%d \n ",i,m_C.row_ptr(i+1));
+        if  ((m_C.row_ptr(i+1) - m_C.row_ptr(i))<=2)   // 2 or less terms in constraint
+        {
+            int linear_var = -1;
+            int const_term = -1;
+            double linear_coeff = 0;
+            double const_coeff  = 0;
+            bool skip = false;
+            
+            
+            for (int j=m_C.row_ptr(i) ; j < m_C.row_ptr(i+1) ; j ++)
+            {
+                int A_row = m_A.row_ptr(m_C.col_ind(j)); // begining of the current A row
+                int A_row_end = m_A.row_ptr(m_C.col_ind(j)+1); // end of the current A row
+                
+//                 printf("%d , ",A_row_end-A_row );
+                if (A_row_end-A_row > 1) // more than one variable in this term
+                {
+                    skip = true;
+                    break;
+                }
+                
+                
+                if (A_row_end-A_row == 1)// The row of A has only one term.
+                {
+                     if (m_A.val(A_row) == 1 && linear_var == -1) // linear term for the first time
+                     {
+                         linear_var = m_A.col_ind(A_row);
+                         linear_coeff = m_C.val(j);
+                     }
+                     else if (m_A.val(A_row) == 0 && const_term == -1) { // constant term for the first time
+                         const_term = m_A.col_ind(A_row);
+                         const_coeff = m_C.val(j);
+                     }
+                     else {
+                         skip = true;
+                         //printf("skipped, const %d, term %d\n", i, j);
+                         break;
+                     }
+                }
+                else {// empty row - zeros
+                     if ( const_term == -1) { // constant term for the first time
+                         const_term = 0;
+                         const_coeff = m_C.val(j);
+                     }
+                     else {
+                         skip = true;
+                         //printf("skipped - two constants, const %d, term %d\n", i, j);
+                         break;
+                     }
+                }
+            } // end of for on j
+            
+            if (skip)
+            {    continue; }
+            
+            
+            if (linear_var >= 0 && const_term == -1) // no const term
+            {
+                const_term = 0;
+                const_coeff = 0;
+            }
+            
+            if (const_term >= 0 && linear_var >= 0 && linear_coeff != 0)
+            {// If we are here the constraint is linear with single constant and single linear term.
+            
+                double val = -const_coeff/linear_coeff;
+//                printf("val = %f ",val);
+                if (i > m_m_ineq_constrs)   
+                { // Equality constraint
+//                   printf("Replaced equality, var %d\n",linear_var);                    
+                   x_l[linear_var] = val;
+                   x_u[linear_var] = val;
+                   
+                }
+                else 
+                {// Inequality constraint
+//                    printf("Replaced inequality, var %d\n",linear_var);
+                    if (linear_coeff < 0 ) {
+                        x_l[linear_var] = val;
+                    }
+                    else {
+                        x_u[linear_var] = val;
+                    }
+                   
+                    
+                }
+            } // end of if (const_term >= 0 && linear_var >= 0 && linear_coeff != 0)
+        } // end of   "if  ((m_C.row_ptr(i+1) - m_C.row_ptr(i))<=2)"
+            
+    }    // end of for loop on i
+  
     for(int i= 0 ; i <  m_n_fixed ;  i ++)
     {
         int idx = m_FixedStruct.col_ind(i);
@@ -475,5 +571,8 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
         g_l[i] = 0;
         g_u[i] = 0;
     }
+    
+//    printf("\n end func \n");
+
 }
 
