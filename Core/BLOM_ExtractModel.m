@@ -91,6 +91,22 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         for i = 1:length(block.handles);
             someBlock = block.names{i}
         end
+        
+        % check to see if allVars points to the proper block
+        for i = 1:length(allVars.block)
+            currentBlockName = block.names(allVars.block(i));
+            parent = get_param(allVars.outportHandle(i),'Parent');
+            
+            if strcmp(currentBlockName,parent)
+                fprintf('correct index\n')
+            else
+                fprintf('INCORRECT INDEX, BAD\n')
+                currentBlockName
+                parent
+                fprintf('\nExambine Above\n')
+            end
+            
+        end
 
         % just a placeholder for ModelSpec so that MATLAB does not complain
         ModelSpec = 1;
@@ -221,12 +237,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
             allVars,allVarsZero,block,blockZero,state,iZero,portH);
     end
     
-    % array of outport indices to remove at the end of search. for now, we
-    % want to remove the outports of From blocks. Do not want to remove it
-    % during the search to prevent finding it over again each time
-    removeOutport = zeros(10,1);
-    removeOutportZeroIndex = 1;
-    
     
     % iOut is current outport handle we are looking at
 	iOut = 1;
@@ -270,14 +280,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
                     updateVars(sourceOutports,outportHandles,iZero,...
                     allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
 
-                % want to remove this outport later since all is does is route
-                % a signal
-                removeOutport(removeOutportZeroIndex) = iOut;
-                removeOutportZeroIndex = removeOutportZeroIndex + 1;
-
-                if removeOutportZeroIndex==length(removeOutport)
-                    removeOutport = [removeOutport; zeros(length(removeOutport),1)];
-                end
             elseif strncmp(refBlock,'BLOM_Lib',8)
                 % subsystem that's a BLOM block
                 state = 'BLOM';
@@ -289,23 +291,13 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
         elseif strcmp(sourceType,'From')
             % the current block is a from block, find goto block and see
             % what is connected to the goto block
-            tag = get_param(sourceBlock,'GotoTag');
-            
-            % want to remove this outport later since all is does is route
-            % a signal
-            removeOutport(removeOutportZeroIndex) = iOut;
-            removeOutportZeroIndex = removeOutportZeroIndex + 1;
-            
-            if removeOutportZeroIndex==length(removeOutport)
-                removeOutport = [removeOutport; zeros(length(removeOutport),1)];
-            end
-            
-            % there should only be one goto block associated with this from
-            % block
-            gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
-            gotoPorts = get_param(gotoBlock{1},'PortHandles');
-            sourceInports = [gotoPorts.Inport];
-            state = 'norm';
+            % NOTE: sourceInports is really the tag of the from block ONLY
+            % in this From block case. in the updateVars code, it takes
+            % this into consideration and finds the proper blocks
+            sourceInports{1} = get_param(sourceBlock,'GotoTag');
+            sourceInports{2} = name;
+
+            state = 'from';
             [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
@@ -362,12 +354,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
         iOut = iOut+1;
     end
     
-    % remove unwanted outports (e.g. from block outport)
-    if any(removeOutport==0)
-        removeOutport = removeOutport(1:(removeOutportZeroIndex-1));
-    end
-    outportHandles(removeOutport) = [];
-    iZero = iZero-removeOutportZeroIndex+1;
     
     if any(outportHandles==0)
         outportHandles = outportHandles(1:iZero-1);
@@ -427,6 +413,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         iOut = varargin{1};
         sourcePorts = varargin{2};
     end
+    
     if strcmp(state,'subsys') %FIX: may want to look into special BLOM blocks here
         currentOutport = existingOutports(iOut);
         % if there's a subsystem, inports is actually an array of the
@@ -437,6 +424,16 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         handle = get_param(outportBlocks{index},'Handle');
         portH = get_param(handle,'PortHandles');
         inports = [portH.Inport];
+    end
+    
+    if strcmp(state,'from')
+        tag = inports{1};
+        name = inports{2};
+        % there should only be one goto block associated with this from
+        % block
+        gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
+        gotoPorts = get_param(gotoBlock{1},'PortHandles');
+        inports = [gotoPorts.Inport];
     end
     
     % found outports connected to inports provided
