@@ -454,12 +454,12 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
 {
     for(int i=0; i < m_n ; i ++)
     {
-        x_l[i] =-1.0e19;
-        x_u[i] =+1.0e19;
+        x_l[i] = -1.0e19;
+        x_u[i] = +1.0e19;
     }
    
     // Add variable boundaries for trivial linear constraints
-    for (int i=1; i <= m_m  ; i ++) // Do inequalities first, because if the same variable appears in equality and inequality, the equality shoud prevail.
+    for (int i = 1; i <= m_m_ineq_constrs; i ++) // only do inequalities - removing variables by equality constraints can possibly cause problems
     {
 //        printf("i=%d ,%d \n ",i,m_C.row_ptr(i+1));
         if  ((m_C.row_ptr(i+1) - m_C.row_ptr(i))<=2)   // 2 or less terms in constraint
@@ -471,20 +471,20 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
             bool skip = false;
             
             
-            for (int j=m_C.row_ptr(i) ; j < m_C.row_ptr(i+1) ; j ++)
+            for (int j = m_C.row_ptr(i); j < m_C.row_ptr(i+1); j ++)
             {
                 int A_row = m_A.row_ptr(m_C.col_ind(j)); // begining of the current A row
                 int A_row_end = m_A.row_ptr(m_C.col_ind(j)+1); // end of the current A row
                 
 //                 printf("%d , ",A_row_end-A_row );
-                if (A_row_end-A_row > 1) // more than one variable in this term
+                if (A_row_end - A_row > 1) // more than one variable in this term
                 {
                     skip = true;
                     break;
                 }
                 
                 
-                if (A_row_end-A_row == 1)// The row of A has only one term.
+                if (A_row_end - A_row == 1)// The row of A has only one term.
                 {
                      if (m_A.val(A_row) == 1 && linear_var == -1) // linear term for the first time
                      {
@@ -532,18 +532,18 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
                 if (i > m_m_ineq_constrs)   
                 { // Equality constraint
 //                   printf("Replaced equality, var %d\n",linear_var);                    
-                   x_l[linear_var] = val;
-                   x_u[linear_var] = val;
+                   x_l[linear_var] = (val > x_l[linear_var] ? val : x_l[linear_var]);
+                   x_u[linear_var] = (val < x_u[linear_var] ? val : x_u[linear_var]);
                    
                 }
                 else 
                 {// Inequality constraint
 //                    printf("Replaced inequality, var %d\n",linear_var);
                     if (linear_coeff < 0 ) {
-                        x_l[linear_var] = val;
+                        x_l[linear_var] = (val > x_l[linear_var] ? val : x_l[linear_var]);
                     }
                     else {
-                        x_u[linear_var] = val;
+                        x_u[linear_var] = (val < x_u[linear_var] ? val : x_u[linear_var]);
                     }
                    
                     
@@ -553,7 +553,7 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
             
     }    // end of for loop on i
   
-    for(int i= 0 ; i <  m_n_fixed ;  i ++)
+    for(int i = 0; i < m_n_fixed;  i ++)
     {
         int idx = m_FixedStruct.col_ind(i);
         x_l[idx] = fixed[(int)m_FixedStruct.val(i)-1];
@@ -561,12 +561,12 @@ void MyNLP::GetBounds_info(Index n, Number* x_l, Number* x_u,
      //   printf("%d %d\n",idx,(int)m_FixedStruct.val(i)-1);
     }
     
-    for(int i=0; i < m_m_ineq_constrs; i ++)
+    for(int i = 0; i < m_m_ineq_constrs; i ++)
     {
         g_l[i] = -1.0e19;
         g_u[i] = 0;
     }
-    for(int i= m_m_ineq_constrs; i < m_m; i ++)
+    for(int i = m_m_ineq_constrs; i < m_m; i ++)
     {
         g_l[i] = 0;
         g_u[i] = 0;

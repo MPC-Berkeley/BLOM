@@ -36,7 +36,7 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
                 ipopt_dir '/Ipopt/config.status --file=''Makefile Sparse++/makefile.def''; ' ...
                 'make clean; make all"']);
             
-            if (~exist('BLOM_NLP.exe','file'))
+            if (~exist(fullfile(BLOM_dir,'BLOM_Ipopt','BLOM_NLP.exe'),'file'))
                 warning('Compilation of BLOM_NLP.exe failed. Check the screen for errors');
             else
                 disp('-------------------------------------');
@@ -50,7 +50,7 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
         system([ipopt_dir '/Ipopt/config.status --file="Makefile Sparse++/makefile.def"']);
         system('make clean; make all');
         
-        if (~exist('BLOM_NLP','file'))
+        if (~exist(fullfile(BLOM_dir,'BLOM_Ipopt','BLOM_NLP'),'file'))
             warning('Compilation of BLOM_NLP failed. Check the screen for errors');
         else
             disp('---------------------------------');
