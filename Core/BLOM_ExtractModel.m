@@ -81,7 +81,7 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
-            allVars.outportHandle(i)
+            allVars.outportHandle(i);
             parent = get_param(allVars.outportHandle(i),'Parent');
             portType = get_param(allVars.outportHandle(i),'PortType');
         end
@@ -419,7 +419,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     
     if strcmp(state,'subsys') %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
-        % outports
+        % outports of subsystem
         parent = get_param(currentOutport,'Parent');
         index = inports==currentOutport;
         outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
@@ -492,6 +492,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     
 end
 
+%%
 %======================================================================
 %> @brief update allVars structure 
 %>
@@ -565,6 +566,7 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
     end
 end
 
+%%
 %======================================================================
 %> @brief given block structure and outport, populate the relevant fields
 %> of block
