@@ -82,17 +82,19 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
             allVars.outportHandle(i)
-            parent = get_param(allVars.outportHandle(i),'Parent')
+            parent = get_param(allVars.outportHandle(i),'Parent');
             portType = get_param(allVars.outportHandle(i),'PortType');
         end
 
         fprintf('\n\n\n Here we have the stored data from block\n\n\n');
 
         for i = 1:length(block.handles);
-            someBlock = block.names{i}
+            someBlock = block.names{i};
         end
         
         % check to see if allVars points to the proper block
+        fprintf('Test to make sure allVars points to the proper block\n')
+        fprintf('--------------------------------------------------------\n')
         for i = 1:length(allVars.block)
             currentBlockName = block.names(allVars.block(i));
             parent = get_param(allVars.outportHandle(i),'Parent');
@@ -105,8 +107,8 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
                 parent
                 fprintf('\nExambine Above\n')
             end
-            
         end
+        fprintf('--------------------------------------------------------\n')
 
         % just a placeholder for ModelSpec so that MATLAB does not complain
         ModelSpec = 1;
@@ -413,9 +415,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         iOut = varargin{1};
         sourcePorts = varargin{2};
     end
+    currentOutport = existingOutports(iOut);
     
     if strcmp(state,'subsys') %FIX: may want to look into special BLOM blocks here
-        currentOutport = existingOutports(iOut);
         % if there's a subsystem, inports is actually an array of the
         % outports
         parent = get_param(currentOutport,'Parent');
@@ -469,21 +471,22 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
             % go through each of the outports connected through bound
             for currentOutport = outportsFound
-                [block,blockZero] = updateBlock(block,blockZero,currentOutport);
+                [block,blockZero,currentBlockIndex] =...
+                    updateBlock(block,blockZero,currentOutport);
                 [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                    blockZero,currentOutport,allVarsState,lowerBound,upperBound);
+                    currentBlockIndex,currentOutport,allVarsState,lowerBound,upperBound);
             end
             
         case 'cost'
             
         otherwise 
             % not looking at bounds or costs
-            currentOutport = existingOutports(iOut);
             allVarsState = 'normal';
             %update block structure
-            [block,blockZero] = updateBlock(block,blockZero,currentOutport);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                    blockZero,currentOutport,allVarsState);
+                    currentBlockIndex,currentOutport,allVarsState);
     end
         
     
@@ -507,7 +510,7 @@ end
 %======================================================================
 
 function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-    blockZero,currentOutport,allVarsState,varargin)
+    currentBlockIndex,currentOutport,allVarsState,varargin)
 %this function populates allVars structure
 %state can be 'bound', 'cost' 
     if sum(any(allVars.outportHandle==currentOutport)) == 0
@@ -541,7 +544,7 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
             end
         end
         
-        allVars.block(allVarsZero:(allVarsZero+lengthOut-1)) = blockZero-1;
+        allVars.block(allVarsZero:(allVarsZero+lengthOut-1)) = currentBlockIndex;
         allVars.outportNum(allVarsZero:(allVarsZero+lengthOut-1)) = portNumber;
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
         allVars.outportIndex(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
@@ -576,7 +579,7 @@ end
 %> @retval blockZero updated index of first zero of block
 %======================================================================
 
-function [block,blockZero] = updateBlock(block,blockZero,currentOutport)
+function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,currentOutport)
 %this function populates block using currentOutport information
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
     referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
@@ -612,9 +615,11 @@ function [block,blockZero] = updateBlock(block,blockZero,currentOutport)
         end
         % FIX: POPULATE OUTPORT HANDLES
 
-        % increase the index of block by one
+        % increase the index of block by one and populate currentBlockIndex
+        currentBlockIndex = blockZero;
         blockZero = blockZero+1;
     else %case when the current outport's block is found but has not been added to block data
+        currentBlockIndex = find(block.handles==currentBlockHandle);
         % FIX, find stuff for this case
     end
 end
