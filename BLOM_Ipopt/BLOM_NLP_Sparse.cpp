@@ -256,7 +256,9 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                      {
                          if(p < BLOM_TYPE_EXP)
                          {
-                             tmp *= p --;
+                             tmp *= p;
+                             if (p != 0)
+                                 p--;
                          }
                          else if (p == BLOM_TYPE_EXP) //exp
                          {
