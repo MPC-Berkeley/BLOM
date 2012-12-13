@@ -81,10 +81,15 @@ function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
-            allVars.outportHandle(i);
-            parent = get_param(allVars.outportHandle(i),'Parent');
+            allVars.outportHandle(i)
+            parent = get_param(allVars.outportHandle(i),'Parent')
             portType = get_param(allVars.outportHandle(i),'PortType');
+            if ~strcmp(portType,'outport')
+                fprintf('Oops, this is not an outport, look to see what happened\n')
+                portType
+            end
         end
+        
 
         fprintf('\n\n\n Here we have the stored data from block\n\n\n');
 
@@ -164,29 +169,28 @@ end
 %> boolean true or false if it is connected to a bounds block
 %======================================================================
 
-function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
+function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
+    fromSimulink,name)
     % only flag stop = 1 when there is a bad block
     stop = 0;
-    if ~isempty(varargin)
-        % gets blocks of final stopping places
-        fromSimulink = varargin{1};
-        name = varargin{2};
-        fromSimulinkPorts = get_param(fromSimulink,'PortHandles');
-        sOutportHandles = zeros(length(fromSimulinkPorts),1);
-        sOutportIdx = 1;
-        % add all the outport handles of the fromSimulink blocks. The BFS
-        % will stop at these handles
-        for idx = 1:length(fromSimulinkPorts);
-            currentOutports = fromSimulinkPorts{idx}.Outport;
-            sOutportLength = length(currentOutports);
-            sOutportHandles(sOutportIdx:(sOutportIdx+sOutportLength-1)) = ...
-                currentOutports;
-            sOutportIdx = sOutportIdx+sOutportLength;
-        end
-
+    
+    % gets blocks of final stopping places
+    fromSimulinkPorts = get_param(fromSimulink,'PortHandles');
+    sOutportHandles = zeros(length(fromSimulinkPorts),1);
+    sOutportIdx = 1;
+    % add all the outport handles of the fromSimulink blocks. The BFS
+    % will stop at these handles
+    for idx = 1:length(fromSimulinkPorts);
+        currentOutports = fromSimulinkPorts{idx}.Outport;
+        sOutportLength = length(currentOutports);
+        sOutportHandles(sOutportIdx:(sOutportIdx+sOutportLength-1)) = ...
+            currentOutports;
+        sOutportIdx = sOutportIdx+sOutportLength;
     end
     
     initialSize = 20;
+    
+    % initialize structures and fields
     
     allVarsZero = 1; % index of first allVars zero
     % allVars stores information for every optimization variable
@@ -216,11 +220,13 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
     
     % iZero is index of first zero of outportHandles
     iZero = 1;
-    outportHandles = zeros(initialSize,1);    
+    outportHandles = zeros(initialSize,1);
+    
     % get all outports connected to the bounds 
     state = 'bound';
     for i = 1:length(boundHandles)
         portH = get_param(boundHandles(i),'PortHandles');
+        % costs and bounds should only have one inport and line
         currentInport = [portH.Inport];
         [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
             updateVars(currentInport,outportHandles,iZero,...
@@ -236,7 +242,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,varargin)
         currentInports = [portH.Inport];
         [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
             updateVars(currentInports,outportHandles,iZero,...
-            allVars,allVarsZero,block,blockZero,state,iZero,portH);
+            allVars,allVarsZero,block,blockZero,state);
     end
     
     
@@ -414,8 +420,8 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     if ~isempty(varargin)
         iOut = varargin{1};
         sourcePorts = varargin{2};
+        currentOutport = existingOutports(iOut);
     end
-    currentOutport = existingOutports(iOut);
     
     if strcmp(state,'subsys') %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
@@ -469,7 +475,10 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             lowerBound = eval(get_param(boundHandle,'lb'));
             upperBound = eval(get_param(boundHandle,'ub'));
             
-            % go through each of the outports connected through bound
+            % go through each of the outports connected through bound.
+            % Because bound has only one inport, the for loop above only
+            % goes through one iteration, so the variable outportsFound
+            % will include all the outports found
             for currentOutport = outportsFound
                 [block,blockZero,currentBlockIndex] =...
                     updateBlock(block,blockZero,currentOutport);
@@ -478,6 +487,18 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             end
             
         case 'cost'
+            allVarsState = 'cost';
+            
+            % go through each of the outports connected through cost
+            % Because cost has only one inport, the for loop above only
+            % goes through one iteration, so the variable outportsFound
+            % will include all the outports found
+            for currentOutport = outportsFound
+                [block,blockZero,currentBlockIndex] =...
+                    updateBlock(block,blockZero,currentOutport);
+                [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState);
+            end
             
         otherwise 
             % not looking at bounds or costs
@@ -557,7 +578,7 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 allVars.lowerBound(allVarsZero:(allVarsZero+lengthOut-1)) = lowerBound;
                 allVars.upperBound(allVarsZero:(allVarsZero+lengthOut-1)) = upperBound;
             case 'cost'
-                
+                allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
             case 'normal'
                 % do nothing
         end
@@ -615,6 +636,7 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         if isempty(block.outportHandles{blockZero})
             block.outportHandles{blockZero} = zeros(length(sourcePorts.Outport),1);
         end
+        block.outportHandles{blockZero}(1) = currentOutport;
         % FIX: POPULATE OUTPORT HANDLES
 
         % increase the index of block by one and populate currentBlockIndex
@@ -622,6 +644,8 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         blockZero = blockZero+1;
     else %case when the current outport's block is found but has not been added to block data
         currentBlockIndex = find(block.handles==currentBlockHandle);
+        firstZero = find(block.outportHandles{currentBlockIndex}==0,1);
+        block.outportHandles{currentBlockIndex}(firstZero) = currentOutport;
         % FIX, find stuff for this case
     end
 end
