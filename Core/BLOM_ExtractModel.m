@@ -59,7 +59,7 @@
 %> @retval out2 return value for the second output variable
 %======================================================================
 
-function [ModelSpec] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
+function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     % load system. does nothing if model is not open
     load_system(name);
     % evaluate model to get dimensions
@@ -325,6 +325,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             % we must see what is connected to that block
             parentOfBlock = get_param(sourceBlock,'Parent');
             if ~strcmp(parentOfBlock,name)
+                % FIX: Is this still necessary?
                 parentType = get_param(parentOfBlock,'BlockType');
                 if strcmp(sourceType,'Inport') && strcmp(parentType,'SubSystem')
                     % in this case, there may actually be more inports
