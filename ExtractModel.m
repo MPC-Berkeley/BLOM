@@ -21,11 +21,9 @@ if (nargin < 4)
     name = bdroot;
 end
 
-if strcmp(integ_method,'none')
-    discrete_sys = true;
-end
+
 % First, get structure for one time step
-[all_names_single, AAsingle, Csingle, state_vars_tmp, ineq_vars_single, ...
+[all_names_single, AAsingle, Csingle, state_vars_tmp,state_vars_type, ineq_vars_single, ...
     cost_vars_single, in_vars_single, ex_vars_single, core_vars, ...
     core_functions] = ExtractOnetimeStep(name);
 
@@ -91,43 +89,73 @@ in_vars = repmat(in_vars_single,n_time_steps,1);
 ex_vars = repmat(ex_vars_single,n_time_steps,1);
 all_state_vars = repmat(state_vars,n_time_steps,1);
 
+if any(state_vars_type == 2)
+    discrete_sys = true;
+else
+    discrete_sys = false;
+end
+
+if any(state_vars_type == 4)
+    continouous_sys = true;
+else
+    continouous_sys = false;
+end
+
+if ((discrete_sys || continouous_sys) == false && n_time_steps )
+    error('No discrete or contionuous states and multiple time steps.');
+end
+
+
+toremove_list = [];
+toremove_list_source = [];
+    
 if (discrete_sys)
+    
+    [idx_discr_state_vars j s] =  find(state_vars_type == 2)
+    disc_state_vars = sparse(idx_discr_state_vars, j, state_vars(idx_discr_state_vars),size(state_vars,1),size(state_vars,2));
+
     % introduce equality constraint at state variables between time steps
     % Calc degree of each state variable - propagate the history backwards
     % for pipe of state blocks
-    degree = sparse(length(state_vars),1);
-    for k=1:n_state_vars
-        current = idx_state_vars(k);
-        while (state_vars(current)~=0) % traverse back the state dependency
-            current = state_vars(current); % to resolve multistep delays
-            degree(idx_state_vars(k)) = degree(idx_state_vars(k)) + 1;
+    degree = sparse(length(disc_state_vars),1,0);
+    for k=1:length(idx_discr_state_vars)
+        current = idx_discr_state_vars(k);
+        while (disc_state_vars(current)~=0) % traverse back the state dependency
+            current = disc_state_vars(current); % to resolve multistep delays
+            degree(idx_discr_state_vars(k)) = degree(idx_discr_state_vars(k)) + 1;
         end
     end
     
-    toremove_list = [];
+
     
     % put all the A's together, do the column manipulations all together
     AA_cat = {Atrans'}; % this was calculated earlier
     
     for d=1:full(max(degree)) % propagate delayed variables for all degrees of delay
         for t=d+1:n_time_steps % start from the current delay.
-            for k=1:n_state_vars
+            for k=1:length(idx_discr_state_vars)
                 % elimination of variables with delay d only
-                if (t > (d+1)) && (degree(idx_state_vars(k)) ~= d)
+                if (t > (d+1)) && (degree(idx_discr_state_vars(k)) ~= d)
                     continue;
-                elseif  (t == (d+1)) && (degree(idx_state_vars(k)) < d)
+                elseif  (t == (d+1)) && (degree(idx_discr_state_vars(k)) < d)
                     % special case for the first time instances in the delay chain
                     continue;
                 end
-                source = state_vars(idx_state_vars(k));
+                source = disc_state_vars(idx_discr_state_vars(k));
                 for i=2:d % find the real source variable, including multiple delays
-                    source = state_vars(source);
+                    source = disc_state_vars(source);
                 end
                 % delete the delayed variable, and replace it with its
                 % source variable.
                 %AAs = MoveEqualVar(AAs,source+(t-1-d)*n,idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet
-                AA_cat = MoveEqualVar(AA_cat, source+(t-1-d)*n, idx_state_vars(k)+(t-1)*n); % just copy data, do not remove the column yet
-                toremove_list = [toremove_list, idx_state_vars(k)+(t-1)*n];
+                to_rem_var = idx_discr_state_vars(k)+(t-1)*n;
+                source_var = source+(t-1-d)*n;
+                
+                % The move of the variable is potponed to later phase,
+                % so that the continuous stats will not interfere with it
+%                 AA_cat = MoveEqualVar(AA_cat, source_var,to_rem_var ); % just copy data, do not remove the column yet
+                toremove_list = [toremove_list, to_rem_var];
+                toremove_list_source  = [toremove_list_source, source_var];
             end
         end
     end
@@ -135,7 +163,9 @@ if (discrete_sys)
     %if ~isequal(AA_cat, vertcat(AAs{:}))
     %    error('mismatch')
     %end
-else % continous system
+end
+
+if continouous_sys % continous system
     % Discretize
     switch (integ_method)
         case 'Euler'
@@ -147,19 +177,30 @@ else % continous system
             ButcherTableau.c = [0 1]';
             ButcherTableau.b = [0.5 0.5];
         case 'RK4'
+            
+            if (discrete_sys)
+                % Delays are not treated in the intermediate time steps of RK.
+                % Need to handle the delay there to make it a legal option
+                error('Discrete variables are unsupported in RK4 method')
+            end
             ButcherTableau.A = [0 0 0 0;
                                 .5 0 0 0;
                                 0 .5 0 0;
                                 0 0 1 0];
             ButcherTableau.c = [0 0.5 0.5 1]';
             ButcherTableau.b = [1/6 1/3 1/3 1/6];
+        otherwise
+            error('Unknown integration method - %s ',integ_method);
     end
     
-    toremove_list = [];
+%     toremove_list = [];
+    [idx_cont_state_vars j s] =  find(state_vars_type == 4);
+    cont_state_vars = sparse(idx_cont_state_vars, j, state_vars(idx_cont_state_vars),size(state_vars,1),size(state_vars,2));
+
     for i=2:n_time_steps
         [AAs, Cs, toremove_list_tmp, all_names] = CreateOneIntegrationStep( ...
             AAs, Cs, core_vars, core_functions, ButcherTableau, ...
-            (i-2)*n, (i-1)*n, n, state_vars, dt, in_vars_single, ...
+            (i-2)*n, (i-1)*n, n, cont_state_vars, dt, in_vars_single, ...
             ex_vars_single, all_names, all_names_single);
         toremove_list = [toremove_list, toremove_list_tmp];
         Nprev = N;
@@ -178,6 +219,16 @@ else % continous system
     % put all the A's together, do the column manipulations all together
     AA_cat = vertcat(AAs{:});
 end
+
+
+% after handling of continuous states we can take care of the removed
+% variables.
+AA_cat = {AA_cat}; % MoveEqualVar works with cell arrays
+for i = 1:length(toremove_list_source)
+    AA_cat = MoveEqualVar(AA_cat,toremove_list_source(i),toremove_list(i));
+end
+AA_cat = AA_cat{1};
+
 
 AA_sizes = zeros(length(AAs),2);
 for i=1:length(AAs)
@@ -498,7 +549,7 @@ end
 %==========================================================================
 %==========================================================================
 
-function [all_names, AAs, Cs, state_vars, ineq_vars, cost_vars, in_vars, ...
+function [all_names, AAs, Cs, state_vars, state_vars_type, ineq_vars, cost_vars, in_vars, ...
     ex_vars, core_vars, core_functions] = ExtractOnetimeStep(name)
 
 
@@ -509,9 +560,21 @@ ex_blks = find_system(name, 'Tag', 'OptExternal');
 demuxes = find_system(name, 'BlockType', 'Demux');
 muxes = find_system(name, 'BlockType', 'Mux');
 
-
 cost_blks = find_system(name, 'Tag', 'OptCost');
 ineq_blks = find_system(name, 'Tag', 'InequalBlock');
+
+
+% check the type of the state blocks
+mem_blk_type = cell(size(mem_blks));
+for i=1:length(mem_blks)
+    if ~isempty( find_system('LookUnderMasks','all','FollowLinks','on','Parent',mem_blks{i},'BlockType', 'UnitDelay'))
+        mem_blk_type{i} = 'discr';
+    elseif ~isempty( find_system('LookUnderMasks','all','FollowLinks','on','Parent',mem_blks{i},'BlockType', 'Integrator'))
+        mem_blk_type{i} = 'cont';
+    else
+        error('Unknown state block type "%s"', mem_blks{i});
+    end
+end
 
 % group all blocks. muxes and demuxes  will be treated as polyblocks later.
 all_blks = vertcat(blks, demuxes, muxes, mem_blks, in_blks, ex_blks);
@@ -641,7 +704,12 @@ for i=(length(blks)+1):(length(blks)+length(mem_blks))
         VarNum(N+j+k) = j;
         InPort(N+j+k) = in;
         BlockHandle(N+j+k) = handles(i);
-        BlockType(N+j+k) = 2;
+        switch  mem_blk_type{i-length(blks)}
+            case 'discr'
+                BlockType(N+j+k) = 2;
+            case 'cont'
+                BlockType(N+j+k) = 4;
+        end
         k = k + j(end);
     end
     for out = 1:length(dim{i}.Outport)/2
@@ -650,7 +718,12 @@ for i=(length(blks)+1):(length(blks)+length(mem_blks))
         VarNum(N+j+k) = j;
         InPort(N+j+k) = -out;
         BlockHandle(N+j+k) = handles(i);
-        BlockType(N+j+k) = 2;
+        switch  mem_blk_type{i-length(blks)}
+            case 'discr'
+                BlockType(N+j+k) = 2;
+            case 'cont'
+                BlockType(N+j+k) = 4;
+        end
         k = k + j(end);
     end
     IIs{end+1} = N + [1:dim{i}.Inport(2), dim{i}.Inport(2)+(1:dim{i}.Outport(2))];
@@ -765,11 +838,12 @@ for i=1:length(VarConnect)
         for k = 1:length(VarConnect(i).DstBlock)
             mem_idx  = find(BlockHandle == VarConnect(i).DstBlock(k) ...
                 & -InPort == VarConnect(i).DstPort(k)+1  ...
-                & VarNum == VarNum(i) & BlockType == 2);
+                & VarNum == VarNum(i) & (BlockType==2 | BlockType==4)  );
             if ~isempty(mem_idx)
-                state_vars_mat(mem_idx,i) = 1 ; % state_vars_mat holds connectivity map.
-                % 1 at i,j index means that the state i depends on
-                % variable j
+                state_vars_mat(mem_idx,i) = BlockType(mem_idx) ; % state_vars_mat holds connectivity map.
+                % non-zero at i,j index means that the state i depends on
+                % variable j, the value marks discrete or contionuous
+                % state.
             end
         end
     end
@@ -797,8 +871,9 @@ while length(idx) ~= length(prev_idx)
     %     state_vars = state_vars(idx);
 end
 
-[i, j] = find(state_vars_mat);
+[i, j , vals] = find(state_vars_mat);
 state_vars = sparse(i, ones(size(i)), j, length(all_names), 1);
+state_vars_type = sparse(i, ones(size(i)), vals, length(all_names), 1);
 
 idx = find(ineq_vars);
 for i=1:length(idx)
