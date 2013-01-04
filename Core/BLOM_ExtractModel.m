@@ -188,6 +188,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         sOutportIdx = sOutportIdx+sOutportLength;
     end
     
+    
     initialSize = 20;
     
     % initialize structures and fields
@@ -256,6 +257,13 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             % if the current handle is equal to any of the external or input
             % from simulink, then continue with the loop and do not look
             % for more branches from that block
+            state = 'fromSimulink';
+            sourceInports = 0;
+            sourcePorts = 0;
+            [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
+                    updateVars(sourceInports,outportHandles,iZero,...
+                    allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
+            
             iOut = iOut+1;
             continue
         elseif iOut > length(outportHandles)
@@ -446,25 +454,27 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     end
     
     % found outports connected to inports provided
-    for i = 1:length(inports);
-        currentLine = get_param(inports(i),'Line');
-        % this gives the all the outports connected to this line
-        outportsFound = get_param(currentLine,'SrcPorthandle');
-        outLength = length(outportsFound);
-        % in case outportHandles is too short 
-        if outLength > length(outportHandles)-iZero+1;
-            if outlength > length(outportHandles)
-                outportHandles = [outportHandles; zeros(outLength*2,1)];
-            else
-                outportHandles = [outportHandles; ...
-                    zeros(length(outportHandles),1)];
+    if inports ~= 0
+        for i = 1:length(inports);
+            currentLine = get_param(inports(i),'Line');
+            % this gives the all the outports connected to this line
+            outportsFound = get_param(currentLine,'SrcPorthandle');
+            outLength = length(outportsFound);
+            % in case outportHandles is too short 
+            if outLength > length(outportHandles)-iZero+1;
+                if outlength > length(outportHandles)
+                    outportHandles = [outportHandles; zeros(outLength*2,1)];
+                else
+                    outportHandles = [outportHandles; ...
+                        zeros(length(outportHandles),1)];
+                end
             end
-        end
 
-        diff = setdiff(outportsFound,outportHandles);
-        diffLength = length(diff);
-        outportHandles(iZero:(diffLength+iZero-1)) = diff;
-        iZero = iZero + diffLength;
+            diff = setdiff(outportsFound,outportHandles);
+            diffLength = length(diff);
+            outportHandles(iZero:(diffLength+iZero-1)) = diff;
+            iZero = iZero + diffLength;
+        end
     end
     
     switch state
@@ -501,6 +511,15 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                     currentBlockIndex,currentOutport,allVarsState);
             end
             
+        case 'fromSimulink'
+            % for the fromSimulink blocks, we need a special case to look
+            % at that specific outport even though we stop the BFS here
+            allVarsState = 'normal';
+            currentOutport = existingOutports(iOut);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                currentBlockIndex,currentOutport,allVarsState);
         otherwise 
             % not looking at bounds or costs
             allVarsState = 'normal';
