@@ -81,8 +81,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
-            allVars.outportHandle(i)
             parent = get_param(allVars.outportHandle(i),'Parent')
+            allVars.outportHandle(i)
             portType = get_param(allVars.outportHandle(i),'PortType');
             if ~strcmp(portType,'outport')
                 fprintf('Oops, this is not an outport, look to see what happened\n')
@@ -120,6 +120,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         % close evaluation of models
     catch err
         rethrow(err)
+        eval([name '([],[],[],''term'');']);
     end
     eval([name '([],[],[],''term'');']);
     
@@ -280,10 +281,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         sourceType = get_param(sourceBlock,'BlockType');
         refBlock = get_param(sourceBlock,'ReferenceBlock');
         
-        %take into consideration if this block has been found before
-        block.name{blockZero} = sourceBlock;
-        block.handle(blockZero) = get_param(sourceBlock,'Handle');
-        
         if strcmp(sourceType,'SubSystem')
             if isempty(refBlock)
                 % if the current block is a subsystem and not from BLOM, 
@@ -351,11 +348,28 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                             updateVars(sourceInports,outportHandles,iZero,...
                             allVars,allVarsZero,block,blockZero,2,iOut,sourcePorts);
                     else
+                        allVarsState = 'normal';
+                        [block,blockZero,currentBlockIndex] =...
+                            updateBlock(block,blockZero,outportHandles(iOut));
+                        [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                            currentBlockIndex,outportHandles(iOut),allVarsState);
                         iOut = iOut+1;
                         continue
                     end
+                else
+                    allVarsState = 'normal';
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,outportHandles(iOut));
+                    [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                        currentBlockIndex,outportHandles(iOut),allVarsState);
+                    iOut = iOut+1;
                 end
             else
+                allVarsState = 'normal';
+                [block,blockZero,currentBlockIndex] =...
+                    updateBlock(block,blockZero,outportHandles(iOut));
+                [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,outportHandles(iOut),allVarsState);
                 iOut = iOut+1;
                 continue
             end
