@@ -337,24 +337,34 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                     % connected
                     sourcePorts = get_param(parentOfBlock,'PortHandles');
                     sourceInports = [sourcePorts.Inport];
+                    % find the specific inport index of 
+                    portNumber = eval(get_param(sourceBlock,'Port'));
                     % storing the inport itself is not important. what we
                     % need to store is what is connected to the inport of
-                    % the subsystem
-                    outportHandles(iOut) = [];
-                    iOut = iOut-1;
-                    iZero = iZero-1;
+                    % the subsystem. so, store information for that inport,
+                    % but continue BFS from the subsystem itself.
+                    allVarsState = 'subSysInport';
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,outportHandles(iOut));
+                    [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                        currentBlockIndex,outportHandles(iOut),allVarsState);
+
                     if ~isempty(sourceInports)
+                        state = 'subSysInportParent';
                         [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
-                            updateVars(sourceInports,outportHandles,iZero,...
-                            allVars,allVarsZero,block,blockZero,2,iOut,sourcePorts);
+                            updateVars(sourceInports(portNumber),outportHandles,iZero,...
+                            allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
                     else
+                        % This case should NOT be reached because of an
+                        % inport exists, there is almost certainly a
+                        % corresponding inport for the entire subsystem
+                        % itself. It is here as asafeguard. 
                         allVarsState = 'normal';
+                        fprintf('Have you forgotten to connect one of the inports to subsystem: %s? ', parentOfBlock);
                         [block,blockZero,currentBlockIndex] =...
                             updateBlock(block,blockZero,outportHandles(iOut));
                         [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                             currentBlockIndex,outportHandles(iOut),allVarsState);
-                        iOut = iOut+1;
-                        continue
                     end
                 else
                     allVarsState = 'normal';
@@ -362,7 +372,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                         updateBlock(block,blockZero,outportHandles(iOut));
                     [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                         currentBlockIndex,outportHandles(iOut),allVarsState);
-                    iOut = iOut+1;
                 end
             else
                 allVarsState = 'normal';
@@ -513,7 +522,6 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
         case 'cost'
             allVarsState = 'cost';
-            
             % go through each of the outports connected through cost
             % Because cost has only one inport, the for loop above only
             % goes through one iteration, so the variable outportsFound
@@ -530,6 +538,20 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             % at that specific outport even though we stop the BFS here
             allVarsState = 'normal';
             currentOutport = existingOutports(iOut);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                currentBlockIndex,currentOutport,allVarsState);
+            
+        case 'subSysInportParent'
+            % Here we fill in the optVarIdx field and point to the inport
+            % itself
+            allVarsState = state;
+            % the current outport changes here because we want the outport
+            % connected to the subsystem which is connected to the inport
+            % to the subsystem to have a reference that it's a duplicate
+            % variable
+            currentOutport = outportHandles(iZero-1);
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
@@ -613,7 +635,13 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 allVars.upperBound(allVarsZero:(allVarsZero+lengthOut-1)) = upperBound;
             case 'cost'
                 allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
+            case 'subSysInportParent'
+                % points to original variable
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
+                    (allVarsZero-lengthOut):(allVarsZero-1);
             case 'normal'
+                % do nothing
+            otherwise
                 % do nothing
         end
         
@@ -703,89 +731,3 @@ function [timeStruct] = relevantTimes(outportHandles)
     timeStruct.majorTimeStep = true(length(outportHandles),1);
     timeStruct.minorTimeStep = true(length(outportHandles),1);
 end
-
-%%
-%======================================================================
-%> @brief From outport list, create three different structures needed for
-%> the optimization problem
-%>
-%> More detailed description of the problem.
-%>
-%> @param outportHandles outportHandles found by searchSources
-%> @param name name of model
-%>
-%> @retval allVars structure with fields 1) index of block name 2) outport
-%> # 3) outport handle 4) Index of outport 5) bounds 6) Cost 7) time 8)
-%> list of indices for each optimization variable
-%> @retval blocks structure with fields 1) name of block 2) handle of block
-%> 3) P 4) K 5) inputs, allVars indices 6) outputs, optimvar indices 7)
-%> all outport handles 8) dimensions 9) all source outport handles 
-%======================================================================
-
-function [allVars,polyStruct,blocks] = makeStruct(outportHandles,name)
-    polyHandles = [find_system(name,'FindAll','on','ReferenceBlock',...
-        'BLOM_Lib/Polyblock')];
-    polyLength = length(polyHandles);
-    
-    % create structure to store P and K matricies
-    polyStruct.block = cell(polyLength,1);
-    polyStruct.P = cell(polyLength,1);
-    polyStruct.K = cell(polyLength,1);
-    polyIdx = 1;
-    
-    % structure for block names and handles
-    blocks.names = cell(length(outportHandles),1);
-    blocks.handles = zeros(length(outportHandles),1);
-    blockZero = 1;
-    
-    % structure for optimization variables and handles
-    allVars.block = zeros(length(outportHandles),1);
-    allVars.index = zeros(length(outportHandles),1);
-    allVarsZero = 1;
-    for i = 1:length(outportHandles)
-        currentBlockName = get_param(outportHandles(i),'Parent');
-        currentBlockHandle = get_param(outportHandles(i),'ParentHandle');
-        if ~any(blocks.handles==currentBlockHandle)
-            % no duplicate blocks, add this block
-            blocks.names{blockZero} = currentBlockName;
-            blocks.handles(blockZero) = currentBlockHandle;
-            blockZero = blockZero+1;
-        end
-        
-        polyStruct.block{polyIdx} = blockZero-1;
-        if any(polyHandles==currentBlockHandle)
-            % store P&K matricies if the current block is a polyblock
-            polyStruct.P{polyIdx} = eval(get_param(currentBlockHandle,'P'));
-            polyStruct.K{polyIdx}= eval(get_param(currentBlockHandle,'K'));
-        else
-            % store P and K matricies for the other blocks
-            [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
-            polyStruct.P{polyIdx} = P;
-            polyStruct.K{polyIdx}= K;
-        end
-        polyIdx = polyIdx +1;
-        
-        % get dimensions of each outport and for each parameter, store this
-        % in a structure
-        currentDim = get_param(outportHandles(i),'CompiledPortDimensions');
-        lengthOut = currentDim(1)*currentDim(2);
-        currentIndices = 1:lengthOut;
-        if (allVarsZero+lengthOut) > length(allVars.block)
-            % if the current length of optimvar is not enough, double the
-            % size
-            allVars.block = [allVars.block; zeros(length(allVars.block),1)];
-            allVars.index = [allVars.index; zeros(length(allVars.index),1)];
-        end
-        % store the block and index
-        allVars.block(allVarsZero:(allVarsZero+lengthOut-1)) = blockZero-1;
-        allVars.index(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
-        allVarsZero = allVarsZero+lengthOut;
-        
-    end
-    
-    blocks.names = blocks.names(1:blockZero-1);
-    blocks.handles = blocks.handles(1:blockZero-1);
-    allVars.block = allVars.block(1:allVarsZero-1);
-    allVars.index = allVars.index(1:allVarsZero-1);
-end
-
