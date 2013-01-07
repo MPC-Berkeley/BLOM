@@ -551,7 +551,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             % connected to the subsystem which is connected to the inport
             % to the subsystem to have a reference that it's a duplicate
             % variable
-            currentOutport = outportHandles(iZero-1);
+            currentOutport = diff;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
@@ -637,6 +637,7 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
             case 'subSysInportParent'
                 % points to original variable
+                allVarsZero
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (allVarsZero-lengthOut):(allVarsZero-1);
             case 'normal'
