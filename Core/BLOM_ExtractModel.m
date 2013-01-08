@@ -81,8 +81,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
-            parent = get_param(allVars.outportHandle(i),'Parent')
-            allVars.outportHandle(i)
+            parent = get_param(allVars.outportHandle(i),'Parent');
+            allVars.outportHandle(i);
             portType = get_param(allVars.outportHandle(i),'PortType');
             if ~strcmp(portType,'outport')
                 fprintf('Oops, this is not an outport, look to see what happened\n')
@@ -154,20 +154,23 @@ end
 %> @brief Find all connected source blocks using a breadth first search.
 %> Includes the handles already given.
 %>
-%> More detailed description of the problem.
+%> Also takes into consideration what type of block it's looking at
 %>
-%> @param handleArray the array of handles that you want to search. These
-%> are the block handles of the costs and constraints
+%> @param boundHandles array of handles of all the bound blocks. This is where we
+%> begin the BFS
+%> @param costHandles array of handles all of the cost blocks. We also
+%> begin the BFS from these blocks.
 %> @param varargin the external and input from simulink handles. the
-%> sources of these blocks are not relevant to the optimization problem
+%> sources of these blocks are not relevant to the optimization problem.
+%> These are used to find out where a BFS branch should stop.
 %>
-%> @retval outportHandles returns an array of the outport handles found
-%> from BFS search
+%> @retval block structure with information about all the blocks found in
+%> the BFS
+%> @retval allVars structure that contains information about each
+%> optimization variable
 %> @retval stop if there are any unconnected blocks or blocks that BLOM
 %> does not support, this parameter gives a 1 to indicate true and 0 to
 %> indicate false
-%> @retval boundsStruct structure with fields: 1) outport handles found, 2)
-%> boolean true or false if it is connected to a bounds block
 %======================================================================
 
 function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
@@ -473,6 +476,8 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         % block
         gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
         gotoPorts = get_param(gotoBlock{1},'PortHandles');
+        % note: there should only be one outport associated with each goto
+        % block
         inports = [gotoPorts.Inport];
     end
     
@@ -551,11 +556,32 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             % connected to the subsystem which is connected to the inport
             % to the subsystem to have a reference that it's a duplicate
             % variable
-            currentOutport = diff;
+            currentOutport = outportsFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 currentBlockIndex,currentOutport,allVarsState);
+            
+        case 'from'
+            fprintf('I reach the from case\n')
+            % in this case, we want to be able to fill in the sameOptVar
+            % field in allVars so that we don't create a separate
+            % optimization variable but rather know that this is a duplicate
+            allVarsState = 'rememberIndex';
+            % the currentOutport in this case is the outport that goes to
+            % the GoTo block
+            currentOutport = outportsFound;
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState);
+            % save information for from block here
+            allVarsState = 'from';
+            currentOutport = existingOutports(iOut);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
         otherwise 
             % not looking at bounds or costs
             allVarsState = 'normal';
@@ -573,7 +599,17 @@ end
 %======================================================================
 %> @brief update allVars structure 
 %>
-%> More detailed description of the problem.
+%> Description of how we use sameOptVar 
+%> (or which outport we list as the original variable):
+%> 1. Inports: the original variable is the the inport of the
+%> subsystem. FIX(1/6/2013)?: Maybe it should be the outport of the block 
+%> that goes into the inport because one outport may got into two or more inports
+%> in a subystem
+%> 2. From, GoTo Blocks: 
+%> 3. Mux, DeMux Blocks:
+%> 4. 
+%> 
+%> 
 %>
 %> @param allVars allVars structure
 %> @param allVarsZero current index of first zero of allVars
@@ -587,7 +623,7 @@ end
 %> @retval allVarsZero updated index of first zero of allVarsZero
 %======================================================================
 
-function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
     currentBlockIndex,currentOutport,allVarsState,varargin)
 %this function populates allVars structure
 %state can be 'bound', 'cost' 
@@ -637,9 +673,15 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
             case 'subSysInportParent'
                 % points to original variable
-                allVarsZero
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (allVarsZero-lengthOut):(allVarsZero-1);
+            case 'from'
+                % points to the original outport
+                sameOptIndex = varargin{1}
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
+            case 'rememberIndex'
+                varargout{1} = allVarsZero;
             case 'normal'
                 % do nothing
             otherwise
@@ -647,6 +689,21 @@ function [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
         end
         
         allVarsZero = allVarsZero+lengthOut;
+    else
+        dimension = get_param(currentOutport,'CompiledPortDimensions');
+        lengthOut = dimension(1)*dimension(2);
+        switch allVarsState
+            case 'rememberIndex'
+            % if this outport has already been found but we need the index for
+            % the sameOptVar field
+                varargout{1} = find(allVars.outportHandle==currentOutport,1);
+            case 'from'
+                % points to the original outport
+                fromIndex = find(allVars.outportHandle==currentOutport,1)
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(fromIndex:(fromIndex+lengthOut-1)) = ...
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
+        end
     end
 end
 
@@ -711,24 +768,4 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         block.outportHandles{currentBlockIndex}(firstZero) = currentOutport;
         % FIX, find stuff for this case
     end
-end
-
-%%
-%======================================================================
-%> @brief Creates struct that says which outports are relevant at which
-%> times
-%>
-%> More detailed description of the problem.
-%>
-%> @param outportHandles outportHandles found by searchSources
-%>
-%> @retval timeStruct structure with following fields. 1) outportHandles 2)
-%> majorTimeStep 3) minorTimeStep
-%======================================================================
-
-function [timeStruct] = relevantTimes(outportHandles)
-    timeStruct.outportHandles = outportHandles;
-    % FIX: actually check where the time steps are relevant
-    timeStruct.majorTimeStep = true(length(outportHandles),1);
-    timeStruct.minorTimeStep = true(length(outportHandles),1);
 end
