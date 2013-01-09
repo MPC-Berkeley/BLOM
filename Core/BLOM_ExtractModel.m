@@ -346,14 +346,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                     % need to store is what is connected to the inport of
                     % the subsystem. so, store information for that inport,
                     % but continue BFS from the subsystem itself.
-                    allVarsState = 'subSysInport';
-                    [block,blockZero,currentBlockIndex] =...
-                        updateBlock(block,blockZero,outportHandles(iOut));
-                    [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                        currentBlockIndex,outportHandles(iOut),allVarsState);
 
                     if ~isempty(sourceInports)
-                        state = 'subSysInportParent';
+                        state = 'subSysInport';
                         [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
                             updateVars(sourceInports(portNumber),outportHandles,iZero,...
                             allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
@@ -364,10 +359,6 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                         % itself. It is here as asafeguard. 
                         allVarsState = 'normal';
                         fprintf('Have you forgotten to connect one of the inports to subsystem: %s? ', parentOfBlock);
-                        [block,blockZero,currentBlockIndex] =...
-                            updateBlock(block,blockZero,outportHandles(iOut));
-                        [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                            currentBlockIndex,outportHandles(iOut),allVarsState);
                     end
                 else
                     allVarsState = 'normal';
@@ -548,22 +539,28 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                 currentBlockIndex,currentOutport,allVarsState);
             
-        case 'subSysInportParent'
-            % Here we fill in the optVarIdx field and point to the inport
-            % itself
-            allVarsState = state;
+        case 'subSysInport'
+            % Here we fill in the optVarIdx field have the inport point to
+            % the outport connected to the inport of the subsystem
+
             % the current outport changes here because we want the outport
             % connected to the subsystem which is connected to the inport
             % to the subsystem to have a reference that it's a duplicate
             % variable
+            allVarsState = 'rememberIndex';
             currentOutport = outportsFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
-            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+            [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
                 currentBlockIndex,currentOutport,allVarsState);
             
+            allVarsState = 'subSysInport';
+            currentOutport = existingOutports(iOut);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
         case 'from'
-            fprintf('I reach the from case\n')
             % in this case, we want to be able to fill in the sameOptVar
             % field in allVars so that we don't create a separate
             % optimization variable but rather know that this is a duplicate
@@ -601,13 +598,13 @@ end
 %>
 %> Description of how we use sameOptVar 
 %> (or which outport we list as the original variable):
-%> 1. Inports: the original variable is the the inport of the
-%> subsystem. FIX(1/6/2013)?: Maybe it should be the outport of the block 
-%> that goes into the inport because one outport may got into two or more inports
-%> in a subystem
-%> 2. From, GoTo Blocks: 
-%> 3. Mux, DeMux Blocks:
-%> 4. 
+%> 1. Inports (within subsystems): the original variable the outport of the block 
+%> that goes into the inport
+%> 2. Outports (within subsystems): 
+%> 3. From, GoTo Blocks: The original variable is the outport that connects
+%> to the proper GoTo block
+%> 4. Mux, DeMux Blocks:
+%> 5. 
 %> 
 %> 
 %>
@@ -671,13 +668,15 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 allVars.upperBound(allVarsZero:(allVarsZero+lengthOut-1)) = upperBound;
             case 'cost'
                 allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
-            case 'subSysInportParent'
+            case 'subSysInport'
                 % points to original variable
+                allVarsZero
+                sameOptIndex = varargin{1}
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
-                    (allVarsZero-lengthOut):(allVarsZero-1);
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'from'
                 % points to the original outport
-                sameOptIndex = varargin{1}
+                sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'rememberIndex'
@@ -699,9 +698,15 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 varargout{1} = find(allVars.outportHandle==currentOutport,1);
             case 'from'
                 % points to the original outport
-                fromIndex = find(allVars.outportHandle==currentOutport,1)
+                fromIndex = find(allVars.outportHandle==currentOutport,1);
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(fromIndex:(fromIndex+lengthOut-1)) = ...
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
+            case 'subSysInport'
+                % points to the original outport
+                inportIndex = find(allVars.outportHandle==currentOutport,1);
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(inportIndex:(inportIndex+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
         end
     end
