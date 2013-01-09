@@ -579,6 +579,28 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                     currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
+                
+        case 'subsys'
+            % for this case, we want to fill in the sameOptVar variable for
+            % the subsystems outport and say the original variable is the
+            % outport of whatever is inside the subsystem
+            allVarsState = 'rememberIndex';
+            % the currentOutport in this case is the outport that goes to
+            % the GoTo block
+            currentOutport = outportsFound;
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState);
+            
+            % save information for subsystem outport here
+            allVarsState = 'subsys';
+            currentOutport = existingOutports(iOut);
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
+            
         otherwise 
             % not looking at bounds or costs
             allVarsState = 'normal';
@@ -600,14 +622,14 @@ end
 %> (or which outport we list as the original variable):
 %> 1. Inports (within subsystems): the original variable the outport of the block 
 %> that goes into the inport
-%> 2. Outports (within subsystems): 
+%> 2. Outports (within subsystems): the original variable is the outport of
+%> the block within the subsystem 
 %> 3. From, GoTo Blocks: The original variable is the outport that connects
 %> to the proper GoTo block
 %> 4. Mux, DeMux Blocks:
 %> 5. 
 %> 
 %> 
-%>
 %> @param allVars allVars structure
 %> @param allVarsZero current index of first zero of allVars
 %> @param blockZero current index of first zero of block structure. used to
@@ -670,11 +692,15 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 allVars.cost(allVarsZero:(allVarsZero+lengthOut-1)) = 1;
             case 'subSysInport'
                 % points to original variable
-                allVarsZero
-                sameOptIndex = varargin{1}
+                sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'from'
+                % points to the original outport
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
+            case 'subsys'    
                 % points to the original outport
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
@@ -707,6 +733,12 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 inportIndex = find(allVars.outportHandle==currentOutport,1);
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(inportIndex:(inportIndex+lengthOut-1)) = ...
+                    (sameOptIndex):(sameOptIndex+lengthOut-1);
+            case 'subsys'    
+                % points to the original outport
+                subsysIndex = find(allVars.outportHandle==currentOutport,1);
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(subsysIndex:(subsysIndex+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
         end
     end
