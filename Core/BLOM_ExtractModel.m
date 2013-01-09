@@ -290,7 +290,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 % want to look under the subsystem and get the appropriate
                 % blocks there
                 
-                state = 'subsys';
+                state = 'intoSubsys';
                 sourceOutports = [sourcePorts.Outport];
                 [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
                     updateVars(sourceOutports,outportHandles,iZero,...
@@ -318,6 +318,15 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
             
+        elseif strcmp(sourceType,'Demux')
+            % block is a demux. Here we want to fill in field sameOptVar to
+            % point to the original variable
+            
+            state = 'demux';
+            sourceOutports = [sourcePorts.Outport];
+            [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts,sourceOutports);
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
             % except look for what's connected. 
@@ -449,7 +458,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         currentOutport = existingOutports(iOut);
     end
     
-    if strcmp(state,'subsys') %FIX: may want to look into special BLOM blocks here
+    if strcmp(state,'intoSubsys') %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
         % outports of subsystem
         parent = get_param(currentOutport,'Parent');
@@ -580,13 +589,13 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                     currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
                 
-        case 'subsys'
+        case 'intoSubsys'
             % for this case, we want to fill in the sameOptVar variable for
             % the subsystems outport and say the original variable is the
             % outport of whatever is inside the subsystem
             allVarsState = 'rememberIndex';
             % the currentOutport in this case is the outport that goes to
-            % the GoTo block
+            % the subsystem
             currentOutport = outportsFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
@@ -594,13 +603,38 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                     currentBlockIndex,currentOutport,allVarsState);
             
             % save information for subsystem outport here
-            allVarsState = 'subsys';
+            allVarsState = 'intoSubsys';
             currentOutport = existingOutports(iOut);
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                     currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
-            
+                
+        case 'demux'
+            % the original variable is going to be the outport connected to
+            % the demux
+            allVarsState = 'rememberIndex';
+            % current outport is the outport connected to the demux. should
+            % only be one outport
+            currentOutport = outportsFound;
+            [block,blockZero,currentBlockIndex] =...
+                updateBlock(block,blockZero,currentOutport);
+            [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState);
+                
+            % save info for demux outports
+            allVarsState = 'demux';
+            % in this case we need to fill in the sameOptVar for all of the
+            % demux outports.
+            sourceOutports = varargin{3};
+            sourceBlock = get_param(sourceOutports(1),'Parent')
+            for i = 1:length(sourceOutports)
+                [block,blockZero,currentBlockIndex] =...
+                    updateBlock(block,blockZero,sourceOutports(i));
+                [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                        currentBlockIndex,sourceOutports(i),allVarsState,sameOptIndex,i);
+            end
+
         otherwise 
             % not looking at bounds or costs
             allVarsState = 'normal';
@@ -626,8 +660,10 @@ end
 %> the block within the subsystem 
 %> 3. From, GoTo Blocks: The original variable is the outport that connects
 %> to the proper GoTo block
-%> 4. Mux, DeMux Blocks:
-%> 5. 
+%> For mux and demux blocks, we assume that there's
+%> either a scalars -> vector conversion or a vector -> scalars conversion. 
+%> 4. Demux: The original variable is the outport connected to the demux
+%> and that is being "demux'ed "
 %> 
 %> 
 %> @param allVars allVars structure
@@ -700,11 +736,18 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'subsys'    
+            case 'intoSubsys'    
                 % points to the original outport
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
+            case 'demux'
+                % points the the outport that goes into the demux
+                sameOptIndex = varargin{1};
+                outportIndex = varargin{2};
+                allVarsZero
+                sameOptIndex+outportIndex-1
+                allVars.optVarIdx(allVarsZero) = (sameOptIndex+outportIndex-1);
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
             case 'normal'
@@ -734,12 +777,14 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(inportIndex:(inportIndex+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'subsys'    
+            case 'intoSubsys'    
                 % points to the original outport
                 subsysIndex = find(allVars.outportHandle==currentOutport,1);
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(subsysIndex:(subsysIndex+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
+            otherwise
+                % do nothing
         end
     end
 end
