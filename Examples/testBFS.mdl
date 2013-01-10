@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.33"
+    ComputedModelVersion    "1.37"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Aug 20 12:52:07 2012"
-  RTWModifiedTimeStamp	  267367926
-  ModelVersionFormat	  "1.%<AutoIncrement:33>"
+  LastModifiedDate	  "Thu Jan 10 11:28:51 2013"
+  RTWModifiedTimeStamp	  279717962
+  ModelVersionFormat	  "1.%<AutoIncrement:37>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -600,6 +600,28 @@ Model {
       TagVisibility	      "local"
     }
     Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "fixdt(1,16,0)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "[]"
+      ParamDataTypeStr	      "Inherit: Same as input"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      Goto
       IconDisplay	      "Tag"
     }
@@ -639,6 +661,14 @@ Model {
       IgnoreLimit	      off
       ZeroCross		      on
       ContinuousStateAttributes	"''"
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
     }
     Block {
       BlockType		      Outport
@@ -728,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [107, 51, 1150, 998]
+    Location		    [713, 52, 1644, 962]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -742,7 +772,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    92
+    SIDHighWatermark	    106
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -851,13 +881,6 @@ Model {
     }
     Block {
       BlockType		      Constant
-      Name		      "Constant2"
-      SID		      30
-      Position		      [340, 455, 370, 485]
-      Value		      "1:2"
-    }
-    Block {
-      BlockType		      Constant
       Name		      "Constant3"
       SID		      31
       Position		      [340, 500, 370, 530]
@@ -867,7 +890,7 @@ Model {
       BlockType		      Constant
       Name		      "Constant8"
       SID		      83
-      Position		      [210, 805, 240, 835]
+      Position		      [100, 750, 130, 780]
       Value		      "4:5"
     }
     Block {
@@ -969,7 +992,21 @@ Model {
       Name		      "From3"
       SID		      92
       Position		      [95, 636, 135, 664]
-      GotoTag		      "D"
+      GotoTag		      "E"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From4"
+      SID		      104
+      Position		      [205, 456, 245, 484]
+      GotoTag		      "E"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From5"
+      SID		      105
+      Position		      [205, 501, 245, 529]
+      GotoTag		      "E"
     }
     Block {
       BlockType		      Goto
@@ -991,16 +1028,16 @@ Model {
       BlockType		      Goto
       Name		      "Goto2"
       SID		      89
-      Position		      [410, 775, 450, 805]
+      Position		      [275, 735, 315, 765]
       GotoTag		      "C"
       TagVisibility	      "local"
     }
     Block {
       BlockType		      Goto
       Name		      "Goto3"
-      SID		      90
-      Position		      [410, 830, 450, 860]
-      GotoTag		      "D"
+      SID		      103
+      Position		      [530, 750, 570, 780]
+      GotoTag		      "E"
       TagVisibility	      "local"
     }
     Block {
@@ -1050,6 +1087,16 @@ Model {
       SID		      17
       Ports		      [1, 1]
       Position		      [650, 150, 680, 180]
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux"
+      SID		      106
+      Ports		      [2, 1]
+      Position		      [275, 471, 280, 509]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
     }
     Block {
       BlockType		      Reference
@@ -1174,8 +1221,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[1324, 644, 1649, 876]
-	Open			on
+	Location		[1325, 667, 1650, 899]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1306,7 +1353,7 @@ Model {
       Name		      "Subsystem1"
       SID		      85
       Ports		      [1, 2]
-      Position		      [325, 775, 365, 835]
+      Position		      [190, 735, 230, 795]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -1316,8 +1363,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem1"
-	Location		[307, 788, 647, 968]
-	Open			on
+	Location		[1156, 544, 1496, 724]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1347,7 +1394,7 @@ Model {
 	  BlockType		  Constant
 	  Name			  "sub_Constant5"
 	  SID			  82
-	  Position		  [25, 95, 55, 125]
+	  Position		  [25, 75, 55, 105]
 	  Value			  "4:5"
 	}
 	Block {
@@ -1411,6 +1458,7 @@ Model {
 	Line {
 	  SrcBlock		  "sub_Constant5"
 	  SrcPort		  1
+	  Points		  [0, 20]
 	  DstBlock		  "sub_Product1"
 	  DstPort		  2
 	}
@@ -1437,6 +1485,124 @@ Model {
 	  SrcPort		  2
 	  DstBlock		  "Out2"
 	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem2"
+      SID		      99
+      Ports		      [2, 1]
+      Position		      [405, 735, 495, 790]
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem2"
+	Location		[1044, 764, 1374, 849]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  100
+	  Position		  [25, 28, 55, 42]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  102
+	  Position		  [25, 43, 55, 57]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Add4"
+	  SID			  93
+	  Ports			  [2, 1]
+	  Position		  [80, 27, 110, 58]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  94
+	  Position		  [160, 30, 190, 60]
+	  Gain			  "4"
+	  ParameterDataTypeMode	  "Inherit via internal rule"
+	  ParameterDataType	  "fixdt(1, 16)"
+	  ParameterScaling	  "2^0"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Integrator
+	  Name			  "Integrator1"
+	  SID			  95
+	  Ports			  [1, 1]
+	  Position		  [220, 30, 250, 60]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  101
+	  Position		  [275, 38, 305, 52]
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  DstBlock		  "Integrator1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Add4"
+	  SrcPort		  1
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Add4"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Integrator1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Add4"
+	  DstPort		  2
 	}
       }
     }
@@ -1566,12 +1732,6 @@ Model {
 	  DstPort		  1
 	}
       }
-    }
-    Line {
-      SrcBlock		      "Constant2"
-      SrcPort		      1
-      DstBlock		      "Product"
-      DstPort		      1
     }
     Line {
       SrcBlock		      "Constant3"
@@ -1711,7 +1871,6 @@ Model {
     Line {
       SrcBlock		      "Constant8"
       SrcPort		      1
-      Points		      [50, 0; 0, -15]
       DstBlock		      "Subsystem1"
       DstPort		      1
     }
@@ -1724,8 +1883,42 @@ Model {
     Line {
       SrcBlock		      "Subsystem1"
       SrcPort		      2
-      Points		      [10, 0; 0, 25]
+      Points		      [125, 0; 0, -5]
+      Branch {
+	Points			[0, -25]
+	DstBlock		"Subsystem2"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Subsystem2"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "Subsystem2"
+      SrcPort		      1
       DstBlock		      "Goto3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From4"
+      SrcPort		      1
+      Points		      [10, 0]
+      DstBlock		      "Mux"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From5"
+      SrcPort		      1
+      Points		      [10, 0]
+      DstBlock		      "Mux"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Mux"
+      SrcPort		      1
+      Points		      [50, 0; 0, -20]
+      DstBlock		      "Product"
       DstPort		      1
     }
   }
