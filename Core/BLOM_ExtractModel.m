@@ -76,7 +76,10 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
 
         % find out which wires are relevant at which times
         %[timeStruct] = relevantTimes(outportHandles);
-
+        
+        % create large P and K matrix
+        % [bigP,bigK] = combinePK(block,allVars);
+        
         %following code is to make sure searchSources works
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
@@ -119,8 +122,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         ModelSpec = 1;
         % close evaluation of models
     catch err
-        rethrow(err)
         eval([name '([],[],[],''term'');']);
+        rethrow(err)
     end
     eval([name '([],[],[],''term'');']);
     
@@ -203,7 +206,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.outportNum = zeros(initialSize,1); % outport number. e.g. if there are multiple outports of a block
     allVars.outportHandle = zeros(initialSize,1); % handle of specific outport
     allVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
-    allVars.optVarIdx = zeros(initialSize,1); % points to the true optimization variable. (will usually point to itself, otherwise, some "true" variable)
+    allVars.optVarIdx = zeros(initialSize,1); % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -inf
@@ -498,9 +501,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 end
             end
 
-            diff = setdiff(outportsFound,outportHandles);
-            diffLength = length(diff);
-            outportHandles(iZero:(diffLength+iZero-1)) = diff;
+            diffOutports = setdiff(outportsFound,outportHandles);
+            diffLength = length(diffOutports);
+            outportHandles(iZero:(diffLength+iZero-1)) = diffOutports;
             iZero = iZero + diffLength;
         end
     end
@@ -627,7 +630,6 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             % in this case we need to fill in the sameOptVar for all of the
             % demux outports.
             sourceOutports = varargin{3};
-            sourceBlock = get_param(sourceOutports(1),'Parent')
             for i = 1:length(sourceOutports)
                 [block,blockZero,currentBlockIndex] =...
                     updateBlock(block,blockZero,sourceOutports(i));
@@ -745,8 +747,6 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 % points the the outport that goes into the demux
                 sameOptIndex = varargin{1};
                 outportIndex = varargin{2};
-                allVarsZero
-                sameOptIndex+outportIndex-1
                 allVars.optVarIdx(allVarsZero) = (sameOptIndex+outportIndex-1);
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
@@ -807,7 +807,10 @@ end
 function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,currentOutport)
 %this function populates block using currentOutport information
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
+    sourcePorts = get_param(currentBlockHandle,'PortHandles');
     referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
+    
+    
     % if the size of block equals the blockZero, need to double to
     % length of block
     if blockZero == length(block.handles)
@@ -821,7 +824,6 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
         currentBlockName = get_param(currentOutport,'Parent');
-        sourcePorts = get_param(currentBlockName,'PortHandles');
         block.names{blockZero} = currentBlockName;
         block.handles(blockZero) = currentBlockHandle;
         if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
@@ -838,16 +840,59 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         if isempty(block.outportHandles{blockZero})
             block.outportHandles{blockZero} = zeros(length(sourcePorts.Outport),1);
         end
-        block.outportHandles{blockZero}(1) = currentOutport;
+        outportIndex = sourcePorts.Outport==currentOutport;
+        block.outportHandles{blockZero}(outportIndex) = currentOutport;
         % FIX: POPULATE OUTPORT HANDLES
+        
+        % search for inport 
 
         % increase the index of block by one and populate currentBlockIndex
         currentBlockIndex = blockZero;
         blockZero = blockZero+1;
     else %case when the current outport's block is found but has not been added to block data
         currentBlockIndex = find(block.handles==currentBlockHandle);
-        firstZero = find(block.outportHandles{currentBlockIndex}==0,1);
-        block.outportHandles{currentBlockIndex}(firstZero) = currentOutport;
+        outportIndex = sourcePorts.Outport==currentOutport;
+        
+        block.outportHandles{blockZero}(outportIndex) = currentOutport;
         % FIX, find stuff for this case
     end
+    
+    % get information for the block and port that this outport goes to
+    outportLine = get_param(currentOutport,'Line');
+    destBlocks = get_param(outportLine,'DstBlockHandle');
+    destPorts = get_param(outportLine,'DstPortHandle');
+    % in the case of bounds and costs, we will not find block information
+    % for it. Otherwise, this should always be true
+    for i = 1:length(destBlocks)
+        inportBlockIndex = block.handles==destBlocks(i);
+        if any(inportBlockIndex)
+            inportBlockPorts = get_param(block.handles(inportBlockIndex),'PortHandles');
+            inportPorts = inportBlockPorts.Inport;
+            inportIndex = inportPorts==destPorts(i);
+            if isempty(block.inputs{inportBlockIndex})
+                block.inputs{inportBlockIndex} = zeros(length(inportPorts),1);
+            end
+            block.inputs{inportBlockIndex}(inportIndex) = currentOutport;
+        end
+    end
+        
+end
+
+%%
+%======================================================================
+%> @brief given block and allVars, create a large P and K matrix with the
+%> indicies of allVars as the columns
+%>
+%> More detailed description of the problem.
+%>
+%> @param block block structure
+%> @param allVars allVars structure
+%>
+%> @retval bigP P matrix of all variables
+%> @retval bigK K matrix of all variables
+%======================================================================
+
+function [bigP,bigK] = combinePK(block,allVars)
+
+
 end
