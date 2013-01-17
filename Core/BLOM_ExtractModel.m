@@ -80,6 +80,26 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         % create large P and K matrix
         % [bigP,bigK] = combinePK(block,allVars);
         
+        % following code checks whether or not inports and outportHandles
+        % was filled in properly
+        fprintf('--------------------------------------------------------\n')
+        fprintf('Test block.outportHandles and inports is correct\n')
+        fprintf('--------------------------------------------------------\n')
+        for i = 1:length(block.handles)
+            currentPorts = get_param(block.handles(i),'PortHandles');
+            currentOutports = currentPorts.Outport;
+            currentInports = currentPorts.Inport;
+            % compare lists of Outports
+            diffOutports = setdiff(currentOutports,block.outportHandles{i});
+            if ~isempty(diffOutports)
+                fprintf('Difference in Outports in %s\n',block.names{i})
+                currentOutports
+                block.outportHandles{i}
+                get_param(block.outportHandles{i},'Parent')
+            end
+            % compare inports
+        end
+        
         %following code is to make sure searchSources works
         fprintf('The Number of blocks is %.0f\n',length(block.handles))
         fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
@@ -108,7 +128,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             parent = get_param(allVars.outportHandle(i),'Parent');
             
             if strcmp(currentBlockName,parent)
-                fprintf('correct index\n')
+                %fprintf('correct index\n')
             else
                 fprintf('INCORRECT INDEX, BAD\n')
                 currentBlockName
@@ -792,7 +812,7 @@ end
 %%
 %======================================================================
 %> @brief given block structure and outport, populate the relevant fields
-%> of block
+%> of block using currentOutport information
 %>
 %> More detailed description of the problem.
 %>
@@ -805,7 +825,7 @@ end
 %======================================================================
 
 function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,currentOutport)
-%this function populates block using currentOutport information
+
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
     sourcePorts = get_param(currentBlockHandle,'PortHandles');
     referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
@@ -820,6 +840,7 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         end
         block.handles = [block.handles; zeros(blockZero,1)];
     end
+    
 
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
@@ -842,20 +863,19 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         end
         outportIndex = sourcePorts.Outport==currentOutport;
         block.outportHandles{blockZero}(outportIndex) = currentOutport;
-        % FIX: POPULATE OUTPORT HANDLES
         
-        % search for inport 
 
         % increase the index of block by one and populate currentBlockIndex
         currentBlockIndex = blockZero;
         blockZero = blockZero+1;
     else %case when the current outport's block is found but has not been added to block data
+        currentBlockName = get_param(currentOutport,'Parent');
         currentBlockIndex = find(block.handles==currentBlockHandle);
         outportIndex = sourcePorts.Outport==currentOutport;
-        
-        block.outportHandles{blockZero}(outportIndex) = currentOutport;
+        block.outportHandles{currentBlockIndex}(outportIndex) = currentOutport;
         % FIX, find stuff for this case
     end
+    
     
     % get information for the block and port that this outport goes to
     outportLine = get_param(currentOutport,'Line');
