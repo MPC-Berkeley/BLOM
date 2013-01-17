@@ -97,7 +97,25 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 block.outportHandles{i}
                 get_param(block.outportHandles{i},'Parent')
             end
+            
             % compare inports
+            inportsOutport = zeros(length(currentInports),1);
+            for index = 1:length(currentInports)
+                currentLine = get_param(currentInports(index),'Line');
+                inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
+            end
+            diffInports = setdiff(inportsOutport,block.inputs{i});
+            if ~isempty(diffInports)
+                fprintf('Difference in inputs in %s\n',block.names{i})
+                inportsOutport
+                block.inputs{i}
+                get_param(inportsOutport,'Parent')
+            end
+            
+            
+            % first need to get list of inports for each block and the
+            % outport that's associated with that inport
+            
         end
         
         %following code is to make sure searchSources works
@@ -424,6 +442,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     if any(outportHandles==0)
         outportHandles = outportHandles(1:iZero-1);
     end
+    
+    block = updateInputsField(block,outportHandles);
+    
     %check if any handles are -1 and remove them
     if any(outportHandles==-1)
         % FIX PRINT STATEMENT. NOT NECESSARILY TRUE
@@ -876,27 +897,47 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
         % FIX, find stuff for this case
     end
     
-    
-    % get information for the block and port that this outport goes to
-    outportLine = get_param(currentOutport,'Line');
-    destBlocks = get_param(outportLine,'DstBlockHandle');
-    destPorts = get_param(outportLine,'DstPortHandle');
-    % in the case of bounds and costs, we will not find block information
-    % for it. Otherwise, this should always be true
-    for i = 1:length(destBlocks)
-        inportBlockIndex = block.handles==destBlocks(i);
-        if any(inportBlockIndex)
-            inportBlockPorts = get_param(block.handles(inportBlockIndex),'PortHandles');
-            inportPorts = inportBlockPorts.Inport;
-            inportIndex = inportPorts==destPorts(i);
-            if isempty(block.inputs{inportBlockIndex})
-                block.inputs{inportBlockIndex} = zeros(length(inportPorts),1);
-            end
-            block.inputs{inportBlockIndex}(inportIndex) = currentOutport;
-        end
-    end
         
 end
+
+%% 
+%======================================================================
+%> @brief given list of outports and block, fill in the input field of
+%> block
+%>
+%> More detailed description of the problem.
+%>
+%> @param block block structure
+%> @param outportHandles all the outports found in BFS
+%>
+%> @retval block updated block structure with inputs field filled in
+%======================================================================
+
+function [block] = updateInputsField(block,outportHandles)
+    % get information for the block and port that this outport goes to
+    for index = 1:length(outportHandles)
+        currentOutport = outportHandles(index);
+        outportLine = get_param(currentOutport,'Line');
+        destBlocks = get_param(outportLine,'DstBlockHandle');
+        destPorts = get_param(outportLine,'DstPortHandle');
+        % in the case of bounds and costs, we will not find block information
+        % for it. Otherwise, this should always be true
+        for i = 1:length(destBlocks)
+            inportBlockIndex = block.handles==destBlocks(i);
+            if any(inportBlockIndex)
+                inportBlockPorts = get_param(block.handles(inportBlockIndex),'PortHandles');
+                inportPorts = inportBlockPorts.Inport;
+                inportIndex = inportPorts==destPorts(i);
+                if isempty(block.inputs{inportBlockIndex})
+                    block.inputs{inportBlockIndex} = zeros(length(inportPorts),1);
+                end
+                block.inputs{inportBlockIndex}(inportIndex) = currentOutport;
+            end
+        end
+    end
+
+end
+
 
 %%
 %======================================================================
