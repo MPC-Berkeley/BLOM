@@ -84,6 +84,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         % was filled in properly
         fprintf('--------------------------------------------------------\n')
         fprintf('Test block.outportHandles and inports is correct\n')
+        fprintf('Everything is good if nothing prints\n')
         fprintf('--------------------------------------------------------\n')
         for i = 1:length(block.handles)
             currentPorts = get_param(block.handles(i),'PortHandles');
@@ -105,7 +106,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
             end
             diffInports = setdiff(inportsOutport,block.inputs{i});
-            if ~isempty(diffInports)
+            if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
                 inportsOutport
                 block.inputs{i}
@@ -119,8 +120,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         end
         
         %following code is to make sure searchSources works
-        fprintf('The Number of blocks is %.0f\n',length(block.handles))
-        fprintf('The Number of outports is %.0f\n',length(allVars.outportHandle))
+        fprintf('The Number of blocks found is %.0f\n',length(block.handles))
+        fprintf('The Number of outports found is %.0f\n',length(allVars.outportHandle))
         for i = 1:length(allVars.outportHandle);
             parent = get_param(allVars.outportHandle(i),'Parent');
             allVars.outportHandle(i);
