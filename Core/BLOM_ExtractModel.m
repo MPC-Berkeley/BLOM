@@ -78,7 +78,9 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         %[timeStruct] = relevantTimes(outportHandles);
         
         % create large P and K matrix
-        % [bigP,bigK] = combinePK(block,allVars);
+        try
+        [bigP,bigK] = combinePK(block,allVars);
+        end
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -159,11 +161,12 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
 
         % just a placeholder for ModelSpec so that MATLAB does not complain
         ModelSpec = 1;
-        % close evaluation of models
     catch err
+        % close evaluation of models
         eval([name '([],[],[],''term'');']);
         rethrow(err)
     end
+    % close evaluation of models
     eval([name '([],[],[],''term'');']);
     
 end
@@ -955,6 +958,64 @@ end
 %======================================================================
 
 function [bigP,bigK] = combinePK(block,allVars)
-
+    pRowSize = 30;
+    kRowSize = 30;
+    pRowZero = 1;
+    kRowZero = 1;
+    bigP = zeros(pRowSize,length(allVars.block));
+    bigK = zeros(kRowSize,length(allVars.block));
+    
+    for idx = 1:length(block.handles)
+        % go through all the blocks and fill in what the P and K matrix
+        % should be
+        if ~isempty(block.P{idx})
+            % only start filling in the P and K matrices if there are P and
+            % K matrices to fill. not all blocks will have this field
+            
+            % find the current P and K matrix
+            currentP = block.P{idx};
+            pRowLength = size(currentP,1);
+            currentK = block.K{idx};
+            kRowLength = size(currentK,1);
+            
+            % find all the relevant allVars indicies that match the
+            % outports of block.inputs
+            inputsIndices = zeros(length(block.inputs),length(allVars.block));
+            for inputsIdx = 1:length(block.inputs{idx})
+                inputsIndices(inputsIdx,:) =...
+                    allVars.outportHandle==block.inputs{idx}(inputsIdx);
+            end
+            inputsIndices = logical(inputsIndices);
+            
+            % find all the relevant allVars indicies that match the
+            % outports of block.inputs
+            outputsIndices = zeros(length(block.outportHandles),length(allVars.block));
+            for outputsIdx = 1:length(block.outportHandles{idx});
+                outputsIndices(outputsIdx,:) =...
+                    allVars.outportHandle==block.outportHandles{idx}(outputsIdx);
+            end
+            outputsIndices = logical(outputsIndices);
+            
+            % FIX: Increase the size of bigP and bigK when needed
+            
+            % here we put the relevant parts of P and K in the right places
+            currentZeroCol = 1;
+            currentP
+            currentK
+            for pIdx = 1:size(inputsIndices,1)
+                dimOutport = sum(inputsIndices(pIdx,:));
+                size(bigP(inputsIndices(pIdx,:),pRowZero:(pRowZero+pRowLength-1)))
+                size(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
+                bigP(inputsIndices(pIdx,:),pRowZero:(pRowZero+pRowLength-1))...
+                    = currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1));
+                currentZeroCol = currentZeroCol + dimOutport;
+            end
+            
+            
+            pRowZero = pRowZero + pRowLength;
+            kRowZero = kRowZero + kRowLength;
+            
+        end
+    end
 
 end
