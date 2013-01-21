@@ -79,7 +79,9 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         
         % create large P and K matrix
         try
-        [bigP,bigK] = combinePK(block,allVars);
+            [bigP,bigK] = combinePK(block,allVars);
+        catch err
+            rethrow(err)
         end
         
         % following code checks whether or not inports and outportHandles
@@ -968,6 +970,8 @@ function [bigP,bigK] = combinePK(block,allVars)
     for idx = 1:length(block.handles)
         % go through all the blocks and fill in what the P and K matrix
         % should be
+        % idx = block index
+
         if ~isempty(block.P{idx})
             % only start filling in the P and K matrices if there are P and
             % K matrices to fill. not all blocks will have this field
@@ -980,10 +984,17 @@ function [bigP,bigK] = combinePK(block,allVars)
             
             % find all the relevant allVars indicies that match the
             % outports of block.inputs
-            inputsIndices = zeros(length(block.inputs),length(allVars.block));
+            inputsIndices = zeros(length(block.inputs{idx}),length(allVars.block));
             for inputsIdx = 1:length(block.inputs{idx})
                 inputsIndices(inputsIdx,:) =...
                     allVars.outportHandle==block.inputs{idx}(inputsIdx);
+                if sum(inputsIndices(inputsIdx,:)) == 0
+                    % This case should never happen. DELETE AFTER TESTING.
+                    parentName = get_param(block.inputs{idx}(inputsIdx),'Parent');
+                    block.names{idx}
+                    idx
+                    fprintf('For some reason, cannot find input for %s\n',parentName)
+                end
             end
             inputsIndices = logical(inputsIndices);
             
@@ -1000,13 +1011,16 @@ function [bigP,bigK] = combinePK(block,allVars)
             
             % here we put the relevant parts of P and K in the right places
             currentZeroCol = 1;
-            currentP
-            currentK
+            sumInput = sum(inputsIndices,2);
+            idx
+
             for pIdx = 1:size(inputsIndices,1)
-                dimOutport = sum(inputsIndices(pIdx,:));
-                size(bigP(inputsIndices(pIdx,:),pRowZero:(pRowZero+pRowLength-1)))
+                dimOutport = sumInput(pIdx)
+                full(currentP)
+                full(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
+                size(bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:)))
                 size(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
-                bigP(inputsIndices(pIdx,:),pRowZero:(pRowZero+pRowLength-1))...
+                bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:))...
                     = currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1));
                 currentZeroCol = currentZeroCol + dimOutport;
             end
