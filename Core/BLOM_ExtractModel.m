@@ -1,4 +1,4 @@
-%> @file BLOM_ExtractModel.m
+ %> @file BLOM_ExtractModel.m
 %> @brief BLOM 2.0 Outline based on what we discussed previously
 
 %> Overview of BLOM Extract Model Structure
@@ -78,11 +78,11 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         %[timeStruct] = relevantTimes(outportHandles);
         
         % create large P and K matrix
-        try
-            [bigP,bigK] = combinePK(block,allVars);
-        catch err
-            rethrow(err)
-        end
+       % try
+          %  [bigP,bigK] = combinePK(block,allVars);
+        %catch err
+           % rethrow(err)
+        %end
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -374,6 +374,17 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts,sourceOutports);
+            
+        elseif strcmp(sourceType,'Mux')
+            % block is a mux. Here we want to fill in field sameOptVar to
+            % point to the original variable
+            
+            state='mux';
+            sourceOutports=[sourcePorts.Outport];
+            [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts,sourceOutports);
+            
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
             % except look for what's connected. 
@@ -683,6 +694,24 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
                         currentBlockIndex,sourceOutports(i),allVarsState,sameOptIndex,i);
             end
+            
+        case 'mux'
+            % the original variables are the outports connected to the mux
+           allVarsState = 'rememberIndex';
+           for i=1:length(outportsFound)
+                currentOutport = outportsFound(i);
+                [block,blockZero,currentBlockIndex] =...
+                     updateBlock(block,blockZero,currentOutport);
+                [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                      currentBlockIndex,currentOutport,allVarsState);
+           end
+           % save information for mux outport here
+           allVarsState = 'mux';
+           currentOutport = existingOutports(iOut);
+           [block,blockZero,currentBlockIndex] =...
+               updateBlock(block,blockZero,currentOutport);
+           [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                   currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
 
         otherwise 
             % not looking at bounds or costs
@@ -713,6 +742,7 @@ end
 %> either a scalars -> vector conversion or a vector -> scalars conversion. 
 %> 4. Demux: The original variable is the outport connected to the demux
 %> and that is being "demux'ed "
+%> 5. Mux: The original variables are the outports connected to the mux
 %> 
 %> 
 %> @param allVars allVars structure
@@ -791,10 +821,15 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'demux'
-                % points the the outport that goes into the demux
+                % points to the outport that goes into the demux
                 sameOptIndex = varargin{1};
                 outportIndex = varargin{2};
                 allVars.optVarIdx(allVarsZero) = (sameOptIndex+outportIndex-1);
+            case 'mux'
+                % points to the outports that go into the mux
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
+                (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
             case 'normal'
