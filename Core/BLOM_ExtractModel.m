@@ -674,26 +674,38 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         case 'demux'
             % the original variable is going to be the outport connected to
             % the demux
-            allVarsState = 'rememberIndex';
-            % current outport is the outport connected to the demux. should
-            % only be one outport
+            
+            % in this case we need to fill in the optVarIdx the outport
+            % connected to the demux
+            sourceOutports = varargin{3};
+            for i = 1:length(sourceOutports)
+                if i == 1
+                    % remember the index of the first demux outport. 
+                    allVarsState = 'rememberIndex';
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,sourceOutports(i));
+                    [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                            currentBlockIndex,sourceOutports(i),allVarsState);
+                else
+                    % store information for the rest of the demux outports
+                    allVarsState = 'normal';
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,sourceOutports(i));
+                    [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                            currentBlockIndex,sourceOutports(i),allVarsState);
+                end
+            end
+            
+            allVarsState = 'demux';
+            % should only be one outport connected to the demux. make sure
+            % to properly name sameOptVar in demux
             currentOutport = outportsFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
-            [allVars,allVarsZero,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
-                    currentBlockIndex,currentOutport,allVarsState);
+            [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
+                    currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
                 
-            % save info for demux outports
-            allVarsState = 'demux';
-            % in this case we need to fill in the sameOptVar for all of the
-            % demux outports.
-            sourceOutports = varargin{3};
-            for i = 1:length(sourceOutports)
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,sourceOutports(i));
-                [allVars,allVarsZero] = updateAllVars(allVars,allVarsZero,...
-                        currentBlockIndex,sourceOutports(i),allVarsState,sameOptIndex,i);
-            end
+            
             
         case 'mux'
             % the original variables are the outports connected to the mux
@@ -823,10 +835,11 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'demux'
-                % points to the outport that goes into the demux
+                % the outport that goes into the demux points to the demux
+                % outports
                 sameOptIndex = varargin{1};
-                outportIndex = varargin{2};
-                allVars.optVarIdx(allVarsZero) = (sameOptIndex+outportIndex-1);
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) =...
+                    (sameOptIndex+lengthOut-1);
             case 'mux'
                 % points to the outports that go into the mux
                 sameOptIndex = varargin{1};
