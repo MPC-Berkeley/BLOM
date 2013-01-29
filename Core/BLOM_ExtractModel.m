@@ -250,7 +250,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.outportNum = zeros(initialSize,1); % outport number. e.g. if there are multiple outports of a block
     allVars.outportHandle = zeros(initialSize,1); % handle of specific outport
     allVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
-    allVars.optVarIdx = zeros(initialSize,1); % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
+    allVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -inf
@@ -775,17 +775,19 @@ function [allVars,allVarsZero,varargout] = updateAllVars(allVars,allVarsZero,...
             if newLength >= 2*oldLength
             % new entries greater than twice the old length
                 for field={'block', 'outportNum','outportHandle','outportIndex',...
-                        'optVarIdx','cost'}
+                        'cost'}
                         allVars.(field{1}) = [allVars.(field{1}); zeros(newLength*2,1)];
                 end
+                allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(newLength*2+oldLength))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(newLength*2,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(newLength*2,1)];
                 allVars.time = [allVars.time; cell(newLength*2,1)];
             else % double the length of all fields in allVars
                 for field={'block', 'outportNum','outportHandle','outportIndex',...
-                        'optVarIdx','cost'}
+                        'cost'}
                         allVars.(field{1}) = [allVars.(field{1}); zeros(oldLength,1)];
                 end
+                allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(oldLength,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(oldLength,1)];
                 allVars.time = [allVars.time; cell(oldLength,1)];
