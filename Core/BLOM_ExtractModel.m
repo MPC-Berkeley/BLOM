@@ -95,12 +95,17 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             currentOutports = currentPorts.Outport;
             currentInports = currentPorts.Inport;
             % compare lists of Outports
-            diffOutports = setdiff(currentOutports,block.outportHandles{i});
+            
+            currentBlockOutports = zeros(length(block.outportHandles{i}),1);
+            for idx = 1:length(block.outportHandles{i})
+                currentBlockOutports(idx) = allVars.outportHandle(block.outportHandles{i}(idx));
+            end
+            
+            diffOutports = setdiff(currentBlockOutports,currentOutports);
             if ~isempty(diffOutports)
                 fprintf('Difference in Outports in %s\n',block.names{i})
                 currentOutports
-                block.outportHandles{i}
-                %get_param(block.outportHandles{i},'Parent')
+                get_param(allVars.outportHandle(block.outportHandles{i}),'Parent')
             end
             
             % compare inports
@@ -863,7 +868,8 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                 % do nothing
         end
         
-        
+        % populate block.outportHandles with index of the first allVars
+        % variable with the proper outport
         if pointToDiffIndex
             block.outportHandles{currentBlockIndex}(portNumber) = sameOptIndex;
         else
