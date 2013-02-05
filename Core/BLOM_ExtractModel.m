@@ -87,7 +87,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         % following code checks whether or not inports and outportHandles
         % was filled in properly
         fprintf('--------------------------------------------------------\n')
-        fprintf('Test block.outportHandles and inports is correct\n')
+        fprintf('Test block.outputIdxs and inports is correct\n')
         fprintf('Everything is good if nothing prints\n')
         fprintf('--------------------------------------------------------\n')
         for i = 1:length(block.handles)
@@ -96,16 +96,16 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             currentInports = currentPorts.Inport;
             % compare lists of Outports
             
-            currentBlockOutports = zeros(length(block.outportHandles{i}),1);
-            for idx = 1:length(block.outportHandles{i})
-                currentBlockOutports(idx) = allVars.outportHandle(block.outportHandles{i}(idx));
+            currentBlockOutports = zeros(length(block.outputIdxs{i}),1);
+            for idx = 1:length(block.outputIdxs{i})
+                currentBlockOutports(idx) = allVars.outportHandle(block.outputIdxs{i}(idx));
             end
             
             diffOutports = setdiff(currentBlockOutports,currentOutports);
             if ~isempty(diffOutports)
                 fprintf('Difference in Outports in %s\n',block.names{i})
                 currentOutports
-                get_param(allVars.outportHandle(block.outportHandles{i}),'Parent')
+                get_param(allVars.outportHandle(block.outputIdxs{i}),'Parent')
             end
             
             % compare inports
@@ -114,11 +114,11 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 currentLine = get_param(currentInports(index),'Line');
                 inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
             end
-            diffInports = setdiff(inportsOutport,block.inputs{i});
+            diffInports = setdiff(inportsOutport,block.inputIdxs{i});
             if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
                 inportsOutport
-                block.inputs{i}
+                block.inputIdxs{i}
                 get_param(inportsOutport,'Parent')
             end
             
@@ -267,8 +267,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     block.handles = zeros(initialSize,1); % handle of block
     block.P = cell(initialSize,1); % P matrix of block, if relevant
     block.K = cell(initialSize,1); % K matrix of block, if relevant
-    block.inputs = cell(initialSize,1); % inputs of each block
-    block.outportHandles = cell(initialSize,1); %all outport handles of block
+    block.inputIdxs = cell(initialSize,1); % the first optVarIDx of the outports connected to the inports of that block
+    block.outputIdxs = cell(initialSize,1); %the first optVarIdx of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.sourceOutports = cell(initialSize,1); % source outport handles
     
@@ -475,7 +475,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     end
     
     % remove empty and 0 entries in blocks
-    for field={'names', 'P','K','inputs','outportHandles','dimensions',...
+    for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
             'sourceOutports'}
         block.(field{1}) = block.(field{1})(1:(blockZero-1));
     end
@@ -868,12 +868,12 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                 % do nothing
         end
         
-        % populate block.outportHandles with index of the first allVars
+        % populate block.outputIdxs with index of the first allVars
         % variable with the proper outport
         if pointToDiffIndex
-            block.outportHandles{currentBlockIndex}(portNumber) = sameOptIndex;
+            block.outputIdxs{currentBlockIndex}(portNumber) = sameOptIndex;
         else
-            block.outportHandles{currentBlockIndex}(portNumber) = allVarsZero;
+            block.outputIdxs{currentBlockIndex}(portNumber) = allVarsZero;
         end
         
         allVarsZero = allVarsZero+lengthOut;
@@ -934,7 +934,7 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
     % if the size of block equals the blockZero, need to double to
     % length of block
     if blockZero == length(block.handles)
-        for field={'names', 'P','K','inputs','outportHandles','dimensions',...
+        for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
                 'sourceOutports'}
                 block.(field{1}) = [block.(field{1}); cell(blockZero,1)];
         end
@@ -958,8 +958,8 @@ function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,curre
             block.K{blockZero}= K;
         end
 
-        if isempty(block.outportHandles{blockZero})
-            block.outportHandles{blockZero} = zeros(length(sourcePorts.Outport),1);
+        if isempty(block.outputIdxs{blockZero})
+            block.outputIdxs{blockZero} = zeros(length(sourcePorts.Outport),1);
         end
         
 
@@ -1003,10 +1003,10 @@ function [block] = updateInputsField(block,outportHandles)
                 inportBlockPorts = get_param(block.handles(inportBlockIndex),'PortHandles');
                 inportPorts = inportBlockPorts.Inport;
                 inportIndex = inportPorts==destPorts(i);
-                if isempty(block.inputs{inportBlockIndex})
-                    block.inputs{inportBlockIndex} = zeros(length(inportPorts),1);
+                if isempty(block.inputIdxs{inportBlockIndex})
+                    block.inputIdxs{inportBlockIndex} = zeros(length(inportPorts),1);
                 end
-                block.inputs{inportBlockIndex}(inportIndex) = currentOutport;
+                block.inputIdxs{inportBlockIndex}(inportIndex) = currentOutport;
             end
         end
     end
@@ -1052,14 +1052,14 @@ function [bigP,bigK] = combinePK(block,allVars)
             kRowLength = size(currentK,1);
             
             % find all the relevant allVars indicies that match the
-            % outports of block.inputs
-            inputsIndices = zeros(length(block.inputs{idx}),length(allVars.block));
-            for inputsIdx = 1:length(block.inputs{idx})
+            % outports of block.inputIdxs
+            inputsIndices = zeros(length(block.inputIdxs{idx}),length(allVars.block));
+            for inputsIdx = 1:length(block.inputIdxs{idx})
                 inputsIndices(inputsIdx,:) =...
-                    allVars.outportHandle==block.inputs{idx}(inputsIdx);
+                    allVars.outportHandle==block.inputIdxs{idx}(inputsIdx);
                 if sum(inputsIndices(inputsIdx,:)) == 0
                     % This case should never happen. DELETE AFTER TESTING.
-                    parentName = get_param(block.inputs{idx}(inputsIdx),'Parent');
+                    parentName = get_param(block.inputIdxs{idx}(inputsIdx),'Parent');
                     block.names{idx}
                     idx
                     fprintf('For some reason, cannot find input for %s\n',parentName)
@@ -1068,11 +1068,11 @@ function [bigP,bigK] = combinePK(block,allVars)
             inputsIndices = logical(inputsIndices);
             
             % find all the relevant allVars indicies that match the
-            % outports of block.inputs
-            outputsIndices = zeros(length(block.outportHandles),length(allVars.block));
-            for outputsIdx = 1:length(block.outportHandles{idx});
+            % outports of block.inputIdxs
+            outputsIndices = zeros(length(block.outputIdxs),length(allVars.block));
+            for outputsIdx = 1:length(block.outputIdxs{idx});
                 outputsIndices(outputsIdx,:) =...
-                    allVars.outportHandle==block.outportHandles{idx}(outputsIdx);
+                    allVars.outportHandle==block.outputIdxs{idx}(outputsIdx);
             end
             outputsIndices = logical(outputsIndices);
             
