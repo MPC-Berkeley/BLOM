@@ -106,6 +106,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 fprintf('Difference in Outports in %s\n',block.names{i})
                 currentOutports
                 get_param(allVars.outportHandle(block.outputIdxs{i}),'Parent')
+                fprintf('--------------------------------------------------------\n')
             end
             
             % compare inports
@@ -114,12 +115,19 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 currentLine = get_param(currentInports(index),'Line');
                 inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
             end
-            diffInports = setdiff(inportsOutport,block.inputIdxs{i});
+            
+            currentBlockInports = zeros(length(block.inputIdxs{i}),1);
+            for idx = 1:length(block.inputIdxs{i})
+                currentBlockInports(idx) = allVars.outportHandle(block.inputIdxs{i}(idx));
+            end
+            
+            diffInports = setdiff(inportsOutport,currentBlockInports);
             if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
                 inportsOutport
                 block.inputIdxs{i}
                 get_param(inportsOutport,'Parent')
+                fprintf('--------------------------------------------------------\n')
             end
             
             
@@ -465,7 +473,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         outportHandles = outportHandles(1:iZero-1);
     end
     
-    block = updateInputsField(block,outportHandles);
+    block = updateInputsField(block,allVars,outportHandles);
     
     %check if any handles are -1 and remove them
     if any(outportHandles==-1)
@@ -988,10 +996,12 @@ end
 %> @retval block updated block structure with inputs field filled in
 %======================================================================
 
-function [block] = updateInputsField(block,outportHandles)
+function [block] = updateInputsField(block,allVars,outportHandles)
     % get information for the block and port that this outport goes to
     for index = 1:length(outportHandles)
         currentOutport = outportHandles(index);
+        % find the first index that corresponds to this outport in allVars
+        allVarsIdx = find(allVars.outportHandle==currentOutport,1);
         outportLine = get_param(currentOutport,'Line');
         destBlocks = get_param(outportLine,'DstBlockHandle');
         destPorts = get_param(outportLine,'DstPortHandle');
@@ -1006,7 +1016,7 @@ function [block] = updateInputsField(block,outportHandles)
                 if isempty(block.inputIdxs{inportBlockIndex})
                     block.inputIdxs{inportBlockIndex} = zeros(length(inportPorts),1);
                 end
-                block.inputIdxs{inportBlockIndex}(inportIndex) = currentOutport;
+                block.inputIdxs{inportBlockIndex}(inportIndex) = allVarsIdx;
             end
         end
     end
