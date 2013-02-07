@@ -104,6 +104,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             diffOutports = setdiff(currentBlockOutports,currentOutports);
             if ~isempty(diffOutports)
                 fprintf('Difference in Outports in %s\n',block.names{i})
+                currentOutports
                 get_param(allVars.outportHandle(block.outputIdxs{i}),'Parent')
                 fprintf('--------------------------------------------------------\n')
             end
@@ -123,6 +124,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             diffInports = setdiff(inportsOutport,currentBlockInports);
             if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
+                inportsOutport
                 block.inputIdxs{i}
                 get_param(inportsOutport,'Parent')
                 fprintf('--------------------------------------------------------\n')
@@ -143,6 +145,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             portType = get_param(allVars.outportHandle(i),'PortType');
             if ~strcmp(portType,'outport')
                 fprintf('Oops, this is not an outport, look to see what happened\n')
+                portType
             end
         end
         
@@ -164,6 +167,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
                 %fprintf('correct index\n')
             else
                 fprintf('INCORRECT INDEX, BAD\n')
+                currentBlockName
+                parent
                 fprintf('\nExambine Above\n')
             end
         end
@@ -384,7 +389,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts,sourceOutports);
             
         elseif strcmp(sourceType,'Mux')
-            % block is a mux. Here we want to fill in field sameOptVar to        
+            % block is a mux. Here we want to fill in field sameOptVar to
+            % point to the original variable
+            
             state='mux';
             sourceOutports=[sourcePorts.Outport];
             [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
@@ -1063,6 +1070,8 @@ function [bigP,bigK] = combinePK(block,allVars)
                 if sum(inputsIndices(inputsIdx,:)) == 0
                     % This case should never happen. DELETE AFTER TESTING.
                     parentName = get_param(block.inputIdxs{idx}(inputsIdx),'Parent');
+                    block.names{idx}
+                    idx
                     fprintf('For some reason, cannot find input for %s\n',parentName)
                 end
             end
@@ -1082,7 +1091,10 @@ function [bigP,bigK] = combinePK(block,allVars)
             % here we put the relevant parts of P and K in the right places
             currentZeroCol = 1;
             sumInput = sum(inputsIndices,2);
+            idx
+
             for pIdx = 1:size(inputsIndices,1)
+                dimOutport = sumInput(pIdx)
                 full(currentP)
                 full(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
                 size(bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:)))
