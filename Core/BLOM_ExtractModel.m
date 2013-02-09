@@ -650,14 +650,14 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             allVarsState = 'rememberIndex';
             % the currentOutport in this case is the outport that goes to
             % the GoTo block
-            currentOutport = outportsFound;
+            currentOutport = existingOutports(iOut);
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
                     block,currentBlockIndex,currentOutport,allVarsState);
             % save information for from block here
             allVarsState = 'from';
-            currentOutport = existingOutports(iOut);
+            currentOutport = outportsFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
