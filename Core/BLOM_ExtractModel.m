@@ -393,10 +393,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             % point to the original variable
             
             state='mux';
-            sourceOutports=[sourcePorts.Outport];
             [outportHandles,iZero,allVars,allVarsZero,block,blockZero] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts,sourceOutports);
+                allVars,allVarsZero,block,blockZero,state,iOut,sourcePorts);
             
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
@@ -554,13 +553,15 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         % block
         inports = [gotoPorts.Inport];
     end
-    
+   
     % found outports connected to inports provided
     if inports ~= 0
+        allOutportsFound=zeros(length(inports),1);
         for i = 1:length(inports);
             currentLine = get_param(inports(i),'Line');
             % this gives the all the outports connected to this line
             outportsFound = get_param(currentLine,'SrcPorthandle');
+            allOutportsFound(i) = outportsFound;
             outLength = length(outportsFound);
             % in case outportHandles is too short 
             if outLength > length(outportHandles)-iZero+1;
@@ -720,23 +721,25 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 
             
             
-        case 'mux'
+        case 'mux'           
+
             % the original variables are the outports connected to the mux
-           allVarsState = 'rememberIndex';
-           for i=1:length(outportsFound)
-                currentOutport = outportsFound(i);
-                [block,blockZero,currentBlockIndex] =...
-                     updateBlock(block,blockZero,currentOutport);
-                [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
-                      block,currentBlockIndex,currentOutport,allVarsState);
-           end
+                   currentOutport = existingOutports(iOut);
+                   allVarsState = 'rememberIndex';
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,currentOutport);
+                    [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
+                        block,currentBlockIndex,currentOutport,allVarsState);
+                 for idx=1:length(allOutportsFound)
+                    allVarsState = 'mux';
+                    currentOutport=allOutportsFound(idx)
+                    [block,blockZero,currentBlockIndex] =...
+                        updateBlock(block,blockZero,currentOutport);
+                    [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
+                        block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex+idx-1);  
+                 end
+
            % save information for mux outport here
-           allVarsState = 'mux';
-           currentOutport = existingOutports(iOut);
-           [block,blockZero,currentBlockIndex] =...
-               updateBlock(block,blockZero,currentOutport);
-           [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
-               block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
 
         otherwise 
             % not looking at bounds or costs
@@ -818,7 +821,6 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                 allVars.time = [allVars.time; cell(oldLength,1)];
             end
         end
-        
         allVars.block(allVarsZero:(allVarsZero+lengthOut-1)) = currentBlockIndex;
         allVars.outportNum(allVarsZero:(allVarsZero+lengthOut-1)) = portNumber;
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
@@ -1070,8 +1072,7 @@ function [bigP,bigK] = combinePK(block,allVars)
                 if sum(inputsIndices(inputsIdx,:)) == 0
                     % This case should never happen. DELETE AFTER TESTING.
                     parentName = get_param(block.inputIdxs{idx}(inputsIdx),'Parent');
-                    block.names{idx}
-                    idx
+                    block.names{idx};
                     fprintf('For some reason, cannot find input for %s\n',parentName)
                 end
             end
@@ -1091,10 +1092,9 @@ function [bigP,bigK] = combinePK(block,allVars)
             % here we put the relevant parts of P and K in the right places
             currentZeroCol = 1;
             sumInput = sum(inputsIndices,2);
-            idx
 
             for pIdx = 1:size(inputsIndices,1)
-                dimOutport = sumInput(pIdx)
+                dimOutport = sumInput(pIdx);
                 full(currentP)
                 full(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
                 size(bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:)))
