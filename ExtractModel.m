@@ -407,7 +407,7 @@ protected = in_vars | ex_vars;
 [cost, to_remove_var_cost, all_names, AAs, Cs] = ...
     ExtractVars(all_names, AAs, Cs, cost_vars, protected);
 % protect the cost variables, so they do not get removed
-protected = protected | any(vertcat(cost.AAs{:}))';
+protected = protected | any(vertcat(cost.AAs{:}),1)';
 [ineq, to_remove_var_ineq, all_names, AAs, Cs] = ...
     ExtractVars(all_names, AAs, Cs, -ineq_vars, protected);
 % minus is to handle definition of inequality
