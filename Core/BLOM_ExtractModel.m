@@ -879,12 +879,9 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
         end
         
         % populate block.outputIdxs with index of the first allVars
-        % variable with the proper outport
-        if pointToDiffIndex
-            block.outputIdxs{currentBlockIndex}(portNumber) = sameOptIndex;
-        else
-            block.outputIdxs{currentBlockIndex}(portNumber) = allVarsZero;
-        end
+        % variable. Does not take into consideration redundancies. This
+        % will be taken care of later.
+        block.outputIdxs{currentBlockIndex}(portNumber) = allVarsZero;
         
         allVarsZero = allVarsZero+lengthOut;
     else
