@@ -560,9 +560,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         for i = 1:length(inports);
             currentLine = get_param(inports(i),'Line');
             % this gives the all the outports connected to this line
-            outportsFound = get_param(currentLine,'SrcPorthandle');
-            allOutportsFound(i) = outportsFound;
-            outLength = length(outportsFound);
+            outportFound = get_param(currentLine,'SrcPorthandle');
+            allOutportsFound(i) = outportFound;
+            outLength = length(outportFound);
             % in case outportHandles is too short 
             if outLength > length(outportHandles)-iZero+1;
                 if outlength > length(outportHandles)
@@ -573,7 +573,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 end
             end
 
-            diffOutports = setdiff(outportsFound,outportHandles);
+            diffOutports = setdiff(outportFound,outportHandles);
             diffLength = length(diffOutports);
             outportHandles(iZero:(diffLength+iZero-1)) = diffOutports;
             iZero = iZero + diffLength;
@@ -591,9 +591,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
             % go through each of the outports connected through bound.
             % Because bound has only one inport, the for loop above only
-            % goes through one iteration, so the variable outportsFound
+            % goes through one iteration, so the variable outportFound
             % will include all the outports found
-            for currentOutport = outportsFound
+            for currentOutport = outportFound
                 [block,blockZero,currentBlockIndex] =...
                     updateBlock(block,blockZero,currentOutport);
                 [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
@@ -604,9 +604,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             allVarsState = 'cost';
             % go through each of the outports connected through cost
             % Because cost has only one inport, the for loop above only
-            % goes through one iteration, so the variable outportsFound
+            % goes through one iteration, so the variable outportFound
             % will include all the outports found
-            for currentOutport = outportsFound
+            for currentOutport = outportFound
                 [block,blockZero,currentBlockIndex] =...
                     updateBlock(block,blockZero,currentOutport);
                 [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
@@ -632,7 +632,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             % to the subsystem to have a reference that it's a duplicate
             % variable
             allVarsState = 'rememberIndex';
-            currentOutport = outportsFound;
+            currentOutport = outportFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
@@ -658,7 +658,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                     block,currentBlockIndex,currentOutport,allVarsState);
             % save information for from block here
             allVarsState = 'from';
-            currentOutport = outportsFound;
+            currentOutport = outportFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
@@ -679,7 +679,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
             % save information for subsystem outport here
             allVarsState = 'intoSubsys';
-            currentOutport = outportsFound;
+            currentOutport = outportFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
@@ -713,7 +713,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             allVarsState = 'demux';
             % should only be one outport connected to the demux. make sure
             % to properly name sameOptVar in demux
-            currentOutport = outportsFound;
+            currentOutport = outportFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
