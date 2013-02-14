@@ -826,10 +826,6 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
         allVars.outportIndex(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
         
-        % pointToDiffIndex is either 0 or 1. 0 if the block outports should
-        % point to the current index of allVarsZero and 1 if there was a
-        % redundant variable and it should point to another index.
-        pointToDiffIndex = 0;
         
         switch allVarsState
             case 'bound'
@@ -844,32 +840,27 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
-                pointToDiffIndex = 1;
             case 'from'
                 % points to the original outport
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
-                pointToDiffIndex = 1;
             case 'intoSubsys'    
                 % points to the original outport
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
-                pointToDiffIndex = 1;
             case 'demux'
                 % the outport that goes into the demux points to the demux
                 % outports
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) =...
                     (sameOptIndex+lengthOut-1);
-                pointToDiffIndex = 1;
             case 'mux'
                 % points to the outports that go into the mux
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
                 (sameOptIndex):(sameOptIndex+lengthOut-1);
-                pointToDiffIndex = 1;
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
             case 'normal'
