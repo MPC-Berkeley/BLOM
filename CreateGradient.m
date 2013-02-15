@@ -48,6 +48,8 @@ for i = range % for all non zero variables
                 error('tanh is unsupported for gradient generation')
             elseif (A(j,i) == BLOM_FunctionCode('atan') ) % atan
                 error('atan is unsupported for gradient generation')
+            elseif (A(j,i) == BLOM_FunctionCode('erf') ) % erf
+                error('erf is unsupported for gradient generation')
             else
                 error(['Unrecognized function code ' num2str(A(j,i))])
             end

@@ -501,6 +501,8 @@ function [y]=Outputs(block)
   vX(tanhbool) = tanh(X(Acols(tanhbool))); % hyperbolic tangents
   atanbool = inbool & (Avals == BLOM_FunctionCodes.atan);
   vX(atanbool) = atan(X(Acols(atanbool))); % arctangents
+  erfbool = inbool & (Avals == BLOM_FunctionCodes.erf);
+  vX(erfbool) = erf(X(Acols(erfbool))); % error functions
   
   prods = ones(size(A,1),1);
   for v = 1:length(Avals)

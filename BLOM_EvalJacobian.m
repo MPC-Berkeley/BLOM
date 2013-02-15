@@ -23,6 +23,7 @@ sinbool  = (Pvals == BLOM_FunctionCode('sin'));
 cosbool  = (Pvals == BLOM_FunctionCode('cos'));
 tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
 atanbool = (Pvals == BLOM_FunctionCode('atan'));
+erfbool  = (Pvals == BLOM_FunctionCode('erf'));
 
 vx = x(Pcols).^Pvals; % powers of input variables
 vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
@@ -31,6 +32,7 @@ vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
 vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
 vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
 vx(atanbool) = atan(x(Pcols(atanbool))); % arctangents
+vx(erfbool)  = erf(x(Pcols(erfbool))); % error functions
 
 vxderiv = Pvals.*(x(Pcols).^(Pvals - 1)); % derivatives of powers
 vxderiv(expbool)  = vx(expbool); % derivatives of exponentials
@@ -39,6 +41,7 @@ vxderiv(sinbool)  = cos(x(Pcols(sinbool))); % derivatives of sines
 vxderiv(cosbool)  = -sin(x(Pcols(cosbool))); % derivatives of cosines
 vxderiv(tanhbool) = sech(x(Pcols(tanhbool))).^2; % derivatives of hyperbolic tangents
 vxderiv(atanbool) = 1./(x(Pcols(atanbool)).^2 + 1); % derivatives of arctangents
+vxderiv(erfbool)  = 2./(sqrt(pi)*exp(x(Pcols(erfbool)).^2)); % derivatives of error functions
 
 % construct Jacobian of vx product vector (same sparsity pattern as P)
 prodJacvals = ones(size(Pvals)); % for linear terms, this is 1

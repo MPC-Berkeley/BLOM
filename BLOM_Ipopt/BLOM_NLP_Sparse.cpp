@@ -4,7 +4,7 @@
 
 __inline double EvalSpecial(double tmp,const double p, const double * x,const int idx )
 {
-    if (p == BLOM_TYPE_EXP) //exp
+    if (p == BLOM_FUNCTIONCODE_EXP) //exp
     {
         tmp *= exp(x[idx]);
         if (std::isinf(tmp))
@@ -12,25 +12,29 @@ __inline double EvalSpecial(double tmp,const double p, const double * x,const in
         if (std::isnan(tmp))
             printf("BLOM_NLP_Sparse:exp nan, j=%d, %f %f \n",idx,x[idx],exp(x[idx]));
     }
-    else if (p == BLOM_TYPE_LOG) //log
+    else if (p == BLOM_FUNCTIONCODE_LOG) //log
     {
         tmp *= log(x[idx]);
     }
-    else if (p == BLOM_TYPE_SIN) //sin
+    else if (p == BLOM_FUNCTIONCODE_SIN) //sin
     {
         tmp *= sin(x[idx]);
     }
-    else if (p == BLOM_TYPE_COS) //cos
+    else if (p == BLOM_FUNCTIONCODE_COS) //cos
     {
         tmp *= cos(x[idx]);
     }
-    else if (p == BLOM_TYPE_TANH) //tanh
+    else if (p == BLOM_FUNCTIONCODE_TANH) //tanh
     {
         tmp *= tanh(x[idx]);
     }
-    else if (p == BLOM_TYPE_ATAN) //atan
+    else if (p == BLOM_FUNCTIONCODE_ATAN) //atan
     {
         tmp *= atan(x[idx]);
+    }
+    else if (p == BLOM_FUNCTIONCODE_ERF) //erf
+    {
+        tmp *= erf(x[idx]);
     }
     else
     {
@@ -57,7 +61,7 @@ double MyNLP::  CalcValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,con
 			 for (int j=A_row ; j < A_row_end ; j ++ )
 			 {
 			 	double p = A.val(j);
-                if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                if (p < BLOM_FUNCTIONCODE_EXP ) // The main case - powers: integer and non-integer
                 {
                     if (floor(p)==p && p >= 0 ) // integer and non negative
                     {
@@ -127,38 +131,43 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
                 double p = A.val(j);
                 if (A.col_ind(j) == dvar) // special treatment for dvar
                 {
-                    if(p < BLOM_TYPE_EXP)
+                    if(p < BLOM_FUNCTIONCODE_EXP)
                     {
                         tmp *= p --;
                     }
-                    else if (p == BLOM_TYPE_EXP) //exp
+                    else if (p == BLOM_FUNCTIONCODE_EXP) //exp
                     {
                         // do nothing for exp
                         
                     }
-                    else if (p ==  BLOM_TYPE_LOG) //log
+                    else if (p == BLOM_FUNCTIONCODE_LOG) //log
                     {
-                        p=-1;
+                        p = -1;
                         
                     }
-                    else if (p ==  BLOM_TYPE_SIN) //sin
+                    else if (p == BLOM_FUNCTIONCODE_SIN) //sin
                     {
-                        p = BLOM_TYPE_COS;
+                        p = BLOM_FUNCTIONCODE_COS;
                     }
-                    else if (p == BLOM_TYPE_COS) //cos
+                    else if (p == BLOM_FUNCTIONCODE_COS) //cos
                     {
                         tmp *= -1;
-                        p = BLOM_TYPE_SIN;
+                        p = BLOM_FUNCTIONCODE_SIN;
                     }
-                    else if (p == BLOM_TYPE_TANH) //tanh
+                    else if (p == BLOM_FUNCTIONCODE_TANH) //tanh
                     { // special treatment: evaluate it here:
                         double th = tanh(x[A.col_ind(j)]);
                         tmp *= 1 - th*th;
                         continue; // continue to the next variable
                     }
-                    else if (p == BLOM_TYPE_ATAN) //atan
+                    else if (p == BLOM_FUNCTIONCODE_ATAN) //atan
                     { // special treatment: evaluate it here:
                         tmp *= 1/(x[A.col_ind(j)]*x[A.col_ind(j)] + 1);
+                        continue; // continue to the next variable
+                    }
+                    else if (p == BLOM_FUNCTIONCODE_ERF) //erf
+                    { // special treatment: evaluate it here:
+                        tmp *= 1/(sqrt(atan(1.0))*exp(x[A.col_ind(j)]*x[A.col_ind(j)]));
                         continue; // continue to the next variable
                     }
                     else
@@ -171,7 +180,7 @@ double MyNLP::  CalcDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,int f,
 
                 
                 
-                if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                if (p < BLOM_FUNCTIONCODE_EXP ) // The main case - powers: integer and non-integer
                 {
                     if (floor(p)==p && p >= 0 ) // integer and non negative
                     {
@@ -254,30 +263,30 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                  { // Apply the derivative each time dvar is found
                      if (A.col_ind(j) == dvar)
                      {
-                         if(p < BLOM_TYPE_EXP)
+                         if(p < BLOM_FUNCTIONCODE_EXP)
                          {
                              tmp *= p;
                              if (p != 0)
                                  p--;
                          }
-                         else if (p == BLOM_TYPE_EXP) //exp
+                         else if (p == BLOM_FUNCTIONCODE_EXP) //exp
                          {
                              // do nothing for exp
                          }
-                         else if (p == BLOM_TYPE_LOG) //log
+                         else if (p == BLOM_FUNCTIONCODE_LOG) //log
                          {
-                             p=-1;
+                             p = -1;
                          }
-                         else if (p == BLOM_TYPE_SIN) //sin
+                         else if (p == BLOM_FUNCTIONCODE_SIN) //sin
                          {
-                             p = BLOM_TYPE_COS;
+                             p = BLOM_FUNCTIONCODE_COS;
                          }
-                         else if (p == BLOM_TYPE_COS) //cos
+                         else if (p == BLOM_FUNCTIONCODE_COS) //cos
                          {
                              tmp *= -1;
-                             p = BLOM_TYPE_SIN;
+                             p = BLOM_FUNCTIONCODE_SIN;
                          }
-                         else if (p == BLOM_TYPE_TANH) //tanh
+                         else if (p == BLOM_FUNCTIONCODE_TANH) //tanh
                          { // special treatment: evaluate it here:
                              double th = tanh(x[A.col_ind(j)]);
                              if (dvar1==dvar2) // 2nd derivative of tanh
@@ -293,7 +302,7 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                                  eval = false; // continue to the next variable
                              }
                          }
-                         else if (p == BLOM_TYPE_ATAN) //atan
+                         else if (p == BLOM_FUNCTIONCODE_ATAN) //atan
                          { // special treatment: evaluate it here:
                              double xj = x[A.col_ind(j)];
                              if (dvar1==dvar2) // 2nd derivative of atan
@@ -309,6 +318,22 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                                  eval = false; // continue to the next variable
                              }
                          }
+                         else if (p == BLOM_FUNCTIONCODE_ERF) //erf
+                         { // special treatment: evaluate it here:
+                             double xj = x[A.col_ind(j)];
+                             if (dvar1==dvar2) // 2nd derivative of erf
+                             {
+                                 // the first time we are in dvar1
+                                 tmp *= -2*xj/(sqrt(atan(1.0))*exp(xj*xj));
+                                 eval = false; // continue to the next variable
+                                 break; // do not check the dvar2
+                             }
+                             else
+                             {
+                                 tmp *= 1/(sqrt(atan(1.0))*exp(xj*xj));
+                                 eval = false; // continue to the next variable
+                             }
+                         }
                          else
                          {
                              printf("BLOM_NLP_Sparse:EvalSpecial: unknown special code %g ! \n",p);
@@ -318,7 +343,7 @@ double MyNLP::  CalcDoubleDerValue(CompRow_Mat_double& A,CompRow_Mat_double&  C,
                  
                  
                  if (eval) { // evalutate if was not evaluted before, such as tanh.
-                     if (p < BLOM_TYPE_EXP ) // The main case - powers: integer and non-integer
+                     if (p < BLOM_FUNCTIONCODE_EXP ) // The main case - powers: integer and non-integer
                      {
                          if (floor(p)==p && p >= 0 ) // integer and non negative
                          {

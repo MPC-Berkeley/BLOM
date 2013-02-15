@@ -73,6 +73,8 @@ if (~isempty(idx))
                         str = [str  'tanh(' names{jA(j)} ')' ];
                     elseif A(i,jA(j)) == BLOM_FunctionCodes.atan
                         str = [str  'atan(' names{jA(j)} ')' ];
+                    elseif A(i,jA(j)) == BLOM_FunctionCodes.erf
+                        str = [str  'erf(' names{jA(j)} ')' ];
                     else
                         error(['Unrecognized function code ' num2str(A(i,jA(j)))])
                     end
