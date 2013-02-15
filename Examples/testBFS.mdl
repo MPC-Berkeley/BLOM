@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.37"
+    ComputedModelVersion    "1.57"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "JJK"
+  LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Jan 10 11:28:51 2013"
-  RTWModifiedTimeStamp	  279717962
-  ModelVersionFormat	  "1.%<AutoIncrement:37>"
+  LastModifiedDate	  "Fri Feb 15 13:39:44 2013"
+  RTWModifiedTimeStamp	  282836383
+  ModelVersionFormat	  "1.%<AutoIncrement:57>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [713, 52, 1644, 962]
+    Location		    [490, 82, 1413, 871]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -772,7 +772,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    106
+    SIDHighWatermark	    114
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -802,7 +802,7 @@ Model {
       Name		      "Add2"
       SID		      33
       Ports		      [2, 1]
-      Position		      [820, 190, 855, 250]
+      Position		      [785, 120, 820, 180]
       InputSameDT	      off
       OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -813,7 +813,7 @@ Model {
       Name		      "Add3"
       SID		      34
       Ports		      [2, 1]
-      Position		      [820, 311, 855, 384]
+      Position		      [805, 311, 840, 384]
       InputSameDT	      off
       OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
@@ -898,7 +898,7 @@ Model {
       Name		      "Demux"
       SID		      29
       Ports		      [1, 2]
-      Position		      [485, 461, 490, 499]
+      Position		      [485, 466, 490, 504]
       ShowName		      off
       Outputs		      "2"
       DisplayOption	      "bar"
@@ -1363,7 +1363,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem1"
-	Location		[1156, 544, 1496, 724]
+	Location		[848, 552, 1188, 732]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1503,8 +1503,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem2"
-	Location		[1044, 764, 1374, 849]
-	Open			off
+	Location		[712, 522, 1420, 855]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1565,20 +1565,166 @@ Model {
 	  Name			  "Integrator1"
 	  SID			  95
 	  Ports			  [1, 1]
-	  Position		  [220, 30, 250, 60]
+	  Position		  [365, 30, 395, 60]
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Subsubsystem1"
+	  SID			  111
+	  Ports			  [1, 1]
+	  Position		  [220, 24, 320, 66]
+	  LibraryVersion	  "1.762"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  System {
+	    Name		    "Subsubsystem1"
+	    Location		    [784, 504, 1136, 576]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "In1"
+	      SID		      112
+	      Position		      [20, 28, 50, 42]
+	      IconDisplay	      "Port number"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	    }
+	    Block {
+	      BlockType		      Gain
+	      Name		      "Gain"
+	      SID		      113
+	      Position		      [135, 20, 165, 50]
+	      ParameterDataTypeMode   "Inherit via internal rule"
+	      ParameterDataType	      "fixdt(1, 16)"
+	      ParameterScaling	      "2^0"
+	      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+	      OutDataTypeMode	      "Inherit via internal rule"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+	      SaturateOnIntegerOverflow	off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "Out1"
+	      SID		      114
+	      Position		      [270, 28, 300, 42]
+	      IconDisplay	      "Port number"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	    }
+	    Line {
+	      SrcBlock		      "In1"
+	      SrcPort		      1
+	      DstBlock		      "Gain"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Gain"
+	      SrcPort		      1
+	      DstBlock		      "Out1"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Subsubsystem2"
+	  SID			  107
+	  Ports			  [1, 1]
+	  Position		  [420, 24, 520, 66]
+	  LibraryVersion	  "1.762"
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  System {
+	    Name		    "Subsubsystem2"
+	    Location		    [784, 504, 1136, 576]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "In1"
+	      SID		      108
+	      Position		      [20, 28, 50, 42]
+	      IconDisplay	      "Port number"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	    }
+	    Block {
+	      BlockType		      Gain
+	      Name		      "Gain"
+	      SID		      110
+	      Position		      [135, 20, 165, 50]
+	      ParameterDataTypeMode   "Inherit via internal rule"
+	      ParameterDataType	      "fixdt(1, 16)"
+	      ParameterScaling	      "2^0"
+	      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+	      OutDataTypeMode	      "Inherit via internal rule"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+	      SaturateOnIntegerOverflow	off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "Out1"
+	      SID		      109
+	      Position		      [270, 28, 300, 42]
+	      IconDisplay	      "Port number"
+	      OutDataType	      "fixdt(1, 16)"
+	      OutScaling	      "2^0"
+	    }
+	    Line {
+	      SrcBlock		      "In1"
+	      SrcPort		      1
+	      DstBlock		      "Gain"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "Gain"
+	      SrcPort		      1
+	      DstBlock		      "Out1"
+	      DstPort		      1
+	    }
+	  }
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
 	  SID			  101
-	  Position		  [275, 38, 305, 52]
+	  Position		  [555, 38, 585, 52]
 	  IconDisplay		  "Port number"
-	}
-	Line {
-	  SrcBlock		  "Gain"
-	  SrcPort		  1
-	  DstBlock		  "Integrator1"
-	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "Add4"
@@ -1593,16 +1739,34 @@ Model {
 	  DstPort		  1
 	}
 	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Add4"
+	  DstPort		  2
+	}
+	Line {
 	  SrcBlock		  "Integrator1"
+	  SrcPort		  1
+	  DstBlock		  "Subsubsystem2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Subsubsystem2"
 	  SrcPort		  1
 	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "In2"
+	  SrcBlock		  "Subsubsystem1"
 	  SrcPort		  1
-	  DstBlock		  "Add4"
-	  DstPort		  2
+	  DstBlock		  "Integrator1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  DstBlock		  "Subsubsystem1"
+	  DstPort		  1
 	}
       }
     }
@@ -1674,6 +1838,7 @@ Model {
 	Branch {
 	  Points		  [165, 0]
 	  Branch {
+	    Points		    [0, -70]
 	    DstBlock		    "Add2"
 	    DstPort		    1
 	  }
@@ -1763,16 +1928,16 @@ Model {
     Line {
       SrcBlock		      "Demux"
       SrcPort		      2
-      Points		      [5, 0; 0, -240]
+      Points		      [5, 0; 0, -245]
       DstBlock		      "Add1"
       DstPort		      5
     }
     Line {
       SrcBlock		      "Add3"
       SrcPort		      1
-      Points		      [10, 0]
+      Points		      [25, 0]
       Branch {
-	Points			[0, -70; -65, 0]
+	Points			[0, -70; -110, 0; 0, -115]
 	DstBlock		"Add2"
 	DstPort			2
       }
@@ -1785,7 +1950,7 @@ Model {
     Line {
       SrcBlock		      "Add2"
       SrcPort		      1
-      Points		      [20, 0; 0, 80; -75, 0]
+      Points		      [25, 0; 0, 150; -60, 0]
       DstBlock		      "Add3"
       DstPort		      1
     }
@@ -1801,12 +1966,6 @@ Model {
       Points		      [-145, 0; 0, -80]
       DstBlock		      "Product"
       DstPort		      3
-    }
-    Line {
-      SrcBlock		      "Polyblock"
-      SrcPort		      2
-      DstBlock		      "Polyblock3"
-      DstPort		      2
     }
     Line {
       SrcBlock		      "Polyblock3"
@@ -1828,13 +1987,6 @@ Model {
       Points		      [30, 0; 0, 25]
       DstBlock		      "Polyblock"
       DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Polyblock2"
-      SrcPort		      2
-      Points		      [0, -20]
-      DstBlock		      "Add"
-      DstPort		      4
     }
     Line {
       SrcBlock		      "From2"
@@ -1920,6 +2072,19 @@ Model {
       Points		      [50, 0; 0, -20]
       DstBlock		      "Product"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Polyblock"
+      SrcPort		      2
+      DstBlock		      "Polyblock3"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Polyblock2"
+      SrcPort		      2
+      Points		      [0, -20]
+      DstBlock		      "Add"
+      DstPort		      4
     }
   }
 }
