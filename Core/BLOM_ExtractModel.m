@@ -534,9 +534,9 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     if strcmp(state,'intoSubsys') %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
         % outports of subsystem
-        parent = get_param(currentOutport,'Parent');
+        parent = get_param(currentOutport,'Parent')
         index = inports==currentOutport;
-        outportBlocks = find_system(parent,'regexp','on','BlockType','Outport');
+        outportBlocks = find_system(parent,'SearchDepth',1,'regexp','on','BlockType','Outport');
         handle = get_param(outportBlocks{index},'Handle');
         portH = get_param(handle,'PortHandles');
         inports = [portH.Inport];
@@ -552,6 +552,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         % note: there should only be one outport associated with each goto
         % block
         inports = [gotoPorts.Inport];
+        
     end
    
     % found outports connected to inports provided
@@ -671,7 +672,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             allVarsState = 'rememberIndex';
             % the currentOutport in this case is the outport that goes to
             % the subsystem
-            currentOutport = existingOutports(iOut);
+            currentOutport = outportFound;
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
@@ -679,7 +680,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
             % save information for subsystem outport here
             allVarsState = 'intoSubsys';
-            currentOutport = outportFound;
+            currentOutport = existingOutports(iOut);
             [block,blockZero,currentBlockIndex] =...
                 updateBlock(block,blockZero,currentOutport);
             [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
