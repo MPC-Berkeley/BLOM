@@ -724,22 +724,25 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
         case 'mux'           
 
             % the original variables are the outports connected to the mux
-                   currentOutport = existingOutports(iOut);
+            for idx=1:length(allOutportsFound)
+                   currentOutport = allOutportsFound(idx);
                    allVarsState = 'rememberIndex';
                     [block,blockZero,currentBlockIndex] =...
                         updateBlock(block,blockZero,currentOutport);
                     [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
                         block,currentBlockIndex,currentOutport,allVarsState);
-                 for idx=1:length(allOutportsFound)
+            
+              % save information for mux outport here   
                     allVarsState = 'mux';
-                    currentOutport=allOutportsFound(idx);
+                    currentOutport=existingOutports(iOut);
                     [block,blockZero,currentBlockIndex] =...
                         updateBlock(block,blockZero,currentOutport);
                     [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
                         block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex+idx-1);  
-                 end
+            end
+                 
 
-           % save information for mux outport here
+           
 
         otherwise 
             % not looking at bounds or costs
