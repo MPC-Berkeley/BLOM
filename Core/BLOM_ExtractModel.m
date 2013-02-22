@@ -827,7 +827,6 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
         allVars.outportIndex(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
         
-        allVarsState
         switch allVarsState
             case 'bound'
                 lowerBound = varargin{1};
@@ -860,9 +859,8 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                     (sameOptIndex+outportNumber-1);
             case 'mux'
                 % points to the outports that go into the mux
-                ['am i here? i hope so']
-                sameOptIndex = varargin{1}
-                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = sameOptIndex
+                sameOptIndex = varargin{1};
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = sameOptIndex;
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
             case 'normal'
@@ -903,6 +901,20 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(subsysIndex:(subsysIndex+lengthOut-1)) = ...
                     (sameOptIndex):(sameOptIndex+lengthOut-1);
+                
+            case 'demux'
+                % the outport that goes into the demux points to the demux
+                % outports. NOTE: This assumes that 
+                varIndex = find(allVars.outportHandle==currentOutport,1);
+                sameOptIndex = varargin{1};
+                outportNumber = varargin{2};
+                allVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) =...
+                    (sameOptIndex+outportNumber-1);
+            case 'mux'
+                % points to the outports that go into the mux
+                sameOptIndex = varargin{1};
+                varIndex = find(allVars.outportHandle==currentOutport,1);
+                allVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) = sameOptIndex;
             otherwise
                 % do nothing
         end
