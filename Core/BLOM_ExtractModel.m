@@ -844,12 +844,14 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
             case 'demux'
                 % the outport that goes into the demux points to the demux
                 % outports. NOTE: This assumes that 
+                ['got to demux']
                 sameOptIndex = varargin{1};
                 outportNumber = varargin{2};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) =...
                     (sameOptIndex+outportNumber-1);
             case 'mux'
                 % points to the outports that go into the mux
+                ['got to mux']
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = sameOptIndex;
             case 'rememberIndex'
@@ -1132,3 +1134,14 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
     [~,~,optVarIdx] = unique(optVarIdx);
 end
 
+%%
+%==========================================================================
+%> @brief checks for cycles within vector
+%>
+%> @param vector you are trying to check
+%>
+%> @retval hasCycle boolean for whether a cycle exists in vector
+%==========================================================================
+function hasCycle = checkForCycle(vector)
+
+end
