@@ -1104,3 +1104,30 @@ function [bigP,bigK] = combinePK(block,allVars)
     end
 
 end
+
+%%
+%==========================================================================
+%> @brief Reroutes pointers such that if System A points to System B, and 
+%> System B points to System C, System A points to System C instead.
+%> optVarIdx then reduced to remove gaps. e.g. [1;3;4;5]->[1;2;3;4]
+%> 
+%> @param optVarIdx vector to be rerouted and reduced
+%> 
+%> @retval optVarIdx rerouted and reduced
+%==========================================================================
+function optVarIdx = cleanupOptVarIdx(optVarIdx)
+
+    if (checkForCycle(optVarIdx))
+        %Error, optVarIdx contains cycle
+    end
+
+    for i = 1:length(optVarIdx)
+        target = i;
+        while (target ~= optVarIdx(target))
+            target = optVarIdx(target);
+        end
+        optVarIdx(i) = target;
+    end
+    [~,~,optVarIdx] = unique(optVarIdx);
+end
+
