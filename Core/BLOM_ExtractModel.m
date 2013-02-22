@@ -725,7 +725,6 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                     mux_optVarIdx(idx) = sameOptIndex;
              end    
               % save information for mux outport here   
-              mux_optVarIdx
                 allVarsState = 'mux';
                 currentOutport=existingOutports(iOut);
                 [block,blockZero,currentBlockIndex] =...
