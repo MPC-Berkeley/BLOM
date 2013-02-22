@@ -709,15 +709,6 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
                 [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
                     block,currentBlockIndex,sourceOutports(i),allVarsState,sameOptIndex,i);
             end
-            
-            allVarsState = 'demux';
-            % should only be one outport connected to the demux. make sure
-            % to properly name sameOptVar in demux
-            currentOutport = outportFound;
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
-            [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
-                block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
                 
             
             
