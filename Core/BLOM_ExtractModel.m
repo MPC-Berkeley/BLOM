@@ -722,27 +722,25 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
             
             
         case 'mux'           
-
             % the original variables are the outports connected to the mux
+            mux_optVarIdx = zeros(length(allOutportsFound),1);
             for idx=1:length(allOutportsFound)
-                   currentOutport = allOutportsFound(idx);
+                   currentOutport = allOutportsFound(idx);                
                    allVarsState = 'rememberIndex';
                     [block,blockZero,currentBlockIndex] =...
                         updateBlock(block,blockZero,currentOutport);
                     [allVars,allVarsZero,block,sameOptIndex] = updateAllVars(allVars,allVarsZero,...
                         block,currentBlockIndex,currentOutport,allVarsState);
-            
+                    mux_optVarIdx(idx) = sameOptIndex;
+             end    
               % save information for mux outport here   
-                    allVarsState = 'mux';
-                    currentOutport=existingOutports(iOut);
-                    [block,blockZero,currentBlockIndex] =...
-                        updateBlock(block,blockZero,currentOutport);
-                    [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
-                        block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex+idx-1);  
-            end
-                 
-
-           
+              mux_optVarIdx
+                allVarsState = 'mux';
+                currentOutport=existingOutports(iOut);
+                [block,blockZero,currentBlockIndex] =...
+                    updateBlock(block,blockZero,currentOutport);
+                [allVars,allVarsZero,block] = updateAllVars(allVars,allVarsZero,...
+                    block,currentBlockIndex,currentOutport,allVarsState,mux_optVarIdx);  
 
         otherwise 
             % not looking at bounds or costs
@@ -829,7 +827,7 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
         allVars.outportHandle(allVarsZero:(allVarsZero+lengthOut-1)) = currentOutport;
         allVars.outportIndex(allVarsZero:(allVarsZero+lengthOut-1)) = currentIndices;
         
-        
+        allVarsState
         switch allVarsState
             case 'bound'
                 lowerBound = varargin{1};
@@ -862,9 +860,9 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
                     (sameOptIndex+outportNumber-1);
             case 'mux'
                 % points to the outports that go into the mux
-                sameOptIndex = varargin{1};
-                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = ...
-                (sameOptIndex):(sameOptIndex+lengthOut-1);
+                ['am i here? i hope so']
+                sameOptIndex = varargin{1}
+                allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = sameOptIndex
             case 'rememberIndex'
                 varargout{1} = allVarsZero;
             case 'normal'
