@@ -534,7 +534,7 @@ function [outportHandles,iZero,allVars,allVarsZero,block,blockZero] =...
     if strcmp(state,'intoSubsys') %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
         % outports of subsystem
-        parent = get_param(currentOutport,'Parent')
+        parent = get_param(currentOutport,'Parent');
         index = inports==currentOutport;
         outportBlocks = find_system(parent,'SearchDepth',1,'regexp','on','BlockType','Outport');
         handle = get_param(outportBlocks{index},'Handle');
@@ -844,14 +844,12 @@ function [allVars,allVarsZero,block,varargout] = updateAllVars(allVars,allVarsZe
             case 'demux'
                 % the outport that goes into the demux points to the demux
                 % outports. NOTE: This assumes that 
-                ['got to demux']
                 sameOptIndex = varargin{1};
                 outportNumber = varargin{2};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) =...
                     (sameOptIndex+outportNumber-1);
             case 'mux'
                 % points to the outports that go into the mux
-                ['got to mux']
                 sameOptIndex = varargin{1};
                 allVars.optVarIdx(allVarsZero:(allVarsZero+lengthOut-1)) = sameOptIndex;
             case 'rememberIndex'
