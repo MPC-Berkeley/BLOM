@@ -289,7 +289,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             coeffsNum=coeffsChar(1:end-1)-48; % extract coefficients by converting from char to num and remove spaces, parentheses
             coeffs=coeffsNum(2*(1:length(coeffsNum)/2));
             coeffsLength=length(coeffs); % number of coefficients
-            P = repmat(linspace(coeffsLength,0,coeffsLength+1)',1,2*polyInputDimNum);
+            P = [repmat(linspace(coeffsLength-1,0,coeffsLength)',1,polyInputDimNum) -speye(polyInputDimNum)];
             K = repmat(coeffs,polyInputDimNum,1);
             
         otherwise 
