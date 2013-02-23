@@ -257,8 +257,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     
     % initialize structures and fields
     
-    allVars.zeroIdx = 1; % index of first allVars zero
     % allVars stores information for every optimization variable
+    allVars.zeroIdx = 1; % index of first allVars zero
     allVars.block = zeros(initialSize,1); % the index of the block
     allVars.outportNum = zeros(initialSize,1); % outport number. e.g. if there are multiple outports of a block
     allVars.outportHandle = zeros(initialSize,1); % handle of specific outport
@@ -269,8 +269,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -inf
     allVars.time = cell(initialSize,1);
     
-    blockZero = 1; % index of first block zero
     % block stores information about each block
+    block.zeroIdx = 1; % index of first block zero
     block.names = cell(initialSize,1); % name of block
     block.handles = zeros(initialSize,1); % handle of block
     block.P = cell(initialSize,1); % P matrix of block, if relevant
@@ -293,9 +293,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         portH = get_param(boundHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = [portH.Inport];
-        [outportHandles,iZero,allVars,block,blockZero] = ...
+        [outportHandles,iZero,allVars,block] = ...
             updateVars(currentInport,outportHandles,iZero,...
-            allVars,block,blockZero,state,iZero,portH,boundHandles(i));
+            allVars,block,state,iZero,portH,boundHandles(i));
     end
  
     
@@ -305,9 +305,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         portH = get_param(costHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInports = [portH.Inport];
-        [outportHandles,iZero,allVars,block,blockZero] = ...
+        [outportHandles,iZero,allVars,block] = ...
             updateVars(currentInports,outportHandles,iZero,...
-            allVars,block,blockZero,state);
+            allVars,block,state);
     end
     
     
@@ -324,9 +324,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             state = 'fromSimulink';
             sourceInports = 0;
             sourcePorts = 0;
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                     updateVars(sourceInports,outportHandles,iZero,...
-                    allVars,block,blockZero,state,iOut,sourcePorts);
+                    allVars,block,state,iOut,sourcePorts);
             
             iOut = iOut+1;
             continue
@@ -352,16 +352,16 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 
                 state = 'intoSubsys';
                 sourceOutports = [sourcePorts.Outport];
-                [outportHandles,iZero,allVars,block,blockZero] = ...
+                [outportHandles,iZero,allVars,block] = ...
                     updateVars(sourceOutports,outportHandles,iZero,...
-                    allVars,block,blockZero,state,iOut,sourcePorts);
+                    allVars,block,state,iOut,sourcePorts);
 
             elseif strncmp(refBlock,'BLOM_Lib',8)
                 % subsystem that's a BLOM block
                 state = 'BLOM';
-                [outportHandles,iZero,allVars,block,blockZero] = ...
+                [outportHandles,iZero,allVars,block] = ...
                     updateVars(sourceInports,outportHandles,iZero,...
-                    allVars,block,blockZero,state,iOut,sourcePorts);
+                    allVars,block,state,iOut,sourcePorts);
             end
                 
         elseif strcmp(sourceType,'From')
@@ -374,9 +374,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             sourceInports{2} = name;
 
             state = 'from';
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,block,blockZero,state,iOut,sourcePorts);
+                allVars,block,state,iOut,sourcePorts);
             
         elseif strcmp(sourceType,'Demux')
             % block is a demux. Here we want to fill in field sameOptVar to
@@ -384,18 +384,18 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             
             state = 'demux';
             sourceOutports = [sourcePorts.Outport];
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,block,blockZero,state,iOut,sourcePorts,sourceOutports);
+                allVars,block,state,iOut,sourcePorts,sourceOutports);
             
         elseif strcmp(sourceType,'Mux')
             % block is a mux. Here we want to fill in field sameOptVar to
             % point to the original variable
             
             state='mux';
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,block,blockZero,state,iOut,sourcePorts);
+                allVars,block,state,iOut,sourcePorts);
             
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
@@ -403,9 +403,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             % FIX: check to see which inports affect which outports. Not
             % all inports may be relevant
             state = 'norm';
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,block,blockZero,state,iOut,sourcePorts);
+                allVars,block,state,iOut,sourcePorts);
         elseif isempty(sourceInports)
             % if there are no inports, no need to search this outport
             % anymore. However, if the block is an inport of a subsystem,
@@ -428,9 +428,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
 
                     if ~isempty(sourceInports)
                         state = 'subSysInport';
-                        [outportHandles,iZero,allVars,block,blockZero] = ...
+                        [outportHandles,iZero,allVars,block] = ...
                             updateVars(sourceInports(portNumber),outportHandles,iZero,...
-                            allVars,block,blockZero,state,iOut,sourcePorts);
+                            allVars,block,state,iOut,sourcePorts);
                     else
                         % This case should NOT be reached because of an
                         % inport exists, there is almost certainly a
@@ -441,15 +441,15 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                     end
                 else
                     allVarsState = 'normal';
-                    [block,blockZero,currentBlockIndex] =...
-                        updateBlock(block,blockZero,outportHandles(iOut));
+                    [block,currentBlockIndex] =...
+                        updateBlock(block,outportHandles(iOut));
                     [allVars,block] = updateAllVars(allVars,...
                         block,currentBlockIndex,outportHandles(iOut),allVarsState);
                 end
             else
                 allVarsState = 'normal';
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,outportHandles(iOut));
+                [block,currentBlockIndex] =...
+                    updateBlock(block,outportHandles(iOut));
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,outportHandles(iOut),allVarsState);
                 iOut = iOut+1;
@@ -458,9 +458,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         else
             % in the case of one inport, it must affect the outport, so
             % find the relevant outports
-            [outportHandles,iZero,allVars,block,blockZero] = ...
+            [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                allVars,block,blockZero,2,iOut,sourcePorts);
+                allVars,block,2,iOut,sourcePorts);
         end
         % FIX: should check to see if BLOM supports the blocks that is
         % found right here
@@ -484,9 +484,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     % remove empty and 0 entries in blocks
     for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
             'sourceOutports'}
-        block.(field{1}) = block.(field{1})(1:(blockZero-1));
+        block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
-    block.handles = block.handles(1:(blockZero-1));
+    block.handles = block.handles(1:(block.zeroIdx-1));
     
     % remove empty and 0 entries in allVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
@@ -518,9 +518,9 @@ end
 %> @retval iZero updates current index of the first zero
 %======================================================================
 
-function [outportHandles,iZero,allVars,block,blockZero] =...
+function [outportHandles,iZero,allVars,block] =...
     updateVars(inports,existingOutports,iZero,allVars,...
-    block,blockZero,state,varargin)
+    block,state,varargin)
 
     outportHandles = existingOutports;
 
@@ -595,8 +595,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % goes through one iteration, so the variable outportFound
             % will include all the outports found
             for currentOutport = outportFound
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,currentOutport);
+                [block,currentBlockIndex] =...
+                    updateBlock(block,currentOutport);
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState,lowerBound,upperBound);
             end
@@ -608,8 +608,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % goes through one iteration, so the variable outportFound
             % will include all the outports found
             for currentOutport = outportFound
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,currentOutport);
+                [block,currentBlockIndex] =...
+                    updateBlock(block,currentOutport);
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState);
             end
@@ -619,8 +619,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % at that specific outport even though we stop the BFS here
             allVarsState = 'normal';
             currentOutport = existingOutports(iOut);
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState);
             
@@ -634,15 +634,15 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % variable
             allVarsState = 'rememberIndex';
             currentOutport = outportFound;
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block,sameOptIndex] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState);
             
             allVarsState = 'subSysInport';
             currentOutport = existingOutports(iOut);
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
         case 'from'
@@ -653,15 +653,15 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % the currentOutport in this case is the outport that goes to
             % the GoTo block
             currentOutport = outportFound;
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block,sameOptIndex] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState);
             % save information for from block here
             allVarsState = 'from';
             currentOutport = existingOutports(iOut);
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
                 
@@ -673,16 +673,16 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % the currentOutport in this case is the outport that goes to
             % the subsystem
             currentOutport = outportFound;
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block,sameOptIndex] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState);
             
             % save information for subsystem outport here
             allVarsState = 'intoSubsys';
             currentOutport = existingOutports(iOut);
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState,sameOptIndex);
                 
@@ -693,8 +693,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             allVarsState = 'rememberIndex';
             % should only be one outport connected to the demux.
             currentOutport = outportFound;
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block,sameOptIndex] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState);
             
@@ -704,8 +704,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             for i = 1:length(sourceOutports)
                 % store information for the rest of the demux outports
                 allVarsState = 'demux';
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,sourceOutports(i));
+                [block,currentBlockIndex] =...
+                    updateBlock(block,sourceOutports(i));
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,sourceOutports(i),allVarsState,sameOptIndex,i);
             end
@@ -718,8 +718,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             for idx=1:length(allOutportsFound)
                    currentOutport = allOutportsFound(idx);                
                    allVarsState = 'rememberIndex';
-                    [block,blockZero,currentBlockIndex] =...
-                        updateBlock(block,blockZero,currentOutport);
+                    [block,currentBlockIndex] =...
+                        updateBlock(block,currentOutport);
                     [allVars,block,sameOptIndex] = updateAllVars(allVars,...
                         block,currentBlockIndex,currentOutport,allVarsState);
                     mux_optVarIdx(idx) = sameOptIndex;
@@ -727,8 +727,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
               % save information for mux outport here   
                 allVarsState = 'mux';
                 currentOutport=existingOutports(iOut);
-                [block,blockZero,currentBlockIndex] =...
-                    updateBlock(block,blockZero,currentOutport);
+                [block,currentBlockIndex] =...
+                    updateBlock(block,currentOutport);
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState,mux_optVarIdx);  
 
@@ -736,8 +736,8 @@ function [outportHandles,iZero,allVars,block,blockZero] =...
             % not looking at bounds or costs
             allVarsState = 'normal';
             %update block structure
-            [block,blockZero,currentBlockIndex] =...
-                updateBlock(block,blockZero,currentOutport);
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
             [allVars,block] = updateAllVars(allVars,...
                 block,currentBlockIndex,currentOutport,allVarsState);
     end
@@ -766,7 +766,7 @@ end
 %> 
 %> @param allVars allVars structure
 %> @param allVars.zeroIdx current index of first zero of allVars
-%> @param blockZero current index of first zero of block structure. used to
+%> @param block.zeroIdx current index of first zero of block structure. used to
 %> figure out which block the outport is from
 %> @param currentOutport outport that you want to add information for
 %> @param state lets the function know how to populate allVars. current
@@ -919,55 +919,55 @@ end
 %> More detailed description of the problem.
 %>
 %> @param block block structure
-%> @param blockZero current index of first zero of block
+%> @param block.zeroIdx current index of first zero of block
 %> @param currentOutport outport that you want to add information for
 %>
 %> @retval block block structure
-%> @retval blockZero updated index of first zero of block
+%> @retval block.zeroIdx updated index of first zero of block
 %======================================================================
 
-function [block,blockZero,currentBlockIndex] = updateBlock(block,blockZero,currentOutport)
+function [block,currentBlockIndex] = updateBlock(block,currentOutport)
 
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
     sourcePorts = get_param(currentBlockHandle,'PortHandles');
     referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
     
     
-    % if the size of block equals the blockZero, need to double to
+    % if the size of block equals the block.zeroIdx, need to double to
     % length of block
-    if blockZero == length(block.handles)
+    if block.zeroIdx == length(block.handles)
         for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
                 'sourceOutports'}
-                block.(field{1}) = [block.(field{1}); cell(blockZero,1)];
+                block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
-        block.handles = [block.handles; zeros(blockZero,1)];
+        block.handles = [block.handles; zeros(block.zeroIdx,1)];
     end
     
 
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
         currentBlockName = get_param(currentOutport,'Parent');
-        block.names{blockZero} = currentBlockName;
-        block.handles(blockZero) = currentBlockHandle;
+        block.names{block.zeroIdx} = currentBlockName;
+        block.handles(block.zeroIdx) = currentBlockHandle;
         if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
             % store P&K matricies if the current block is a polyblock
-            block.P{blockZero} = eval(get_param(currentBlockHandle,'P'));
-            block.K{blockZero}= eval(get_param(currentBlockHandle,'K'));
+            block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
+            block.K{block.zeroIdx}= eval(get_param(currentBlockHandle,'K'));
         else
             % store P and K matricies for the other blocks
             [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
-            block.P{blockZero} = P;
-            block.K{blockZero}= K;
+            block.P{block.zeroIdx} = P;
+            block.K{block.zeroIdx}= K;
         end
 
-        if isempty(block.outputIdxs{blockZero})
-            block.outputIdxs{blockZero} = zeros(length(sourcePorts.Outport),1);
+        if isempty(block.outputIdxs{block.zeroIdx})
+            block.outputIdxs{block.zeroIdx} = zeros(length(sourcePorts.Outport),1);
         end
         
 
         % increase the index of block by one and populate currentBlockIndex
-        currentBlockIndex = blockZero;
-        blockZero = blockZero+1;
+        currentBlockIndex = block.zeroIdx;
+        block.zeroIdx = block.zeroIdx+1;
     else %case when the current outport's block is found but has not been added to block data
         currentBlockName = get_param(currentOutport,'Parent');
         currentBlockIndex = find(block.handles==currentBlockHandle);
