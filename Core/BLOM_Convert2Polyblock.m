@@ -200,7 +200,7 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                             divide_index = divide_index+1;
                         end
                     elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
-                        % one more more vectors/matrices and one more more
+                        % one or more vectors/matrices and one or more
                         % scalars. all the vectors/matrices are multiplied
                         % element wise and all elements of the
                         % vectors/matrices are multiplied by the scalars
