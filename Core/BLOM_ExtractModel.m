@@ -281,6 +281,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     block.outputIdxs = cell(initialSize,1); %the first optVarIdx of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.sourceOutports = cell(initialSize,1); % source outport handles
+    block.boundOrCost = false(initialSize,1); %indicator to whether block is a bound or cost block
     
     % find all lines connected to costs and bounds and then get outport
     % ports from there. fill in allVars and block structures as necessary
@@ -295,6 +296,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         portH = get_param(boundHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = [portH.Inport];
+        [block, ~] = updateBlock(block, currentInport);
         [outportHandles,iZero,allVars,block] = ...
             updateVars(currentInport,outportHandles,iZero,...
             allVars,block,state,iZero,portH,boundHandles(i));
@@ -307,6 +309,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         portH = get_param(costHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInports = [portH.Inport];
+        [block, ~] = updateBlock(block, currentInports);
         [outportHandles,iZero,allVars,block] = ...
             updateVars(currentInports,outportHandles,iZero,...
             allVars,block,state);
@@ -489,6 +492,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
     block.handles = block.handles(1:(block.zeroIdx-1));
+    block.boundOrCost = block.boundOrCost(1:(block.zeroIdx-1));
     
     % remove empty and 0 entries in allVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
@@ -943,6 +947,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
+        block.boundOrCost = [block.boundOrCost; false(block.zeroIdx,1)];
     end
     
 
@@ -955,6 +960,8 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
             block.K{block.zeroIdx}= eval(get_param(currentBlockHandle,'K'));
+        elseif (strcmp(referenceBlock, 'BLOM_Lib/Bound') || strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost'))
+            block.boundOrCost(block.zeroIdx) = true;
         else
             % store P and K matricies for the other blocks
             [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
