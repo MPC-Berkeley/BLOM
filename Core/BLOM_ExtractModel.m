@@ -80,11 +80,11 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         %[timeStruct] = relevantTimes(outportHandles);
         
         % create large P and K matrix
-       % try
-          %  [bigP,bigK] = combinePK(block,allVars);
-        %catch err
-           % rethrow(err)
-        %end
+%         try
+%            [bigP,bigK] = combinePK(block,allVars);
+%         catch err
+%            rethrow(err)
+%         end
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -1037,17 +1037,15 @@ end
 %> @param block block structure
 %> @param allVars allVars structure
 %>
-%> @retval bigP P matrix of all variables
+%> @retval bigP P matrix of all variables. Columns of bigP correspond to
+%> the optVarIdx field of allVars
 %> @retval bigK K matrix of all variables
 %======================================================================
 
 function [bigP,bigK] = combinePK(block,allVars)
-    pRowSize = 30;
-    kRowSize = 30;
-    pRowZero = 1;
-    kRowZero = 1;
-    bigP = zeros(pRowSize,length(allVars.block));
-    bigK = zeros(kRowSize,length(allVars.block));
+    bigP = [];
+    bigK = [];
+    optVarLength = max(allVars.optVarIdx);
     
     for idx = 1:length(block.handles)
         % go through all the blocks and fill in what the P and K matrix
@@ -1060,54 +1058,50 @@ function [bigP,bigK] = combinePK(block,allVars)
             
             % find the current P and K matrix
             currentP = block.P{idx};
-            pRowLength = size(currentP,1);
             currentK = block.K{idx};
-            kRowLength = size(currentK,1);
             
-            % find all the relevant allVars indicies that match the
-            % outports of block.inputIdxs
-            inputsIndices = zeros(length(block.inputIdxs{idx}),length(allVars.block));
-            for inputsIdx = 1:length(block.inputIdxs{idx})
-                inputsIndices(inputsIdx,:) =...
-                    allVars.outportHandle==block.inputIdxs{idx}(inputsIdx);
-                if sum(inputsIndices(inputsIdx,:)) == 0
-                    % This case should never happen. DELETE AFTER TESTING.
-                    parentName = get_param(block.inputIdxs{idx}(inputsIdx),'Parent');
-                    block.names{idx};
-                    fprintf('For some reason, cannot find input for %s\n',parentName)
-                end
-            end
-            inputsIndices = logical(inputsIndices);
+            % get the full list of input and output indices
+            portDimen = get_param(block.handles(idx),'CompiledPortDimensions');
+            inputsLength = sum(portDimen.Inport(1:2:end).*portDimen.Inport(2:2:end));
+            outputsLength = sum(portDimen.Outport(1:2:end).*portDimen.Outport(2:2:end));
             
-            % find all the relevant allVars indicies that match the
-            % outports of block.inputIdxs
-            outputsIndices = zeros(length(block.outputIdxs),length(allVars.block));
-            for outputsIdx = 1:length(block.outputIdxs{idx});
-                outputsIndices(outputsIdx,:) =...
-                    allVars.outportHandle==block.outputIdxs{idx}(outputsIdx);
-            end
-            outputsIndices = logical(outputsIndices);
-            
-            % FIX: Increase the size of bigP and bigK when needed
-            
-            % here we put the relevant parts of P and K in the right places
-            currentZeroCol = 1;
-            sumInput = sum(inputsIndices,2);
-
-            for pIdx = 1:size(inputsIndices,1)
-                dimOutport = sumInput(pIdx);
-                full(currentP)
-                full(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
-                size(bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:)))
-                size(currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1)))
-                bigP(pRowZero:(pRowZero+pRowLength-1),inputsIndices(pIdx,:))...
-                    = currentP(:,currentZeroCol:(currentZeroCol+dimOutport-1));
-                currentZeroCol = currentZeroCol + dimOutport;
+            fullInputs = zeros(inputsLength,1);
+            fullOutputs = zeros(outputsLength,1);
+           
+            zeroIdx = 1;
+            for j = 1:length(block.inputIdxs{idx})
+                currentInputLength = portDimen.Inport(2*j-1)*portDimen.Inport(2*j);
+                fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
+                    block.inputIdxs{idx}(j):(block.inputIdxs{idx}(j)+currentInputLength-1);
+                zeroIdx = zeroIdx + currentInputLength;
             end
             
+            zeroIdx = 1;
+            for j = 1:length(block.outputIdxs{idx})
+                currentOutputLength = portDimen.Outport(2*j-1)*portDimen.Outport(2*j);
+                fullOutputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
+                    block.outputIdxs{idx}(j):(block.outputIdxs{idx}(j)+currentOutputLength-1);
+                zeroIdx = zeroIdx + currentOutputLength;
+            end
             
-            pRowZero = pRowZero + pRowLength;
-            kRowZero = kRowZero + kRowLength;
+            inputsAndOutputsIdxs = [fullInputs; fullOutputs];
+            
+            % get the values of P and the corresponding columns and rows
+            [rows,col,val] = find(block.P{idx});
+            numRows = size(block.P{idx},1);
+            % map the correct columns of P. First find which allVars
+            % indices the columns correspond to then find the optVarIdx
+            % using the allVars indices
+            colIdx = inputsAndOutputsIdxs(col);
+            optColIdx = allVars.optVarIdx(colIdx);
+            
+            % make the newP with the proper column length and proper value
+            % placement
+            newP = sparase(rows,optColIdx,val,numRows,optVarLength);
+            % concatenate the newP to the bigP
+            bigP = vertCat(bigP,newP);
+            
+            bigK = vertCat(bigK,block.K{idx});
             
         end
     end
