@@ -73,6 +73,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         if stop == 1
             % break the code somehow?
         end
+        
+        %allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
 
         % find out which wires are relevant at which times
         %[timeStruct] = relevantTimes(outportHandles);
@@ -1117,13 +1119,18 @@ end
 %==========================================================================
 function optVarIdx = cleanupOptVarIdx(optVarIdx)
 
-    if (checkForCycle(optVarIdx))
-        %Error, optVarIdx contains cycle
-    end
-
     for i = 1:length(optVarIdx)
         target = i;
+        traversedTargets = zeros(size(optVarIdx));
+        k = 1;
         while (target ~= optVarIdx(target))
+            if(any(traversedTargets == target))
+                error('ERROR: optVarIdx contains cycle')
+                %slight redundancies, could be made faster with initial
+                %check
+            end
+            traversedTargets(k) = target;
+            k = k + 1;
             target = optVarIdx(target);
         end
         optVarIdx(i) = target;
@@ -1131,14 +1138,39 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
     [~,~,optVarIdx] = unique(optVarIdx);
 end
 
+
 %%
 %==========================================================================
-%> @brief checks for cycles within vector
+%> @brief checks for cycles within vector (currently slower than check as you go)
 %>
-%> @param vector you are trying to check
+%> @param vector v you are trying to check
 %>
 %> @retval hasCycle boolean for whether a cycle exists in vector
 %==========================================================================
-function hasCycle = checkForCycle(vector)
+function hasCycle = checkForCycle(v)
+    hasCycle = false;
+    visited = false(size(v));
+    
+    for i = 1:length(v)
+        if (v(i) == i)
+            visited(i) = true;
+        end
+    end
 
+    for i = 1:length(v)
+        target = i;
+        traversedTargets = zeros(size(v));
+        k = 1;
+        while (~visited(target) || any(traversedTargets == target))
+            if(any(traversedTargets == target))
+                hasCycle = true;
+                return
+            end
+            visited(target) = true;
+            traversedTargets(k) = target;
+            k = k + 1;
+            target = v(target);
+        end
+    end
+    
 end
