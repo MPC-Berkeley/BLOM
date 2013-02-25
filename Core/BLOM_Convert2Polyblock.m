@@ -285,12 +285,26 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
         case 'Polyval'
             polyInportDim=get_param(blockHandle,'CompiledPortDimensions');
             polyInputDimNum=prod(polyInportDim.Inport);% length of input vector
-            coeffsChar=get_param(blockHandle,'Coefs'); % get coefficients as a character string
-            coeffsNum=coeffsChar(1:end-1)-48; % extract coefficients by converting from char to num and remove spaces, parentheses
-            coeffs=coeffsNum(2*(1:length(coeffsNum)/2));
+            coeffs=eval(get_param(blockHandle,'Coefs')); % get coefficients
             coeffsLength=length(coeffs); % number of coefficients
-            P = [repmat(linspace(coeffsLength-1,0,coeffsLength)',1,polyInputDimNum) -speye(polyInputDimNum)];
-            K = repmat(coeffs,polyInputDimNum,1);
+            polyPowers=linspace(coeffsLength-1,0,coeffsLength)'; % vector of powers of polynomial
+            polyPowersy=[zeros(coeffsLength-1,1);1]; % vector of power of y (always zeros then a 1)
+            pLeft=zeros(coeffsLength*polyInputDimNum,polyInputDimNum); % left half of P matrix
+            pRight=pLeft; % right half of P matrix
+            K=zeros(polyInputDimNum,polyInputDimNum*coeffsLength);
+            for polyIndex=1:polyInputDimNum % create left and right halves of P matrix, as well as K matrix
+                pLeft(((polyIndex-1)*coeffsLength+1):polyIndex*coeffsLength,polyIndex)=polyPowers;
+                pRight(((polyIndex-1)*coeffsLength+1):polyIndex*coeffsLength,polyIndex)=polyPowersy;
+                K(polyIndex,(polyIndex-1)*coeffsLength+1:polyIndex*coeffsLength)=[coeffs(1:end-1) -1];
+            end
+            P=[pLeft pRight]; % combine left and right halves
+            P=sparse([P;zeros(1,polyInputDimNum*2)]); % insert elements corresponding to constants at the end
+            K=sparse([K coeffs(end)*ones(polyInputDimNum,1)]); % insert elements corresponding to constants at the end
+            
+            %% unary minus
+        case 'UnaryMinus'
+                    P = speye(totalInputs*2);
+                    K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
             
         otherwise 
             P = [];
