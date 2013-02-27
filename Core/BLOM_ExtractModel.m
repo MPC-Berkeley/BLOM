@@ -70,6 +70,11 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
         % FIX: should implement something that stops the code after analyzing
         % all the blocks and finding an error in the structure of the model
+        
+        % expands all the inport and outport indexes such that it points to
+        % each scalar instead of just to first entry
+        block = expandInportOutportIdx(block);
+        
         if stop == 1
             % break the code somehow?
         end
@@ -1061,31 +1066,9 @@ function [bigP,bigK] = combinePK(block,allVars)
             currentK = block.K{idx};
             
             % get the full list of input and output indices
-            portDimen = get_param(block.handles(idx),'CompiledPortDimensions');
-            inputsLength = sum(portDimen.Inport(1:2:end).*portDimen.Inport(2:2:end));
-            outputsLength = sum(portDimen.Outport(1:2:end).*portDimen.Outport(2:2:end));
-            
-            fullInputs = zeros(inputsLength,1);
-            fullOutputs = zeros(outputsLength,1);
-           
-            zeroIdx = 1;
-            for j = 1:length(block.inputIdxs{idx})
-                currentInputLength = portDimen.Inport(2*j-1)*portDimen.Inport(2*j);
-                fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
-                    block.inputIdxs{idx}(j):(block.inputIdxs{idx}(j)+currentInputLength-1);
-                zeroIdx = zeroIdx + currentInputLength;
-            end
-            
-            zeroIdx = 1;
-            for j = 1:length(block.outputIdxs{idx})
-                currentOutputLength = portDimen.Outport(2*j-1)*portDimen.Outport(2*j);
-                fullOutputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
-                    block.outputIdxs{idx}(j):(block.outputIdxs{idx}(j)+currentOutputLength-1);
-                zeroIdx = zeroIdx + currentOutputLength;
-            end
-            
-            inputsAndOutputsIdxs = [fullInputs; fullOutputs];
-            
+            inputsAndOutputsIdxs = [block.inputIdxs(idx); block.outputIdxs(idx)];
+
+
             % get the values of P and the corresponding columns and rows
             [rows,col,val] = find(block.P{idx});
             numRows = size(block.P{idx},1);
@@ -1107,6 +1090,46 @@ function [bigP,bigK] = combinePK(block,allVars)
     end
 
 end
+
+%%
+%================================================================
+%> @brief updates block.inportIdxs and block.outportIdxs such that for
+%> input and outport arrays, has a pointer to each scalar
+%>
+%> @param block
+%>
+%> @retval block
+%========================================================================
+
+function block = expandInportOutportIdx(block)
+    for blockIdx = 1:block.zeroIdx-1
+        portDim = getParam(block.handles(blockIdx), 'CompiledPortDim');
+        inputsLength = sum(portDim.Inport(1:2:end).*portDim.Inport(2:2:end));
+        outputsLength = sum(portDim.Outport(1:2:end).*portDim.Outort(2:2:end));
+        
+        zeroIdx = 1;
+        fullInputs = zeros(inputsLength,1);
+        for j = 1:length(block.inputIdxs{blockIdx})
+            currentInputLength = portDimen.Inport(2*j-1)*portDimen.Inport(2*j);
+            fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
+                block.inputIdxs{blockIdx}(j):(block.inputIdxs{blockIdx}(j)+currentInputLength-1);
+            zeroIdx = zeroIdx + currentInputLength;
+        end
+        block.inputIdxs(blockIdx) = fullInputs;
+        
+        zeroIdx = 1;
+        fullOutputs = zeros(outputsLength,1);
+        for j = 1:length(block.outputIdxs{blockIdx})
+            currentOutputLength = portDimen.Outport(2*j-1)*portDimen.Outport(2*j);
+            fullOutputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
+                block.outputIdxs{blockIdx}(j):(block.outputIdxs{blockIdx}(j)+currentOutputLength-1);
+            zeroIdx = zeroIdx + currentOutputLength;
+        end
+        block.outportIdxs(blockIdx) = fullOutports;
+        
+    end
+end
+
 
 %%
 %==========================================================================
