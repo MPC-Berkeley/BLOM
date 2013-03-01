@@ -278,9 +278,12 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             
             K = horzcat(speye(totalInputs),-1*eye(totalInputs),...
                 bias*ones(totalInputs,1));
-        %% trigonometric function (currently not functional in polyblock)
-        case 'Trigonometric Function'
-            
+        %% trigonometric function 
+        % supports all trig functions
+        case 'Trigonometry'
+            mathFunction=get_param(blockHandle,'Operator');
+            P=[speye(totalInputs)*BLOM_FunctionCode(mathFunction) speye(totalInputs)];
+            K=horzcat(speye(totalInputs),-1*speye(totalInputs));
         %% polynomial    
         case 'Polyval'
             polyInportDim=get_param(blockHandle,'CompiledPortDimensions');
@@ -305,6 +308,16 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
         case 'UnaryMinus'
                     P = speye(totalInputs*2);
                     K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
+                    
+             %% Math Function
+             % supports exp, log, log10, conj, reciprocal, rem, mod
+             % currently does not support 10^u, magnitude^2, square, sqrt,
+             % 1/sqrt, pow, hypot, transpose, or hermition since we assume
+             % these can be expressed using P and K matrices seperately
+        case 'Math'
+            mathFunction=get_param(blockHandle,'Operator');
+            P=[speye(totalInputs)*BLOM_FunctionCode(mathFunction) speye(totalInputs)];
+            K=horzcat(speye(totalInputs),-1*speye(totalInputs));
             
         otherwise 
             P = [];
