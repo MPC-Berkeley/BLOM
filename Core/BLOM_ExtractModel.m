@@ -79,6 +79,8 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             % break the code somehow?
         end
         
+        allVars = labelTimeRelevance(allVars,block,inputAndExternalHandles);
+        
         %allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
 
         % find out which wires are relevant at which times
@@ -131,7 +133,7 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
             diffInports = setdiff(inportsOutport,currentBlockInports);
             if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
-                inportsOutport
+                ['inputsOutport;' inportsOutport]
                 block.inputIdxs{i}
                 get_param(inportsOutport,'Parent')
                 fprintf('--------------------------------------------------------\n')
@@ -273,7 +275,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
-    allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -inf
+    allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -in
+    
     allVars.time = cell(initialSize,1);
     
     % block stores information about each block
@@ -811,6 +814,7 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(newLength*2+oldLength))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(newLength*2,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(newLength*2,1)];
+                
                 allVars.time = [allVars.time; cell(newLength*2,1)];
             else % double the length of all fields in allVars
                 for field={'block', 'outportNum','outportHandle','outportIndex',...
@@ -820,6 +824,7 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(oldLength,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(oldLength,1)];
+                
                 allVars.time = [allVars.time; cell(oldLength,1)];
             end
         end
@@ -1068,7 +1073,6 @@ function [bigP,bigK] = combinePK(block,allVars)
             % get the full list of input and output indices
             inputsAndOutputsIdxs = [block.inputIdxs(idx); block.outputIdxs(idx)];
 
-
             % get the values of P and the corresponding columns and rows
             [rows,col,val] = find(block.P{idx});
             numRows = size(block.P{idx},1);
@@ -1096,36 +1100,40 @@ end
 %> @brief updates block.inportIdxs and block.outportIdxs such that for
 %> input and outport arrays, has a pointer to each scalar
 %>
-%> @param block
+%> @param block 
 %>
 %> @retval block
 %========================================================================
 
 function block = expandInportOutportIdx(block)
     for blockIdx = 1:block.zeroIdx-1
-        portDim = getParam(block.handles(blockIdx), 'CompiledPortDim');
+        portDim = get_param(block.handles(blockIdx),'CompiledPortDimensions');
         inputsLength = sum(portDim.Inport(1:2:end).*portDim.Inport(2:2:end));
-        outputsLength = sum(portDim.Outport(1:2:end).*portDim.Outort(2:2:end));
+        outputsLength = sum(portDim.Outport(1:2:end).*portDim.Outport(2:2:end));
         
-        zeroIdx = 1;
-        fullInputs = zeros(inputsLength,1);
-        for j = 1:length(block.inputIdxs{blockIdx})
-            currentInputLength = portDimen.Inport(2*j-1)*portDimen.Inport(2*j);
-            fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
-                block.inputIdxs{blockIdx}(j):(block.inputIdxs{blockIdx}(j)+currentInputLength-1);
-            zeroIdx = zeroIdx + currentInputLength;
+        if ~isempty(block.inputIdxs{blockIdx})
+            zeroIdx = 1;
+            fullInputs = zeros(inputsLength,1);        
+            for j = 1:length(block.inputIdxs{blockIdx})
+                currentInputLength = portDim.Inport(2*j-1).*portDim.Inport(2*j);
+                fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
+                    block.inputIdxs{blockIdx}(j):(block.inputIdxs{blockIdx}(j)+currentInputLength-1);
+                zeroIdx = zeroIdx + currentInputLength;
+            end
+            block.inputIdxs{blockIdx} = fullInputs;
         end
-        block.inputIdxs(blockIdx) = fullInputs;
         
-        zeroIdx = 1;
-        fullOutputs = zeros(outputsLength,1);
-        for j = 1:length(block.outputIdxs{blockIdx})
-            currentOutputLength = portDimen.Outport(2*j-1)*portDimen.Outport(2*j);
-            fullOutputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
-                block.outputIdxs{blockIdx}(j):(block.outputIdxs{blockIdx}(j)+currentOutputLength-1);
-            zeroIdx = zeroIdx + currentOutputLength;
+        if ~isempty(block.outputIdxs{blockIdx})
+            zeroIdx = 1;
+            fullOutputs = zeros(outputsLength,1);
+            for j = 1:length(block.outputIdxs{blockIdx})
+                currentOutputLength = portDim.Outport(2*j-1).*portDim.Outport(2*j);
+                fullOutputs(zeroIdx:(zeroIdx+currentOutputLength-1)) = ...
+                    block.outputIdxs{blockIdx}(j):(block.outputIdxs{blockIdx}(j)+currentOutputLength-1);
+                zeroIdx = zeroIdx + currentOutputLength;
+            end
+            block.outportIdxs{blockIdx} = fullOutputs;
         end
-        block.outportIdxs(blockIdx) = fullOutports;
         
     end
 end
@@ -1197,4 +1205,71 @@ function hasCycle = checkForCycle(v)
         end
     end
     
+end
+
+%%======================================================================
+%> @brief traverse graph from cost and bound blocks then add fields to
+%> allVars to label relevance of variables at initial, intermediate, and 
+%> final times
+%>
+%> @param block: block structure
+%>
+%> @param allVars: all variables
+%>
+%> @return allVars: allVars with added boolean arrays as fields: initTime, 
+%> interTime, finalTime
+%=======================================================================
+
+function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
+    allVars.initTime = false(allVars.zeroIdx-1,1);
+    allVars.interTime = false(allVars.zeroIdx-1,1);
+    allVars.finalTime = false(allVars.zeroIdx-1,1);
+    
+    blockIdxs = 1:block.zeroIdx-1;
+    for startBlock = blockIdxs(block.boundOrCost)
+        startBlockHandle = block.handles(startBlock);
+        init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
+        final = strcmp(get_param(startBlockHandle, 'final_step'), 'on');
+        inter = strcmp(get_param(startBlockHandle, 'intermediate_step'), 'on');
+        
+        blocks = [startBlock; zeros(10,1)];
+        zeroIdx = 2;
+        idx = 1;
+        while(blocks(idx)~=0)
+            
+            % if you've already been to current block previously or current
+            % block is an input block (may be redundant), proceed to next loop iteration
+            if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
+                inputs = block.inputIdxs{blocks(idx)};
+                
+                if(init)
+                    allVars.initTime(inputs) = true;
+                end
+                if(final)
+                    allVars.finalTime(inputs) = true;
+                end
+                if(inter)
+                    allVars.interTime(inputs) = true;
+                end
+            
+                %expand blocks when necessary
+                if(length(blocks) < zeroIdx+length(inputs))
+                    if(length(inputs) > length(blocks))
+                        blocks = [blocks; zeros(2*length(inputs),1)];
+                    else
+                        blocks = [blocks; zeros(size(blocks))];
+                    end
+                end
+                        
+               
+                blocks(zeroIdx:zeroIdx+length(inputs)-1) = allVars.block(inputs);
+                zeroIdx = zeroIdx+length(inputs);
+                        
+            end
+           
+            idx = idx+1;
+        end
+        
+    end
+
 end
