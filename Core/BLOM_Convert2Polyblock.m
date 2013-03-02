@@ -279,10 +279,11 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             K = horzcat(speye(totalInputs),-1*eye(totalInputs),...
                 bias*ones(totalInputs,1));
         %% trigonometric function 
-        % supports all trig functions
+        % expresses all trig functions using a unique value e20 (e.g. sin
+        % is 3e20) 
         case 'Trigonometry'
             mathFunction=get_param(blockHandle,'Operator');
-            P=[speye(totalInputs)*BLOM_FunctionCode(mathFunction) speye(totalInputs)];
+            P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
         %% polynomial    
         case 'Polyval'
@@ -310,13 +311,14 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                     K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
                     
              %% Math Function
-             % supports exp, log, log10, conj, reciprocal, rem, mod
-             % currently does not support 10^u, magnitude^2, square, sqrt,
-             % 1/sqrt, pow, hypot, transpose, or hermition since we assume
-             % these can be expressed using P and K matrices seperately
+             % Currently expresses exp, log, log10, conj, rem,
+             % mod using a unique value e20 for each special function. The
+             % other special functions will be expressed using P and K
+             % matrices.
+        
         case 'Math'
             mathFunction=get_param(blockHandle,'Operator');
-            P=[speye(totalInputs)*BLOM_FunctionCode(mathFunction) speye(totalInputs)];
+            P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
             
         otherwise 
