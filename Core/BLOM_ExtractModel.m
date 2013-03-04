@@ -299,7 +299,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     block.outputIdxs = cell(initialSize,1); %the first optVarIdx of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.sourceOutports = cell(initialSize,1); % source outport handles
-    block.boundOrCost = false(initialSize,1); %indicator to whether block is a bound or cost block
+    block.bound = false(initialSize,1); %indicator to whether block is a bound block
+    block.cost = false(initialSize,1); %indicator to whether block is a cost block
     
     % find all lines connected to costs and bounds and then get outport
     % ports from there. fill in allVars and block structures as necessary
@@ -510,7 +511,9 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
     block.handles = block.handles(1:(block.zeroIdx-1));
-    block.boundOrCost = block.boundOrCost(1:(block.zeroIdx-1));
+    block.bound = block.bound(1:(block.zeroIdx-1));
+    block.cost = block.cost(1:(block.zeroIdx-1));
+
     
     % remove empty and 0 entries in allVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
@@ -967,7 +970,9 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
-        block.boundOrCost = [block.boundOrCost; false(block.zeroIdx,1)];
+        block.bound = [block.bound; false(block.zeroIdx,1)];
+        block.cost = [block.cost; false(block.zeroIdx,1)];
+
     end
     
 
@@ -980,8 +985,10 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
             block.K{block.zeroIdx}= eval(get_param(currentBlockHandle,'K'));
-        elseif (strcmp(referenceBlock, 'BLOM_Lib/Bound') || strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost'))
-            block.boundOrCost(block.zeroIdx) = true;
+        elseif strcmp(referenceBlock, 'BLOM_Lib/Bound')
+            block.bound(block.zeroIdx) = true;
+        elseif strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost')
+            block.cost(block.zeroIdx) = true;
         else
             % store P and K matricies for the other blocks
             [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
@@ -1221,6 +1228,8 @@ end
 %> @brief traverse graph from cost and bound blocks then add fields to
 %> allVars to label relevance of variables at initial, intermediate, and 
 %> final times
+%> NOTE: does not properly traverse into subsystems or across from/goto
+%> blocks
 %>
 %> @param block: block structure
 %>
@@ -1236,7 +1245,7 @@ function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
     allVars.finalTime = false(allVars.zeroIdx-1,1);
     
     blockIdxs = 1:block.zeroIdx-1;
-    for startBlock = blockIdxs(block.boundOrCost)
+    for startBlock = blockIdxs(block.bound | block.cost)
         startBlockHandle = block.handles(startBlock);
         init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
         final = strcmp(get_param(startBlockHandle, 'final_step'), 'on');
