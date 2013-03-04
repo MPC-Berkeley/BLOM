@@ -92,6 +92,16 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
 %         catch err
 %            rethrow(err)
 %         end
+
+        % create initial fields for ModelSpec
+        ModelSpec.Name = name;
+        ModelSpec.integ_method = integ_method;
+        ModelSpec.dt = dt;
+        ModelSpec.horizon = horizon;
+        ModelSpec.options;
+        
+        % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
+        [ModelSpec] = convert2ModelSpec(ModelSpec,allVars,block,varargin);
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -1272,4 +1282,20 @@ function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
         
     end
 
+end
+
+%%======================================================================
+%> @brief Convert BLOM 2.0 variables into a structure readable by BLOM 1.0
+%>
+%> @param block: block structure
+%> @param allVars: all variables
+%>
+%> @retval ModelSpec structure that will feed into BLOM 2.0
+%=======================================================================
+
+
+% NOTE, REPLACE VARARGIN WITH ACTUAL VARIABLES. THIS IS JUST A PLACEHOLDER
+% FOR NOW
+function [ModelSpec] = convert2ModelSpec(ModelSpec,allVars,block,varargin)
+    
 end
