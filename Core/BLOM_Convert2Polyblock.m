@@ -305,25 +305,24 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             P=sparse([P;zeros(1,polyInputDimNum*2)]); % insert elements corresponding to constants at the end
             K=sparse([K coeffs(end)*ones(polyInputDimNum,1)]); % insert elements corresponding to constants at the end
             
-            %% unary minus
+        %% unary minus
         case 'UnaryMinus'
                     P = speye(totalInputs*2);
                     K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
                     
-             %% Math Function
-             % Currently expresses exp, log, log10, conj, rem,
-             % mod using a unique value e20 for each special function. The
-             % other special functions will be expressed using P and K
-             % matrices.
-        
+        %% Math Function
+        % Currently expresses exp, log, log10, conj, rem,
+        % mod using a unique value e20 for each special function. The
+        % other special functions will be expressed using P and K
+        % matrices.
         case 'Math'
             mathFunction=get_param(blockHandle,'Operator');
             P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
             
-            %% Bound
-            % bound block uses inequality constraints, no bound exists if
-            % Inf or -Inf is present
+        %% Bound
+        % bound block uses inequality constraints, no bound exists if
+        % Inf or -Inf is present
         case 'Bound'
             upperbound=eval(get_param(blockHandle,'ub'));
             lowerbound=eval(get_param(blockHandle,'lb'));
