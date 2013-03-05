@@ -86,12 +86,12 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         % find out which wires are relevant at which times
         %[timeStruct] = relevantTimes(outportHandles);
         
-        % create large P and K matrix
-%         try
-%            [bigP,bigK] = combinePK(block,allVars);
-%         catch err
-%            rethrow(err)
-%         end
+        % create large P and K matrix for entire problem
+        try
+           [bigP,bigK] = combinePK(block,allVars);
+        catch err
+           rethrow(err)
+        end
 
         % create initial fields for ModelSpec
         ModelSpec.Name = name;
@@ -1057,7 +1057,8 @@ end
 %%
 %======================================================================
 %> @brief given block and allVars, create a large P and K matrix with the
-%> indicies of allVars as the columns
+%> indicies of allVars as the columns. Once there, trim the P and K
+%> matrices for the different time steps
 %>
 %> More detailed description of the problem.
 %>
@@ -1109,6 +1110,34 @@ function [bigP,bigK] = combinePK(block,allVars)
             
         end
     end
+
+    
+end
+
+%%
+%================================================================
+%> @brief updates block.inportIdxs and block.outportIdxs such that for
+%> input and outport arrays, has a pointer to each scalar
+%>
+%> @param bigP the P matrix with all of columns as optVarIdx columns
+%> @param bigK corresponding K matrix with 
+%>
+%> @retval block
+%========================================================================
+
+function [fullP,fullK] = trimPKforTime(bigP,bigK,allVars)
+    
+    % first create the P and K for initialTime
+    initP = bigP(:,allVars.initTime);
+    % remove initP rows if they are all equal to zero AND if the row had a
+    % value in the columns that were removed. 
+    removeP_Rows = ~(any(bigP>0,2) & ~ any(initP>0,2));
+    initP(removeP_Rows,:) = [];
+    initK = bigK(:,removeP_Rows);
+    
+    
+   
+
 
 end
 
@@ -1240,6 +1269,8 @@ end
 %=======================================================================
 
 function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
+    % the following allVars fields state whether or not a variable is
+    % relevant at that time
     allVars.initTime = false(allVars.zeroIdx-1,1);
     allVars.interTime = false(allVars.zeroIdx-1,1);
     allVars.finalTime = false(allVars.zeroIdx-1,1);
