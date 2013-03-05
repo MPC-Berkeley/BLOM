@@ -321,6 +321,23 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
             
+            %% Bound
+            % bound block uses inequality constraints, no bound exists if
+            % Inf or -Inf is present
+        case 'Bound'
+            upperbound=eval(get_param(blockHandle,'ub'));
+            lowerbound=eval(get_param(blockHandle,'lb'));
+            P=sparse([ones(2*totalInputs,1) zeros(2*totalInputs,1)]);
+            K=sparse([-ones(totalInputs,1) lowerbound*ones(totalInputs,1);ones(totalInputs,1) -upperbound*ones(totalInputs,1)]);
+            if upperbound==Inf
+                P(totalInputs+1:end,:)=[];
+                K(totalInputs+1:end,:)=[];
+            end
+            if lowerbound==-Inf
+                P(1:totalInputs,:)=[];
+                K(1:totalInputs,:)=[];
+            end
+            
         otherwise 
             P = [];
             K = [];
