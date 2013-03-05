@@ -1120,25 +1120,48 @@ end
 %> input and outport arrays, has a pointer to each scalar
 %>
 %> @param bigP the P matrix with all of columns as optVarIdx columns
-%> @param bigK corresponding K matrix with 
+%> @param bigK corresponding K matrix for bigP 
 %>
-%> @retval block
+%> @retval fullP the full P matrix for the entire problem for all time
+%> steps
+%> @retval fullK the full K matrix for the entire problem for all time
+%> steps
 %========================================================================
 
-function [fullP,fullK] = trimPKforTime(bigP,bigK,allVars)
+function [fullP,fullK] = createFullPK(bigP,bigK,allVars)
+    % first get truncated P and K matrices with the relevant times and
+    % variables
+    [initP,initK] = trimPK(bigP,bigK,allVars.initTime);
+    [interP,interK] = trimPK(bigP,bigK,allvars.interTime);
+    [finalP,finalK] = trimPK(bigP,bigK,allVars.finalTime);
     
+end
+
+%%
+%================================================================
+%> @brief updates block.inportIdxs and block.outportIdxs such that for
+%> input and outport arrays, has a pointer to each scalar
+%>
+%> @param bigP the P matrix with all of columns as optVarIdx columns
+%> @param bigK corresponding K matrix for bigP
+%>
+%> @retval trimP the P matrix for that time
+%> @retval trimK K matrix for that time
+%========================================================================
+
+function [trimP,trimK] = trimPK(bigP,bigK,relevantTimes)
     % first create the P and K for initialTime
-    initP = bigP(:,allVars.initTime);
+    trimP = bigP(:,relevantTimes);
     % remove initP rows if they are all equal to zero AND if the row had a
     % value in the columns that were removed. 
-    removeP_Rows = ~(any(bigP>0,2) & ~ any(initP>0,2));
-    initP(removeP_Rows,:) = [];
-    initK = bigK(:,removeP_Rows);
-    
-    
-   
-
-
+    removeP_rows = ~(any(bigP>0,2) & ~ any(initP>0,2));
+    trimP(removeP_rows,:) = [];
+    % remove the corresponding columns of K
+    trimK = bigK(:,removeP_rows);
+    % remove rows of K that had a value in the removed columns of K in the
+    % previous line
+    removeK_rows = ~any(bigK(:,~removeP_rows)~=0,2);
+    trimK(removeK_rows,:) = [];
 end
 
 %%
@@ -1260,11 +1283,11 @@ end
 %> NOTE: does not properly traverse into subsystems or across from/goto
 %> blocks
 %>
-%> @param block: block structure
+%> @param block block structure
 %>
-%> @param allVars: all variables
+%> @param allVars all variables
 %>
-%> @return allVars: allVars with added boolean arrays as fields: initTime, 
+%> @retval allVars allVars with added boolean arrays as fields: initTime, 
 %> interTime, finalTime
 %=======================================================================
 
