@@ -279,31 +279,44 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             K = horzcat(speye(totalInputs),-1*eye(totalInputs),...
                 bias*ones(totalInputs,1));
         %% trigonometric function 
-        % expresses all trig functions using a unique value e20 (e.g. sin
-        % is 3e20) 
+        
         case 'Trigonometry'
+            % expresses all trig functions using a unique value e20 (e.g. sin
+            % is 3e20)   
             mathFunction=get_param(blockHandle,'Operator');
             P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
         %% polynomial    
         case 'Polyval'
             polyInportDim=get_param(blockHandle,'CompiledPortDimensions');
-            polyInputDimNum=prod(polyInportDim.Inport);% length of input vector
-            coeffs=eval(get_param(blockHandle,'Coefs')); % get coefficients
-            coeffsLength=length(coeffs); % number of coefficients
-            polyPowers=linspace(coeffsLength-1,0,coeffsLength)'; % vector of powers of polynomial
-            polyPowersy=[zeros(coeffsLength-1,1);1]; % vector of power of y (always zeros then a 1)
-            pLeft=zeros(coeffsLength*polyInputDimNum,polyInputDimNum); % left half of P matrix
-            pRight=pLeft; % right half of P matrix
+            % length of input vector
+            polyInputDimNum=prod(polyInportDim.Inport);
+            % get coefficients
+            coeffs=eval(get_param(blockHandle,'Coefs'));
+            % number of coefficients
+            coeffsLength=length(coeffs); 
+            % vector of powers of polynomial
+            polyPowers=linspace(coeffsLength-1,0,coeffsLength)'; 
+            % vector of power of y (always zeros then a 1)
+            polyPowersy=[zeros(coeffsLength-1,1);1]; 
+            % left half of P matrix
+            pLeft=zeros(coeffsLength*polyInputDimNum,polyInputDimNum); 
+            % right half of P matrix
+            pRight=pLeft; 
             K=zeros(polyInputDimNum,polyInputDimNum*coeffsLength);
-            for polyIndex=1:polyInputDimNum % create left and right halves of P matrix, as well as K matrix
+            
+            % create left and right halves of P matrix, as well as K matrix
+            for polyIndex=1:polyInputDimNum 
                 pLeft(((polyIndex-1)*coeffsLength+1):polyIndex*coeffsLength,polyIndex)=polyPowers;
                 pRight(((polyIndex-1)*coeffsLength+1):polyIndex*coeffsLength,polyIndex)=polyPowersy;
                 K(polyIndex,(polyIndex-1)*coeffsLength+1:polyIndex*coeffsLength)=[coeffs(1:end-1) -1];
             end
-            P=[pLeft pRight]; % combine left and right halves
-            P=sparse([P;zeros(1,polyInputDimNum*2)]); % insert elements corresponding to constants at the end
-            K=sparse([K coeffs(end)*ones(polyInputDimNum,1)]); % insert elements corresponding to constants at the end
+            % combine left and right halves
+            P=[pLeft pRight]; 
+            % insert elements corresponding to constants at the end
+            P=sparse([P;zeros(1,polyInputDimNum*2)]); 
+            % insert elements corresponding to constants at the ends
+            K=sparse([K coeffs(end)*ones(polyInputDimNum,1)]); 
             
         %% unary minus
         case 'UnaryMinus'
@@ -311,30 +324,43 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                     K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
                     
         %% Math Function
-        % Currently expresses exp, log, log10, conj, rem,
-        % mod using a unique value e20 for each special function. The
-        % other special functions will be expressed using P and K
-        % matrices.
         case 'Math'
+            % Currently expresses exp, log, log10, conj, rem,
+            % mod using a unique value e20 for each special function. The
+            % other special functions will be expressed using P and K
+            % matrices.
             mathFunction=get_param(blockHandle,'Operator');
             P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
             K=horzcat(speye(totalInputs),-1*speye(totalInputs));
             
-        %% Bound
-        % bound block uses inequality constraints, no bound exists if
-        % Inf or -Inf is present
-        case 'Bound'
-            upperbound=eval(get_param(blockHandle,'ub'));
-            lowerbound=eval(get_param(blockHandle,'lb'));
-            P=sparse([ones(2*totalInputs,1) zeros(2*totalInputs,1)]);
-            K=sparse([-ones(totalInputs,1) lowerbound*ones(totalInputs,1);ones(totalInputs,1) -upperbound*ones(totalInputs,1)]);
-            if upperbound==Inf
-                P(totalInputs+1:end,:)=[];
-                K(totalInputs+1:end,:)=[];
-            end
-            if lowerbound==-Inf
-                P(1:totalInputs,:)=[];
-                K(1:totalInputs,:)=[];
+        %% SubSystem.
+        case 'SubSystem'
+            % currently just handles the bound blom block. Other blocks
+            % with subsystem block types return an empty P and K
+            
+            % find the type of the block (Bound, DiscreteCost, etc)
+            referenceBlock=get_param(blockHandle,'ReferenceBlock'); 
+            blomBlockType=referenceBlock(10:end);
+            
+            % bound block uses inequality constraints, no bound exists if
+            % Inf or -Inf is present             
+            if strcmp(blomBlockType,'Bound')==1
+                % extract upper and lower bounds
+                upperbound=eval(get_param(blockHandle,'ub'));
+                lowerbound=eval(get_param(blockHandle,'lb'));
+                P=sparse([ones(2*totalInputs,1) zeros(2*totalInputs,1)]);
+                K=sparse([-ones(totalInputs,1) lowerbound*ones(totalInputs,1);ones(totalInputs,1) -upperbound*ones(totalInputs,1)]);
+                if upperbound==Inf
+                    P(totalInputs+1:end,:)=[];
+                    K(totalInputs+1:end,:)=[];
+                end
+                if lowerbound==-Inf
+                    P(1:totalInputs,:)=[];
+                    K(1:totalInputs,:)=[];
+                end
+            else
+                P=[];
+                K=[];
             end
             
         otherwise 
