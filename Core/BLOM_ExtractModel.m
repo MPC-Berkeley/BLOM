@@ -1152,9 +1152,9 @@ end
 function [trimP,trimK] = trimPK(bigP,bigK,relevantTimes)
     % first create the P and K for initialTime
     trimP = bigP(:,relevantTimes);
-    % remove initP rows if they are all equal to zero AND if the row had a
-    % value in the columns that were removed. 
-    removeP_rows = ~(any(bigP>0,2) & ~ any(initP>0,2));
+    % remove initP rows if the row had a value in the columns that were
+    % removed. 
+    removeP_rows = ~(any(bigP(:,~relevantTimes)~=0,2));
     trimP(removeP_rows,:) = [];
     % remove the corresponding columns of K
     trimK = bigK(:,removeP_rows);
