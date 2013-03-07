@@ -363,10 +363,26 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 K=[];
             end
             
+        case 'Demux'
+            P = [];
+            K = [];
+        case 'Mux'
+            P = [];
+            K = [];
+        case 'From'
+            P = [];
+            K = [];
+        case 'UnitDelay'
+            P = [];
+            K = [];
+        case 'Inport'
+            P = [];
+            K = [];
+            
         otherwise 
             P = [];
             K = [];
-            fprintf('This block is currently not supported by BLOM\n');
+            [blockType ' is currently not supported by BLOM. Sorry']
 
     end
 
