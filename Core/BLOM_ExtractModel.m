@@ -87,21 +87,21 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         %[timeStruct] = relevantTimes(outportHandles);
         
         % create large P and K matrix for entire problem
-        try
-           [bigP,bigK] = combinePK(block,allVars);
-        catch err
-           rethrow(err)
-        end
+%         try
+%            [bigP,bigK] = combinePK(block,allVars);
+%         catch err
+%            rethrow(err)
+%         end
 
         % create initial fields for ModelSpec
         ModelSpec.Name = name;
         ModelSpec.integ_method = integ_method;
         ModelSpec.dt = dt;
         ModelSpec.horizon = horizon;
-        ModelSpec.options;
+        ModelSpec.options = options;
         
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
-        [ModelSpec] = convert2ModelSpec(ModelSpec,allVars,block,varargin);
+        [ModelSpec] = convert2ModelSpec(ModelSpec,allVars,block);
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -1089,7 +1089,7 @@ function [bigP,bigK] = combinePK(block,allVars)
             currentK = block.K{idx};
             
             % get the full list of input and output indices
-            inputsAndOutputsIdxs = [block.inputIdxs(idx); block.outputIdxs(idx)];
+            inputsAndOutputsIdxs = [block.inputIdxs{idx}; block.outputIdxs{idx}];
 
             % get the values of P and the corresponding columns and rows
             [rows,col,val] = find(block.P{idx});
@@ -1097,16 +1097,18 @@ function [bigP,bigK] = combinePK(block,allVars)
             % map the correct columns of P. First find which allVars
             % indices the columns correspond to then find the optVarIdx
             % using the allVars indices
+            col
+            inputsAndOutputsIdxs
             colIdx = inputsAndOutputsIdxs(col);
             optColIdx = allVars.optVarIdx(colIdx);
             
             % make the newP with the proper column length and proper value
             % placement
-            newP = sparase(rows,optColIdx,val,numRows,optVarLength);
+            newP = sparse(rows,optColIdx,val,numRows,optVarLength);
+
             % concatenate the newP to the bigP
-            bigP = vertCat(bigP,newP);
-            
-            bigK = vertCat(bigK,block.K{idx});
+            bigP = vertcat(bigP,newP);
+            bigK = blkdiag(bigK,block.K{idx});
             
         end
     end
