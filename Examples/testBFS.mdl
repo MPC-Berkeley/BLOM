@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.57"
+    ComputedModelVersion    "1.58"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Kyle"
+  LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 15 13:39:44 2013"
-  RTWModifiedTimeStamp	  282836383
-  ModelVersionFormat	  "1.%<AutoIncrement:57>"
+  LastModifiedDate	  "Thu Mar  7 14:14:53 2013"
+  RTWModifiedTimeStamp	  284566490
+  ModelVersionFormat	  "1.%<AutoIncrement:58>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [490, 82, 1413, 871]
+    Location		    [1885, 92, 2901, 975]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -772,7 +772,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    114
+    SIDHighWatermark	    115
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -1080,13 +1080,6 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       simin		      "simin"
       interpType	      "Zero-Order Hold"
-    }
-    Block {
-      BlockType		      Integrator
-      Name		      "Integrator"
-      SID		      17
-      Ports		      [1, 1]
-      Position		      [650, 150, 680, 180]
     }
     Block {
       BlockType		      Mux
@@ -1406,10 +1399,10 @@ Model {
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.80"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  ""
+	  SourceType		  "Unknown"
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
+	  FunctionWithSeparateData "off"
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1418,8 +1411,8 @@ Model {
 	  P			  "sparse([1 1 0; 3 1 0])"
 	  K			  "sparse([1 0.8; 1 1])"
 	  inputs		  "0"
-	  inputScalar		  on
-	  outputScalar		  on
+	  inputScalar		  "on"
+	  outputScalar		  "on"
 	}
 	Block {
 	  BlockType		  Product
@@ -1503,8 +1496,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem2"
-	Location		[712, 522, 1420, 855]
-	Open			on
+	Location		[713, 545, 1421, 878]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1785,6 +1778,13 @@ Model {
       BlockMirror	      on
       SampleTime	      "-1"
     }
+    Block {
+      BlockType		      UnitDelay
+      Name		      "Unit Delay2"
+      SID		      115
+      Position		      [645, 148, 680, 182]
+      SampleTime	      "-1"
+    }
     Line {
       SrcBlock		      "Constant"
       SrcPort		      1
@@ -1814,7 +1814,7 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Integrator"
+      SrcBlock		      "Unit Delay2"
       SrcPort		      1
       Points		      [0, -30; -170, 0]
       DstBlock		      "Add1"
@@ -1824,10 +1824,6 @@ Model {
       SrcBlock		      "Add1"
       SrcPort		      1
       Points		      [0, -55; 15, 0]
-      Branch {
-	DstBlock		"Integrator"
-	DstPort			1
-      }
       Branch {
 	Points			[0, 40]
 	Branch {
@@ -1848,6 +1844,10 @@ Model {
 	    DstPort		    2
 	  }
 	}
+      }
+      Branch {
+	DstBlock		"Unit Delay2"
+	DstPort			1
       }
     }
     Line {
