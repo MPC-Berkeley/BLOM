@@ -281,11 +281,39 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
         %% trigonometric function 
         
         case 'Trigonometry'
-            % expresses all trig functions using a unique value e20 (e.g. sin
-            % is 3e20)   
+            % sin, cos, and exp exprseed using unique high value number
+            % (ex. sin is 3e20). Other  trig functions are expressed in
+            % terms of sin, cos, and exp. Hyperbolic functions have not
+            % been added yet.
             mathFunction=get_param(blockHandle,'Operator');
-            P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
-            K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+            specialSin=BLOM_FunctionCode('sin');
+            specialCos=BLOM_FunctionCode('cos');                      
+            switch mathFunction
+                case 'tan'
+                    P=sparse([specialSin*eye(totalInputs) zeros(totalInputs);specialCos*eye(totalInputs) eye(totalInputs)]);
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'cot'
+                    P=sparse([specialCos*eye(totalInputs) zeros(totalInputs);specialSin*eye(totalInputs) eye(totalInputs)]);
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'asin'
+                    P=blkdiag(speye(totalInputs),specialSin*speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'acos'
+                    P=blkdiag(speye(totalInputs),specialCos*speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'atan'
+                    P=sparse([eye(totalInputs) specialCos*eye(totalInputs);zeros(totalInputs) specialSin*eye(totalinputs)]);
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'acot'
+                    P=sparse([eye(totalInputs) specialSin*eye(totalInputs);zeros(totalInputs) specialCos*eye(totalinputs)]);
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'sincos'
+                    P=blkdiag(specialSin*speye(totalInputs),specialCos*speye(totalInputs),speye(2*totalInputs));
+                    K=horzcat(speye(2*totalInputs),-1*speye(2*totalInputs));
+                otherwise
+                    P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+            end
         %% polynomial    
         case 'Polyval'
             polyInportDim=get_param(blockHandle,'CompiledPortDimensions');
@@ -330,8 +358,23 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
             % other special functions will be expressed using P and K
             % matrices.
             mathFunction=get_param(blockHandle,'Operator');
-            P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
-            K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+            switch mathFunction
+                case 'square'
+                    P=blkdiag(speye(totalInputs)*2,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'sqrt'
+                    P=blkdiag(speye(totalInputs)*.5,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));       
+                case 'pow'
+                    P=blkdiag(speye(totalInputs)*pow,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'reciprocal'
+                    P=blkdiag(speye(totalInputs)*-1,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                otherwise
+                    P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+            end
             
         %% SubSystem.
         case 'SubSystem'
