@@ -12,21 +12,8 @@ codes_struct.log  = 2e20;
 codes_struct.sin  = 3e20;
 codes_struct.cos  = 4e20;
 codes_struct.tan = 5e20;
-codes_struct.asin = 6e20;
-codes_struct.acos = 7e20;
-codes_struct.atan = 8e20;
-codes_struct.atan2 = 9e20;
-codes_struct.sinh = 10e20;
-codes_struct.cosh = 11e20;
-codes_struct.tanh = 12e20;
-codes_struct.asinh = 13e20;
-codes_struct.acosh = 14e20;
-codes_struct.atanh = 15e20;
-codes_struct.sincos = 16e20;
-codes_struct.log10 = 17e20;
-codes_struct.conj = 18e20;
-codes_struct.rem = 19e20;
-codes_struct.mod = 20e20;
+codes_struct.atan=6e20;
+
 
 if nargin == 0
     fcn = '';
