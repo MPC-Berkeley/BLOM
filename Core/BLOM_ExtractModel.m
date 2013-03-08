@@ -1315,7 +1315,34 @@ function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
             % if you've already been to current block previously or current
             % block is an input block (may be redundant), proceed to next loop iteration
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
-                inputs = block.inputIdxs{blocks(idx)};
+                blockHandle = block.handles(blocks(idx));
+                blockType = get_param(blockHandle, 'BlockType');
+                refBlock = get_param(blockHandle, 'ReferenceBlock');
+                
+                if strcmp(blockType, 'SubSystem') && isempty(refBlock)
+                    outportBlocks = find_system(blockHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
+                    inputs = [block.inputIdxs{blocks(idx)}];
+                    for n = 1:length(outportBlocks)
+                        outportBlockPorts = get_param(outportBlocks(n), 'PortHandles');
+                        outportInputHandle = outportBlockPorts.Inport;
+                        line = get_param(outportInputHandle, 'Line');
+                        srcPortHandle = get_param(line, 'SrcPortHandle');
+                        inputsToAdd = find(allVars.outportHandle == srcPortHandle);
+                        inputs = [inputs; inputsToAdd];
+                    end
+
+                elseif strcmp(blockType, 'From')
+                    gotoTag = get_param(blockHandle, 'GotoTag');
+                    name = get_param(blockHandle, 'Parent');
+                    gotoBlock = find_system(name,'BlockType','Goto','GotoTag',gotoTag);
+                    gotoPorts = get_param(gotoBlock{1},'PortHandles');
+                    inputHandle = gotoPorts.Inport;
+                    line = get_param(inputHandle, 'Line');
+                    srcPortHandle = get_param(line, 'SrcPortHandle');
+                    inputs = find(allVars.outportHandle == srcPortHandle);
+                else
+                    inputs = block.inputIdxs{blocks(idx)};
+                end
                 
                 if(init)
                     allVars.initTime(inputs) = true;
