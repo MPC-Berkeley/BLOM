@@ -371,6 +371,76 @@ function [P,K] = BLOM_Convert2Polyblock(blockHandle)
                 case 'reciprocal'
                     P=blkdiag(speye(totalInputs)*-1,speye(totalInputs));
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'log'
+                    specialExp=BLOM_FunctionCode('exp');
+                    P=blkdiag(speye(totalInputs),speye(totalInputs)*specialExp);
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'magnitude^2'
+                    P=blkdiag(speye(totalInputs)*2,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                    warning('BLOM does not support complex numbers. Proceed with caution.')
+                case '1/sqrt'
+                    P=blkdiag(speye(totalInputs)*-0.5,speye(totalInputs));
+                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                case 'log10'
+                    specialExp=BLOM_FunctionCode('exp');
+                    P=blkdiag(speye(totalInputs),speye(totalInputs)*specialExp);
+                    K=horzcat(speye(totalInputs)*0.1,-1*speye(totalInputs));
+                case 'conj'
+                    error('Sorry, BLOM does not support complex numbers.')
+                case '10^u'
+                    specialExp=BLOM_FunctionCode('exp');
+                    P=blkdiag(speye(totalInputs)*specialExp,speye(totalInputs));
+                    K=horzcat(10*speye(totalInputs),-1*speye(totalInputs));
+                case 'hypot'
+                    hypotPortDim=get_param(blockHandle,'CompiledPortDimensions');
+                    hypotInports=hypotPortDim.Inport;
+                    if any(hypotInports~=1)
+                        [largeDim,largeDimInd]=max(hypotInports);
+                         P=2*speye(totalInputs+largeDim);
+                        if sum(hypotInports)==largeDim+3
+                            if largeDimInd<=2
+                                K=horzcat(speye(largeDim),ones(largeDim,1),-1*speye(largeDim));
+                            else
+                                K=horzcat(ones(largeDim,1),speye(largeDim),-1*speye(largeDim));
+                            end
+                        else
+                            K=horzcat(speye(largeDim),speye(largeDim),-1*speye(largeDim));
+                        end
+                    else
+                        P=speye(3)*2;
+                        K=[1 1 -1];
+                    end
+                case 'transpose'
+                    transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
+                    if length(transposePortDim)>2
+                        transposeInports=transposePortDim.Inport(2:3);
+                        transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
+                        transposeInd=transposeInd';
+                        transposeInd=transposeInd(1:end);
+                        KLeft=speye(totalInputs)*-1;
+                        
+                        K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
+                    else
+                        K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                    end
+                    P=speye(totalInputs*2);
+                case 'hermitian'
+                    transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
+                    if length(transposePortDim)>2
+                        transposeInports=transposePortDim.Inport(2:3);
+                        transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
+                        transposeInd=transposeInd';
+                        transposeInd=transposeInd(1:end);
+                        KLeft=speye(totalInputs)*-1;
+                        
+                        K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
+                    else
+                        K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+                    end
+                    P=speye(totalInputs*2);
+                    warning('BLOM does not support complex numbers. Proceed with caution.')
+                    
                 otherwise
                     P=blkdiag(speye(totalInputs)*BLOM_FunctionCode(mathFunction), speye(totalInputs));
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
