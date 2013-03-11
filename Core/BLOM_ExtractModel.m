@@ -286,6 +286,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -in
+    allVars.state = false(initialSize,1); %indicator as to whether the variable is a state variable
     
     allVars.time = cell(initialSize,1);
     
@@ -421,6 +422,12 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,block,state,iOut,sourcePorts);
             
+        elseif strcmp(sourceType,'UnitDelay')
+            state = 'unitDelay';
+            [outportHandles,iZero,allVars,block] = ...
+                updateVars(sourceInports,outportHandles,iZero,...
+                allVars,block,state,iOut,sourcePorts);
+            
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
             % except look for what's connected. 
@@ -430,6 +437,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
             [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,block,state,iOut,sourcePorts);
+            
         elseif isempty(sourceInports)
             % if there are no inports, no need to search this outport
             % anymore. However, if the block is an inport of a subsystem,
@@ -523,6 +531,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.upperBound = allVars.upperBound(1:(allVars.zeroIdx-1));
     allVars.lowerBound = allVars.lowerBound(1:(allVars.zeroIdx-1));
     allVars.time = allVars.time(1:(allVars.zeroIdx-1));
+    allVars.state = allVars.state(1:(allVars.zeroIdx-1));
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
     % order
@@ -759,6 +768,14 @@ function [outportHandles,iZero,allVars,block] =...
                 [allVars,block] = updateAllVars(allVars,...
                     block,currentBlockIndex,currentOutport,allVarsState,mux_optVarIdx);  
 
+        case 'unitDelay'
+            allVarsState = 'unitDelay';
+            %update block structure
+            [block,currentBlockIndex] =...
+                updateBlock(block,currentOutport);
+            [allVars,block] = updateAllVars(allVars,...
+                block,currentBlockIndex,currentOutport,allVarsState);
+            
         otherwise 
             % not looking at bounds or costs
             allVarsState = 'normal';
@@ -827,6 +844,7 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(newLength*2+oldLength))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(newLength*2,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(newLength*2,1)];
+                allVars.state = [allVars.state; false(newLength*2,1)];
                 
                 allVars.time = [allVars.time; cell(newLength*2,1)];
             else % double the length of all fields in allVars
@@ -837,6 +855,7 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(oldLength,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(oldLength,1)];
+                allVars.state = [allVars.state; false(oldLength,1)];
                 
                 allVars.time = [allVars.time; cell(oldLength,1)];
             end
@@ -882,6 +901,8 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = sameOptIndex;
             case 'rememberIndex'
                 varargout{1} = allVars.zeroIdx;
+            case 'unitDelay'
+                allVars.state(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
             case 'normal'
                 % do nothing
             otherwise
@@ -934,6 +955,10 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 sameOptIndex = varargin{1};
                 varIndex = find(allVars.outportHandle==currentOutport,1);
                 allVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) = sameOptIndex;
+                
+            case 'unitDelay'
+                allVars.state(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
+                
             otherwise
                 % do nothing
         end
