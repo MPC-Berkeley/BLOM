@@ -1404,6 +1404,38 @@ function allVars = labelTimeRelevance(allVars, block, inputAndExternalHandles)
 
 end
 
+%%
+%=====================================================================
+%> @brief creates fullVars struct using separete time steps of allVars
+%>
+%> @param allVars completed allVars filled in with time steps and bounds
+%>
+%> @retval fullVars struct with variables separated by time steps
+%=====================================================================
+function fullVars = createFullVars(allVars)
+
+%NOTE: currently fields of fullVars are still tentative. Change to suit
+%needs when necessary
+    initFullVars.allVarsIdx = find(allVars.initTime);
+    initFullVars.outportHandle = allVars.outportHandle(allVars.initTime);
+    initFullVars.upperBound = allVars.initUpperBound(allVars.initTime); %currently bounds are not separated by time step
+    initFullVars.lowerBound = allVars.initLowerBound(allVars.initTime); %currently bounds are not separeted by time step
+    
+    interFullVars.allVarsIdx = find(allVars.interTime);
+    interFullVars.outportHandle = allVars.outportHandle(allVars.interTime);
+    interFullVars.upperBound = allVars.interUpperBound(allVars.interTime); %currently bounds are not separated by time step
+    interFullVars.lowerBound = allVars.interLowerBound(allVars.interTime); %currently bounds are not separeted by time step
+   
+    finalFullVars.allVarsIdx = find(allVars.finalTime);
+    finalFullVars.outportHandle = allVars.outportHandle(allVars.finalTime);
+    finalFullVars.upperBound = allVars.finalUpperBound(allVars.finalTime); %currently bounds are not separated by time step
+    finalFullVars.lowerBound = allVars.finalLowerBound(allVars.finalTime); %currently bounds are not separeted by time step
+    
+%TODO: combine initFullVars, interFullVars, and finalFullVars into fullVars
+    
+end
+
+
 %%======================================================================
 %> @brief Convert BLOM 2.0 variables into a structure readable by BLOM 1.0
 %>
