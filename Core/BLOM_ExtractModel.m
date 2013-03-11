@@ -422,7 +422,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
                 updateVars(sourceInports,outportHandles,iZero,...
                 allVars,block,state,iOut,sourcePorts);
             
-        elseif strcmp(sourceType,'UnitDelay')
+        elseif strcmp(sourceType,'UnitDelay')       
             state = 'unitDelay';
             [outportHandles,iZero,allVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
@@ -902,6 +902,8 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
             case 'rememberIndex'
                 varargout{1} = allVars.zeroIdx;
             case 'unitDelay'
+                ['update block: ' block.names{allVars.block(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1))}]
+                ['lengthOut: ' num2str(lengthOut)]
                 allVars.state(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
             case 'normal'
                 % do nothing
@@ -957,7 +959,8 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) = sameOptIndex;
                 
             case 'unitDelay'
-                allVars.state(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
+                varIndex = find(allVars.outportHandle==currentOutport,1);
+                allVars.state(varIndex:(varIndex+lengthOut-1)) = true;
                 
             otherwise
                 % do nothing
