@@ -1018,10 +1018,12 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         elseif strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost')
             block.cost(block.zeroIdx) = true;
         else
-            % store P and K matricies for the other blocks
-            [P,K] = BLOM_Convert2Polyblock(currentBlockHandle);
+            % store P and K matricies for the other blocks, as well as
+            % boolean 1 if special function required and 0 ottherwise
+            [P,K,specialFunPresence] = BLOM_Convert2Polyblock(currentBlockHandle);
             block.P{block.zeroIdx} = P;
             block.K{block.zeroIdx}= K;
+            block.specialFunPresence{block.zeroIdx}=specialFunPresence;
         end
 
         if isempty(block.outputIdxs{block.zeroIdx})
