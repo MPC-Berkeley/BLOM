@@ -87,11 +87,11 @@ function [ModelSpec,block,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_met
         %[timeStruct] = relevantTimes(outportHandles);
         
         % create large P and K matrix for entire problem
-%         try
-%            [bigP,bigK] = combinePK(block,allVars);
-%         catch err
-%            rethrow(err)
-%         end
+        try
+           [bigP,bigK] = combinePK(block,allVars);
+        catch err
+           rethrow(err)
+        end
 
         % create initial fields for ModelSpec
         ModelSpec.Name = name;
@@ -1173,8 +1173,6 @@ function [bigP,bigK] = combinePK(block,allVars)
             % map the correct columns of P. First find which allVars
             % indices the columns correspond to then find the optVarIdx
             % using the allVars indices
-            col
-            inputsAndOutputsIdxs
             colIdx = inputsAndOutputsIdxs(col);
             optColIdx = allVars.optVarIdx(colIdx);
             
