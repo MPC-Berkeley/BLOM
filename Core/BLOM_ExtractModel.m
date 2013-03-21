@@ -287,6 +287,8 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     allVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
     allVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -in
     allVars.state = false(initialSize,1); %indicator as to whether the variable is a state variable
+    allVars.input = false(initialSize,1); %indicator as to whether the variable is an input variable
+    allVars.external = false(initialSize,1); %indicator as to whether the variable is an external variable
     
     allVars.time = cell(initialSize,1);
     
@@ -368,6 +370,7 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
         sourceInports = [sourcePorts.Inport];
         sourceType = get_param(sourceBlock,'BlockType');
         refBlock = get_param(sourceBlock,'ReferenceBlock');
+
         
         if strcmp(sourceType,'SubSystem')
             if isempty(refBlock)
@@ -525,13 +528,13 @@ function [block,allVars,stop] = searchSources(boundHandles,costHandles,...
     
     % remove empty and 0 entries in allVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
-        'optVarIdx','cost'}
+        'optVarIdx','cost','state','input','external'}
         allVars.(field{1}) = allVars.(field{1})(1:(allVars.zeroIdx-1));
     end
     allVars.upperBound = allVars.upperBound(1:(allVars.zeroIdx-1));
     allVars.lowerBound = allVars.lowerBound(1:(allVars.zeroIdx-1));
     allVars.time = allVars.time(1:(allVars.zeroIdx-1));
-    allVars.state = allVars.state(1:(allVars.zeroIdx-1));
+
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
     % order
@@ -653,12 +656,39 @@ function [outportHandles,iZero,allVars,block] =...
         case 'fromSimulink'
             % for the fromSimulink blocks, we need a special case to look
             % at that specific outport even though we stop the BFS here
-            allVarsState = 'normal';
-            currentOutport = existingOutports(iOut);
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [allVars,block] = updateAllVars(allVars,...
-                block,currentBlockIndex,currentOutport,allVarsState);
+            
+%             allVarsState = 'normal';
+%             currentOutport = existingOutports(iOut);
+%             [block,currentBlockIndex] =...
+%                 updateBlock(block,currentOutport);
+%             [allVars,block] = updateAllVars(allVars,...
+%                 block,currentBlockIndex,currentOutport,allVarsState);
+%             
+            sourceBlock = get_param(outportHandles(iOut),'Parent');
+            refBlock = get_param(sourceBlock,'ReferenceBlock');
+
+            if strcmp(refBlock, 'BLOM_Lib/InputFromSimulink') || ...
+               strcmp(refBlock, 'BLOM_Lib/InputFromWorkspace')
+                allVarsState = 'input';
+
+                currentOutport = existingOutports(iOut);
+                [block,currentBlockIndex] =...
+                    updateBlock(block,currentOutport);
+                [allVars,block] = updateAllVars(allVars,...
+                    block,currentBlockIndex,currentOutport,allVarsState);
+            elseif strcmp(refBlock, 'BLOM_Lib/ExternalFromWorkspace') || ...
+                   strcmp(refBlock, 'BLOM_Lib/ExternalFromSimulink')
+            
+                allVarsState = 'external';
+
+                currentOutport = existingOutports(iOut);
+                [block,currentBlockIndex] =...
+                    updateBlock(block,currentOutport);
+                [allVars,block] = updateAllVars(allVars,...
+                    block,currentBlockIndex,currentOutport,allVarsState);
+            else
+                %should never reach here
+            end
             
         case 'subSysInport'
             % Here we fill in the optVarIdx field have the inport point to
@@ -841,10 +871,13 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                         'cost'}
                         allVars.(field{1}) = [allVars.(field{1}); zeros(newLength*2,1)];
                 end
+                
+                for field={'state', 'input','external'}
+                        allVars.(field{1}) = [allVars.(field{1}); false(newLength*2,1)];
+                end
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(newLength*2+oldLength))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(newLength*2,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(newLength*2,1)];
-                allVars.state = [allVars.state; false(newLength*2,1)];
                 
                 allVars.time = [allVars.time; cell(newLength*2,1)];
             else % double the length of all fields in allVars
@@ -855,8 +888,10 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
                 allVars.optVarIdx = [allVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
                 allVars.upperBound = [allVars.upperBound; inf*ones(oldLength,1)];
                 allVars.lowerBound = [allVars.lowerBound; -inf*ones(oldLength,1)];
-                allVars.state = [allVars.state; false(oldLength,1)];
-                
+                for field={'state', 'input', 'external'}
+                        allVars.(field{1}) = [allVars.(field{1}); false(oldLength,1)];
+                end
+                             
                 allVars.time = [allVars.time; cell(oldLength,1)];
             end
         end
@@ -902,9 +937,11 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
             case 'rememberIndex'
                 varargout{1} = allVars.zeroIdx;
             case 'unitDelay'
-                ['update block: ' block.names{allVars.block(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1))}]
-                ['lengthOut: ' num2str(lengthOut)]
                 allVars.state(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
+            case 'input'
+                allVars.input(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
+            case 'external'
+                allVars.external(allVars.zeroIdx:(allVars.zeroIdx+lengthOut-1)) = true;
             case 'normal'
                 % do nothing
             otherwise
@@ -961,6 +998,14 @@ function [allVars,block,varargout] = updateAllVars(allVars,...
             case 'unitDelay'
                 varIndex = find(allVars.outportHandle==currentOutport,1);
                 allVars.state(varIndex:(varIndex+lengthOut-1)) = true;
+                
+            case 'input'
+                varIndex = find(allVars.outportHandle==currentOutport,1);
+                allVars.input(varIndex:(varIndex+lengthOut-1)) = true;  
+                
+            case 'external'
+                varIndex = find(allVars.outportHandle==currentOutport,1);
+                allVars.external(varIndex:(varIndex+lengthOut-1)) = true;
                 
             otherwise
                 % do nothing
@@ -1062,6 +1107,7 @@ function [block] = updateInputsField(block,allVars,outportHandles)
         currentOutport = outportHandles(index);
         % find the first index that corresponds to this outport in allVars
         allVarsIdx = find(allVars.outportHandle==currentOutport,1);
+             
         outportLine = get_param(currentOutport,'Line');
         destBlocks = get_param(outportLine,'DstBlockHandle');
         destPorts = get_param(outportLine,'DstPortHandle');
@@ -1451,5 +1497,6 @@ end
 % NOTE, REPLACE VARARGIN WITH ACTUAL VARIABLES. THIS IS JUST A PLACEHOLDER
 % FOR NOW
 function [ModelSpec] = convert2ModelSpec(ModelSpec,allVars,block,varargin)
-    
+    ModelSpec.in_vars = allVars.input;
+    ModelSpec.ex_vars = allVars.external;
 end
