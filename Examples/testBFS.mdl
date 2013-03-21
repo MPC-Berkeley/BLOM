@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.58"
+    ComputedModelVersion    "1.59"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "JJK"
+  LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Mar  7 14:14:53 2013"
-  RTWModifiedTimeStamp	  284566490
-  ModelVersionFormat	  "1.%<AutoIncrement:58>"
+  LastModifiedDate	  "Wed Mar 20 17:56:41 2013"
+  RTWModifiedTimeStamp	  285699962
+  ModelVersionFormat	  "1.%<AutoIncrement:59>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [1885, 92, 2901, 975]
+    Location		    [2890, 82, 3830, 1051]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -930,7 +930,7 @@ Model {
       Name		      "ExternalFromSimulink1"
       SID		      15
       Ports		      [1, 1]
-      Position		      [270, 384, 370, 426]
+      Position		      [270, 374, 370, 416]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
@@ -1399,10 +1399,10 @@ Model {
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.80"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  "Unknown"
+	  SourceType		  ""
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData "off"
+	  FunctionWithSeparateData off
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1411,8 +1411,8 @@ Model {
 	  P			  "sparse([1 1 0; 3 1 0])"
 	  K			  "sparse([1 0.8; 1 1])"
 	  inputs		  "0"
-	  inputScalar		  "on"
-	  outputScalar		  "on"
+	  inputScalar		  on
+	  outputScalar		  on
 	}
 	Block {
 	  BlockType		  Product
@@ -1860,13 +1860,14 @@ Model {
     Line {
       SrcBlock		      "ExternalFromSimulink1"
       SrcPort		      1
-      Points		      [85, 0; 0, -175]
+      Points		      [85, 0; 0, -165]
       DstBlock		      "Add1"
       DstPort		      4
     }
     Line {
       SrcBlock		      "Constant1"
       SrcPort		      1
+      Points		      [25, 0]
       DstBlock		      "ExternalFromSimulink1"
       DstPort		      1
     }
