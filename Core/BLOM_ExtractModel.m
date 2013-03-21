@@ -1270,6 +1270,7 @@ function block = expandInportOutportIdx(block)
             block.inputIdxs{blockIdx} = fullInputs;
         end
         
+        
         if ~isempty(block.outputIdxs{blockIdx})
             zeroIdx = 1;
             fullOutputs = zeros(outputsLength,1);
@@ -1279,8 +1280,9 @@ function block = expandInportOutportIdx(block)
                     block.outputIdxs{blockIdx}(j):(block.outputIdxs{blockIdx}(j)+currentOutputLength-1);
                 zeroIdx = zeroIdx + currentOutputLength;
             end
-            block.outportIdxs{blockIdx} = fullOutputs;
+            block.outputIdxs{blockIdx} = fullOutputs;
         end
+        
         
     end
 end
