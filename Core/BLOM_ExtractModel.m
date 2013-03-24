@@ -83,6 +83,8 @@ function [ModelSpec,block,stepVars] = BLOM_ExtractModel(name,horizon,dt,integ_me
         
         %stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
+        allVars = createAllVars(stepVars,horizon);
+        
         % create large P and K matrix for entire problem
         try
            [bigP,bigK] = combinePK(block,stepVars);
@@ -1208,6 +1210,14 @@ function [fullP,fullK] = createFullPK(bigP,bigK,stepVars,horizon)
     [interP,interK] = trimPK(bigP,bigK,allvars.interTime);
     [finalP,finalK] = trimPK(bigP,bigK,stepVars.finalTime);
     
+    % create the P and K matrices for all intermediate time steps
+    interP_full = kron(speye(horizon-2),interP);
+    interK_full = kron(speye(horizon02),interK);
+    
+    allP_cell = {initP,interP_full,finalP};
+    allK_cell = {initK,interK_full,finalK};
+    fullP = blkdiag(allP_cell{:});
+    fullK = blkdiag(allK_cell{:});
 end
 
 %%
@@ -1457,8 +1467,7 @@ end
 %>
 %> @retval allVars struct with variables separated by time steps
 %=====================================================================
-function allVars = createAllVars(stepVars)
-
+function allVars = createAllVars(stepVars,horizon)
 %NOTE: currently fields of allVars are still tentative. Change to suit
 %needs when necessary
     initAllVars.stepVarsIdx = find(stepVars.initTime);
