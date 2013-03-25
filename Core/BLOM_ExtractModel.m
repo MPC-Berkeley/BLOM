@@ -83,7 +83,8 @@ function [ModelSpec,block,stepVars] = BLOM_ExtractModel(name,horizon,dt,integ_me
         
         %stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
-        allVars = createAllVars(stepVars,horizon);
+        allVars = stepVars;
+        %allVars = createAllVars(stepVars,horizon);
         
         % create large P and K matrix for entire problem
         try
@@ -297,12 +298,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.handles = zeros(initialSize,1); % handle of block
     block.P = cell(initialSize,1); % P matrix of block, if relevant
     block.K = cell(initialSize,1); % K matrix of block, if relevant
-    block.inputIdxs = cell(initialSize,1); % the first optVarIDx of the outports connected to the inports of that block
-    block.outputIdxs = cell(initialSize,1); %the first optVarIdx of the outports of that block
+    block.inputIdxs = cell(initialSize,1); % the first optVarIdx of the outports connected to the inports of that block
+    block.outputIdxs = cell(initialSize,1); % the first optVarIdx of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.sourceOutports = cell(initialSize,1); % source outport handles
-    block.bound = false(initialSize,1); %indicator to whether block is a bound block
-    block.cost = false(initialSize,1); %indicator to whether block is a cost block
+    block.bound = false(initialSize,1); % indicator to whether block is a bound block
+    block.cost = false(initialSize,1); % indicator to whether block is a cost block
     
     % find all lines connected to costs and bounds and then get outport
     % ports from there. fill in stepVars and block structures as necessary
@@ -1361,7 +1362,8 @@ function hasCycle = checkForCycle(v)
     
 end
 
-%%======================================================================
+%%
+%======================================================================
 %> @brief traverse graph from cost and bound blocks then add fields to
 %> stepVars to label relevance of variables at initial, intermediate, and 
 %> final times
@@ -1461,6 +1463,46 @@ end
 
 %%
 %=====================================================================
+%> @brief creates expands fields of block to account for multiple time
+%> steps
+%>
+%> @param block completed block struct filled in for one time step
+%>
+%> @param timesteps number of timesteps
+%>
+%> @param numStepVars number of variables in stepVars
+%>
+%> @retval block struct with variables for all time steps
+%=====================================================================
+function block = expandBlock(block, timesteps, numStepVars)
+
+% could be vectorized version of below if i can figure out how to get size
+% in a vectorized manner
+%         block.field{:} = ones(size(block.field{:})) * [0:timesteps-1] * numStepVars ...
+%             + block.field{:} * ones(timesteps,1);
+
+    for idx = 1:block.zeroIdx-1
+        %expand inputIdxs
+        if ~isempty(block.inputIdxs{idx})
+            block.inputIdxs{idx} = ...
+                ones(size(block.inputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
+                + block.inputIdxs{idx} * ones(1,timesteps);
+        end
+        
+        %expand outputIdxs
+        if ~isempty(block.outputIdxs{idx})
+            block.outputIdxs{idx} = ...
+                ones(size(block.outputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
+                + block.outputIdxs{idx} * ones(1,timesteps);
+        end
+        
+        %TODO: update any other fields that must be expanded
+    end
+end
+
+
+%%
+%=====================================================================
 %> @brief creates allVars struct using separete time steps of stepVars
 %>
 %> @param stepVars completed stepVars filled in with time steps and bounds
@@ -1487,10 +1529,12 @@ function allVars = createAllVars(stepVars,horizon)
     
 %TODO: combine initAllVars, interAllVars, and finalAllVars into allVars
     
+
 end
 
 
-%%======================================================================
+%%
+%======================================================================
 %> @brief Convert BLOM 2.0 variables into a structure readable by BLOM 1.0
 %>
 %> @param block: block structure
