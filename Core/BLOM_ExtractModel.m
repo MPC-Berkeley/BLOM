@@ -305,7 +305,6 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.inputIdxs = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
     block.outputIdxs = cell(initialSize,1); % the stepVar indices of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
-    block.sourceOutports = cell(initialSize,1); % source outport handles
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
     
