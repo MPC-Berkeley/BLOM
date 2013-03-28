@@ -289,8 +289,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     stepVars.state = false(initialSize,1); %indicator as to whether the variable is a state variable
     stepVars.input = false(initialSize,1); %indicator as to whether the variable is an input variable
     stepVars.external = false(initialSize,1); %indicator as to whether the variable is an external variable
-    
-    stepVars.time = cell(initialSize,1);
+    % the following stepVars fields state whether or not a variable is
+    % relevant at that time step. They are not filled in but put here for
+    % reference
+    %stepVars.initTime
+    %stepVars.interTime
+    %stepVars.finalTime
     
     % block stores information about each block
     block.zeroIdx = 1; % index of first block zero
@@ -298,8 +302,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.handles = zeros(initialSize,1); % handle of block
     block.P = cell(initialSize,1); % P matrix of block, if relevant
     block.K = cell(initialSize,1); % K matrix of block, if relevant
-    block.inputIdxs = cell(initialSize,1); % the first optVarIdx of the outports connected to the inports of that block
-    block.outputIdxs = cell(initialSize,1); % the first optVarIdx of the outports of that block
+    block.inputIdxs = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
+    block.outputIdxs = cell(initialSize,1); % the stepVar indices of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.sourceOutports = cell(initialSize,1); % source outport handles
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
@@ -1512,23 +1516,36 @@ end
 function allVars = createAllVars(stepVars,horizon)
 %NOTE: currently fields of allVars are still tentative. Change to suit
 %needs when necessary
-    initAllVars.stepVarsIdx = find(stepVars.initTime);
-    initAllVars.outportHandle = stepVars.outportHandle(stepVars.initTime);
-    initAllVars.upperBound = stepVars.initUpperBound(stepVars.initTime); %currently bounds are not separated by time step
-    initAllVars.lowerBound = stepVars.initLowerBound(stepVars.initTime); %currently bounds are not separeted by time step
+
+    % initialize allVars fields.
     
-    interAllVars.stepVarsIdx = find(stepVars.interTime);
-    interAllVars.outportHandle = stepVars.outportHandle(stepVars.interTime);
-    interAllVars.upperBound = stepVars.interUpperBound(stepVars.interTime); %currently bounds are not separated by time step
-    interAllVars.lowerBound = stepVars.interLowerBound(stepVars.interTime); %currently bounds are not separeted by time step
-   
-    finalAllVars.stepVarsIdx = find(stepVars.finalTime);
-    finalAllVars.outportHandle = stepVars.outportHandle(stepVars.finalTime);
-    finalAllVars.upperBound = stepVars.finalUpperBound(stepVars.finalTime); %currently bounds are not separated by time step
-    finalAllVars.lowerBound = stepVars.finalLowerBound(stepVars.finalTime); %currently bounds are not separeted by time step
+    % first find length of allVars (this includes redundancies)
+    initialLength = sum(stepVars.initTime);
+    interLength = sum(stepVars.interTime);
+    finalLength = sum(stepVars.finalTime);
+    totalLength = initialLength+interLength*(horizon-2)+finalLength;
     
-%TODO: combine initAllVars, interAllVars, and finalAllVars into allVars
+    % because each variable has it's own time step, we can simply set
+    % lowerBound and upperBound
+    allVars.lowerBound(1:initialLength) = stepVars.initLowerBound(stepVars.initTime);
+    allVars.lowerBound(initialLength+1:end-finalLength-1) =...
+        kron(ones(horizon-2,1),stepVars.interLowerBound(stepVars.interTime));
+    allVars.lowerBound(end-finalLength:end) = stepVars.finalLowerBound(stepVars.finalTime);
     
+    allVars.upperBound(1:initialLength) = stepVars.initUpperBound(stepVars.initTime);
+    allVars.upperBound(initialLength+1:end-finalLength-1) =...
+        kron(ones(horizon-2,1),stepVars.interUpperBound(stepVars.interTime));
+    allVars.upperBound(end-finalLength:end) = stepVars.finalUpperBound(stepVars.finalTime);
+    
+    % allVars.stepVarIdx points to the stepVarIdx that each index
+    % corresponds to
+    stepVarIndices = 1:(stepVars.zeroIdx-1);
+    allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
+    allVars.stepVarIdx(initialLength+1:end-finalLength-1) =...
+        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime);
+    allVars.stepVarIdx(end-finalLength:end) = stepVarsIndices(stepVars.finalTime);
+    
+    % optVarIdx for allVars. reroutes redundant variables
 
 end
 
