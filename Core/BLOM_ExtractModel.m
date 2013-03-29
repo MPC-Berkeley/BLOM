@@ -1541,7 +1541,7 @@ function allVars = createAllVars(stepVars,horizon)
     stepVarIndices = 1:(stepVars.zeroIdx-1);
     allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
     allVars.stepVarIdx(initialLength+1:end-finalLength-1) =...
-        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime);
+        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
     allVars.stepVarIdx(end-finalLength:end) = stepVarsIndices(stepVars.finalTime);
     
     % optVarIdx for allVars. reroutes redundant variables
