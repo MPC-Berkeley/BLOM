@@ -520,8 +520,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     end
     
     % remove empty and 0 entries in blocks
-    for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
-            'sourceOutports'}
+    for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
     block.handles = block.handles(1:(block.zeroIdx-1));
@@ -536,7 +535,6 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     end
     stepVars.upperBound = stepVars.upperBound(1:(stepVars.zeroIdx-1));
     stepVars.lowerBound = stepVars.lowerBound(1:(stepVars.zeroIdx-1));
-    stepVars.time = stepVars.time(1:(stepVars.zeroIdx-1));
 
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
@@ -894,8 +892,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 for field={'state', 'input', 'external'}
                         stepVars.(field{1}) = [stepVars.(field{1}); false(oldLength,1)];
                 end
-                             
-                stepVars.time = [stepVars.time; cell(oldLength,1)];
+
             end
         end
         stepVars.block(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentBlockIndex;
@@ -1041,8 +1038,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
     % if the size of block equals the block.zeroIdx, need to double to
     % length of block
     if block.zeroIdx == length(block.handles)
-        for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions',...
-                'sourceOutports'}
+        for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions'}
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
