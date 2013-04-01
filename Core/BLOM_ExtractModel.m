@@ -88,7 +88,7 @@ function [ModelSpec,block,stepVars] = BLOM_ExtractModel(name,horizon,dt,integ_me
         
         % create large P and K matrix for entire problem
         try
-           [bigP,bigK] = combinePK(block,stepVars);
+           [stepP,stepK] = combinePK(block,stepVars);
         catch err
            rethrow(err)
         end
@@ -1132,22 +1132,21 @@ end
 %%
 %======================================================================
 %> @brief given block and stepVars, create a large P and K matrix with the
-%> indicies of stepVars as the columns. Once there, trim the P and K
-%> matrices for the different time steps
+%> indicies of stepVars.optVarIdx as the columns. 
 %>
 %> More detailed description of the problem.
 %>
 %> @param block block structure
 %> @param stepVars stepVars structure
 %>
-%> @retval bigP P matrix of all variables. Columns of bigP correspond to
+%> @retval stepP P matrix of all variables. Columns of stepP correspond to
 %> the optVarIdx field of stepVars
-%> @retval bigK K matrix of all variables
+%> @retval stepK K matrix of all variables
 %======================================================================
 
-function [bigP,bigK] = combinePK(block,stepVars)
-    bigP = [];
-    bigK = [];
+function [stepP,stepK] = combinePK(block,stepVars)
+    stepP = [];
+    stepK = [];
     optVarLength = max(stepVars.optVarIdx);
     
     for idx = 1:length(block.handles)
@@ -1179,9 +1178,9 @@ function [bigP,bigK] = combinePK(block,stepVars)
             % placement
             newP = sparse(rows,optColIdx,val,numRows,optVarLength);
 
-            % concatenate the newP to the bigP
-            bigP = vertcat(bigP,newP);
-            bigK = blkdiag(bigK,block.K{idx});
+            % concatenate the newP to the stepP
+            stepP = vertcat(stepP,newP);
+            stepK = blkdiag(stepK,block.K{idx});
             
         end
     end
@@ -1194,8 +1193,8 @@ end
 %> @brief updates block.inportIdxs and block.outportIdxs such that for
 %> input and outport arrays, has a pointer to each scalar
 %>
-%> @param bigP the P matrix with all of columns as optVarIdx columns
-%> @param bigK corresponding K matrix for bigP 
+%> @param stepP the P matrix with all of columns as optVarIdx columns
+%> @param stepK corresponding K matrix for stepP 
 %>
 %> @retval fullP the full P matrix for the entire problem for all time
 %> steps
@@ -1203,12 +1202,12 @@ end
 %> steps
 %========================================================================
 
-function [fullP,fullK] = createFullPK(bigP,bigK,stepVars,horizon)
+function [fullP,fullK] = createFullPK(stepP,stepK,stepVars,horizon)
     % first get truncated P and K matrices with the relevant times and
     % variables
-    [initP,initK] = trimPK(bigP,bigK,stepVars.initTime);
-    [interP,interK] = trimPK(bigP,bigK,allvars.interTime);
-    [finalP,finalK] = trimPK(bigP,bigK,stepVars.finalTime);
+    [initP,initK] = trimPK(stepP,stepK,stepVars.initTime);
+    [interP,interK] = trimPK(stepP,stepK,allvars.interTime);
+    [finalP,finalK] = trimPK(stepP,stepK,stepVars.finalTime);
     
     % create the P and K matrices for all intermediate time steps
     interP_full = kron(speye(horizon-2),interP);
@@ -1225,25 +1224,25 @@ end
 %> @brief updates block.inportIdxs and block.outportIdxs such that for
 %> input and outport arrays, has a pointer to each scalar
 %>
-%> @param bigP the P matrix with all of columns as optVarIdx columns
-%> @param bigK corresponding K matrix for bigP
+%> @param stepP the P matrix with all of columns as optVarIdx columns
+%> @param stepK corresponding K matrix for stepP
 %>
 %> @retval trimP the P matrix for that time
 %> @retval trimK K matrix for that time
 %========================================================================
 
-function [trimP,trimK] = trimPK(bigP,bigK,relevantTimes)
+function [trimP,trimK] = trimPK(stepP,stepK,relevantTimes)
     % first create the P and K for initialTime
-    trimP = bigP(:,relevantTimes);
+    trimP = stepP(:,relevantTimes);
     % remove initP rows if the row had a value in the columns that were
     % removed. 
-    removeP_rows = ~(any(bigP(:,~relevantTimes)~=0,2));
+    removeP_rows = ~(any(stepP(:,~relevantTimes)~=0,2));
     trimP(removeP_rows,:) = [];
     % remove the corresponding columns of K
-    trimK = bigK(:,removeP_rows);
+    trimK = stepK(:,removeP_rows);
     % remove rows of K that had a value in the removed columns of K in the
     % previous line
-    removeK_rows = ~any(bigK(:,~removeP_rows)~=0,2);
+    removeK_rows = ~any(stepK(:,~removeP_rows)~=0,2);
     trimK(removeK_rows,:) = [];
 end
 
