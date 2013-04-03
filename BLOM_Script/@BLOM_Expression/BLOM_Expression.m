@@ -121,6 +121,33 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
             out.K = -out.K;
         end
         
+        function out = mrdivide(in1, in2)
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
+            end
+            if isnumeric(in2)
+                size2 = size(in2);
+            else
+                in2 = BLOM_Expression(in2);
+                size2 = [size(in2.K, 1), 1];
+            end
+            if max(size2) > 1
+                error(['matrix division not supported, use ./ for ' ...
+                    'elementwise division'])
+            end
+            out = in1*(in2^(-1));
+        end
+        
+        function out = rdivide(in1, in2)
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
+            end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = in1.*(in2.^(-1));
+        end
+        
         function out = ctranspose(in1)
             warning(['all BLOM_Expression objects are considered vectors, ' ...
                 'ctranspose does nothing'])
