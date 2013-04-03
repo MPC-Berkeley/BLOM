@@ -1,0 +1,97 @@
+Shouldn't do everything as overloads with introducing variables. Need
+additional classes for "expression", "term", and "special function".
+Terms are products of powers of variables (rows of P, and a scalar K
+with default = 1), expressions are linear combinations (rows of K) of
+terms and/or special functions. A variable is a simple case of a term,
+a term (or special function) is a simple case of an expression.
+
+Maybe just one class for expressions? Any term-specific algebraic behavior
+can just check if there is only one nonzero per row of K?
+
+Special functions should introduce additional variables (and equality
+constraints to set them) for their input if it is not a simple variable.
+Maybe a special function is just a term with a flag set?
+Would also need a special function flag for expressions. Should
+variable*expression or term*expression distribute the product over all
+terms of the expression (if no special functions), or introduce variables?
+
+For multiplication and division, check if either input only has a single
+term (nonzero) per row of K, and no special functions. Don't need to
+introduce variables for those rows.
+
+Multiplication, division, or powers should introduce additional variables
+for any inputs that are expressions or special functions. The output is
+always a term. IGNORE THIS ONE?
+
+Addition or subtraction can take anything as input (need to introduce
+identity terms for simple variables), always output an expression.
+
+Probably want to store the transposes of all P's, maybe not K's?
+Addition of expressions is horizontal concatenation of K's and Pt's
+
+Use InferiorClasses attribute for mixed-class operator precedence.
+Variables are inferior to expressions, terms, and special functions
+Terms are inferior to expressions and special functions
+Special functions are inferior to expressions
+Superior classes need to implement all mixed-class operators
+
+Constraint class: Handle lb <= x <= ub or not?
+1 <= x + 1 is handled by operator precedence, <= lower than +
+Store left input, right input, and operator?
+Concatenate constraint <= object or object <= constraint accordingly
+prob.newConstraint(constraint) calls setBounds appropriately - if either
+input is numeric, use its value for lb/ub instead of introducing slack var
+Expressions and variables are inferior to constraints?
+
+
+
+Only introduce variables when setting a constraint or cost? Save global
+handle for variables?
+Hold auxiliary P and K in expressions for any introduced variables, don't
+incorporate constraints in parent problem until expression is set in
+cost or constraint.
+
+
+
+Maybe prefer introducing variables for vector special functions over
+scalar multi-term expressions?
+
+
+
+old code:
+
+
+%{
+    if max(size1) == 1 && (in1.specialFunction || max(size2) > 1 ...
+            || ~in2.specialFunction)
+        % in1 is a scalar expression, prefer using it to distribute
+        % product (if single term) or introducing new variable
+        if nnz(in1.K) <= 1 && ~in1.specialFunction && ~in2.specialFunction
+            % single-term expression and no special functions,
+            % so can just add entries of Pt and multiply K's
+            
+        else
+            % introduce a new variable and set it equal to in1,
+            % express product in terms of this new variable
+            
+        end
+    elseif max(size2) == 1
+        % in2 is a scalar expression, prefer using it to distribute
+        % product (if single term) or introducing new variable
+        if nnz(in2.K) <= 1 && ~in1.specialFunction && ~in2.specialFunction
+            % single-term expression and no special functions,
+            % so can just add entries of Pt and multiply K's
+            
+        else
+            % introduce a new variable and set it equal to in2,
+            % express product in terms of this new variable
+            
+        end
+    else
+        error('this case should not be possible')
+    end
+    %}
+
+
+
+
