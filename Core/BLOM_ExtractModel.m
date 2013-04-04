@@ -1542,7 +1542,7 @@ function allVars = createAllVars(stepVars,horizon)
     % allVars.stepVarIdx points to the stepVarIdx that each index
     % corresponds to
     stepVarIndices = 1:(stepVars.zeroIdx-1);
-    allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
+    allVars.stepVarIdx(1:initialLength) = stepVarIndices(stepVars.initTime);
     allVars.stepVarIdx(initialLength+1:end-finalLength-1) =...
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
