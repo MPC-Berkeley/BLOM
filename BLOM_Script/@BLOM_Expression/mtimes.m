@@ -39,7 +39,6 @@ if isnumeric(in1)
             warning(['all BLOM_Expression objects are considered vectors, ' ...
                 'converting first input of mtimes to column vector'])
             in1 = in1(:);
-            size1 = size(in1);
         end
         out = in2;
         out.K = kron(in1, out.K);
@@ -152,8 +151,7 @@ else % expression times expression, and we know one (or both) of the
     out.auxPt = [in1.auxPt, in2.auxPt];
     out.auxK = blkdiag(in1.auxK, in2.auxK);
     if ~isempty(newvar) % introduced new variable, add to auxPt and auxK
-        out.auxPt = [blkdiag(out.auxPt, ...
-            sparse(max(size(newvar.idx)), 0)), aux.Pt];
+        out.auxPt = [blkdiag(out.auxPt, sparse(numel(newvar.idx), 0)), aux.Pt];
         out.auxK = blkdiag(out.auxK, aux.K);
     end
 end

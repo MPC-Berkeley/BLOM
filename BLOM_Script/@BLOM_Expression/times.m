@@ -225,8 +225,7 @@ else % expression times expression
     out.auxPt = [in1.auxPt, in2.auxPt];
     out.auxK = blkdiag(in1.auxK, in2.auxK);
     if ~isempty(newvar) % introduced new variable, add to auxPt and auxK
-        out.auxPt = [blkdiag(out.auxPt, ...
-            sparse(max(size(newvar.idx)), 0)), aux.Pt];
+        out.auxPt = [blkdiag(out.auxPt, sparse(numel(newvar.idx), 0)), aux.Pt];
         out.auxK = blkdiag(out.auxK, aux.K);
     end
 end

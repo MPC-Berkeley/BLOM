@@ -85,7 +85,7 @@ classdef BLOM_Problem < handle
                 problem.K(1, :) = 0;
                 % add cost.K to end of first row, pad zeros below it
                 problem.K = blkdiag([problem.K, blkdiag(cost.K, ...
-                    sparse(size(problem.Pt, 1) - 1, 0))], cost.auxK);
+                    sparse(size(problem.K, 1) - 1, 0))], cost.auxK);
             end
         end
         
@@ -125,8 +125,17 @@ classdef BLOM_Problem < handle
             end
             if isa(expression, 'BLOM_Variable')
                 idx = expression.idx;
-                problem.lb(idx) = max(problem.lb(idx), lb);
-                problem.ub(idx) = min(problem.ub(idx), ub);
+                if numel(idx) == numel(unique(idx))
+                    % no duplicates, set vectorized
+                    problem.lb(idx) = max(problem.lb(idx), lb);
+                    problem.ub(idx) = min(problem.ub(idx), ub);
+                else
+                    % some duplicate indices, set in loop
+                    for i = 1:numel(idx)
+                        problem.lb(idx(i)) = max(problem.lb(idx(i)), lb(i));
+                        problem.ub(idx(i)) = min(problem.ub(idx(i)), ub(i));
+                    end
+                end
             else
                 % add to P & K where lb == ub == 0,
                 % otherwise introduce slack vars
@@ -137,20 +146,21 @@ classdef BLOM_Problem < handle
                     idx = slackvar.idx;
                     problem.lb(idx) = max(problem.lb(idx), lb);
                     problem.ub(idx) = min(problem.ub(idx), ub);
-                    if any(problem.lb(idx) > problem.ub(idx))
-                        warning('infeasible bound set')
-                    end
                     newPt = blkdiag(expression.Pt, speye(num_slacks));
                     newK = [expression.K, sparse(slack_idx, 1:num_slacks, ...
                         -1, size(expression.K, 1), num_slacks)];
                     expression.auxPt = blkdiag(expression.auxPt, ...
                         sparse(num_slacks, 0));
                 else
+                    idx = [];
                     newPt = expression.Pt;
                     newK = expression.K;
                 end
                 problem.Pt = [problem.Pt, newPt, expression.auxPt];
                 problem.K = blkdiag(problem.K, newK, expression.auxK);
+            end
+            if any(problem.lb(idx) > problem.ub(idx))
+                warning('infeasible bound set')
             end
         end
         

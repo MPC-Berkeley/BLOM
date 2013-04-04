@@ -5,6 +5,12 @@ if ~isnumeric(in2)
 end
 size1 = [size(in1.K, 1), 1];
 size2 = size(in2);
+if size2(1) == 1 && size2(2) > 1
+    warning(['all BLOM_Expression objects are considered vectors, ' ...
+        'converting second input of power to column vector'])
+    in2 = in2(:);
+    size2 = size(in2);
+end
 if max(size1) > 1 && max(size2) > 1 && ~isequal(size1, size2)
     error('inputs must be scalars, or the same size as each other')
 end
@@ -25,7 +31,7 @@ if ~specialFunction && ~in1.specialFunction && all(terms_per_row <= 1)
         else
             out = in1;
             out.Pt = in2*out.Pt;
-            out.K = (out.K).^in2;
+            out.K(out.K ~= 0) = (out.K(out.K ~= 0)).^in2;
         end
     elseif max(size1) == 1
         % scalar expression to non-scalar power
