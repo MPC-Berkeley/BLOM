@@ -174,7 +174,10 @@ classdef BLOM_Problem < handle
         function combineDuplicateTerms(problem)
             % find the unique columns of Pt
             problem.removeUnusedTerms;
-            
+            [Punique, idx1, idx2] = unique(problem.Pt', 'rows');
+            problem.Pt = Punique';
+            problem.K = problem.K * sparse(1:numel(idx2), ...
+                idx2, 1, numel(idx2), size(Punique,1));
         end
     end
 end

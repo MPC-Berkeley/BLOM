@@ -103,10 +103,13 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
         function expr = combineDuplicateTerms(expr)
             % find the unique columns of Pt
             expr = expr.removeUnusedTerms;
-            
+            [Punique, idx1, idx2] = unique(expr.Pt', 'rows');
+            expr.Pt = Punique';
+            expr.K = expr.K * sparse(1:numel(idx2), ...
+                idx2, 1, numel(idx2), size(Punique,1));
         end
         
-        % plus, multiplication, division, and powers are in separate files
+        % plus, multiplication, and powers are in separate files
         
         function out = uplus(in1) % +x
             out = in1;
@@ -160,6 +163,76 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
             out = in1;
         end
         
+        function out = dot(in1, in2)
+            if isnumeric(in1)
+                size1 = size(in1);
+                if size1(1) == 1 && size1(2) > 1
+                    warning(['all BLOM_Expression objects are considered vectors, ' ...
+                        'converting first input of dot to column vector'])
+                    in1 = in1(:);
+                    size1 = size(in1);
+                end
+            else
+                in1 = BLOM_Expression(in1);
+                size1 = [size(in1.K, 1), 1];
+            end
+            if isnumeric(in2)
+                size2 = size(in2);
+                if size2(1) == 1 && size2(2) > 1
+                    warning(['all BLOM_Expression objects are considered vectors, ' ...
+                        'converting second input of dot to column vector'])
+                    in2 = in2(:);
+                    size2 = size(in2);
+                end
+            else
+                in2 = BLOM_Expression(in2);
+                size2 = [size(in2.K, 1), 1];
+            end
+            if min(size1) > 1 || min(size2) > 1
+                error('both inputs must be vectors')
+            elseif max(size1) ~= max(size2)
+                error('both inputs must be the same length')
+            end
+            out = sum(in1.*in2);
+        end
+        
+        function out = prod(in1, dim)
+            if nargin < 2 || isequal(dim, 1)
+                % product along columns
+                out = 1;
+                in1_Kt = in1.K'; % save transpose because getting columns
+                % of a sparse matrix is faster than getting rows
+                for i = 1:size(in1.K, 1) % should vectorize this loop
+                    out = out * BLOM_Expression(in1.problem, ...
+                        in1_Kt(:, i)', in1.Pt, in1.specialFunction);
+                end
+            elseif ~isnumeric(dim) || numel(dim) > 1
+                error('dimension input must be a scalar constant')
+            elseif isequal(dim, 2)
+                warning(['all BLOM_Expression objects are considered vectors, ' ...
+                    'product along rows is same as original input'])
+                out = in1;
+            else
+                error('multidimensional variables not supported')
+            end
+        end
+        
+        function out = sum(in1, dim)
+            if nargin < 2 || isequal(dim, 1)
+                % sum along columns
+                out = in1;
+                out.K = sum(out.K, 1);
+            elseif ~isnumeric(dim) || numel(dim) > 1
+                error('dimension input must be a scalar constant')
+            elseif isequal(dim, 2)
+                warning(['all BLOM_Expression objects are considered vectors, ' ...
+                    'sum along rows is same as original input'])
+                out = in1;
+            else
+                error('multidimensional variables not supported')
+            end
+        end
+        
         function out = sqrt(in1)
             out = power(in1, 0.5);
         end
@@ -192,9 +265,6 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
             out = power(in1, BLOM_FunctionCode('erf'));
         end
         
-        % dot
-        % prod
-        % sum
         % horzcat
         % vertcat
         % repmat

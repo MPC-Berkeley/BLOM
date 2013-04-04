@@ -58,43 +58,43 @@ classdef BLOM_Variable < handle
         end
         
         function out = mtimes(in1, in2)
-            if isnumeric(in1)
-                out = mtimes(in1, BLOM_Expression(in2));
-            elseif isnumeric(in2)
-                out = mtimes(BLOM_Expression(in1), in2);
-            else
-                out = mtimes(BLOM_Expression(in1), BLOM_Expression(in2));
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
             end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = mtimes(in1, in2);
         end
         
         function out = times(in1, in2)
-            if isnumeric(in1)
-                out = times(in1, BLOM_Expression(in2));
-            elseif isnumeric(in2)
-                out = times(BLOM_Expression(in1), in2);
-            else
-                out = times(BLOM_Expression(in1), BLOM_Expression(in2));
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
             end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = times(in1, in2);
         end
         
         function out = mrdivide(in1, in2)
-            if isnumeric(in1)
-                out = mrdivide(in1, BLOM_Expression(in2));
-            elseif isnumeric(in2)
-                out = mrdivide(BLOM_Expression(in1), in2);
-            else
-                out = mrdivide(BLOM_Expression(in1), BLOM_Expression(in2));
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
             end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = mrdivide(in1, in2);
         end
         
         function out = rdivide(in1, in2)
-            if isnumeric(in1)
-                out = rdivide(in1, BLOM_Expression(in2));
-            elseif isnumeric(in2)
-                out = rdivide(BLOM_Expression(in1), in2);
-            else
-                out = rdivide(BLOM_Expression(in1), BLOM_Expression(in2));
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
             end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = rdivide(in1, in2);
         end
         
         function out = mpower(in1, in2)
@@ -147,27 +147,37 @@ classdef BLOM_Variable < handle
         end
         
         function out = dot(in1, in2)
-            if isnumeric(in1)
-                size1 = size(in1);
-                size2 = size(in2.idx);
-                if min(size1) > 1 || min(size2) > 1
-                    error('both inputs must be vectors')
-                elseif max(size1) ~= max(size2)
-                    error('both inputs must be the same length')
-                end
-                % FINISH HERE
-            elseif isnumeric(in2)
-                size1 = size(in1.idx);
-                size2 = size(in2);
-                if min(size1) > 1 || min(size2) > 1
-                    error('both inputs must be vectors')
-                elseif max(size1) ~= max(size2)
-                    error('both inputs must be the same length')
-                end
-                % FINISH HERE
-            else
-                out = dot(BLOM_Expression(in1), BLOM_Expression(in2));
+            if ~isnumeric(in1)
+                in1 = BLOM_Expression(in1);
             end
+            if ~isnumeric(in2)
+                in2 = BLOM_Expression(in2);
+            end
+            out = dot(in1, in2);
+        end
+        
+        function out = prod(in1, dim)
+            size1 = size(in1.idx);
+            if nargin < 2 && min(size1) == 1
+                % product of vector elements
+                out = BLOM_Expression(in1.problem, sparse(in1.idx, 1, 1, ...
+                    numel(in1.problem.lb), 1), speye(1), false);
+            elseif nargin < 2 || isequal(dim, 1)
+                % product of matrix elements along columns
+                
+                
+            elseif ~isnumeric(dim) || numel(dim) > 1
+                error('dimension input must be a scalar constant')
+            elseif isequal(dim, 2)
+                % product of matrix elements along rows
+                
+            else
+                error('multidimensional variables not supported')
+            end
+        end
+        
+        function out = sum(in1, dim)
+            
         end
         
         function out = sqrt(in1)
@@ -202,8 +212,6 @@ classdef BLOM_Variable < handle
             out = power(in1, BLOM_FunctionCode('erf'));
         end
         
-        % prod
-        % sum
         % horzcat
         % vertcat
         % repmat
