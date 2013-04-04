@@ -1524,7 +1524,10 @@ function allVars = createAllVars(stepVars,horizon)
     totalLength = initialLength+interLength*(horizon-2)+finalLength;
     
     % initialize allVars fields.
-
+    allVars.lowerBound = zeros(totalLength,1);
+    allVars.upperBound = zeros(totalLength,1);
+    allVars.stepVarIdx = zeros(totalLength,1);
+    allVars.optVarIdx = zeros(totalLength,1);
     
     
     % because each variable has it's own time step, we can simply set
