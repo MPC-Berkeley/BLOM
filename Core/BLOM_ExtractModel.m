@@ -1296,11 +1296,12 @@ end
 %==========================================================================
 %> @brief Reroutes pointers such that if System A points to System B, and 
 %> System B points to System C, System A points to System C instead.
-%> optVarIdx then reduced to remove gaps. e.g. [1;3;4;5]->[1;2;3;4]
+%> optVarIdx then reduced to remove gaps. 
+%> e.g. [1;2;5;3;5]->[1;2;5;5;5]->[1;2;3;3;3].  
 %> 
-%> @param optVarIdx vector to be rerouted and reduced
+%> @param optVarIdx optVarIdx vector to be rerouted and reduced
 %> 
-%> @retval optVarIdx rerouted and reduced
+%> @retval optVarIdx with optVarIdx rerouted and reduced
 %==========================================================================
 function optVarIdx = cleanupOptVarIdx(optVarIdx)
 
@@ -1483,8 +1484,12 @@ function block = expandBlock(block, timesteps, numStepVars)
         %expand inputIdxs
         if ~isempty(block.inputIdxs{idx})
             block.inputIdxs{idx} = ...
-                ones(size(block.inputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
-                + block.inputIdxs{idx} * ones(1,timesteps);
+                (ones(size(block.inputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
+                + block.inputIdxs{idx} * ones(1,timesteps)); % ...
+%                 .*...
+%                 [true(size(block.inputIdxs{idx})).*allVars.initTime(idx), ...
+%                 true(size(block.inputIdxs{idx})).*allVars.interTime(idx)*true(1,timesteps-2), ...
+%                 true(size(block.inputIdxs{idx})).*allVars.finalTime(idx)];
         end
         
         %expand outputIdxs
@@ -1539,7 +1544,20 @@ function allVars = createAllVars(stepVars,horizon)
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
     allVars.stepVarIdx(end-finalLength:end) = stepVarsIndices(stepVars.finalTime);
     
-    % optVarIdx for allVars. reroutes redundant variables
+    % optVarIdx for allVars. reroutes redundant variables  
+        %init Time
+    stepVarLength = stepVars.zeroIdx - 1;
+    allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime);
+        %inter Time
+    repeatedInterOptVarIdx = repmat(stepVars.optVarIdx(stepVars.interTime),horizon-2,1);
+    incrementInterOptVarIdxMat = stepVarLength * ones(interLength,1) * (1:horizon-2);
+    incrementInterOptVarIdxVector = incrementInterOptVarIdxMat(:);
+    allVars.optVarIdx(initialLength+1:initialLength+interLength*(horizon-2)) = ...
+        repeatedInterOptVarIdx + incrementInterOptVarIdxVector;
+        %final Time
+    allVars.optVarIdx(end-finalLength+1:end) = stepVars.optVarIdx(stepVars.finalTime) + stepVarLength*(horizon-1);
+    
+    allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
 
 end
 
