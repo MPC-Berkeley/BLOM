@@ -1516,7 +1516,6 @@ function allVars = createAllVars(stepVars,horizon)
 %NOTE: currently fields of allVars are still tentative. Change to suit
 %needs when necessary
 
-    % initialize allVars fields.
     
     % first find length of allVars (this includes redundancies)
     initialLength = sum(stepVars.initTime);
@@ -1524,17 +1523,21 @@ function allVars = createAllVars(stepVars,horizon)
     finalLength = sum(stepVars.finalTime);
     totalLength = initialLength+interLength*(horizon-2)+finalLength;
     
+    % initialize allVars fields.
+
+    
+    
     % because each variable has it's own time step, we can simply set
     % lowerBound and upperBound
     allVars.lowerBound(1:initialLength) = stepVars.initLowerBound(stepVars.initTime);
     allVars.lowerBound(initialLength+1:end-finalLength-1) =...
         kron(ones(horizon-2,1),stepVars.interLowerBound(stepVars.interTime));
-    allVars.lowerBound(end-finalLength:end) = stepVars.finalLowerBound(stepVars.finalTime);
+    allVars.lowerBound(end-finalLength+1:end) = stepVars.finalLowerBound(stepVars.finalTime);
     
     allVars.upperBound(1:initialLength) = stepVars.initUpperBound(stepVars.initTime);
     allVars.upperBound(initialLength+1:end-finalLength-1) =...
         kron(ones(horizon-2,1),stepVars.interUpperBound(stepVars.interTime));
-    allVars.upperBound(end-finalLength:end) = stepVars.finalUpperBound(stepVars.finalTime);
+    allVars.upperBound(end-finalLength+1:end) = stepVars.finalUpperBound(stepVars.finalTime);
     
     % allVars.stepVarIdx points to the stepVarIdx that each index
     % corresponds to
@@ -1542,7 +1545,7 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
     allVars.stepVarIdx(initialLength+1:end-finalLength-1) =...
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
-    allVars.stepVarIdx(end-finalLength:end) = stepVarsIndices(stepVars.finalTime);
+    allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
     
     % optVarIdx for allVars. reroutes redundant variables  
         %init Time
