@@ -1365,9 +1365,8 @@ end
 %======================================================================
 %> @brief traverse graph from cost and bound blocks then add fields to
 %> stepVars to label relevance of variables at initial, intermediate, and 
-%> final times
-%> NOTE: does not properly traverse into subsystems or across from/goto
-%> blocks
+%> final times.  For unit delay, all variables before the input are
+%> relevant at all time steps before the relevance of the output variable
 %>
 %> @param block block structure
 %>
@@ -1385,13 +1384,30 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     stepVars.finalTime = false(stepVars.zeroIdx-1,1);
     
     blockIdxs = 1:block.zeroIdx-1;
-    for startBlock = blockIdxs(block.bound | block.cost)
-        startBlockHandle = block.handles(startBlock);
-        init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
-        final = strcmp(get_param(startBlockHandle, 'final_step'), 'on');
-        inter = strcmp(get_param(startBlockHandle, 'intermediate_step'), 'on');
+    
+    startBlock = [blockIdxs(block.bound | block.cost) zeros(1,10)];
+    startBlockIdx = 1;
+    startBlockZeroIdx = sum(startBlock ~= 0)+1;
+    while startBlockIdx ~= startBlockZeroIdx
+        startBlockHandle = block.handles(startBlock(startBlockIdx));
+        startBlockType = get_param(startBlockHandle, 'BlockType');
         
-        blocks = [startBlock; zeros(10,1)];
+        
+        if strcmp(startBlockType, 'UnitDelay')
+            inputVarIdxsCell = block.inputIdxs(startBlock(startBlockIdx));
+            inputVarIdxs = inputVarIdxsCell{1};
+            
+            final = stepVars.finalTime(inputVarIdxs(1));
+            inter = final || stepVars.interTime(inputVarIdxs(1));
+            init = inter || stepVars.initTime(inputVarIdxs(1));
+            
+        else
+            init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
+            final = strcmp(get_param(startBlockHandle, 'final_step'), 'on');
+            inter = strcmp(get_param(startBlockHandle, 'intermediate_step'), 'on');
+        end
+        blocks = [startBlock(startBlockIdx); zeros(10,1)];
+        
         zeroIdx = 2;
         idx = 1;
         while(blocks(idx)~=0)
@@ -1424,6 +1440,19 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     line = get_param(inputHandle, 'Line');
                     srcPortHandle = get_param(line, 'SrcPortHandle');
                     inputs = find(stepVars.outportHandle == srcPortHandle);
+                    
+                elseif strcmp(blockType, 'UnitDelay')
+                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0
+                        startBlock(startBlockZeroIdx) = blocks(idx);
+                        startBlockZeroIdx = startBlockZeroIdx + 1;
+                        
+                        if startBlockZeroIdx > length(startBlock)
+                            startBlock = [startBlock zeros(1, length(startBlock))];
+                        end
+                    end
+                                        
+                    inputs = [];
+                    
                 else
                     inputs = block.inputIdxs{blocks(idx)};
                 end
@@ -1456,6 +1485,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
             idx = idx+1;
         end
         
+        startBlockIdx = startBlockIdx + 1;
     end
 
 end
@@ -1551,17 +1581,29 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
     
     % optVarIdx for allVars. reroutes redundant variables  
-        %init Time
+    
+    % init Time
     stepVarLength = stepVars.zeroIdx - 1;
     allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime);
-        %inter Time
+    % inter Time
     repeatedInterOptVarIdx = repmat(stepVars.optVarIdx(stepVars.interTime),horizon-2,1);
     incrementInterOptVarIdxMat = stepVarLength * ones(interLength,1) * (1:horizon-2);
     incrementInterOptVarIdxVector = incrementInterOptVarIdxMat(:);
     allVars.optVarIdx(initialLength+1:initialLength+interLength*(horizon-2)) = ...
         repeatedInterOptVarIdx + incrementInterOptVarIdxVector;
-        %final Time
+    % final Time
     allVars.optVarIdx(end-finalLength+1:end) = stepVars.optVarIdx(stepVars.finalTime) + stepVarLength*(horizon-1);
+    % reroute optVarIdx for delay blocks such that output of 1/z at timestep
+    % k+1 is same as optvaridx of inut at timestep k
+    for idx = initialLength+1:totalLength
+       if (stepVars.state(allVars.stepVarIdx(idx)))
+          
+           
+       end
+    end
+    
+    
+    
     
     allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
 
