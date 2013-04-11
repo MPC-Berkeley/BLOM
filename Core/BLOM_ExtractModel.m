@@ -1391,15 +1391,13 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     while startBlockIdx ~= startBlockZeroIdx
         startBlockHandle = block.handles(startBlock(startBlockIdx));
         startBlockType = get_param(startBlockHandle, 'BlockType');
-        
-        
+
         if strcmp(startBlockType, 'UnitDelay')
-            inputVarIdxsCell = block.inputIdxs(startBlock(startBlockIdx));
-            inputVarIdxs = inputVarIdxsCell{1};
+            outputVarIdxs = block.outputIdxs{startBlock(startBlockIdx)};
             
-            final = stepVars.finalTime(inputVarIdxs(1));
-            inter = final || stepVars.interTime(inputVarIdxs(1));
-            init = inter || stepVars.initTime(inputVarIdxs(1));
+            final = stepVars.finalTime(outputVarIdxs(1));
+            inter = final || stepVars.interTime(outputVarIdxs(1));
+            init = inter || stepVars.initTime(outputVarIdxs(1));
             
         else
             init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
@@ -1441,8 +1439,14 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     srcPortHandle = get_param(line, 'SrcPortHandle');
                     inputs = find(stepVars.outportHandle == srcPortHandle);
                     
-                elseif strcmp(blockType, 'UnitDelay')
-                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0
+                elseif strcmp(blockType, 'UnitDelay') && (idx ~= 1)
+                    inputVarIdxs = block.inputIdxs{blocks(idx)};
+                    inputFinal = stepVars.finalTime(inputVarIdxs(1));
+                    inputInter = stepVars.interTime(inputVarIdxs(1));
+                    inputInit = stepVars.initTime(inputVarIdxs(1));
+
+                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0 && ...
+                            (inputFinal ~= final || inputInter ~= (inter || final) || inputInit ~= (final || inter || init))
                         startBlock(startBlockZeroIdx) = blocks(idx);
                         startBlockZeroIdx = startBlockZeroIdx + 1;
                         
@@ -1450,7 +1454,6 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                             startBlock = [startBlock zeros(1, length(startBlock))];
                         end
                     end
-                                        
                     inputs = [];
                     
                 else
@@ -1475,11 +1478,9 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                         blocks = [blocks; zeros(size(blocks))];
                     end
                 end
-                        
                
                 blocks(zeroIdx:zeroIdx+length(inputs)-1) = stepVars.block(inputs);
                 zeroIdx = zeroIdx+length(inputs);
-                        
             end
            
             idx = idx+1;
