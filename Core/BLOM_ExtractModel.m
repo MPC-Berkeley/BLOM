@@ -284,8 +284,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     stepVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
     stepVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     stepVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
-    stepVars.upperBound = inf*ones(initialSize,1); % upper bound of each variable. default inf
-    stepVars.lowerBound = -inf*ones(initialSize,1); % lower bound of each variable. default -in
+    stepVars.initUpperBound = inf*ones(initialSize,1); % upper bound of at initial time step. default inf
+    stepVars.initLowerBound = -inf*ones(initialSize,1); % lower bound of at initial time step. default -inf
+    stepVars.interUpperBound = inf*ones(initialSize,1); % upper bound of at intermediate time step. default inf
+    stepVars.interLowerBound = -inf*ones(initialSize,1); % lower bound of at intermediate time step. default -inf
+    stepVars.finalUpperBound = inf*ones(initialSize,1); % upper bound of at final time step. default inf
+    stepVars.finalLowerBound = -inf*ones(initialSize,1); % lower bound of at final time step. default -inf
     stepVars.state = false(initialSize,1); %indicator as to whether the variable is a state variable
     stepVars.input = false(initialSize,1); %indicator as to whether the variable is an input variable
     stepVars.external = false(initialSize,1); %indicator as to whether the variable is an external variable
@@ -321,7 +325,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         portH = get_param(boundHandles(i),'PortHandles');
         % costs and bounds should only have one inport and line
         currentInport = [portH.Inport];
-        [block, ~] = updateBlock(block, currentInport);
+        [block, ~] = updateBlock(block,currentInport);
         [outportHandles,iZero,stepVars,block] = ...
             updateVars(currentInport,outportHandles,iZero,...
             stepVars,block,state,iZero,portH,boundHandles(i));
@@ -530,11 +534,10 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     
     % remove empty and 0 entries in stepVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
-        'optVarIdx','cost','state','input','external'}
+        'optVarIdx','cost','state','input','external','initLowerBound','initUpperBound',...
+        'interLowerBound','interUpperBound','finalLowerBound','finalUpperBound'}
         stepVars.(field{1}) = stepVars.(field{1})(1:(stepVars.zeroIdx-1));
     end
-    stepVars.upperBound = stepVars.upperBound(1:(stepVars.zeroIdx-1));
-    stepVars.lowerBound = stepVars.lowerBound(1:(stepVars.zeroIdx-1));
 
     % FIX: need to find some way to remove all -1 handles. using setdiff
     % with [-1] reorders all the outport handles and puts it in ascending
@@ -627,8 +630,6 @@ function [outportHandles,iZero,stepVars,block] =...
             % bounds for these
             stepVarsState = 'bound';
             boundHandle = varargin{3};
-            lowerBound = eval(get_param(boundHandle,'lb'));
-            upperBound = eval(get_param(boundHandle,'ub'));
             
             % go through each of the outports connected through bound.
             % Because bound has only one inport, the for loop above only
@@ -638,7 +639,7 @@ function [outportHandles,iZero,stepVars,block] =...
                 [block,currentBlockIndex] =...
                     updateBlock(block,currentOutport);
                 [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,lowerBound,upperBound);
+                    block,currentBlockIndex,currentOutport,stepVarsState,boundHandle);
             end
             
         case 'cost'
@@ -877,8 +878,13 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                         stepVars.(field{1}) = [stepVars.(field{1}); false(newLength*2,1)];
                 end
                 stepVars.optVarIdx = [stepVars.optVarIdx; ((oldLength+1):(newLength*2+oldLength))'];
-                stepVars.upperBound = [stepVars.upperBound; inf*ones(newLength*2,1)];
-                stepVars.lowerBound = [stepVars.lowerBound; -inf*ones(newLength*2,1)];
+                
+                stepVars.initLowerBound = [stepVars.initLowerBound; -inf*ones(newLength*2,1)];
+                stepVars.initUpperBound = [stepVars.initUpperBound; inf*ones(newLength*2,1)];
+                stepVars.interLowerBound = [stepVars.interLowerBound; -inf*ones(newLength*2,1)];
+                stepVars.interUpperBound = [stepVars.interUpperBound; inf*ones(newLength*2,1)];
+                stepVars.finalLowerBound = [stepVars.finalLowerBound; -inf*ones(newLength*2,1)];
+                stepVars.finalUpperBound = [stepVars.finalUpperBound; inf*ones(newLength*2,1)];
                 
                 stepVars.time = [stepVars.time; cell(newLength*2,1)];
             else % double the length of all fields in stepVars
@@ -887,8 +893,13 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                         stepVars.(field{1}) = [stepVars.(field{1}); zeros(oldLength,1)];
                 end
                 stepVars.optVarIdx = [stepVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
-                stepVars.upperBound = [stepVars.upperBound; inf*ones(oldLength,1)];
-                stepVars.lowerBound = [stepVars.lowerBound; -inf*ones(oldLength,1)];
+                stepVars.initLowerBound = [stepVars.initLowerBound; -inf*ones(oldLength*2,1)];
+                stepVars.initUpperBound = [stepVars.initUpperBound; inf*ones(oldLength*2,1)];
+                stepVars.interLowerBound = [stepVars.interLowerBound; -inf*ones(oldLength*2,1)];
+                stepVars.interUpperBound = [stepVars.interUpperBound; inf*ones(oldLength*2,1)];
+                stepVars.finalLowerBound = [stepVars.finalLowerBound; -inf*ones(oldLength*2,1)];
+                stepVars.finalUpperBound = [stepVars.finalUpperBound; inf*ones(oldLength*2,1)];
+                
                 for field={'state', 'input', 'external'}
                         stepVars.(field{1}) = [stepVars.(field{1}); false(oldLength,1)];
                 end
@@ -902,10 +913,31 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         
         switch stepVarsState
             case 'bound'
-                lowerBound = varargin{1};
-                upperBound = varargin{2};
-                stepVars.lowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                stepVars.upperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                % fill in bound parameters for different time steps
+                boundHandle = varargin{1};
+                lowerBound = eval(get_param(boundHandle,'lb'));
+                upperBound = eval(get_param(boundHandle,'ub'));
+
+                % find out for which time steps these bounds are relevant
+                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
+                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
+                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
+                
+                if init
+                    stepVars.initLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.initUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
+                
+                if inter
+                    stepVars.interLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.interUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
+                
+                if final
+                    stepVars.finalLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.finalUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
+                    
             case 'cost'
                 stepVars.cost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = 1;
             case 'subSysInport'
@@ -958,6 +990,33 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         dimension = get_param(currentOutport,'CompiledPortDimensions');
         lengthOut = dimension(1)*dimension(2);
         switch stepVarsState
+            case 'bound'
+                % sometimes there will be two bound blocks connected to the
+                % same outport. This means that the bounds are different at
+                % different time steps
+                boundHandle = varargin{1};
+                lowerBound = eval(get_param(boundHandle,'lb'));
+                upperBound = eval(get_param(boundHandle,'ub'));
+
+                % find out for which time steps these bounds are relevant
+                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
+                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
+                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
+                
+                if init
+                    stepVars.initLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.initUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
+                
+                if inter
+                    stepVars.interLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.interUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
+                
+                if final
+                    stepVars.finalLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
+                    stepVars.finalUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                end
             case 'rememberIndex'
             % if this outport has already been found but we need the index for
             % the sameOptVar field
