@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.59"
+    ComputedModelVersion    "1.62"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Kyle"
+  LastModifiedBy	  "Jason"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Mar 20 17:56:41 2013"
-  RTWModifiedTimeStamp	  285699962
-  ModelVersionFormat	  "1.%<AutoIncrement:59>"
+  LastModifiedDate	  "Fri Apr 12 20:49:58 2013"
+  RTWModifiedTimeStamp	  287699608
+  ModelVersionFormat	  "1.%<AutoIncrement:62>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [2890, 82, 3830, 1051]
+    Location		    [794, 142, 1915, 979]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -772,7 +772,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    115
+    SIDHighWatermark	    116
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -837,8 +837,8 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      ub		      "inf"
-      lb		      "-inf"
+      ub		      "8"
+      lb		      "-8"
       initial_step	      on
       final_step	      on
       intermediate_step	      on
@@ -861,10 +861,34 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      ub		      "inf"
-      lb		      "-inf"
+      ub		      "6"
+      lb		      "-6"
       initial_step	      on
       final_step	      on
+      intermediate_step	      off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound2"
+      SID		      116
+      Ports		      [1]
+      Position		      [625, 307, 700, 353]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.80"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "10"
+      lb		      "-10"
+      initial_step	      off
+      final_step	      off
       intermediate_step	      on
     }
     Block {
@@ -1827,11 +1851,6 @@ Model {
       Branch {
 	Points			[0, 40]
 	Branch {
-	  Points		  [0, 60]
-	  DstBlock		  "Bound1"
-	  DstPort		  1
-	}
-	Branch {
 	  Points		  [165, 0]
 	  Branch {
 	    Points		    [0, -70]
@@ -1842,6 +1861,18 @@ Model {
 	    Points		    [0, 160]
 	    DstBlock		    "Add3"
 	    DstPort		    2
+	  }
+	}
+	Branch {
+	  Points		  [0, 60]
+	  Branch {
+	    DstBlock		    "Bound1"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 65]
+	    DstBlock		    "Bound2"
+	    DstPort		    1
 	  }
 	}
       }
