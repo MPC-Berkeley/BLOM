@@ -2,7 +2,8 @@
 simin = [0 1];
 
 %profile on;
-[a,block,stepVars] = BLOM_ExtractModel('testBFS',1,1,1,1);
+horizon = 3;
+[a,block,stepVars,allVars] = BLOM_ExtractModel('testBFS',horizon,1,1,1);
 %profile viewer;
 
 %% note, should find the following blocks in the BFS search (parentheses
