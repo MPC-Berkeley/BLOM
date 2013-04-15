@@ -93,6 +93,10 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         catch err
            rethrow(err)
         end
+        
+        % create allVars
+        % allVars = createAllVars(stepVars,horizon);
+        
 
         % create initial fields for ModelSpec
         ModelSpec.Name = name;
