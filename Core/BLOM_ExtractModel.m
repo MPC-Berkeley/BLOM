@@ -59,7 +59,7 @@
 %> @retval out2 return value for the second output variable
 %======================================================================
 
-function [ModelSpec,block,stepVars] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
+function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     % load system. does nothing if model is not open
     load_system(name);
     % evaluate model to get dimensions
@@ -83,8 +83,9 @@ function [ModelSpec,block,stepVars] = BLOM_ExtractModel(name,horizon,dt,integ_me
         
         %stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
-        allVars = stepVars;
-        %allVars = createAllVars(stepVars,horizon);
+        % create allVars. allVars contains all variables at all time steps
+        % and is made from stepVars
+        allVars = createAllVars(stepVars,horizon);
         
         % create large P and K matrix for entire problem
         try
@@ -1606,7 +1607,6 @@ function allVars = createAllVars(stepVars,horizon)
 %NOTE: currently fields of allVars are still tentative. Change to suit
 %needs when necessary
 
-    
     % first find length of allVars (this includes redundancies)
     initialLength = sum(stepVars.initTime);
     interLength = sum(stepVars.interTime);
@@ -1623,20 +1623,20 @@ function allVars = createAllVars(stepVars,horizon)
     % because each variable has it's own time step, we can simply set
     % lowerBound and upperBound
     allVars.lowerBound(1:initialLength) = stepVars.initLowerBound(stepVars.initTime);
-    allVars.lowerBound(initialLength+1:end-finalLength-1) =...
+    allVars.lowerBound(initialLength+1:end-finalLength) =...
         kron(ones(horizon-2,1),stepVars.interLowerBound(stepVars.interTime));
     allVars.lowerBound(end-finalLength+1:end) = stepVars.finalLowerBound(stepVars.finalTime);
     
     allVars.upperBound(1:initialLength) = stepVars.initUpperBound(stepVars.initTime);
-    allVars.upperBound(initialLength+1:end-finalLength-1) =...
+    allVars.upperBound(initialLength+1:end-finalLength) =...
         kron(ones(horizon-2,1),stepVars.interUpperBound(stepVars.interTime));
     allVars.upperBound(end-finalLength+1:end) = stepVars.finalUpperBound(stepVars.finalTime);
     
     % allVars.stepVarIdx points to the stepVarIdx that each index
     % corresponds to
-    stepVarIndices = 1:(stepVars.zeroIdx-1);
-    allVars.stepVarIdx(1:initialLength) = stepVarIndices(stepVars.initTime);
-    allVars.stepVarIdx(initialLength+1:end-finalLength-1) =...
+    stepVarsIndices = 1:(stepVars.zeroIdx-1);
+    allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
+    allVars.stepVarIdx(initialLength+1:end-finalLength) =...
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
     
