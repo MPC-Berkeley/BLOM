@@ -111,7 +111,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         % following code checks whether or not inports and outportHandles
         % was filled in properly
         fprintf('--------------------------------------------------------\n')
-        fprintf('Test block.outputIdxs and inports is correct\n')
+        fprintf('Test block.stepOutputIdx and inports is correct\n')
         fprintf('Everything is good if nothing prints\n')
         fprintf('--------------------------------------------------------\n')
         for i = 1:length(block.handles)
@@ -120,16 +120,16 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
             currentInports = currentPorts.Inport;
             % compare lists of Outports
             
-            currentBlockOutports = zeros(length(block.outputIdxs{i}),1);
-            for idx = 1:length(block.outputIdxs{i})
-                currentBlockOutports(idx) = stepVars.outportHandle(block.outputIdxs{i}(idx));
+            currentBlockOutports = zeros(length(block.stepOutputIdx{i}),1);
+            for idx = 1:length(block.stepOutputIdx{i})
+                currentBlockOutports(idx) = stepVars.outportHandle(block.stepOutputIdx{i}(idx));
             end
             
             diffOutports = setdiff(currentBlockOutports,currentOutports);
             if ~isempty(diffOutports)
                 fprintf('Difference in Outports in %s\n',block.names{i})
                 currentOutports
-                get_param(stepVars.outportHandle(block.outputIdxs{i}),'Parent')
+                get_param(stepVars.outportHandle(block.stepOutputIdx{i}),'Parent')
                 fprintf('--------------------------------------------------------\n')
             end
             
@@ -140,16 +140,16 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
                 inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
             end
             
-            currentBlockInports = zeros(length(block.inputIdxs{i}),1);
-            for idx = 1:length(block.inputIdxs{i})
-                currentBlockInports(idx) = stepVars.outportHandle(block.inputIdxs{i}(idx));
+            currentBlockInports = zeros(length(block.stepInputIdx{i}),1);
+            for idx = 1:length(block.stepInputIdx{i})
+                currentBlockInports(idx) = stepVars.outportHandle(block.stepInputIdx{i}(idx));
             end
             
             diffInports = setdiff(inportsOutport,currentBlockInports);
             if ~isempty(diffInports) && ~any(block.handles(i)==inputAndExternalHandles)
                 fprintf('Difference in inputs in %s\n',block.names{i})
                 ['inputsOutport;' inportsOutport]
-                block.inputIdxs{i}
+                block.stepInputIdx{i}
                 get_param(inportsOutport,'Parent')
                 fprintf('--------------------------------------------------------\n')
             end
@@ -311,8 +311,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.handles = zeros(initialSize,1); % handle of block
     block.P = cell(initialSize,1); % P matrix of block, if relevant
     block.K = cell(initialSize,1); % K matrix of block, if relevant
-    block.inputIdxs = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
-    block.outputIdxs = cell(initialSize,1); % the stepVar indices of the outports of that block
+    block.stepInputIdx = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
+    block.stepOutputIdx = cell(initialSize,1); % the stepVar indices of the outports of that block
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
@@ -529,7 +529,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     end
     
     % remove empty and 0 entries in blocks
-    for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions'}
+    for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
     block.handles = block.handles(1:(block.zeroIdx-1));
@@ -985,10 +985,10 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 % do nothing
         end
         
-        % populate block.outputIdxs with index of the first stepVars
+        % populate block.stepOutputIdx with index of the first stepVars
         % variable. Does not take into consideration redundancies. This
         % will be taken care of later.
-        block.outputIdxs{currentBlockIndex}(portNumber) = stepVars.zeroIdx;
+        block.stepOutputIdx{currentBlockIndex}(portNumber) = stepVars.zeroIdx;
         
         stepVars.zeroIdx = stepVars.zeroIdx+lengthOut;
     else
@@ -1102,7 +1102,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
     % if the size of block equals the block.zeroIdx, need to double to
     % length of block
     if block.zeroIdx == length(block.handles)
-        for field={'names', 'P','K','inputIdxs','outputIdxs','dimensions'}
+        for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
@@ -1134,8 +1134,8 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             block.specialFunPresence{block.zeroIdx}=specialFunPresence;
         end
 
-        if isempty(block.outputIdxs{block.zeroIdx})
-            block.outputIdxs{block.zeroIdx} = zeros(length(sourcePorts.Outport),1);
+        if isempty(block.stepOutputIdx{block.zeroIdx})
+            block.stepOutputIdx{block.zeroIdx} = zeros(length(sourcePorts.Outport),1);
         end
         
 
@@ -1182,10 +1182,10 @@ function [block] = updateInputsField(block,stepVars,outportHandles)
                 inportBlockPorts = get_param(block.handles(inportBlockIndex),'PortHandles');
                 inportPorts = inportBlockPorts.Inport;
                 inportIndex = inportPorts==destPorts(i);
-                if isempty(block.inputIdxs{inportBlockIndex})
-                    block.inputIdxs{inportBlockIndex} = zeros(length(inportPorts),1);
+                if isempty(block.stepInputIdx{inportBlockIndex})
+                    block.stepInputIdx{inportBlockIndex} = zeros(length(inportPorts),1);
                 end
-                block.inputIdxs{inportBlockIndex}(inportIndex) = stepVarsIdx;
+                block.stepInputIdx{inportBlockIndex}(inportIndex) = stepVarsIdx;
             end
         end
     end
@@ -1227,7 +1227,7 @@ function [stepP,stepK] = combinePK(block,stepVars)
             currentK = block.K{idx};
             
             % get the full list of input and output indices
-            inputsAndOutputsIdxs = [block.inputIdxs{idx}; block.outputIdxs{idx}];
+            inputsAndOutputsIdxs = [block.stepInputIdx{idx}; block.stepOutputIdx{idx}];
 
             % get the values of P and the corresponding columns and rows
             [rows,col,val] = find(block.P{idx});
@@ -1326,29 +1326,29 @@ function block = expandInportOutportIdx(block)
         inputsLength = sum(portDim.Inport(1:2:end).*portDim.Inport(2:2:end));
         outputsLength = sum(portDim.Outport(1:2:end).*portDim.Outport(2:2:end));
         
-        if ~isempty(block.inputIdxs{blockIdx})
+        if ~isempty(block.stepInputIdx{blockIdx})
             zeroIdx = 1;
             fullInputs = zeros(inputsLength,1);        
-            for j = 1:length(block.inputIdxs{blockIdx})
+            for j = 1:length(block.stepInputIdx{blockIdx})
                 currentInputLength = portDim.Inport(2*j-1).*portDim.Inport(2*j);
                 fullInputs(zeroIdx:(zeroIdx+currentInputLength-1)) = ...
-                    block.inputIdxs{blockIdx}(j):(block.inputIdxs{blockIdx}(j)+currentInputLength-1);
+                    block.stepInputIdx{blockIdx}(j):(block.stepInputIdx{blockIdx}(j)+currentInputLength-1);
                 zeroIdx = zeroIdx + currentInputLength;
             end
-            block.inputIdxs{blockIdx} = fullInputs;
+            block.stepInputIdx{blockIdx} = fullInputs;
         end
         
         
-        if ~isempty(block.outputIdxs{blockIdx})
+        if ~isempty(block.stepOutputIdx{blockIdx})
             zeroIdx = 1;
             fullOutputs = zeros(outputsLength,1);
-            for j = 1:length(block.outputIdxs{blockIdx})
+            for j = 1:length(block.stepOutputIdx{blockIdx})
                 currentOutputLength = portDim.Outport(2*j-1).*portDim.Outport(2*j);
                 fullOutputs(zeroIdx:(zeroIdx+currentOutputLength-1)) = ...
-                    block.outputIdxs{blockIdx}(j):(block.outputIdxs{blockIdx}(j)+currentOutputLength-1);
+                    block.stepOutputIdx{blockIdx}(j):(block.stepOutputIdx{blockIdx}(j)+currentOutputLength-1);
                 zeroIdx = zeroIdx + currentOutputLength;
             end
-            block.outputIdxs{blockIdx} = fullOutputs;
+            block.stepOutputIdx{blockIdx} = fullOutputs;
         end
         
         
@@ -1457,7 +1457,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
         startBlockType = get_param(startBlockHandle, 'BlockType');
 
         if strcmp(startBlockType, 'UnitDelay')
-            outputVarIdxs = block.outputIdxs{startBlock(startBlockIdx)};
+            outputVarIdxs = block.stepOutputIdx{startBlock(startBlockIdx)};
             
             final = stepVars.finalTime(outputVarIdxs(1));
             inter = final || stepVars.interTime(outputVarIdxs(1));
@@ -1483,7 +1483,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 
                 if strcmp(blockType, 'SubSystem') && isempty(refBlock)
                     outportBlocks = find_system(blockHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-                    inputs = [block.inputIdxs{blocks(idx)}];
+                    inputs = [block.stepInputIdx{blocks(idx)}];
                     for n = 1:length(outportBlocks)
                         outportBlockPorts = get_param(outportBlocks(n), 'PortHandles');
                         outportInputHandle = outportBlockPorts.Inport;
@@ -1504,7 +1504,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     inputs = find(stepVars.outportHandle == srcPortHandle);
                     
                 elseif strcmp(blockType, 'UnitDelay') && (idx ~= 1)
-                    inputVarIdxs = block.inputIdxs{blocks(idx)};
+                    inputVarIdxs = block.stepInputIdx{blocks(idx)};
                     inputFinal = stepVars.finalTime(inputVarIdxs(1));
                     inputInter = stepVars.interTime(inputVarIdxs(1));
                     inputInit = stepVars.initTime(inputVarIdxs(1));
@@ -1521,7 +1521,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     inputs = [];
                     
                 else
-                    inputs = block.inputIdxs{blocks(idx)};
+                    inputs = block.stepInputIdx{blocks(idx)};
                 end
                 
                 if(init)
@@ -1576,22 +1576,22 @@ function block = expandBlock(block, timesteps, numStepVars)
 %             + block.field{:} * ones(timesteps,1);
 
     for idx = 1:block.zeroIdx-1
-        %expand inputIdxs
-        if ~isempty(block.inputIdxs{idx})
-            block.inputIdxs{idx} = ...
-                (ones(size(block.inputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
-                + block.inputIdxs{idx} * ones(1,timesteps)); % ...
+        %expand stepInputIdx
+        if ~isempty(block.stepInputIdx{idx})
+            block.stepInputIdx{idx} = ...
+                (ones(size(block.stepInputIdx{idx})) * (0:timesteps-1) * numStepVars ...
+                + block.stepInputIdx{idx} * ones(1,timesteps)); % ...
 %                 .*...
-%                 [true(size(block.inputIdxs{idx})).*allVars.initTime(idx), ...
-%                 true(size(block.inputIdxs{idx})).*allVars.interTime(idx)*true(1,timesteps-2), ...
-%                 true(size(block.inputIdxs{idx})).*allVars.finalTime(idx)];
+%                 [true(size(block.stepInputIdx{idx})).*allVars.initTime(idx), ...
+%                 true(size(block.stepInputIdx{idx})).*allVars.interTime(idx)*true(1,timesteps-2), ...
+%                 true(size(block.stepInputIdx{idx})).*allVars.finalTime(idx)];
         end
         
-        %expand outputIdxs
-        if ~isempty(block.outputIdxs{idx})
-            block.outputIdxs{idx} = ...
-                ones(size(block.outputIdxs{idx})) * (0:timesteps-1) * numStepVars ...
-                + block.outputIdxs{idx} * ones(1,timesteps);
+        %expand stepOutputIdx
+        if ~isempty(block.stepOutputIdx{idx})
+            block.stepOutputIdx{idx} = ...
+                ones(size(block.stepOutputIdx{idx})) * (0:timesteps-1) * numStepVars ...
+                + block.stepOutputIdx{idx} * ones(1,timesteps);
         end
         
         %TODO: update any other fields that must be expanded
