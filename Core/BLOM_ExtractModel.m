@@ -1564,38 +1564,39 @@ end
 %>
 %> @param timesteps number of timesteps
 %>
-%> @param numStepVars number of variables in stepVars
-%>
 %> @retval block struct with variables for all time steps
 %=====================================================================
-function block = expandBlock(block, timesteps, numStepVars)
-
-% could be vectorized version of below if i can figure out how to get size
-% in a vectorized manner
-%         block.field{:} = ones(size(block.field{:})) * [0:timesteps-1] * numStepVars ...
-%             + block.field{:} * ones(timesteps,1);
-
-    for idx = 1:block.zeroIdx-1
-        %expand stepInputIdx
-        if ~isempty(block.stepInputIdx{idx})
-            block.stepInputIdx{idx} = ...
-                (ones(size(block.stepInputIdx{idx})) * (0:timesteps-1) * numStepVars ...
-                + block.stepInputIdx{idx} * ones(1,timesteps)); % ...
-%                 .*...
-%                 [true(size(block.stepInputIdx{idx})).*allVars.initTime(idx), ...
-%                 true(size(block.stepInputIdx{idx})).*allVars.interTime(idx)*true(1,timesteps-2), ...
-%                 true(size(block.stepInputIdx{idx})).*allVars.finalTime(idx)];
-        end
-        
-        %expand stepOutputIdx
-        if ~isempty(block.stepOutputIdx{idx})
-            block.stepOutputIdx{idx} = ...
-                ones(size(block.stepOutputIdx{idx})) * (0:timesteps-1) * numStepVars ...
-                + block.stepOutputIdx{idx} * ones(1,timesteps);
-        end
-        
-        %TODO: update any other fields that must be expanded
+function block = expandBlock(block, horizon, stepVars, allVars)
+    
+    % adds a field to stepVars with row vectors containing pointers to
+    % Allvars in column of appropriate timesteps
+    % CHANGE ONLY APPLIES TO TEMP VARIABLE IN THIS FUNCTION CALL
+    stepVars.allVarsIdxs = cell(stepVars.zeroIdx-1,1);
+    for stepVarIdx = 1:stepVars.zeroIdx-1
+        stepVars.allVarsIdxs{idx} = zeros(1, horizon);
+        allVarsIdxs = find(allVars.stepVarIdx == stepVarIdx);
+        stepVars.allVarsIdxs{stepVarIdx}(allVars.timeStep(allVarsIdxs)) = allVarsIdxs;
     end
+    
+    block.allInputMatrix = cell(block.zeroIdx-1,1);
+    block.allOutputMatrix = cell(block.zeroIdx-1,1);
+
+    for blockIdx = 1:block.zeroIdx - 1
+        block.allInputMatrix{blockIdx} = zeros(length(block.stepInputIdx{blockIdx}), horizon); 
+        block.allOutputMatrix{blockIdx} = zeros(length(block.stepOutputIdx{blockIdx}), horizon); 
+        
+        for inputIdx = 1:length(block.stepInputIdx{blockIdx})
+            block.allInputMatrix{blockIdx}(inputIdx,:) = ...
+                stepVars.allVarsIdxs{block.stepInputIdx{blockIdx}(inputIdx)};
+        end
+        
+        for outputIdx = 1:length(block.stepOutputIdx{blockIdx})
+            block.allOutputMatrix{blockIdx}(outputIdx,:) = ...
+                stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}(outputIdx)};
+        end
+            
+    end
+
 end
 
 
@@ -1622,6 +1623,14 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.upperBound = zeros(totalLength,1);
     allVars.stepVarIdx = zeros(totalLength,1);
     allVars.optVarIdx = zeros(totalLength,1);
+    allVars.timeStep = zeros(totalLength,1);
+    
+    % label what timestep each variable is relevant at
+    allVars.timeStep(1:initialLength) = ones(initialLength,1);
+    interSteps = ones(interLength,1) * (2:horizon-1);
+    interStepsArray = interSteps(:);
+    allVars.timeStep(initialLength+1:end-finalLength) = interSteps(:);
+    allVars.timeStep(end-finalLength+1:end) = horizon * ones(finalLength,1);
     
     
     % because each variable has it's own time step, we can simply set
