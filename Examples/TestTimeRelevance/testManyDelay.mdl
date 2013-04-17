@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.2"
+    ComputedModelVersion    "1.5"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Eric"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 16 15:15:40 2013"
-  RTWModifiedTimeStamp	  288025873
-  ModelVersionFormat	  "1.%<AutoIncrement:2>"
+  LastModifiedDate	  "Wed Apr 17 12:06:57 2013"
+  RTWModifiedTimeStamp	  288101214
+  ModelVersionFormat	  "1.%<AutoIncrement:5>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -590,24 +590,16 @@ Model {
       FramePeriod	      "inf"
     }
     Block {
-      BlockType		      Integrator
-      ExternalReset	      "none"
-      InitialConditionSource  "internal"
-      InitialCondition	      "0"
-      LimitOutput	      off
-      UpperSaturationLimit    "inf"
-      LowerSaturationLimit    "-inf"
-      ShowSaturationPort      off
-      ShowStatePort	      off
-      AbsoluteTolerance	      "auto"
-      IgnoreLimit	      off
-      ZeroCross		      on
-      ContinuousStateAttributes	"''"
+      BlockType		      UnitDelay
+      X0		      "0"
+      SampleTime	      "1"
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
     }
   }
   System {
     Name		    "testManyDelay"
-    Location		    [1057, 706, 1516, 1049]
+    Location		    [1272, 446, 1731, 789]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -621,7 +613,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    6
+    SIDHighWatermark	    12
     Block {
       BlockType		      Reference
       Name		      "Bound"
@@ -642,75 +634,138 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       ub		      "1"
       lb		      "0"
-      initial_step	      on
+      initial_step	      off
       final_step	      on
-      intermediate_step	      on
+      intermediate_step	      off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound1"
+      SID		      11
+      Ports		      [1]
+      Position		      [365, 117, 440, 163]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.80"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "2"
+      lb		      "1"
+      initial_step	      off
+      final_step	      on
+      intermediate_step	      off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound2"
+      SID		      12
+      Ports		      [1]
+      Position		      [365, 192, 440, 238]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.80"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "3"
+      lb		      "2"
+      initial_step	      off
+      final_step	      on
+      intermediate_step	      off
     }
     Block {
       BlockType		      Constant
       Name		      "Constant"
       SID		      2
-      Position		      [15, 30, 45, 60]
+      Position		      [75, 35, 105, 65]
       OutDataType	      "fixdt(1, 16)"
       OutScaling	      "2^0"
     }
     Block {
-      BlockType		      Integrator
-      Name		      "Integrator"
-      SID		      3
-      Ports		      [1, 1]
-      Position		      [90, 35, 120, 65]
+      BlockType		      UnitDelay
+      Name		      "Unit Delay"
+      SID		      7
+      Position		      [290, 198, 325, 232]
+      SampleTime	      "-1"
     }
     Block {
-      BlockType		      Integrator
-      Name		      "Integrator1"
-      SID		      4
-      Ports		      [1, 1]
-      Position		      [155, 35, 185, 65]
+      BlockType		      UnitDelay
+      Name		      "Unit Delay1"
+      SID		      8
+      Position		      [190, 33, 225, 67]
+      SampleTime	      "-1"
     }
     Block {
-      BlockType		      Integrator
-      Name		      "Integrator2"
-      SID		      5
-      Ports		      [1, 1]
-      Position		      [215, 35, 245, 65]
+      BlockType		      UnitDelay
+      Name		      "Unit Delay2"
+      SID		      9
+      Position		      [290, 123, 325, 157]
+      SampleTime	      "-1"
     }
     Block {
-      BlockType		      Integrator
-      Name		      "Integrator3"
-      SID		      6
-      Ports		      [1, 1]
-      Position		      [270, 35, 300, 65]
+      BlockType		      UnitDelay
+      Name		      "Unit Delay3"
+      SID		      10
+      Position		      [290, 33, 325, 67]
+      SampleTime	      "-1"
+    }
+    Line {
+      SrcBlock		      "Unit Delay3"
+      SrcPort		      1
+      DstBlock		      "Bound"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Unit Delay2"
+      SrcPort		      1
+      DstBlock		      "Bound1"
+      DstPort		      1
     }
     Line {
       SrcBlock		      "Constant"
       SrcPort		      1
-      Points		      [10, 0; 0, 5]
-      DstBlock		      "Integrator"
+      Points		      [35, 0]
+      Branch {
+	DstBlock		"Unit Delay1"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 85]
+	Branch {
+	  Points		  [0, 5]
+	  DstBlock		  "Unit Delay2"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [130, 0]
+	  DstBlock		  "Unit Delay"
+	  DstPort		  1
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "Unit Delay1"
+      SrcPort		      1
+      DstBlock		      "Unit Delay3"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Integrator"
+      SrcBlock		      "Unit Delay"
       SrcPort		      1
-      DstBlock		      "Integrator1"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Integrator1"
-      SrcPort		      1
-      DstBlock		      "Integrator2"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Integrator2"
-      SrcPort		      1
-      DstBlock		      "Integrator3"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Integrator3"
-      SrcPort		      1
-      DstBlock		      "Bound"
+      DstBlock		      "Bound2"
       DstPort		      1
     }
   }
