@@ -1572,10 +1572,8 @@ function block = expandBlock(block, horizon, stepVars, allVars)
     % Allvars in column of appropriate timesteps
     % CHANGE ONLY APPLIES TO TEMP VARIABLE IN THIS FUNCTION CALL
     stepVars.allVarsIdxs = cell(stepVars.zeroIdx-1,1);
-    for stepVarIdx = 1:stepVars.zeroIdx-1
-        stepVars.allVarsIdxs{idx} = zeros(1, horizon);
-        allVarsIdxs = find(allVars.stepVarIdx == stepVarIdx);
-        stepVars.allVarsIdxs{stepVarIdx}(allVars.timeStep(allVarsIdxs)) = allVarsIdxs;
+    for allVarsIdx = 1:allVars.totalLength
+        stepVars.allVarsIdxs{allVars.stepVarIdx(allVarsIdx)}(allVars.timeStep(allVarsIdx)) = allVarsIdx;
     end
     
     block.allInputMatrix = cell(block.zeroIdx-1,1);
@@ -1585,15 +1583,11 @@ function block = expandBlock(block, horizon, stepVars, allVars)
         block.allInputMatrix{blockIdx} = zeros(length(block.stepInputIdx{blockIdx}), horizon); 
         block.allOutputMatrix{blockIdx} = zeros(length(block.stepOutputIdx{blockIdx}), horizon); 
         
-        for inputIdx = 1:length(block.stepInputIdx{blockIdx})
-            block.allInputMatrix{blockIdx}(inputIdx,:) = ...
-                stepVars.allVarsIdxs{block.stepInputIdx{blockIdx}(inputIdx)};
-        end
+        block.allInputMatrix{blockIdx} = ...
+            reshape([stepVars.allVarsIdxs{block.stepInputIdx{blockIdx}}], horizon, length(block.stepInputIdx{blockIdx}))';
         
-        for outputIdx = 1:length(block.stepOutputIdx{blockIdx})
-            block.allOutputMatrix{blockIdx}(outputIdx,:) = ...
-                stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}(outputIdx)};
-        end
+        block.allOutputMatrix{blockIdx} = ...
+            reshape([stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}}], horizon, length(block.stepOutputIdx{blockIdx}))';
             
     end
 
@@ -1618,6 +1612,8 @@ function allVars = createAllVars(stepVars,horizon)
     finalLength = sum(stepVars.finalTime);
     totalLength = initialLength+interLength*(horizon-2)+finalLength;
     
+    allVars.totalLength = totalLength;
+    
     % initialize allVars fields.
     allVars.lowerBound = zeros(totalLength,1);
     allVars.upperBound = zeros(totalLength,1);
@@ -1625,10 +1621,9 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.optVarIdx = zeros(totalLength,1);
     allVars.timeStep = zeros(totalLength,1);
     
-    % label what timestep each variable is relevant at
+    % label what timestep each variable exists in
     allVars.timeStep(1:initialLength) = ones(initialLength,1);
     interSteps = ones(interLength,1) * (2:horizon-1);
-    interStepsArray = interSteps(:);
     allVars.timeStep(initialLength+1:end-finalLength) = interSteps(:);
     allVars.timeStep(end-finalLength+1:end) = horizon * ones(finalLength,1);
     
@@ -1672,12 +1667,10 @@ function allVars = createAllVars(stepVars,horizon)
        if (stepVars.state(allVars.stepVarIdx(idx)))
           
            
+           
        end
     end
-    
-    
-    
-    
+
     allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
 
 end
