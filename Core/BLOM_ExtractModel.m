@@ -1369,6 +1369,7 @@ end
 %==========================================================================
 function optVarIdx = cleanupOptVarIdx(optVarIdx)
 
+    [~,~,optVarIdx] = unique(optVarIdx);
     for i = 1:length(optVarIdx)
         target = i;
         traversedTargets = zeros(size(optVarIdx));
@@ -1385,7 +1386,7 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
         end
         optVarIdx(i) = target;
     end
-    [~,~,optVarIdx] = unique(optVarIdx);
+    [~,~,optVarIdx] = unique(optVarIdx)
 end
 
 
