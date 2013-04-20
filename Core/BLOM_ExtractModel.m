@@ -1369,7 +1369,6 @@ end
 %==========================================================================
 function optVarIdx = cleanupOptVarIdx(optVarIdx)
 
-    [~,~,optVarIdx] = unique(optVarIdx)
     for i = 1:length(optVarIdx)
         target = i;
         traversedTargets = zeros(size(optVarIdx));
@@ -1390,7 +1389,7 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
         end
         optVarIdx(i) = target;
     end
-    [~,~,optVarIdx] = unique(optVarIdx)
+    [~,~,optVarIdx] = unique(optVarIdx);
 end
 
 
@@ -1655,6 +1654,8 @@ function allVars = createAllVars(stepVars,horizon)
     
     % optVarIdx for allVars. reroutes redundant variables  
     
+    stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
+    
     % init Time
     stepVarLength = stepVars.zeroIdx - 1;
     allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime);
@@ -1676,7 +1677,7 @@ function allVars = createAllVars(stepVars,horizon)
        end
     end
 
-    allVars.optVarIdx = cleanupOptVarIdx(allVars.optVarIdx);
+    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
 
 end
 
