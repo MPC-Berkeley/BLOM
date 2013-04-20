@@ -1369,14 +1369,18 @@ end
 %==========================================================================
 function optVarIdx = cleanupOptVarIdx(optVarIdx)
 
-    [~,~,optVarIdx] = unique(optVarIdx);
+    [~,~,optVarIdx] = unique(optVarIdx)
     for i = 1:length(optVarIdx)
         target = i;
         traversedTargets = zeros(size(optVarIdx));
         k = 1;
         while (target ~= optVarIdx(target))
             if(any(traversedTargets == target))
-                error('ERROR: optVarIdx contains cycle')
+
+                traversedTargets(traversedTargets==0) = [];
+                
+                optVarIdx(traversedTargets) = min(traversedTargets);
+                %error('ERROR: optVarIdx contains cycle')
                 %slight redundancies, could be made faster with initial
                 %check
             end
