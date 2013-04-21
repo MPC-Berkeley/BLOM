@@ -80,12 +80,16 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         end
         
         stepVars = labelTimeRelevance(stepVars,block,inputAndExternalHandles);
-        
-        %stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
-        
+                
         % create allVars. allVars contains all variables at all time steps
         % and is made from stepVars
         allVars = createAllVars(stepVars,horizon);
+        
+        block = expandBlock(block,horizon,stepVars,allVars);
+        
+        stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
+        
+        allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
         
         % create large P and K matrix for entire problem
         try
@@ -1652,10 +1656,18 @@ function allVars = createAllVars(stepVars,horizon)
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
     
-    % optVarIdx for allVars. reroutes redundant variables  
+
+
+end
+
+%%
+function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     
-    stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
-    
+    initialLength = sum(stepVars.initTime);
+    interLength = sum(stepVars.interTime);
+    finalLength = sum(stepVars.finalTime);
+    totalLength = initialLength+interLength*(horizon-2)+finalLength;
+
     % init Time
     stepVarLength = stepVars.zeroIdx - 1;
     allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime);
@@ -1669,15 +1681,24 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.optVarIdx(end-finalLength+1:end) = stepVars.optVarIdx(stepVars.finalTime) + stepVarLength*(horizon-1);
     % reroute optVarIdx for delay blocks such that output of 1/z at timestep
     % k+1 is same as optvaridx of inut at timestep k
-    for idx = initialLength+1:totalLength
-       if (stepVars.state(allVars.stepVarIdx(idx)))
-          
-           
-           
-       end
-    end
 
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
+    
+    allVars.PKOptVarIdxReroute = zeros(max(allVars.optVarIdx),1);
+    
+    for idx = initialLength+1:totalLength
+        stepVarIdx = allVars.stepVarIdx(idx);
+        if (stepVars.state(stepVarIdx))
+            blockIdx = stepVars.block(stepVarIdx);
+            timeStep = allVars.timeStep(idx);
+            blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx, 1);
+            newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
+            
+            allVars.PKOptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
+            allVars.optVarIdx(idx) = newOptVarIdx;
+        end
+    end
+
 
 end
 
