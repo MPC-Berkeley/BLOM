@@ -92,15 +92,16 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
         
         % create large P and K matrix for entire problem
+        % initially we create the P and K matrix of stepVars then we create
+        % the P and K matrix for allVars
         try
            [stepP,stepK] = combinePK(block,stepVars);
         catch err
            rethrow(err)
         end
         
-        % create allVars
-        % allVars = createAllVars(stepVars,horizon);
-        
+        % create P and K matrix for allVars
+        % [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars);
 
         % create initial fields for ModelSpec
         ModelSpec.Name = name;
@@ -1270,7 +1271,7 @@ end
 %> steps
 %========================================================================
 
-function [fullP,fullK] = createFullPK(stepP,stepK,stepVars,horizon)
+function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     % first get truncated P and K matrices with the relevant times and
     % variables
     [initP,initK] = trimPK(stepP,stepK,stepVars.initTime);
@@ -1279,12 +1280,29 @@ function [fullP,fullK] = createFullPK(stepP,stepK,stepVars,horizon)
     
     % create the P and K matrices for all intermediate time steps
     interP_full = kron(speye(horizon-2),interP);
-    interK_full = kron(speye(horizon02),interK);
+    interK_full = kron(speye(horizon-2),interK);
     
     allP_cell = {initP,interP_full,finalP};
     allK_cell = {initK,interK_full,finalK};
     fullP = blkdiag(allP_cell{:});
-    fullK = blkdiag(allK_cell{:});
+    allK = blkdiag(allK_cell{:});
+    
+    % use allVars.PKOptVarIdxReroute to reroute columns of states
+    % NOTE: This only works if there's only one rerouting needed. In other
+    % words, only one column i can add to a certain column j. Another
+    % column k cannot added to that same column j. 
+    [~,colLength] = size(fullP);
+    currentCols = 1:colLength;
+    keepIndex = allVars.PKOptVarIdxReroute == 0;
+    toIndex = currentCols;
+    toIndex(~keepIndex) = allVars.PKOptVarIdxReroute(~keepIndex);
+    [~,~,rerouteIdx] = unique(toIndex);
+    addColsIdx = rerouteIdx(~keepIndex);
+        
+    % get only the relevant columns of P;
+    tempP = fullP(:,keepIndex);
+    tempP(:,addColsIdx) = tempP(:,addColsIdx) + fullP(:,~keepIndex);
+    allP = tempP;
 end
 
 %%
