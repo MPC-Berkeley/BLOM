@@ -135,6 +135,40 @@ switch modelname
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0])==0
             warning('testManyDelay, test 6 failed')
         end
+    case 'testSubsystem'
+        %% test 1
+        set_param('testSubsystem/Bound','initial_step','on')
+        set_param('testSubsystem/Bound','intermediate_step','on')
+        set_param('testSubsystem/Bound','final_step','on')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','on')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','on')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','on')
+        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
+            warning('testSubsystem, test 1 failed')
+        end
+        %% test 2
+        set_param('testSubsystem/Bound','initial_step','off')
+        set_param('testSubsystem/Bound','intermediate_step','off')
+        set_param('testSubsystem/Bound','final_step','off')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','off')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','off')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','off')
+        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0])==0
+            warning('testSubsystem, test 2 failed')
+        end
+        %% test 3
+        set_param('testSubsystem/Bound','initial_step','off')
+        set_param('testSubsystem/Bound','intermediate_step','off')
+        set_param('testSubsystem/Bound','final_step','off')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','on')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','on')
+        set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','on')
+        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;1 1 1;1 1 1;1 1 1])==0
+            warning('testSubsystem, test 3 failed')
+        end
 end
 end
 
