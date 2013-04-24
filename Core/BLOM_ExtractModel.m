@@ -1679,6 +1679,21 @@ function allVars = createAllVars(stepVars,horizon)
 end
 
 %%
+%========================================================================
+%> @brief creates allVars.optVarIdx and allVars.PKOptVarIdxReroute
+%>
+%> @param allVars to fill in
+%>
+%> @param block with block.stepOutputIdx and allInputMatrix already filled
+%> in.  currently done in expandBlock
+%>
+%> @param stepVars with initTime, interTime, finaltime filled in
+%> 
+%> @param horizon for problem
+%>
+%> @retval allVars with allVars.optVarIdx and allVars.PKOptVarIdxReroute
+%> filled in
+%======================================================================
 function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     
     initialLength = sum(stepVars.initTime);
