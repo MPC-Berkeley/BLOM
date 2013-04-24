@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.5"
+    ComputedModelVersion    "1.9"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Eric"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 17 12:06:57 2013"
-  RTWModifiedTimeStamp	  288101214
-  ModelVersionFormat	  "1.%<AutoIncrement:5>"
+  LastModifiedDate	  "Wed Apr 24 13:34:55 2013"
+  RTWModifiedTimeStamp	  288711248
+  ModelVersionFormat	  "1.%<AutoIncrement:9>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -590,6 +590,20 @@ Model {
       FramePeriod	      "inf"
     }
     Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
       BlockType		      UnitDelay
       X0		      "0"
       SampleTime	      "1"
@@ -599,7 +613,7 @@ Model {
   }
   System {
     Name		    "testManyDelay"
-    Location		    [1272, 446, 1731, 789]
+    Location		    [1200, 457, 1659, 800]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -613,7 +627,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    12
+    SIDHighWatermark	    17
     Block {
       BlockType		      Reference
       Name		      "Bound"
@@ -635,7 +649,7 @@ Model {
       ub		      "1"
       lb		      "0"
       initial_step	      off
-      final_step	      on
+      final_step	      off
       intermediate_step	      off
     }
     Block {
@@ -658,55 +672,45 @@ Model {
       RTWMemSecDataParameters "Inherit from model"
       ub		      "2"
       lb		      "1"
-      initial_step	      off
+      initial_step	      on
       final_step	      on
-      intermediate_step	      off
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Bound2"
-      SID		      12
-      Ports		      [1]
-      Position		      [365, 192, 440, 238]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
-      SourceBlock	      "BLOM_Lib/Bound"
-      SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      ub		      "3"
-      lb		      "2"
-      initial_step	      off
-      final_step	      on
-      intermediate_step	      off
+      intermediate_step	      on
     }
     Block {
       BlockType		      Constant
       Name		      "Constant"
       SID		      2
-      Position		      [75, 35, 105, 65]
+      Position		      [35, 35, 65, 65]
       OutDataType	      "fixdt(1, 16)"
       OutScaling	      "2^0"
     }
     Block {
-      BlockType		      UnitDelay
-      Name		      "Unit Delay"
-      SID		      7
-      Position		      [290, 198, 325, 232]
-      SampleTime	      "-1"
+      BlockType		      Constant
+      Name		      "Constant1"
+      SID		      16
+      Position		      [35, 100, 65, 130]
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^0"
     }
     Block {
-      BlockType		      UnitDelay
-      Name		      "Unit Delay1"
-      SID		      8
-      Position		      [190, 33, 225, 67]
-      SampleTime	      "-1"
+      BlockType		      Demux
+      Name		      "Demux"
+      SID		      13
+      Ports		      [1, 2]
+      Position		      [170, 41, 175, 79]
+      ShowName		      off
+      Outputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux"
+      SID		      14
+      Ports		      [2, 1]
+      Position		      [105, 41, 110, 79]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
     }
     Block {
       BlockType		      UnitDelay
@@ -735,38 +739,36 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Constant"
-      SrcPort		      1
-      Points		      [35, 0]
-      Branch {
-	DstBlock		"Unit Delay1"
-	DstPort			1
-      }
-      Branch {
-	Points			[0, 85]
-	Branch {
-	  Points		  [0, 5]
-	  DstBlock		  "Unit Delay2"
-	  DstPort		  1
-	}
-	Branch {
-	  Points		  [130, 0]
-	  DstBlock		  "Unit Delay"
-	  DstPort		  1
-	}
-      }
-    }
-    Line {
-      SrcBlock		      "Unit Delay1"
+      SrcBlock		      "Demux"
       SrcPort		      1
       DstBlock		      "Unit Delay3"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Unit Delay"
-      SrcPort		      1
-      DstBlock		      "Bound2"
+      SrcBlock		      "Demux"
+      SrcPort		      2
+      Points		      [35, 0; 0, 70]
+      DstBlock		      "Unit Delay2"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux"
+      SrcPort		      1
+      DstBlock		      "Demux"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant"
+      SrcPort		      1
+      DstBlock		      "Mux"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant1"
+      SrcPort		      1
+      Points		      [10, 0; 0, -45]
+      DstBlock		      "Mux"
+      DstPort		      2
     }
   }
 }
