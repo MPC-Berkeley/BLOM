@@ -1714,6 +1714,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
 
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
     
+    OptVarIdxReroute = zeros(max(allVars.optVarIdx),1);
     allVars.PKOptVarIdxReroute = zeros(max(allVars.optVarIdx),1);
     
     for idx = initialLength+1:totalLength
@@ -1724,11 +1725,16 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx, 1);
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
             
-            allVars.PKOptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
+            OptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
             allVars.optVarIdx(idx) = newOptVarIdx;
         end
     end
 
+    selfMapIdxs = PKOptVarIdxReroute == 0;
+    allVars.PKOptVarIdxReroute(selfMapIdxs) = 1:length(selfMapIdxs);
+    for stateMapIdx = find(PKOptVarIdxReroute ~= 0)
+        allVars.PKOptVarIdxReroute(stateMapIdx) = allVars.PKOptVarIdxReroute(OptVarIdxReroute(stateMapIdx));
+    end
 
 end
 
