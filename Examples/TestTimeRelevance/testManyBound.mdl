@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.5"
+    ComputedModelVersion    "1.12"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Eric"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 16 15:29:43 2013"
-  RTWModifiedTimeStamp	  288026892
-  ModelVersionFormat	  "1.%<AutoIncrement:5>"
+  LastModifiedDate	  "Wed Apr 24 12:12:42 2013"
+  RTWModifiedTimeStamp	  288706101
+  ModelVersionFormat	  "1.%<AutoIncrement:12>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -590,24 +590,16 @@ Model {
       FramePeriod	      "inf"
     }
     Block {
-      BlockType		      Integrator
-      ExternalReset	      "none"
-      InitialConditionSource  "internal"
-      InitialCondition	      "0"
-      LimitOutput	      off
-      UpperSaturationLimit    "inf"
-      LowerSaturationLimit    "-inf"
-      ShowSaturationPort      off
-      ShowStatePort	      off
-      AbsoluteTolerance	      "auto"
-      IgnoreLimit	      off
-      ZeroCross		      on
-      ContinuousStateAttributes	"''"
+      BlockType		      UnitDelay
+      X0		      "0"
+      SampleTime	      "1"
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
     }
   }
   System {
     Name		    "testManyBound"
-    Location		    [1122, 671, 1708, 1019]
+    Location		    [1236, 277, 1759, 604]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -621,7 +613,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    6
+    SIDHighWatermark	    7
     Block {
       BlockType		      Reference
       Name		      "Bound"
@@ -644,79 +636,7 @@ Model {
       lb		      "0"
       initial_step	      on
       final_step	      off
-      intermediate_step	      off
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Bound1"
-      SID		      4
-      Ports		      [1]
-      Position		      [215, 102, 290, 148]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
-      SourceBlock	      "BLOM_Lib/Bound"
-      SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      ub		      "2"
-      lb		      "1"
-      initial_step	      off
-      final_step	      off
       intermediate_step	      on
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Bound2"
-      SID		      5
-      Ports		      [1]
-      Position		      [215, 177, 290, 223]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
-      SourceBlock	      "BLOM_Lib/Bound"
-      SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      ub		      "3"
-      lb		      "2"
-      initial_step	      off
-      final_step	      off
-      intermediate_step	      on
-    }
-    Block {
-      BlockType		      Reference
-      Name		      "Bound3"
-      SID		      6
-      Ports		      [1]
-      Position		      [215, 252, 290, 298]
-      BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
-      SourceBlock	      "BLOM_Lib/Bound"
-      SourceType	      ""
-      ShowPortLabels	      "FromPortIcon"
-      SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
-      RTWMemSecFuncInitTerm   "Inherit from model"
-      RTWMemSecFuncExecute    "Inherit from model"
-      RTWMemSecDataConstants  "Inherit from model"
-      RTWMemSecDataInternal   "Inherit from model"
-      RTWMemSecDataParameters "Inherit from model"
-      ub		      "4"
-      lb		      "3"
-      initial_step	      off
-      final_step	      on
-      intermediate_step	      off
     }
     Block {
       BlockType		      Constant
@@ -727,48 +647,24 @@ Model {
       OutScaling	      "2^0"
     }
     Block {
-      BlockType		      Integrator
-      Name		      "Integrator"
-      SID		      2
-      Ports		      [1, 1]
-      Position		      [125, 50, 155, 80]
+      BlockType		      UnitDelay
+      Name		      "Unit Delay"
+      SID		      7
+      Position		      [120, 43, 155, 77]
+      SampleTime	      "-1"
     }
     Line {
       SrcBlock		      "Constant"
       SrcPort		      1
-      Points		      [10, 0; 0, 5]
-      DstBlock		      "Integrator"
+      DstBlock		      "Unit Delay"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Integrator"
+      SrcBlock		      "Unit Delay"
       SrcPort		      1
-      Points		      [0, -5; 30, 0]
-      Branch {
-	Points			[5, 0; 0, -10]
-	DstBlock		"Bound"
-	DstPort			1
-      }
-      Branch {
-	Points			[0, 70]
-	Branch {
-	  Points		  [0, 5; 10, 0]
-	  DstBlock		  "Bound1"
-	  DstPort		  1
-	}
-	Branch {
-	  Points		  [0, 70]
-	  Branch {
-	    DstBlock		    "Bound2"
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [0, 75]
-	    DstBlock		    "Bound3"
-	    DstPort		    1
-	  }
-	}
-      }
+      Points		      [20, 0; 0, -10]
+      DstBlock		      "Bound"
+      DstPort		      1
     }
   }
 }
