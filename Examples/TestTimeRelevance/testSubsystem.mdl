@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.1"
+    ComputedModelVersion    "1.5"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Eric"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Apr 16 15:33:46 2013"
-  RTWModifiedTimeStamp	  288027192
-  ModelVersionFormat	  "1.%<AutoIncrement:1>"
+  LastModifiedDate	  "Wed Apr 24 13:46:26 2013"
+  RTWModifiedTimeStamp	  288711871
+  ModelVersionFormat	  "1.%<AutoIncrement:5>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -590,28 +590,6 @@ Model {
       FramePeriod	      "inf"
     }
     Block {
-      BlockType		      Gain
-      Gain		      "1"
-      Multiplication	      "Element-wise(K.*u)"
-      ParamMin		      "[]"
-      ParamMax		      "[]"
-      ParameterDataTypeMode   "Same as input"
-      ParameterDataType	      "fixdt(1,16,0)"
-      ParameterScalingMode    "Best Precision: Matrix-wise"
-      ParameterScaling	      "[]"
-      ParamDataTypeStr	      "Inherit: Same as input"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Same as input"
-      OutDataType	      "fixdt(1,16,0)"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Same as input"
-      LockScale		      off
-      RndMeth		      "Floor"
-      SaturateOnIntegerOverflow	on
-      SampleTime	      "-1"
-    }
-    Block {
       BlockType		      Inport
       Port		      "1"
       UseBusObject	      off
@@ -632,21 +610,6 @@ Model {
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
-    }
-    Block {
-      BlockType		      Integrator
-      ExternalReset	      "none"
-      InitialConditionSource  "internal"
-      InitialCondition	      "0"
-      LimitOutput	      off
-      UpperSaturationLimit    "inf"
-      LowerSaturationLimit    "-inf"
-      ShowSaturationPort      off
-      ShowStatePort	      off
-      AbsoluteTolerance	      "auto"
-      IgnoreLimit	      off
-      ZeroCross		      on
-      ContinuousStateAttributes	"''"
     }
     Block {
       BlockType		      Outport
@@ -689,10 +652,17 @@ Model {
       DataTypeOverride	      "UseLocalSettings"
       MinMaxOverflowLogging   "UseLocalSettings"
     }
+    Block {
+      BlockType		      UnitDelay
+      X0		      "0"
+      SampleTime	      "1"
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
+    }
   }
   System {
     Name		    "testSubsystem"
-    Location		    [1079, 787, 1659, 1047]
+    Location		    [900, 306, 1480, 566]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -706,13 +676,13 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    10
+    SIDHighWatermark	    15
     Block {
       BlockType		      Reference
       Name		      "Bound"
       SID		      5
       Ports		      [1]
-      Position		      [390, 92, 465, 138]
+      Position		      [430, 92, 505, 138]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Bound"
@@ -755,7 +725,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[821, 572, 1319, 872]
+	Location		[1214, 622, 1712, 922]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -778,13 +748,6 @@ Model {
 	  OutScaling		  "2^0"
 	}
 	Block {
-	  BlockType		  Integrator
-	  Name			  "Integrator"
-	  SID			  6
-	  Ports			  [1, 1]
-	  Position		  [175, 100, 205, 130]
-	}
-	Block {
 	  BlockType		  SubSystem
 	  Name			  "Subsystem"
 	  SID			  7
@@ -800,7 +763,7 @@ Model {
 	  MaskHideContents	  off
 	  System {
 	    Name		    "Subsystem"
-	    Location		    [433, 425, 931, 725]
+	    Location		    [1354, 101, 1852, 401]
 	    Open		    on
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -823,19 +786,35 @@ Model {
 	      OutScaling	      "2^0"
 	    }
 	    Block {
-	      BlockType		      Gain
-	      Name		      "Gain"
-	      SID		      10
-	      Position		      [220, 95, 250, 125]
-	      ParameterDataTypeMode   "Inherit via internal rule"
-	      ParameterDataType	      "fixdt(1, 16)"
-	      ParameterScaling	      "2^0"
-	      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-	      OutDataTypeMode	      "Inherit via internal rule"
-	      OutDataType	      "fixdt(1, 16)"
-	      OutScaling	      "2^0"
-	      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-	      SaturateOnIntegerOverflow	off
+	      BlockType		      Reference
+	      Name		      "Bound1"
+	      SID		      15
+	      Ports		      [1]
+	      Position		      [210, 152, 285, 198]
+	      BackgroundColor	      "lightBlue"
+	      LibraryVersion	      "1.80"
+	      SourceBlock	      "BLOM_Lib/Bound"
+	      SourceType	      ""
+	      ShowPortLabels	      "FromPortIcon"
+	      SystemSampleTime	      "-1"
+	      FunctionWithSeparateData off
+	      RTWMemSecFuncInitTerm   "Inherit from model"
+	      RTWMemSecFuncExecute    "Inherit from model"
+	      RTWMemSecDataConstants  "Inherit from model"
+	      RTWMemSecDataInternal   "Inherit from model"
+	      RTWMemSecDataParameters "Inherit from model"
+	      ub		      "2"
+	      lb		      "1"
+	      initial_step	      on
+	      final_step	      on
+	      intermediate_step	      on
+	    }
+	    Block {
+	      BlockType		      UnitDelay
+	      Name		      "Unit Delay"
+	      SID		      14
+	      Position		      [210, 93, 245, 127]
+	      SampleTime	      "-1"
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -849,16 +828,31 @@ Model {
 	    Line {
 	      SrcBlock		      "In1"
 	      SrcPort		      1
-	      DstBlock		      "Gain"
-	      DstPort		      1
+	      Points		      [20, 0]
+	      Branch {
+		DstBlock		"Unit Delay"
+		DstPort			1
+	      }
+	      Branch {
+		Points			[0, 65]
+		DstBlock		"Bound1"
+		DstPort			1
+	      }
 	    }
 	    Line {
-	      SrcBlock		      "Gain"
+	      SrcBlock		      "Unit Delay"
 	      SrcPort		      1
 	      DstBlock		      "Out1"
 	      DstPort		      1
 	    }
 	  }
+	}
+	Block {
+	  BlockType		  UnitDelay
+	  Name			  "Unit Delay"
+	  SID			  13
+	  Position		  [175, 83, 210, 117]
+	  SampleTime		  "-1"
 	}
 	Block {
 	  BlockType		  Outport
@@ -872,21 +866,21 @@ Model {
 	Line {
 	  SrcBlock		  "In1"
 	  SrcPort		  1
-	  Points		  [5, 0; 0, 5]
-	  DstBlock		  "Integrator"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "Integrator"
-	  SrcPort		  1
-	  Points		  [10, 0; 0, -5]
-	  DstBlock		  "Subsystem"
+	  Points		  [15, 0]
+	  DstBlock		  "Unit Delay"
 	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "Subsystem"
 	  SrcPort		  1
 	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Unit Delay"
+	  SrcPort		  1
+	  Points		  [10, 0; 0, 10]
+	  DstBlock		  "Subsystem"
 	  DstPort		  1
 	}
       }
