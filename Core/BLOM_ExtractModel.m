@@ -1001,6 +1001,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         lengthOut = dimension(1)*dimension(2);
         switch stepVarsState
             case 'bound'
+                fromIndex = find(stepVars.outportHandle==currentOutport,1);
                 % sometimes there will be two bound blocks connected to the
                 % same outport. This means that the bounds are different at
                 % different time steps
@@ -1014,18 +1015,18 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
                 
                 if init
-                    stepVars.initLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.initUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                    stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
                 end
                 
                 if inter
-                    stepVars.interLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.interUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                    stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
                 end
                 
                 if final
-                    stepVars.finalLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.finalUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
+                    stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
                 end
             case 'rememberIndex'
             % if this outport has already been found but we need the index for
@@ -1291,18 +1292,14 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     % NOTE: This only works if there's only one rerouting needed. In other
     % words, only one column i can add to a certain column j. Another
     % column k cannot added to that same column j. 
-    [~,colLength] = size(fullP);
-    currentCols = 1:colLength;
-    keepIndex = allVars.PKOptVarIdxReroute == 0;
-    toIndex = currentCols;
-    toIndex(~keepIndex) = allVars.PKOptVarIdxReroute(~keepIndex);
-    [~,~,rerouteIdx] = unique(toIndex);
-    addColsIdx = rerouteIdx(~keepIndex);
-        
-    % get only the relevant columns of P;
-    tempP = fullP(:,keepIndex);
-    tempP(:,addColsIdx) = tempP(:,addColsIdx) + fullP(:,~keepIndex);
-    allP = tempP;
+    [rowPLength,~] = size(allP)
+    
+    % create a matrix that finds which columns of the entire P (with
+    % states) to add to the columns of P without states
+    toAddCol = sparse(1:rowPLength,allVars.PKOptVarIdxReroute);
+    
+    % create the final allP that has proper states.
+    allP = toAddCol*fullP;
 end
 
 %%
