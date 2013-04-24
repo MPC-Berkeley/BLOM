@@ -1283,10 +1283,8 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     interP_full = kron(speye(horizon-2),interP);
     interK_full = kron(speye(horizon-2),interK);
     
-    allP_cell = {initP,interP_full,finalP};
-    allK_cell = {initK,interK_full,finalK};
-    fullP = blkdiag(allP_cell{:});
-    allK = blkdiag(allK_cell{:});
+    fullP = blkdiag(initP,interP_full,finalP);
+    allK = blkdiag(initK,interK_full,finalK);
     
     % use allVars.PKOptVarIdxReroute to reroute columns of states
     % NOTE: This only works if there's only one rerouting needed. In other
