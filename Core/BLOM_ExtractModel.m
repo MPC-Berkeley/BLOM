@@ -1728,9 +1728,9 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
         end
     end
 
-    selfMapIdxs = PKOptVarIdxReroute == 0;
+    selfMapIdxs = find(OptVarIdxReroute == 0);
     allVars.PKOptVarIdxReroute(selfMapIdxs) = 1:length(selfMapIdxs);
-    for stateMapIdx = find(PKOptVarIdxReroute ~= 0)
+    for stateMapIdx = find(OptVarIdxReroute ~= 0)
         allVars.PKOptVarIdxReroute(stateMapIdx) = allVars.PKOptVarIdxReroute(OptVarIdxReroute(stateMapIdx));
     end
 
