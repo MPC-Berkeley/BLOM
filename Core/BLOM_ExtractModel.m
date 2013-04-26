@@ -1273,11 +1273,17 @@ end
 %========================================================================
 
 function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
+    % get a mapping of which optVarIdx are relevant at each time step
+    sizeTimes = length(stepVars.initTime);
+    optInitTime = stepVars.initTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
+    optInterTime = stepVars.interTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
+    optFinalTime = stepVars.finalTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
+    
     % first get truncated P and K matrices with the relevant times and
     % variables
-    [initP,initK] = trimPK(stepP,stepK,stepVars.initTime);
-    [interP,interK] = trimPK(stepP,stepK,allvars.interTime);
-    [finalP,finalK] = trimPK(stepP,stepK,stepVars.finalTime);
+    [initP,initK] = trimPK(stepP,stepK,optInitTime);
+    [interP,interK] = trimPK(stepP,stepK,optInterTime);
+    [finalP,finalK] = trimPK(stepP,stepK,optFinalTime);
     
     % create the P and K matrices for all intermediate time steps
     interP_full = kron(speye(horizon-2),interP);
@@ -1290,11 +1296,11 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     % NOTE: This only works if there's only one rerouting needed. In other
     % words, only one column i can add to a certain column j. Another
     % column k cannot added to that same column j. 
-    [rowPLength,~] = size(allP)
+    [rowPLength,~] = size(fullP);
     
     % create a matrix that finds which columns of the entire P (with
     % states) to add to the columns of P without states
-    toAddCol = sparse(1:rowPLength,allVars.PKOptVarIdxReroute);
+    toAddCol = sparse(1:rowPLength,allVars.OptVarIdxReroute);
     
     % create the final allP that has proper states.
     allP = toAddCol*fullP;
