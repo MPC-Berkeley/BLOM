@@ -1599,6 +1599,7 @@ function block = expandBlock(block, horizon, stepVars, allVars)
     % Allvars in column of appropriate timesteps
     % CHANGE ONLY APPLIES TO TEMP VARIABLE IN THIS FUNCTION CALL
     stepVars.allVarsIdxs = cell(stepVars.zeroIdx-1,1);
+    [stepVars.allVarsIdxs{:}] = deal(zeros(horizon,1));
     for allVarsIdx = 1:allVars.totalLength
         stepVars.allVarsIdxs{allVars.stepVarIdx(allVarsIdx)}(allVars.timeStep(allVarsIdx)) = allVarsIdx;
     end
@@ -1615,7 +1616,10 @@ function block = expandBlock(block, horizon, stepVars, allVars)
         
         block.allOutputMatrix{blockIdx} = ...
             reshape([stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}}], horizon, length(block.stepOutputIdx{blockIdx}))';
-            
+        
+       
+        block.allInputMatrix{blockIdx}(~any(block.allInputMatrix{blockIdx}~=0,2),:) = [];
+        block.allOutputMatrix{blockIdx}(~any(block.allOutputMatrix{blockIdx}~=0,2),:) = [];
     end
 
 end
@@ -1727,6 +1731,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             blockIdx = stepVars.block(stepVarIdx);
             timeStep = allVars.timeStep(idx);
             blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx, 1);
+            block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1)
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
             
             OptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
