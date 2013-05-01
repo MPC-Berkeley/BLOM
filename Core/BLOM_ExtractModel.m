@@ -1731,7 +1731,6 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             blockIdx = stepVars.block(stepVarIdx);
             timeStep = allVars.timeStep(idx);
             blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx, 1);
-            block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1)
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
             
             OptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
