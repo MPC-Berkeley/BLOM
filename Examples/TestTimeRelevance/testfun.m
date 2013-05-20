@@ -166,7 +166,7 @@ switch modelname
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','on')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','on')
         [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
-        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;1 1 1;1 1 1;1 1 1])==0
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;1 1 1;0 0 0;1 1 1;0 0 0;1 1 1;1 1 1])==0
             warning('testSubsystem, test 3 failed')
         end
 end
