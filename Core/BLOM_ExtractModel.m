@@ -102,16 +102,9 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         
         % create P and K matrix for allVars
         % [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars);
-
-        % create initial fields for ModelSpec
-        ModelSpec.Name = name;
-        ModelSpec.integ_method = integ_method;
-        ModelSpec.dt = dt;
-        ModelSpec.horizon = horizon;
-        ModelSpec.options = options;
         
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
-        [ModelSpec] = convert2ModelSpec(ModelSpec,stepVars,block);
+        ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block);
         
         % following code checks whether or not inports and outportHandles
         % was filled in properly
@@ -203,8 +196,6 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         end
         fprintf('--------------------------------------------------------\n')
 
-        % just a placeholder for ModelSpec so that MATLAB does not complain
-        ModelSpec = 1;
     catch err
         % close evaluation of models
         eval([name '([],[],[],''term'');']);
@@ -1757,7 +1748,40 @@ end
 
 % NOTE, REPLACE VARARGIN WITH ACTUAL VARIABLES. THIS IS JUST A PLACEHOLDER
 % FOR NOW
-function [ModelSpec] = convert2ModelSpec(ModelSpec,stepVars,block,varargin)
+function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block,varargin)
+    ModelSpec.name = name;
+    ModelSpec.horizon = horizon;
+    ModelSpec.integ_method = integ_method;
+    ModelSpec.dt = dt;
+    ModelSpec.options = options;
+
     ModelSpec.in_vars = stepVars.input;
     ModelSpec.ex_vars = stepVars.external;
+    
+    varNameParentChar = char(block.names(stepVars.block(allVars.stepVarIdx)));
+    varNameParent = cellstr(varNameParentChar(:,(length(name)+2):end));
+    varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
+    varNameTimeStep = num2str(allVars.timeStep);
+    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNamePortNum, '.t', varNameTimeStep,';');
+    
+    ModelSpec.all_names = cell(max(allVars.PKOptVarIdxReroute),1);
+    vec_idx = zeros(allVars.totalLength,1);
+    for idx = 1:allVars.totalLength
+        vecIdx = allVars.PKOptVarIdxReroute(allVars.optVarIdx(idx));
+        ModelSpec.all_names{vecIdx} = ...
+            strcat(ModelSpec.all_names{vecIdx}, varNameAllVars{idx});
+        vec_idx(idx) = vecIdx;
+    end
+    
+    for idx = 1:size(ModelSpec.all_names)
+       ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
+    end
+   
+    num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
+    terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
+    all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+    ModelSpec.all_names_struct.terms_so_far = terms_so_far;
+    ModelSpec.all_names_struct.all_fields = all_fields;
+    ModelSpec.all_names_struct.vec_idx = vec_idx; 
+    
 end

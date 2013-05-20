@@ -8,7 +8,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','on')
         set_param('testManyBound/Bound','intermediate_step','on')
         set_param('testManyBound/Bound','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 1 1])==0
             warning('testManyBound, test 1 failed')
         end
@@ -16,7 +16,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','off')
         set_param('testManyBound/Bound','intermediate_step','on')
         set_param('testManyBound/Bound','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 1 1;1 1 1])==0
             warning('testManyBound, test 2 failed')
         end
@@ -24,7 +24,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','on')
         set_param('testManyBound/Bound','intermediate_step','off')
         set_param('testManyBound/Bound','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 0 1;1 1 1])==0
             warning('testManyBound, test 3 failed')
         end
@@ -32,7 +32,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','off')
         set_param('testManyBound/Bound','intermediate_step','off')
         set_param('testManyBound/Bound','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 1;1 1 1])==0
             warning('testManyBound, test 4 failed')
         end
@@ -40,7 +40,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','on')
         set_param('testManyBound/Bound','intermediate_step','on')
         set_param('testManyBound/Bound','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 0;1 1 1])==0
             warning('testManyBound, test 5 failed')
         end
@@ -48,7 +48,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','off')
         set_param('testManyBound/Bound','intermediate_step','on')
         set_param('testManyBound/Bound','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 1 0;1 1 1])==0
             warning('testManyBound, test 6 failed')
         end
@@ -64,7 +64,7 @@ switch modelname
         set_param('testManyBound/Bound','initial_step','off')
         set_param('testManyBound/Bound','intermediate_step','off')
         set_param('testManyBound/Bound','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0])==0
             warning('testManyBound, test 8 failed')
         end
@@ -76,7 +76,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','on')
         set_param('testManyDelay/Bound1','intermediate_step','on')
         set_param('testManyDelay/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testManyDelay, test 1 failed')
         end
@@ -87,7 +87,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','on')
         set_param('testManyDelay/Bound1','intermediate_step','on')
         set_param('testManyDelay/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testManyDelay, test 2 failed')
         end
@@ -98,7 +98,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','on')
         set_param('testManyDelay/Bound1','intermediate_step','on')
         set_param('testManyDelay/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testManyDelay, test 3 failed')
         end
@@ -109,7 +109,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','on')
         set_param('testManyDelay/Bound1','intermediate_step','off')
         set_param('testManyDelay/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 0 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testManyDelay, test 4 failed')
         end
@@ -120,7 +120,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','on')
         set_param('testManyDelay/Bound1','intermediate_step','on')
         set_param('testManyDelay/Bound1','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 1 0;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testManyDelay, test 5 failed')
         end
@@ -131,7 +131,7 @@ switch modelname
         set_param('testManyDelay/Bound1','initial_step','off')
         set_param('testManyDelay/Bound1','intermediate_step','off')
         set_param('testManyDelay/Bound1','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0])==0
             warning('testManyDelay, test 6 failed')
         end
@@ -143,7 +143,7 @@ switch modelname
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','on')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','on')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])==0
             warning('testSubsystem, test 1 failed')
         end
@@ -154,7 +154,7 @@ switch modelname
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','off')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','off')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','off')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0;0 0 0])==0
             warning('testSubsystem, test 2 failed')
         end
@@ -165,7 +165,7 @@ switch modelname
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','initial_step','on')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','intermediate_step','on')
         set_param('testSubsystem/Subsystem/Subsystem/Bound1','final_step','on')
-        [a,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubsystem',horizon,1,1,1);
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0;0 0 0;0 0 0;1 1 1;1 1 1;1 1 1])==0
             warning('testSubsystem, test 3 failed')
         end
