@@ -61,11 +61,11 @@ switch modelname
             warning('testManyBound, test 7 failed')
         end
         %% test 8
-        set_param('testManyBound/Bound','initial_step','on')
+        set_param('testManyBound/Bound','initial_step','off')
         set_param('testManyBound/Bound','intermediate_step','off')
         set_param('testManyBound/Bound','final_step','off')
         [a,block,stepVars,allVars] = BLOM_ExtractModel('testManyBound',horizon,1,1,1);
-        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 0 0;1 1 1])==0
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;0 0 0])==0
             warning('testManyBound, test 8 failed')
         end
     case 'testManyDelay'
