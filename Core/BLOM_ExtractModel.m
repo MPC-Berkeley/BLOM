@@ -1610,13 +1610,12 @@ function block = expandBlock(block, horizon, stepVars, allVars)
     for blockIdx = 1:block.zeroIdx - 1
         block.allInputMatrix{blockIdx} = zeros(length(block.stepInputIdx{blockIdx}), horizon); 
         block.allOutputMatrix{blockIdx} = zeros(length(block.stepOutputIdx{blockIdx}), horizon); 
-        
+                
         block.allInputMatrix{blockIdx} = ...
             reshape([stepVars.allVarsIdxs{block.stepInputIdx{blockIdx}}], horizon, length(block.stepInputIdx{blockIdx}))';
         
         block.allOutputMatrix{blockIdx} = ...
-            reshape([stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}}], horizon, length(block.stepOutputIdx{blockIdx}))';
-        
+            reshape([stepVars.allVarsIdxs{block.stepOutputIdx{blockIdx}}], horizon, length(block.stepOutputIdx{blockIdx}))';        
        
         block.allInputMatrix{blockIdx}(~any(block.allInputMatrix{blockIdx}~=0,2),:) = [];
         block.allOutputMatrix{blockIdx}(~any(block.allOutputMatrix{blockIdx}~=0,2),:) = [];
@@ -1676,11 +1675,9 @@ function allVars = createAllVars(stepVars,horizon)
     stepVarsIndices = 1:(stepVars.zeroIdx-1);
     allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
     allVars.stepVarIdx(initialLength+1:end-finalLength) =...
-        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime));
+        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime))';
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
     
-
-
 end
 
 %%
