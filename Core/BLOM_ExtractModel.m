@@ -1500,8 +1500,11 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 refBlock = get_param(blockHandle, 'ReferenceBlock');
                 
                 if strcmp(blockType, 'SubSystem') && isempty(refBlock)
+                    % here we treat it as if the subsystem does not exist
+                    % and traverse normally. In order to do so, we must
+                    % first find the first block connected to a specific
+                    % outport
                     outportBlocks = find_system(blockHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-                    inputs = [block.stepInputIdx{blocks(idx)}];
                     for n = 1:length(outportBlocks)
                         outportBlockPorts = get_param(outportBlocks(n), 'PortHandles');
                         outportInputHandle = outportBlockPorts.Inport;
@@ -1510,6 +1513,17 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                         inputsToAdd = find(stepVars.outportHandle == srcPortHandle);
                         inputs = [inputs; inputsToAdd];
                     end
+                    
+                elseif strcmp(blockType,'Inport')
+                    % for the case of inport, we need to find the output
+                    % connected to the subsystem and that specific inport
+                    parentSubsystem = get_param(blockHandle,'Parent');
+                    parentSubsystemPorts = get_param(parentSubsystem,'PortHandles');                    
+                    portNum = eval(get_param(gcbh,'Port'));
+                    currentSubsystemInport = parentSubsystemPorts.Inport(portNum);
+                    inportLine = get_param(currentSubsystemInport,'Line');
+                    outportSource = get_param(inportLine,'SrcPortHandle');
+                    inputs = find(stepVars.outportHandle == outportSource);
 
                 elseif strcmp(blockType, 'From')
                     gotoTag = get_param(blockHandle, 'GotoTag');
