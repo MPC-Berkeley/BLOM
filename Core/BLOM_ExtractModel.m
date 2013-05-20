@@ -1519,7 +1519,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     % connected to the subsystem and that specific inport
                     parentSubsystem = get_param(blockHandle,'Parent');
                     parentSubsystemPorts = get_param(parentSubsystem,'PortHandles');                    
-                    portNum = eval(get_param(gcbh,'Port'));
+                    portNum = eval(get_param(blockHandle,'Port'));
                     currentSubsystemInport = parentSubsystemPorts.Inport(portNum);
                     inportLine = get_param(currentSubsystemInport,'Line');
                     outportSource = get_param(inportLine,'SrcPortHandle');
@@ -1793,7 +1793,11 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
    
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
-    all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+    if isempty(ModelSpec.all_names)
+       all_fields = cell(1,3);
+    else
+        all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+    end
     ModelSpec.all_names_struct.terms_so_far = terms_so_far;
     ModelSpec.all_names_struct.all_fields = all_fields;
     ModelSpec.all_names_struct.vec_idx = vec_idx; 
