@@ -311,6 +311,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
+    block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block
     
     % find all lines connected to costs and bounds and then get outport
     % ports from there. fill in stepVars and block structures as necessary
@@ -386,6 +387,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 % blocks there
                 
                 state = 'intoSubsys';
+                              
+                block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
                 sourceOutports = [sourcePorts.Outport];
                 [outportHandles,iZero,stepVars,block] = ...
                     updateVars(sourceOutports,outportHandles,iZero,...
@@ -530,6 +533,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.handles = block.handles(1:(block.zeroIdx-1));
     block.bound = block.bound(1:(block.zeroIdx-1));
     block.cost = block.cost(1:(block.zeroIdx-1));
+    block.subsystem = block.subsystem(1:(block.zeroIdx-1));
 
     
     % remove empty and 0 entries in stepVars
@@ -1104,7 +1108,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
         block.bound = [block.bound; false(block.zeroIdx,1)];
         block.cost = [block.cost; false(block.zeroIdx,1)];
-
+        block.subsystem = [block.subsystem; false(block.zeroIdx,1)];
     end
     
 
@@ -1718,15 +1722,11 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
         repeatedInterOptVarIdx + incrementInterOptVarIdxVector;
     % final Time
     allVars.optVarIdx(end-finalLength+1:end) = stepVars.optVarIdx(stepVars.finalTime) + stepVarLength*(horizon-1);
-    
-    allVars.initialOptVarIdx = allVars.optVarIdx;
-    
+        
     % reroute optVarIdx for delay blocks such that output of 1/z at timestep
     % k+1 is same as optvaridx of inut at timestep k
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
-    
-    allVars.initialUniqueOptVarIdx = allVars.optVarIdx;
-    
+        
     allVars.PKOptVarIdxReroute = (1:max(allVars.optVarIdx))';
     for idx = initialLength+1:totalLength
         stepVarIdx = allVars.stepVarIdx(idx);
