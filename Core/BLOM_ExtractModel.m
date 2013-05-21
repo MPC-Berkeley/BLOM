@@ -1515,29 +1515,14 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
         zeroIdx = 2;
         idx = 1;
         while(blocks(idx)~=0)
-            
             % if you've already been to current block previously or current
             % block is an input block (may be redundant), proceed to next loop iteration
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
                 blockHandle = block.handles(blocks(idx));
-                blockType = get_param(blockHandle, 'BlockType');
-                refBlock = get_param(blockHandle, 'ReferenceBlock');
-                
-                if strcmp(blockType, 'SubSystem') && isempty(refBlock)
-                    % here we treat it as if the subsystem does not exist
-                    % and traverse normally. In order to do so, we must
-                    % first find the first block connected to a specific
-                    % outport
-                    outportBlocks = find_system(blockHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-                    for n = 1:length(outportBlocks)
-                        outportBlockPorts = get_param(outportBlocks(n), 'PortHandles');
-                        outportInputHandle = outportBlockPorts.Inport;
-                        line = get_param(outportInputHandle, 'Line');
-                        srcPortHandle = get_param(line, 'SrcPortHandle');
-                        inputsToAdd = find(stepVars.outportHandle == srcPortHandle);
-                        inputs = [inputs; inputsToAdd];
-                    end
+                blockType = get_param(blockHandle, 'BlockType');                
                     
+                if block.subsystem(blocks(idx))
+                    block.names(idx)
                 elseif strcmp(blockType,'Inport')
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
@@ -1589,7 +1574,34 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 if(inter)
                     stepVars.interTime(inputs) = true;
                 end
-            
+
+                inputBlocks = stepVars.block(inputs);
+                while any(block.subsystem(inputBlocks))
+                    for idx = 1:length(inputs)
+                        if block.subsystem(inputBlocks(idx))
+                            subsystemHandle = block.handles(inputBlocks(idx));
+                            outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
+                            outportNum = stepVars.outportNum(inputs(idx));
+                            outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
+                            outportInputHandle = outportBlockPort.Inport;
+                            line = get_param(outportInputHandle, 'Line');
+                            srcPortHandle = get_param(line, 'SrcPortHandle');
+                            inputs(idx) = find(stepVars.outportHandle == srcPortHandle);
+                            inputBlocks(idx) = stepVars.block(inputs(idx));
+                        end
+                    end
+
+                    if(init)
+                        stepVars.initTime(inputs) = true;
+                    end
+                    if(final)
+                        stepVars.finalTime(inputs) = true;
+                    end
+                    if(inter)
+                        stepVars.interTime(inputs) = true;
+                    end
+                end
+                
                 %expand blocks when necessary
                 if(length(blocks) < zeroIdx+length(inputs))
                     if(length(inputs) > length(blocks))
@@ -1602,7 +1614,6 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 blocks(zeroIdx:zeroIdx+length(inputs)-1) = stepVars.block(inputs);
                 zeroIdx = zeroIdx+length(inputs);
             end
-           
             idx = idx+1;
         end
         
