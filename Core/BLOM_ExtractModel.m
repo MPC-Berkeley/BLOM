@@ -105,7 +105,6 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
         ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block);
-        
         % following code checks whether or not inports and outportHandles
         % was filled in properly
         fprintf('--------------------------------------------------------\n')
@@ -1719,32 +1718,31 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
         repeatedInterOptVarIdx + incrementInterOptVarIdxVector;
     % final Time
     allVars.optVarIdx(end-finalLength+1:end) = stepVars.optVarIdx(stepVars.finalTime) + stepVarLength*(horizon-1);
+    
+    allVars.initialOptVarIdx = allVars.optVarIdx;
+    
     % reroute optVarIdx for delay blocks such that output of 1/z at timestep
     % k+1 is same as optvaridx of inut at timestep k
-
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
     
-    OptVarIdxReroute = zeros(max(allVars.optVarIdx),1);
-    allVars.PKOptVarIdxReroute = zeros(max(allVars.optVarIdx),1);
+    allVars.initialUniqueOptVarIdx = allVars.optVarIdx;
     
+    allVars.PKOptVarIdxReroute = (1:max(allVars.optVarIdx))';
     for idx = initialLength+1:totalLength
         stepVarIdx = allVars.stepVarIdx(idx);
-        if (stepVars.state(stepVarIdx))
+        if stepVars.state(stepVarIdx)
+            oldOptVarIdx = allVars.optVarIdx(idx);
             blockIdx = stepVars.block(stepVarIdx);
             timeStep = allVars.timeStep(idx);
-            blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx, 1);
+            blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx,1);
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
-            
-            OptVarIdxReroute(allVars.optVarIdx(idx)) = newOptVarIdx;
-            allVars.optVarIdx(idx) = newOptVarIdx;
+
+            allVars.optVarIdx(allVars.optVarIdx == oldOptVarIdx) = newOptVarIdx;
+            allVars.PKOptVarIdxReroute(oldOptVarIdx) = newOptVarIdx;
         end
     end
-
-    selfMapIdxs = find(OptVarIdxReroute == 0);
-    allVars.PKOptVarIdxReroute(selfMapIdxs) = 1:length(selfMapIdxs);
-    for stateMapIdx = find(OptVarIdxReroute ~= 0)
-        allVars.PKOptVarIdxReroute(stateMapIdx) = allVars.PKOptVarIdxReroute(OptVarIdxReroute(stateMapIdx));
-    end
+    
+    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);    
 
 end
 
@@ -1778,13 +1776,11 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     varNameTimeStep = num2str(allVars.timeStep);
     varNameAllVars = strcat('BL_',varNameParent, '.Out', varNamePortNum, '.t', varNameTimeStep,';');
     
-    ModelSpec.all_names = cell(max(allVars.PKOptVarIdxReroute),1);
-    vec_idx = zeros(allVars.totalLength,1);
+    ModelSpec.all_names = cell(max(allVars.optVarIdx),1);
+    vec_idx = allVars.optVarIdx;
     for idx = 1:allVars.totalLength
-        vecIdx = allVars.PKOptVarIdxReroute(allVars.optVarIdx(idx));
-        ModelSpec.all_names{vecIdx} = ...
-            strcat(ModelSpec.all_names{vecIdx}, varNameAllVars{idx});
-        vec_idx(idx) = vecIdx;
+        ModelSpec.all_names{vec_idx(idx)} = ...
+            strcat(ModelSpec.all_names{vec_idx(idx)}, varNameAllVars{idx});
     end
     
     for idx = 1:size(ModelSpec.all_names)
