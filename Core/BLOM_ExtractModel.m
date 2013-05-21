@@ -1008,19 +1008,40 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 final = strcmp(get_param(boundHandle, 'final_step'), 'on');
                 inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
                 
+                % take into consideration current upper and lower bounds
+                currentInitLB = stepVars.initLowerBound(fromIndex);
+                currentInterLB = stepVars.interLowerBound(fromIndex);
+                currentFinalLB = stepVars.finalLowerBound(fromIndex);
+                
+                currentInitUB = stepVars.initUpperBound(fromIndex);
+                currentInterUB = stepVars.interUpperBound(fromIndex);
+                currentFinalUB = stepVars.finalUpperBound(fromIndex);
+                
                 if init
-                    stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    if lowerBound > currentInitLB
+                        stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    end
+                    if upperBound < currentInitUB
+                        stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    end
                 end
                 
                 if inter
-                    stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    if lowerBound > currentInterLB
+                        stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    end
+                    if upperBound < currentInterUB
+                        stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    end
                 end
                 
                 if final
-                    stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    if lowerBound > currentFinalLB
+                        stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                    end
+                    if upperBound < currentFinalUB
+                        stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                    end
                 end
             case 'rememberIndex'
             % if this outport has already been found but we need the index for
