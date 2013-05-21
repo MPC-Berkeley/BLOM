@@ -169,6 +169,46 @@ switch modelname
         if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;1 1 1;0 0 0;1 1 1;0 0 0;1 1 1;1 1 1])==0
             warning('testSubsystem, test 3 failed')
         end
+        
+    case 'testSubSystemMIMO'
+        %% test 1
+        % testing to make sure that subsystems works correctly for 
+        set_param('testSubSystemMIMO/Bound','initial_step','on')
+        set_param('testSubSystemMIMO/Bound','intermediate_step','on')
+        set_param('testSubSystemMIMO/Bound','final_step','on')
+        set_param('testSubSystemMIMO/Bound1','initial_step','on')
+        set_param('testSubSystemMIMO/Bound1','intermediate_step','on')
+        set_param('testSubSystemMIMO/Bound1','final_step','on')
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubSystemMIMO',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1; 1 1 1; 1 1 1; 1 1 1; 1 1 1; 1 1 1; 1 1 1; 1 1 1; 1 1 1])==0
+            warning('testSubsystem, test 1 failed')
+        end
+        
+        %% test 2
+        set_param('testSubSystemMIMO/Bound','initial_step','on')
+        set_param('testSubSystemMIMO/Bound','intermediate_step','on')
+        set_param('testSubSystemMIMO/Bound','final_step','on')
+        set_param('testSubSystemMIMO/Bound1','initial_step','off')
+        set_param('testSubSystemMIMO/Bound1','intermediate_step','off')
+        set_param('testSubSystemMIMO/Bound1','final_step','off')
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubSystemMIMO',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[1 1 1; 0 0 0; 1 1 1; 0 0 0; 1 1 1; 0 0 0; 0 0 0; 1 1 1; 1 1 1])==0
+            warning('testSubsystem, test 2 failed')
+        end
+        
+        %% test 3
+        set_param('testSubSystemMIMO/Bound','initial_step','off')
+        set_param('testSubSystemMIMO/Bound','intermediate_step','off')
+        set_param('testSubSystemMIMO/Bound','final_step','on')
+        set_param('testSubSystemMIMO/Bound1','initial_step','off')
+        set_param('testSubSystemMIMO/Bound1','intermediate_step','on')
+        set_param('testSubSystemMIMO/Bound1','final_step','off')
+        [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testSubSystemMIMO',horizon,1,1,1);
+        if isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 1; 0 1 0; 0 0 1; 0 1 0; 1 1 1; 1 1 0; 1 1 0; 1 1 1; 1 1 1])==0
+            warning('testSubsystem, test 2 failed')
+        end
+        
 end
+    
 end
 
