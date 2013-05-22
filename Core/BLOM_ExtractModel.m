@@ -315,7 +315,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.mux = false(initialSize,1);% indicator to whether block is a mux block
     block.demux = false(initialSize,1);% indicator to whether block is a demux block
     block.delay = false(initialSize,1);% indicator to whether block is a delay block
-    block.inputBlock = false(initialSize,1);% indicator to whether block is a input block within subsystem
+    block.subsystemInput = false(initialSize,1);% indicator to whether block is a input block within subsystem
     block.fromBlock = false(initialSize,1);% indicator to whether block is a from block
 
 
@@ -394,11 +394,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 % blocks there
                 
                 state = 'intoSubsys';                          
-                block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
                 sourceOutports = [sourcePorts.Outport];
                 [outportHandles,iZero,stepVars,block] = ...
                     updateVars(sourceOutports,outportHandles,iZero,...
                     stepVars,block,state,iOut,sourcePorts);
+                block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
+
 
             elseif strncmp(refBlock,'BLOM_Lib',8)
                 % subsystem that's a BLOM block
@@ -418,38 +419,41 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             sourceInports{2} = name;
 
             state = 'from';
-            block.fromBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts);
+            block.fromBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
+
             
         elseif strcmp(sourceType,'Demux')
             % block is a demux. Here we want to fill in field sameOptVar to
             % point to the original variable
             
             state = 'demux';                
-            block.demux(block.handles==get_param(sourceBlock, 'handle')) = true;
             sourceOutports = [sourcePorts.Outport];
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts,sourceOutports);
-            
+            block.demux(block.handles==get_param(sourceBlock, 'handle')) = true;
+
         elseif strcmp(sourceType,'Mux')
             % block is a mux. Here we want to fill in field sameOptVar to
             % point to the original variable
             
             state='mux';
-            block.mux(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts);
+            block.mux(block.handles==get_param(sourceBlock, 'handle')) = true;
+
             
         elseif strcmp(sourceType,'UnitDelay')       
             state = 'unitDelay';
-            block.delay(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
+                stepVars,block,state,iOut,sourcePorts);  
+            block.delay(block.handles==get_param(sourceBlock, 'handle')) = true;
+
             
         elseif length(sourceInports) > 1
             % currently do nothing special if there is more than one input
@@ -472,8 +476,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 if strcmp(sourceType,'Inport') && strcmp(parentType,'SubSystem')
                     % in this case, there may actually be more inports
                     % connected
-                    block.inputBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
-
+                    
                     sourcePorts = get_param(parentOfBlock,'PortHandles');
                     sourceInports = [sourcePorts.Inport];
                     % find the specific inport index of 
@@ -488,6 +491,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                         [outportHandles,iZero,stepVars,block] = ...
                             updateVars(sourceInports(portNumber),outportHandles,iZero,...
                             stepVars,block,state,iOut,sourcePorts);
+                        block.subsystemInput(block.handles==get_param(sourceBlock, 'handle')) = true;
                     else
                         % This case should NOT be reached because of an
                         % inport exists, there is almost certainly a
@@ -549,7 +553,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.mux = block.mux(1:(block.zeroIdx-1));
     block.demux = block.demux(1:(block.zeroIdx-1));
     block.delay = block.delay(1:(block.zeroIdx-1));
-    block.inputBlock = block.inputBlock(1:(block.zeroIdx-1));
+    block.subsystemInput = block.subsystemInput(1:(block.zeroIdx-1));
     block.fromBlock = block.fromBlock(1:(block.zeroIdx-1));
 
 
@@ -1151,7 +1155,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.mux = [block.mux; false(block.zeroIdx,1)];
         block.demux = [block.demux; false(block.zeroIdx,1)];
         block.delay = [block.delay; false(block.zeroIdx,1)];
-        block.inputBlock = [block.inputBlock; false(block.zeroIdx,1)];
+        block.subsystemInput = [block.subsystemInput; false(block.zeroIdx,1)];
         block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
 
     end
@@ -1539,6 +1543,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
         zeroIdx = 2;
         idx = 1;
         while(blocks(idx)~=0)
+            
             % if you've already been to current block previously or current
             % block is an input block (may be redundant), proceed to next loop iteration
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
@@ -1600,18 +1605,21 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 end
 
                 inputBlocks = stepVars.block(inputs);
+                inputIndex = stepVars.outportIndex(inputs);
                 while any(block.subsystem(inputBlocks))
-                    for idx = 1:length(inputs)
-                        if block.subsystem(inputBlocks(idx))
-                            subsystemHandle = block.handles(inputBlocks(idx));
+                    for inputIdx = 1:length(inputs)
+                        if block.subsystem(inputBlocks(inputIdx))
+                            subsystemHandle = block.handles(inputBlocks(inputIdx));
                             outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-                            outportNum = stepVars.outportNum(inputs(idx));
+                            outportNum = stepVars.outportNum(inputs(inputIdx));
                             outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
                             outportInputHandle = outportBlockPort.Inport;
                             line = get_param(outportInputHandle, 'Line');
                             srcPortHandle = get_param(line, 'SrcPortHandle');
-                            inputs(idx) = find(stepVars.outportHandle == srcPortHandle);
-                            inputBlocks(idx) = stepVars.block(inputs(idx));
+                            inputVector = find(stepVars.outportHandle == srcPortHandle);
+                            inputs(inputIdx) = inputVector(inputIndex(inputIdx));
+                            inputBlocks(inputIdx) = stepVars.block(inputs(inputIdx));  
+                            inputIndex(inputIdx) = stepVars.outportIndex(inputs(inputIdx));
                         end
                     end
 
