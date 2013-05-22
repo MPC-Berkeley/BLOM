@@ -110,7 +110,7 @@ switch modelname
         set_param('testManyDelay/Bound1','intermediate_step','on')
         set_param('testManyDelay/Bound1','final_step','on')
         [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('testManyDelay',horizon,1,1,1);
-        if ~isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1;1 1 1])
+        if ~isequal([stepVars.initTime stepVars.interTime stepVars.finalTime],[0 0 0;1 1 1;0 0 0;1 1 1;0 0 0;1 1 1;0 0 0;1 1 1])
             warning('testManyDelay, test 3 failed')
             testFailed = true;
         end

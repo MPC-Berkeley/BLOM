@@ -1548,11 +1548,10 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
             % block is an input block (may be redundant), proceed to next loop iteration
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
                 blockHandle = block.handles(blocks(idx));
-                blockType = get_param(blockHandle, 'BlockType');                
                     
                 if block.subsystem(blocks(idx))
                     block.names(idx) %should never be here
-                elseif strcmp(blockType,'Inport')
+                elseif block.subsystemInput(blocks(idx))
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
                     parentSubsystem = get_param(blockHandle,'Parent');
@@ -1563,7 +1562,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     outportSource = get_param(inportLine,'SrcPortHandle');
                     inputs = find(stepVars.outportHandle == outportSource);
 
-                elseif strcmp(blockType, 'From')
+                elseif block.fromBlock(blocks(idx))
                     gotoTag = get_param(blockHandle, 'GotoTag');
                     name = get_param(blockHandle, 'Parent');
                     gotoBlock = find_system(name,'BlockType','Goto','GotoTag',gotoTag);
@@ -1573,7 +1572,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     srcPortHandle = get_param(line, 'SrcPortHandle');
                     inputs = find(stepVars.outportHandle == srcPortHandle);
                     
-                elseif strcmp(blockType, 'UnitDelay') && (idx ~= 1)
+                elseif block.delay(blocks(idx)) && (idx ~= 1)
                     inputVarIdxs = block.stepInputIdx{blocks(idx)};
                     inputFinal = stepVars.finalTime(inputVarIdxs(1));
                     inputInter = stepVars.interTime(inputVarIdxs(1));
@@ -1605,8 +1604,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 end
 
                 inputBlocks = stepVars.block(inputs);
-                inputIndex = stepVars.outportIndex(inputs);
-                while any(block.subsystem(inputBlocks))
+                while any(block.subsystem(inputBlocks)) || any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
                     for inputIdx = 1:length(inputs)
                         if block.subsystem(inputBlocks(inputIdx))
                             subsystemHandle = block.handles(inputBlocks(inputIdx));
@@ -1617,10 +1615,20 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                             line = get_param(outportInputHandle, 'Line');
                             srcPortHandle = get_param(line, 'SrcPortHandle');
                             inputVector = find(stepVars.outportHandle == srcPortHandle);
-                            inputs(inputIdx) = inputVector(inputIndex(inputIdx));
-                            inputBlocks(inputIdx) = stepVars.block(inputs(inputIdx));  
-                            inputIndex(inputIdx) = stepVars.outportIndex(inputs(inputIdx));
+                            vectorIndex = stepVars.outportIndex(inputs(inputIdx));
+                            inputs(inputIdx) = inputVector(vectorIndex);
                         end
+                        if block.mux(inputBlocks(inputIdx))
+                            vectorIndex = find(block.stepOutputIdx{inputBlocks(inputIdx)}==inputs(inputIdx),1,'first');
+                            inputVector = block.stepInputIdx{inputBlocks(inputIdx)};
+                            inputs(inputIdx) = inputVector(vectorIndex);
+                        end
+                        if block.demux(inputBlocks(inputIdx))
+                            vectorIndex = find(block.stepOutputIdx{inputBlocks(inputIdx)}==inputs(inputIdx),1,'first');
+                            inputVector = block.stepInputIdx{inputBlocks(inputIdx)};
+                            inputs(inputIdx) = inputVector(vectorIndex);
+                        end
+                        inputBlocks(inputIdx) = stepVars.block(inputs(inputIdx));  
                     end
 
                     if(init)
