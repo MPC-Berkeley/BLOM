@@ -312,6 +312,13 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
     block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block
+    block.mux = false(initialSize,1);% indicator to whether block is a mux block
+    block.demux = false(initialSize,1);% indicator to whether block is a demux block
+    block.delay = false(initialSize,1);% indicator to whether block is a delay block
+    block.inputBlock = false(initialSize,1);% indicator to whether block is a input block within subsystem
+    block.fromBlock = false(initialSize,1);% indicator to whether block is a from block
+
+
     
     % find all lines connected to costs and bounds and then get outport
     % ports from there. fill in stepVars and block structures as necessary
@@ -386,8 +393,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 % want to look under the subsystem and get the appropriate
                 % blocks there
                 
-                state = 'intoSubsys';
-                              
+                state = 'intoSubsys';                          
                 block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
                 sourceOutports = [sourcePorts.Outport];
                 [outportHandles,iZero,stepVars,block] = ...
@@ -412,6 +418,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             sourceInports{2} = name;
 
             state = 'from';
+            block.fromBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts);
@@ -420,7 +427,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             % block is a demux. Here we want to fill in field sameOptVar to
             % point to the original variable
             
-            state = 'demux';
+            state = 'demux';                
+            block.demux(block.handles==get_param(sourceBlock, 'handle')) = true;
             sourceOutports = [sourcePorts.Outport];
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
@@ -431,12 +439,14 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             % point to the original variable
             
             state='mux';
+            block.mux(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts);
             
         elseif strcmp(sourceType,'UnitDelay')       
             state = 'unitDelay';
+            block.delay(block.handles==get_param(sourceBlock, 'handle')) = true;
             [outportHandles,iZero,stepVars,block] = ...
                 updateVars(sourceInports,outportHandles,iZero,...
                 stepVars,block,state,iOut,sourcePorts);
@@ -462,6 +472,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 if strcmp(sourceType,'Inport') && strcmp(parentType,'SubSystem')
                     % in this case, there may actually be more inports
                     % connected
+                    block.inputBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
+
                     sourcePorts = get_param(parentOfBlock,'PortHandles');
                     sourceInports = [sourcePorts.Inport];
                     % find the specific inport index of 
@@ -534,6 +546,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.bound = block.bound(1:(block.zeroIdx-1));
     block.cost = block.cost(1:(block.zeroIdx-1));
     block.subsystem = block.subsystem(1:(block.zeroIdx-1));
+    block.mux = block.mux(1:(block.zeroIdx-1));
+    block.demux = block.demux(1:(block.zeroIdx-1));
+    block.delay = block.delay(1:(block.zeroIdx-1));
+    block.inputBlock = block.inputBlock(1:(block.zeroIdx-1));
+    block.fromBlock = block.fromBlock(1:(block.zeroIdx-1));
+
 
     
     % remove empty and 0 entries in stepVars
@@ -1130,6 +1148,12 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.bound = [block.bound; false(block.zeroIdx,1)];
         block.cost = [block.cost; false(block.zeroIdx,1)];
         block.subsystem = [block.subsystem; false(block.zeroIdx,1)];
+        block.mux = [block.mux; false(block.zeroIdx,1)];
+        block.demux = [block.demux; false(block.zeroIdx,1)];
+        block.delay = [block.delay; false(block.zeroIdx,1)];
+        block.inputBlock = [block.inputBlock; false(block.zeroIdx,1)];
+        block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
+
     end
     
 
@@ -1522,7 +1546,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 blockType = get_param(blockHandle, 'BlockType');                
                     
                 if block.subsystem(blocks(idx))
-                    block.names(idx)
+                    block.names(idx) %should never be here
                 elseif strcmp(blockType,'Inport')
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
