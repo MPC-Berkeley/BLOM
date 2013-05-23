@@ -1738,6 +1738,7 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.stepVarIdx = zeros(totalLength,1);
     allVars.optVarIdx = zeros(totalLength,1);
     allVars.timeStep = zeros(totalLength,1);
+    allVars.cost = zeros(totalLength,1);
     
     % label what timestep each variable exists in
     allVars.timeStep(1:initialLength) = ones(initialLength,1);
@@ -1745,6 +1746,11 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.timeStep(initialLength+1:end-finalLength) = interSteps(:);
     allVars.timeStep(end-finalLength+1:end) = horizon * ones(finalLength,1);
     
+    % set variable cost
+    allVars.cost(1:initialLength) = stepVars.initCost(stepVars.initTime);
+    allVars.cost(initialLength+1:end-finalLength) =...
+        kron(ones(horizon-2,1),stepVars.interCost(stepVars.interTime));
+    allVars.cost(end-finalLength+1:end) = stepVars.finalCost(stepVars.finalTime);   
     
     % because each variable has it's own time step, we can simply set
     % lowerBound and upperBound
@@ -1891,9 +1897,15 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ineqCsM = [(1:numOptVars)*2-1 (1:numOptVars)*2 (1:numOptVars)*2-1 (1:numOptVars)*2];
     ineqCsN = [1:numOptVars 1:numOptVars ones(1,2*numOptVars)*(numOptVars+1)];
     ineqCsVals = [ones(1,numOptVars) -ones(1,numOptVars) -optVarsBounds(:,2)' optVarsBounds(:,1)'];
-    ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals);
+    ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals,2*numOptVars, numOptVars+1);
     ModelSpec.ineq.Cs(isinf(ModelSpec.ineq.Cs(:,numOptVars+1)),:) = [];
     
     %create cost polyblocks
-
+    optVarCosts = zeros(numOptVars,1);
+    optVarCosts(allVars.optVarIdx) = allVars.cost;
+    nonzeroOptVarCosts = optVarCosts~=0;
+    ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
+        optVarCosts(nonzeroOptVarCosts), sum(nonzeroOptVarCosts), numOptVars);
+    ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
+    
 end
