@@ -1848,6 +1848,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     varNameTimeStep = num2str(allVars.timeStep);
     varNameAllVars = strcat('BL_',varNameParent, '.Out', varNamePortNum, '.t', varNameTimeStep,';');
     
+    %create all_names field
     ModelSpec.all_names = cell(max(allVars.optVarIdx),1);
     vec_idx = allVars.optVarIdx;
     for idx = 1:allVars.totalLength
@@ -1859,6 +1860,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
        ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
     end
    
+    %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
     if isempty(ModelSpec.all_names)
@@ -1869,5 +1871,16 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.all_names_struct.terms_so_far = terms_so_far;
     ModelSpec.all_names_struct.all_fields = all_fields;
     ModelSpec.all_names_struct.vec_idx = vec_idx; 
+    
+    %create inequality polyblocks
+    numOptVars = max(allVars.optVarIdx);
+    ModelSpec.ineq.AAs = speye(numOptVars+1, numOptVars);
+    optVarsBounds = zeros(numOptVars,2);
+    optVarsBounds(allVars.optVarIdx,1) = allVars.lowerBound;
+    optVarsBounds(allVars.optVarIdx,2) = allVars.upperBound;
+    ineqCsM = [(1:numOptVars)*2-1 (1:numOptVars)*2 (1:numOptVars)*2-1 (1:numOptVars)*2];
+    ineqCsN = [1:numOptVars 1:numOptVars ones(1,2*numOptVars)*(numOptVars+1)];
+    ineqCsVals = [ones(1,numOptVars) -ones(1,numOptVars) -optVarsBounds(:,2)' optVarsBounds(:,1)'];
+    ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals);
     
 end
