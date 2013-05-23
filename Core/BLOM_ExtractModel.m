@@ -1882,5 +1882,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ineqCsN = [1:numOptVars 1:numOptVars ones(1,2*numOptVars)*(numOptVars+1)];
     ineqCsVals = [ones(1,numOptVars) -ones(1,numOptVars) -optVarsBounds(:,2)' optVarsBounds(:,1)'];
     ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals);
+    ModelSpec.ineq.Cs(isinf(ModelSpec.ineq.Cs(:,numOptVars+1)),:) = [];
     
 end
