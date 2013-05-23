@@ -283,7 +283,9 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     stepVars.outportHandle = zeros(initialSize,1); % handle of specific outport
     stepVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
     stepVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
-    stepVars.cost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost
+    stepVars.initCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at initial time step
+    stepVars.interCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at intermediate time steps
+    stepVars.finalCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the costat final time step
     stepVars.initUpperBound = inf*ones(initialSize,1); % upper bound of at initial time step. default inf
     stepVars.initLowerBound = -inf*ones(initialSize,1); % lower bound of at initial time step. default -inf
     stepVars.interUpperBound = inf*ones(initialSize,1); % upper bound of at intermediate time step. default inf
@@ -344,12 +346,16 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     state = 'cost';
     for i = 1:length(costHandles)
         portH = get_param(costHandles(i),'PortHandles');
+        varargin = [false false false];
+        varargin(1) = double(strcmp(get_param(costHandles(i), 'initial_step'), 'on'));
+        varargin(2) = double(strcmp(get_param(costHandles(i), 'intermediate_step'), 'on'));
+        varargin(3) = double(strcmp(get_param(costHandles(i), 'final_step'), 'on'));
         % costs and bounds should only have one inport and line
         currentInports = [portH.Inport];
         [block, ~] = updateBlock(block, currentInports);
         [outportHandles,iZero,stepVars,block] = ...
             updateVars(currentInports,outportHandles,iZero,...
-            stepVars,block,state);
+            stepVars,block,state,varargin);        
     end
     
     
@@ -560,7 +566,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     
     % remove empty and 0 entries in stepVars
     for field={'block', 'outportNum','outportHandle','outportIndex',...
-        'optVarIdx','cost','state','input','external','initLowerBound','initUpperBound',...
+        'optVarIdx','initCost','interCost','finalCost','state','input','external','initLowerBound','initUpperBound',...
         'interLowerBound','interUpperBound','finalLowerBound','finalUpperBound'}
         stepVars.(field{1}) = stepVars.(field{1})(1:(stepVars.zeroIdx-1));
     end
@@ -594,7 +600,7 @@ function [outportHandles,iZero,stepVars,block] =...
     outportHandles = existingOutports;
 
     
-    if ~isempty(varargin)
+    if ~isempty(varargin) && ~strcmp(state, 'cost')
         iOut = varargin{1};
         sourcePorts = varargin{2};
         currentOutport = existingOutports(iOut);
@@ -678,7 +684,7 @@ function [outportHandles,iZero,stepVars,block] =...
                 [block,currentBlockIndex] =...
                     updateBlock(block,currentOutport);
                 [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState);
+                    block,currentBlockIndex,currentOutport,stepVarsState,varargin{1});
             end
             
         case 'fromSimulink'
@@ -915,7 +921,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 stepVars.time = [stepVars.time; cell(newLength*2,1)];
             else % double the length of all fields in stepVars
                 for field={'block', 'outportNum','outportHandle','outportIndex',...
-                        'cost'}
+                        'initCost', 'interCost', 'finalCost'}
                         stepVars.(field{1}) = [stepVars.(field{1}); zeros(oldLength,1)];
                 end
                 stepVars.optVarIdx = [stepVars.optVarIdx; ((oldLength+1):(oldLength*2))'];
@@ -965,7 +971,9 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 end
                     
             case 'cost'
-                stepVars.cost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = 1;
+                stepVars.initCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(1);
+                stepVars.interCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(2);
+                stepVars.finalCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(3);
             case 'subSysInport'
                 % points to original variable
                 sameOptIndex = varargin{1};
@@ -1860,6 +1868,9 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
        ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
     end
    
+    
+    numOptVars = max(allVars.optVarIdx);
+    
     %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
@@ -1873,7 +1884,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.all_names_struct.vec_idx = vec_idx; 
     
     %create inequality polyblocks
-    numOptVars = max(allVars.optVarIdx);
     ModelSpec.ineq.AAs = speye(numOptVars+1, numOptVars);
     optVarsBounds = zeros(numOptVars,2);
     optVarsBounds(allVars.optVarIdx,1) = allVars.lowerBound;
@@ -1884,4 +1894,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals);
     ModelSpec.ineq.Cs(isinf(ModelSpec.ineq.Cs(:,numOptVars+1)),:) = [];
     
+    %create cost polyblocks
+
 end
