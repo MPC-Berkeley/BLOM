@@ -1177,7 +1177,14 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
-            block.K{block.zeroIdx}= eval(get_param(currentBlockHandle,'K'));
+            block.K{block.zeroIdx} = eval(get_param(currentBlockHandle,'K'));
+            
+            % we have to modify the P and K matrices because the columns of
+            % P are only the inputs of the block so far. we need to include
+            % the outputs
+            totalOutputs = size(block.K{block.zeroIdx},1);
+            block.P{block.zeroIdx} = blkdiag(block.P{block.zeroIdx},speye(totalOutputs));
+            block.K{block.zeroIdx} = horzcat(block.K{block.zeroIdx},-speye(totalOutputs));
         elseif strcmp(referenceBlock, 'BLOM_Lib/Bound')
             block.bound(block.zeroIdx) = true;
         elseif strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost')
