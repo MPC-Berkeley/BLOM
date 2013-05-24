@@ -508,33 +508,8 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             
         %% SubSystem.
         case 'SubSystem'
-            % currently just handles the bound blom block. Other blocks
-            % with subsystem block types return an empty P and K
-            
-            % find the type of the block (Bound, DiscreteCost, etc)
-            referenceBlock=get_param(blockHandle,'ReferenceBlock'); 
-            blomBlockType=referenceBlock(10:end);
-            
-            % bound block uses inequality constraints, no bound exists if
-            % Inf or -Inf is present             
-            if strcmp(blomBlockType,'Bound')==1
-                % extract upper and lower bounds
-                upperbound=eval(get_param(blockHandle,'ub'));
-                lowerbound=eval(get_param(blockHandle,'lb'));
-                P=sparse([ones(2*totalInputs,1) zeros(2*totalInputs,1)]);
-                K=sparse([-ones(totalInputs,1) lowerbound*ones(totalInputs,1);ones(totalInputs,1) -upperbound*ones(totalInputs,1)]);
-                if upperbound==Inf
-                    P(totalInputs+1:end,:)=[];
-                    K(totalInputs+1:end,:)=[];
-                end
-                if lowerbound==-Inf
-                    P(1:totalInputs,:)=[];
-                    K(1:totalInputs,:)=[];
-                end
-            else
-                P=[];
-                K=[];
-            end
+            P = [];
+            K = [];
             
         case 'Demux'
             P = [];
