@@ -101,10 +101,10 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         end
         
         % create P and K matrix for allVars
-        % [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars);
+        [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars);
         
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
-        ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block);
+        ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block, allP,allK);
         % following code checks whether or not inports and outportHandles
         % was filled in properly
         fprintf('--------------------------------------------------------\n')
@@ -1325,6 +1325,7 @@ end
 
 function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     % get a mapping of which optVarIdx are relevant at each time step
+    
     sizeTimes = length(stepVars.initTime);
     optInitTime = stepVars.initTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
     optInterTime = stepVars.interTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
@@ -1344,17 +1345,15 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     allK = blkdiag(initK,interK_full,finalK);
     
     % use allVars.PKOptVarIdxReroute to reroute columns of states
-    % NOTE: This only works if there's only one rerouting needed. In other
-    % words, only one column i can add to a certain column j. Another
-    % column k cannot added to that same column j. 
-    [rowPLength,~] = size(fullP);
+    [~,colPLength] = size(fullP);
+    [~,~,rerouteIdx] = unique(allVars.PKOptVarIdxReroute);
     
     % create a matrix that finds which columns of the entire P (with
     % states) to add to the columns of P without states
-    toAddCol = sparse(1:rowPLength,allVars.OptVarIdxReroute);
+    toAddCol = sparse(1:colPLength,rerouteIdx,ones(size(rerouteIdx)));
     
     % create the final allP that has proper states.
-    allP = toAddCol*fullP;
+    allP = fullP*toAddCol;
 end
 
 %%
@@ -1374,13 +1373,13 @@ function [trimP,trimK] = trimPK(stepP,stepK,relevantTimes)
     trimP = stepP(:,relevantTimes);
     % remove initP rows if the row had a value in the columns that were
     % removed. 
-    removeP_rows = ~(any(stepP(:,~relevantTimes)~=0,2));
+    removeP_rows = any(stepP(:,~relevantTimes)~=0,2);
     trimP(removeP_rows,:) = [];
     % remove the corresponding columns of K
-    trimK = stepK(:,removeP_rows);
+    trimK = stepK(:,~removeP_rows);
     % remove rows of K that had a value in the removed columns of K in the
     % previous line
-    removeK_rows = ~any(stepK(:,~removeP_rows)~=0,2);
+    removeK_rows = any(stepK(:,removeP_rows)~=0,2);
     trimK(removeK_rows,:) = [];
 end
 
@@ -1771,7 +1770,7 @@ function allVars = createAllVars(stepVars,horizon)
     allVars.stepVarIdx(initialLength+1:end-finalLength) =...
         kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime))';
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
-    
+
 end
 
 %%
@@ -1846,7 +1845,7 @@ end
 
 % NOTE, REPLACE VARARGIN WITH ACTUAL VARIABLES. THIS IS JUST A PLACEHOLDER
 % FOR NOW
-function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block,varargin)
+function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block,allP,allK,varargin)
     ModelSpec.name = name;
     ModelSpec.horizon = horizon;
     ModelSpec.integ_method = integ_method;
@@ -1855,6 +1854,9 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
 
     ModelSpec.in_vars = stepVars.input;
     ModelSpec.ex_vars = stepVars.external;
+    
+    ModelSpec.AAs = {allP};
+    ModelSpec.Cs = {allK};
     
     varNameParentChar = char(block.names(stepVars.block(allVars.stepVarIdx)));
     varNameParent = cellstr(varNameParentChar(:,(length(name)+2):end));
@@ -1908,4 +1910,26 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
         optVarCosts(nonzeroOptVarCosts), sum(nonzeroOptVarCosts), numOptVars);
     ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
     
+    %create A,C polyblocks
+    ModelSpec.A = [ModelSpec.cost.A; ModelSpec.ineq.AAs; ModelSpec.AAs{1}];
+    ModelSpec.C = blkdiag(ModelSpec.cost.C, ModelSpec.ineq.Cs, ModelSpec.Cs{1});
+    [len_cost_A,~] = size(ModelSpec.cost.A);
+    [len_ineq_A,~] = size(ModelSpec.ineq.AAs);
+    [len_eq_A,~] = size(ModelSpec.AAs{1});
+    [len_cost_C,~] = size(ModelSpec.cost.C);
+    [len_ineq_C,~] = size(ModelSpec.ineq.Cs);
+    [len_eq_C,~] = size(ModelSpec.Cs{1});        
+    
+    ModelSpec.ineq_start_A = len_cost_A + 1;
+    ModelSpec.ineq_end_A = len_cost_A + len_ineq_A;
+    ModelSpec.eq_start_A = len_cost_A + len_ineq_A + 1;
+    ModelSpec.eq_end_A = len_cost_A + len_ineq_A + len_eq_A;
+    ModelSpec.ineq_start_C = len_cost_C + 1;
+    ModelSpec.ineq_end_C = len_cost_C + len_ineq_C;
+    ModelSpec.eq_start_C = len_cost_C + len_ineq_C + 1;
+    ModelSpec.eq_end_C = len_cost_C + len_ineq_C + len_eq_C;
+    
+    %create all_state_vars
+    ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1));
+ 
 end
