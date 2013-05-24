@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.62"
+    ComputedModelVersion    "1.63"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Jason"
+  LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Apr 12 20:49:58 2013"
-  RTWModifiedTimeStamp	  287699608
-  ModelVersionFormat	  "1.%<AutoIncrement:62>"
+  LastModifiedDate	  "Fri May 24 15:27:17 2013"
+  RTWModifiedTimeStamp	  291310006
+  ModelVersionFormat	  "1.%<AutoIncrement:63>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [794, 142, 1915, 979]
+    Location		    [1442, -383, 3358, 602]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -895,13 +895,13 @@ Model {
       BlockType		      Constant
       Name		      "Constant"
       SID		      12
-      Position		      [60, 140, 90, 170]
+      Position		      [60, 170, 90, 200]
     }
     Block {
       BlockType		      Constant
       Name		      "Constant1"
       SID		      18
-      Position		      [195, 390, 225, 420]
+      Position		      [195, 380, 225, 410]
     }
     Block {
       BlockType		      Constant
@@ -914,7 +914,7 @@ Model {
       BlockType		      Constant
       Name		      "Constant8"
       SID		      83
-      Position		      [100, 750, 130, 780]
+      Position		      [100, 745, 130, 775]
       Value		      "4:5"
     }
     Block {
@@ -1001,21 +1001,21 @@ Model {
       BlockType		      From
       Name		      "From1"
       SID		      79
-      Position		      [220, 666, 260, 694]
+      Position		      [245, 666, 285, 694]
       GotoTag		      "B"
     }
     Block {
       BlockType		      From
       Name		      "From2"
       SID		      91
-      Position		      [95, 566, 135, 594]
+      Position		      [95, 596, 135, 624]
       GotoTag		      "C"
     }
     Block {
       BlockType		      From
       Name		      "From3"
       SID		      92
-      Position		      [95, 636, 135, 664]
+      Position		      [95, 641, 135, 669]
       GotoTag		      "E"
     }
     Block {
@@ -1052,7 +1052,7 @@ Model {
       BlockType		      Goto
       Name		      "Goto2"
       SID		      89
-      Position		      [275, 735, 315, 765]
+      Position		      [275, 730, 315, 760]
       GotoTag		      "C"
       TagVisibility	      "local"
     }
@@ -1069,7 +1069,7 @@ Model {
       Name		      "InputFromSimulink"
       SID		      7
       Ports		      [1, 1]
-      Position		      [125, 134, 225, 176]
+      Position		      [125, 164, 225, 206]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
@@ -1133,7 +1133,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 1 0 1; 3 1 0 1])"
+      P			      "sparse([1 1; 3 1])"
       K			      "sparse([1 0.8; 1 1])"
       inputs		      "0"
       inputScalar	      on
@@ -1157,7 +1157,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 1 0; 3 1 0])"
+      P			      "sparse([1; 3])"
       K			      "sparse([1 0.8; 1 1])"
       inputs		      "0"
       inputScalar	      on
@@ -1181,7 +1181,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 1 0; 3 1 0])"
+      P			      "sparse([1 1; 3 1])"
       K			      "sparse([1 0.8])"
       inputs		      "0"
       inputScalar	      on
@@ -1192,7 +1192,7 @@ Model {
       Name		      "Polyblock5"
       SID		      49
       Ports		      [1, 1]
-      Position		      [585, 432, 675, 508]
+      Position		      [545, 437, 635, 513]
       BackgroundColor	      "lightBlue"
       LibraryVersion	      "1.80"
       SourceBlock	      "BLOM_Lib/Polyblock"
@@ -1205,7 +1205,7 @@ Model {
       RTWMemSecDataConstants  "Inherit from model"
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
-      P			      "sparse([1 1; 3 1])"
+      P			      "sparse([1; 3])"
       K			      "sparse([1 0.8])"
       inputs		      "0"
       inputScalar	      on
@@ -1216,7 +1216,7 @@ Model {
       Name		      "Product"
       SID		      28
       Ports		      [4, 1]
-      Position		      [435, 465, 460, 520]
+      Position		      [440, 455, 465, 510]
       Inputs		      "4"
       InputSameDT	      off
       OutDataTypeMode	      "Inherit via internal rule"
@@ -1228,7 +1228,7 @@ Model {
       Name		      "Subsystem"
       SID		      62
       Ports		      [2, 1]
-      Position		      [190, 585, 230, 645]
+      Position		      [190, 610, 230, 670]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -1370,7 +1370,7 @@ Model {
       Name		      "Subsystem1"
       SID		      85
       Ports		      [1, 2]
-      Position		      [190, 735, 230, 795]
+      Position		      [190, 730, 230, 790]
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
       RTWSystemCode	      "Auto"
@@ -1418,7 +1418,7 @@ Model {
 	  BlockType		  Reference
 	  Name			  "sub_Polyblock1"
 	  SID			  84
-	  Ports			  [1, 2]
+	  Ports			  [3, 2]
 	  Position		  [170, 77, 260, 153]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.80"
@@ -1825,14 +1825,14 @@ Model {
     Line {
       SrcBlock		      "Add"
       SrcPort		      1
-      Points		      [25, 0; 0, -30]
+      Points		      [25, 0; 0, 0]
       Branch {
-	Points			[0, -70]
+	Points			[0, -100]
 	DstBlock		"DiscreteCost"
 	DstPort			1
       }
       Branch {
-	Points			[0, 65]
+	Points			[0, 35]
 	DstBlock		"Add1"
 	DstPort			2
       }
@@ -1898,7 +1898,6 @@ Model {
     Line {
       SrcBlock		      "Constant1"
       SrcPort		      1
-      Points		      [25, 0]
       DstBlock		      "ExternalFromSimulink1"
       DstPort		      1
     }
@@ -1913,12 +1912,12 @@ Model {
       SrcPort		      1
       Points		      [5, 0]
       Branch {
-	Points			[0, -15; 135, 0]
+	Points			[0, -45; 135, 0]
 	DstBlock		"Add"
 	DstPort			2
       }
       Branch {
-	Points			[0, 30]
+	Points			[0, 0]
 	Branch {
 	  Points		  [0, 80]
 	  DstBlock		  "Bound"
@@ -1933,14 +1932,13 @@ Model {
     Line {
       SrcBlock		      "Constant3"
       SrcPort		      1
-      Points		      [15, 0; 0, -30]
+      Points		      [5, 0; 0, -40]
       DstBlock		      "Product"
       DstPort		      2
     }
     Line {
       SrcBlock		      "Product"
       SrcPort		      1
-      Points		      [0, -10]
       DstBlock		      "Demux"
       DstPort		      1
     }
@@ -1953,7 +1951,7 @@ Model {
     Line {
       SrcBlock		      "Polyblock5"
       SrcPort		      1
-      Points		      [0, 110]
+      Points		      [10, 0; 0, 105]
       DstBlock		      "Unit Delay1"
       DstPort		      1
     }
@@ -1995,7 +1993,7 @@ Model {
     Line {
       SrcBlock		      "Unit Delay1"
       SrcPort		      1
-      Points		      [-145, 0; 0, -80]
+      Points		      [-145, 0; 0, -90]
       DstBlock		      "Product"
       DstPort		      3
     }
@@ -2004,7 +2002,7 @@ Model {
       SrcPort		      1
       Points		      [50, 0]
       Branch {
-	Points			[0, -115; -350, 0]
+	Points			[0, -115; -345, 0]
 	DstBlock		"Product"
 	DstPort			4
       }
@@ -2016,21 +2014,19 @@ Model {
     Line {
       SrcBlock		      "Subsystem"
       SrcPort		      1
-      Points		      [30, 0; 0, 25]
       DstBlock		      "Polyblock"
       DstPort		      1
     }
     Line {
       SrcBlock		      "From2"
       SrcPort		      1
-      Points		      [10, 0; 0, 20]
+      Points		      [10, 0; 0, 15]
       DstBlock		      "Subsystem"
       DstPort		      1
     }
     Line {
       SrcBlock		      "From3"
       SrcPort		      1
-      Points		      [0, -20]
       DstBlock		      "Subsystem"
       DstPort		      2
     }
@@ -2067,7 +2063,7 @@ Model {
     Line {
       SrcBlock		      "Subsystem1"
       SrcPort		      2
-      Points		      [125, 0; 0, -5]
+      Points		      [125, 0]
       Branch {
 	Points			[0, -25]
 	DstBlock		"Subsystem2"
@@ -2101,7 +2097,7 @@ Model {
     Line {
       SrcBlock		      "Mux"
       SrcPort		      1
-      Points		      [50, 0; 0, -20]
+      Points		      [50, 0; 0, -30]
       DstBlock		      "Product"
       DstPort		      1
     }
