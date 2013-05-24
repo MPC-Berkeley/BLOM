@@ -14,9 +14,9 @@ function BLOM_PolyblockChangeInputs(block,P,K,inputs,inputScalar,outputScalar)
     
     if inputScalar
         if outputScalar
-            BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),size(K,1));
+            BLOM_ChangeNumberOfPorts(block,size(P,2),size(K,1));
         else
-            BLOM_ChangeNumberOfPorts(block,size(P,2)-size(K,1),1);
+            BLOM_ChangeNumberOfPorts(block,size(P,2),1);
         end
     else
         if outputScalar
