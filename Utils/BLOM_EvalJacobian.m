@@ -5,6 +5,11 @@ function J = BLOM_EvalJacobian(P, K, x)
 % first row of K represents the cost function, then the first row of the
 % output Jacobian represents the gradient of the cost function.
 
+persistent BLOM_FunctionCodes
+if isempty(BLOM_FunctionCodes)
+    BLOM_FunctionCodes = BLOM_FunctionCode('codes_struct');
+end
+
 P = P(any(K,1),:); % remove unused terms
 K = K(:,any(K,1));
 
@@ -17,13 +22,13 @@ nnz_P_per_row = sum(P_pattern, 2);
 nnz_P_prev_rows = [0; cumsum(full(nnz_P_per_row))];
 nonlinear_terms = find(any(P ~= P_pattern, 2) | (nnz_P_per_row > 1))';
 
-expbool  = (Pvals == BLOM_FunctionCode('exp'));
-logbool  = (Pvals == BLOM_FunctionCode('log'));
-sinbool  = (Pvals == BLOM_FunctionCode('sin'));
-cosbool  = (Pvals == BLOM_FunctionCode('cos'));
-tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
-atanbool = (Pvals == BLOM_FunctionCode('atan'));
-erfbool  = (Pvals == BLOM_FunctionCode('erf'));
+expbool  = (Pvals == BLOM_FunctionCodes.exp);
+logbool  = (Pvals == BLOM_FunctionCodes.log);
+sinbool  = (Pvals == BLOM_FunctionCodes.sin);
+cosbool  = (Pvals == BLOM_FunctionCodes.cos);
+tanhbool = (Pvals == BLOM_FunctionCodes.tanh);
+atanbool = (Pvals == BLOM_FunctionCodes.atan);
+erfbool  = (Pvals == BLOM_FunctionCodes.erf);
 
 vx = x(Pcols).^Pvals; % powers of input variables
 vx(expbool)  = exp(x(Pcols(expbool))); % exponentials

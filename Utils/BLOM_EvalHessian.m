@@ -14,6 +14,11 @@ function [H, LambdaMap] = BLOM_EvalHessian(P, K, x, Lambda)
 % LambdaMap is of dimension m by nnz, where m is the number of rows of
 % K and nnz is the number of nonzero elements in the Hessian.
 
+persistent BLOM_FunctionCodes
+if isempty(BLOM_FunctionCodes)
+    BLOM_FunctionCodes = BLOM_FunctionCode('codes_struct');
+end
+
 P = P(any(K,1),:); % remove unused terms
 K = K(:,any(K,1));
 
@@ -43,13 +48,13 @@ nonlinear_terms = find(any(P ~= P_pattern, 2) | (nnz_P_per_row > 1))';
 
 if nargin > 2
     % evaluate polyblock function at given point x
-    expbool  = (Pvals == BLOM_FunctionCode('exp'));
-    logbool  = (Pvals == BLOM_FunctionCode('log'));
-    sinbool  = (Pvals == BLOM_FunctionCode('sin'));
-    cosbool  = (Pvals == BLOM_FunctionCode('cos'));
-    tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
-    atanbool = (Pvals == BLOM_FunctionCode('atan'));
-    erfbool  = (Pvals == BLOM_FunctionCode('erf'));
+    expbool  = (Pvals == BLOM_FunctionCodes.exp);
+    logbool  = (Pvals == BLOM_FunctionCodes.log);
+    sinbool  = (Pvals == BLOM_FunctionCodes.sin);
+    cosbool  = (Pvals == BLOM_FunctionCodes.cos);
+    tanhbool = (Pvals == BLOM_FunctionCodes.tanh);
+    atanbool = (Pvals == BLOM_FunctionCodes.atan);
+    erfbool  = (Pvals == BLOM_FunctionCodes.erf);
     
     vx = x(Pcols).^Pvals; % powers of input variables
     vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
