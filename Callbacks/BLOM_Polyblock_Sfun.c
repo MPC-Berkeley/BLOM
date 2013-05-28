@@ -146,11 +146,11 @@ static void mdlInitializeSampleTimes(SimStruct *S)
  */
 static void mdlOutputs(SimStruct *S, int_T tid)
 {
-    const mxArray *P = ssGetSFcnParam(S, 0);
-    const mxArray *K = ssGetSFcnParam(S, 1);
+    mxArray *P = (mxArray *) ssGetSFcnParam(S, 0);
+    mxArray *K = (mxArray *) ssGetSFcnParam(S, 1);
     mxArray *mxu = mxCreateDoubleMatrix(mxGetN(P), 1, mxREAL);
     mxArray *plhs[1];
-    const mxArray *prhs[3];
+    mxArray *prhs[3];
     int i;
     
     const real_T *u = (const real_T*) ssGetInputPortSignal(S,0);
