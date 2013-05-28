@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Aug 13 16:40:56 2012"
-  RTWModifiedTimeStamp	  266776728
-  ModelVersionFormat	  "1.%<AutoIncrement:80>"
+  LastModifiedDate	  "Tue May 28 14:51:05 2013"
+  RTWModifiedTimeStamp	  291653463
+  ModelVersionFormat	  "1.%<AutoIncrement:106>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -552,22 +552,6 @@ Library {
   }
   BlockParameterDefaults {
     Block {
-      BlockType		      Constant
-      Value		      "1"
-      VectorParams1D	      on
-      SamplingMode	      "Sample based"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
-      LockScale		      off
-      SampleTime	      "inf"
-      FramePeriod	      "inf"
-    }
-    Block {
       BlockType		      Demux
       Outputs		      "4"
       DisplayOption	      "none"
@@ -634,6 +618,13 @@ Library {
       InitialOutput	      "[]"
     }
     Block {
+      BlockType		      "S-Function"
+      FunctionName	      "system"
+      SFunctionModules	      "''"
+      PortCounts	      "[]"
+      SFunctionDeploymentMode off
+    }
+    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -658,7 +649,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [1063, 398, 1632, 839]
+    Location		    [993, 763, 1562, 1204]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -836,7 +827,7 @@ Library {
       MaskValueString	      "Zero-Order Hold"
       System {
 	Name			"ExternalFromSimulink"
-	Location		[433, 469, 931, 769]
+	Location		[433, 491, 931, 791]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1100,7 +1091,7 @@ Library {
       BlockType		      SubSystem
       Name		      "Polyblock"
       SID		      41
-      Ports		      [2, 1]
+      Ports		      [3, 1]
       Position		      [55, 222, 145, 298]
       BackgroundColor	      "lightBlue"
       ShowPortLabels	      "none"
@@ -1120,7 +1111,7 @@ Library {
       MaskEnableString	      "on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
-      MaskVariables	      "P=@1;K=@2;inputs=@3;inputScalar=@4;outputScalar=@5;"
+      MaskVariables	      "P=@1;K=@2;inputs=&3;inputScalar=@4;outputScalar=@5;"
       MaskInitialization      "BLOM_PolyblockChangeInputs(gcb,P,K,inputs,inputScalar,outputScalar)"
       MaskDisplay	      "fprintf('Polyblock')"
       MaskSelfModifiable      on
@@ -1132,7 +1123,7 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[1010, 773, 1396, 1017]
+	Location		[181, 985, 732, 1162]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1145,12 +1136,12 @@ Library {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	162
+	SIDHighWatermark	169
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
 	  SID			  108
-	  Position		  [20, 38, 50, 52]
+	  Position		  [20, 43, 50, 57]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
@@ -1159,18 +1150,19 @@ Library {
 	  BlockType		  Inport
 	  Name			  "In2"
 	  SID			  160
-	  Position		  [20, 68, 50, 82]
+	  Position		  [20, 73, 50, 87]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
 	Block {
-	  BlockType		  Constant
-	  Name			  "Constant"
-	  SID			  161
-	  Position		  [185, 28, 260, 72]
-	  Value			  "ones(size(K,1),1)"
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  166
+	  Position		  [20, 98, 50, 112]
+	  Port			  "3"
+	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
@@ -1188,23 +1180,27 @@ Library {
 	  BlockType		  Mux
 	  Name			  "Mux"
 	  SID			  125
-	  Ports			  [2, 1]
-	  Position		  [80, 40, 85, 80]
+	  Ports			  [3, 1]
+	  Position		  [80, 40, 85, 100]
 	  ShowName		  off
-	  Inputs		  "2"
+	  Inputs		  "3"
 	  DisplayOption		  "bar"
 	}
 	Block {
-	  BlockType		  Terminator
-	  Name			  "Terminator"
-	  SID			  162
-	  Position		  [130, 50, 150, 70]
+	  BlockType		  "S-Function"
+	  Name			  "S-Function"
+	  SID			  168
+	  Ports			  [1, 1]
+	  Position		  [110, 45, 250, 95]
+	  FunctionName		  "BLOM_Polyblock_Sfun"
+	  Parameters		  "P,K"
+	  EnableBusSupport	  off
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
 	  SID			  110
-	  Position		  [320, 38, 350, 52]
+	  Position		  [310, 43, 340, 57]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
@@ -1212,34 +1208,40 @@ Library {
 	Line {
 	  SrcBlock		  "In1"
 	  SrcPort		  1
-	  Points		  [10, 0]
 	  DstBlock		  "Mux"
 	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "Demux"
 	  SrcPort		  1
-	  Points		  [0, -5]
 	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "In2"
 	  SrcPort		  1
+	  Points		  [0, -10]
 	  DstBlock		  "Mux"
 	  DstPort		  2
 	}
 	Line {
-	  SrcBlock		  "Constant"
+	  SrcBlock		  "Mux"
 	  SrcPort		  1
+	  DstBlock		  "S-Function"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "S-Function"
+	  SrcPort		  1
+	  Points		  [10, 0]
 	  DstBlock		  "Demux"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Mux"
+	  SrcBlock		  "In3"
 	  SrcPort		  1
-	  DstBlock		  "Terminator"
-	  DstPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  3
 	}
       }
     }
