@@ -2,18 +2,23 @@ function y = BLOM_EvalPolyBlock(P, K, x)
 % This function evaluates the PolyBlock function represented by the
 % exponent matrix P and coefficient matrix K, at the column vector x
 
+persistent BLOM_FunctionCodes
+if isempty(BLOM_FunctionCodes)
+    BLOM_FunctionCodes = BLOM_FunctionCode('codes_struct');
+end
+
 P = P(any(K,1),:); % remove unused terms
 K = K(:,any(K,1));
 
 if 1 % sparse version
     [Prows Pcols Pvals] = find(P);
-    expbool  = (Pvals == BLOM_FunctionCode('exp'));
-    logbool  = (Pvals == BLOM_FunctionCode('log'));
-    sinbool  = (Pvals == BLOM_FunctionCode('sin'));
-    cosbool  = (Pvals == BLOM_FunctionCode('cos'));
-    tanhbool = (Pvals == BLOM_FunctionCode('tanh'));
-    atanbool = (Pvals == BLOM_FunctionCode('atan'));
-    erfbool  = (Pvals == BLOM_FunctionCode('erf'));
+    expbool  = (Pvals == BLOM_FunctionCodes.exp);
+    logbool  = (Pvals == BLOM_FunctionCodes.log);
+    sinbool  = (Pvals == BLOM_FunctionCodes.sin);
+    cosbool  = (Pvals == BLOM_FunctionCodes.cos);
+    tanhbool = (Pvals == BLOM_FunctionCodes.tanh);
+    atanbool = (Pvals == BLOM_FunctionCodes.atan);
+    erfbool  = (Pvals == BLOM_FunctionCodes.erf);
     
     vx = x(Pcols).^Pvals; % powers of input variables
     vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
@@ -30,13 +35,13 @@ if 1 % sparse version
     end
 else % dense version
     xrep = ones(size(P,1),1)*x'; % transpose x and repeat for each term
-    expbool  = (P == BLOM_FunctionCode('exp'));
-    logbool  = (P == BLOM_FunctionCode('log'));
-    sinbool  = (P == BLOM_FunctionCode('sin'));
-    cosbool  = (P == BLOM_FunctionCode('cos'));
-    tanhbool = (P == BLOM_FunctionCode('tanh'));
-    atanbool = (P == BLOM_FunctionCode('atan'));
-    erfbool  = (P == BLOM_FunctionCode('erf'));
+    expbool  = (P == BLOM_FunctionCodes.exp);
+    logbool  = (P == BLOM_FunctionCodes.log);
+    sinbool  = (P == BLOM_FunctionCodes.sin);
+    cosbool  = (P == BLOM_FunctionCodes.cos);
+    tanhbool = (P == BLOM_FunctionCodes.tanh);
+    atanbool = (P == BLOM_FunctionCodes.atan);
+    erfbool  = (P == BLOM_FunctionCodes.erf);
     
     vx = xrep.^P; % powers of input variables
     vx(expbool)  = exp(xrep(expbool)); % exponentials
