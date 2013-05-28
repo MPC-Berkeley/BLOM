@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.63"
+    ComputedModelVersion    "1.66"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -23,11 +23,11 @@ Model {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Kyle"
+  LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri May 24 15:27:17 2013"
-  RTWModifiedTimeStamp	  291310006
-  ModelVersionFormat	  "1.%<AutoIncrement:63>"
+  LastModifiedDate	  "Tue May 28 15:08:03 2013"
+  RTWModifiedTimeStamp	  291654481
+  ModelVersionFormat	  "1.%<AutoIncrement:66>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [1442, -383, 3358, 602]
+    Location		    [2651, 97, 3608, 1058]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -772,7 +772,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    116
+    SIDHighWatermark	    117
     Block {
       BlockType		      Sum
       Name		      "Add"
@@ -826,7 +826,7 @@ Model {
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -850,7 +850,7 @@ Model {
       Ports		      [1]
       Position		      [625, 242, 700, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -874,7 +874,7 @@ Model {
       Ports		      [1]
       Position		      [625, 307, 700, 353]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -928,13 +928,23 @@ Model {
       DisplayOption	      "bar"
     }
     Block {
+      BlockType		      Demux
+      Name		      "Demux1"
+      SID		      117
+      Ports		      [1, 2]
+      Position		      [265, 621, 270, 659]
+      ShowName		      off
+      Outputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
       BlockType		      Reference
       Name		      "DiscreteCost"
       SID		      5
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -956,7 +966,7 @@ Model {
       Ports		      [1, 1]
       Position		      [270, 374, 370, 416]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -976,7 +986,7 @@ Model {
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1071,7 +1081,7 @@ Model {
       Ports		      [1, 1]
       Position		      [125, 164, 225, 206]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1091,7 +1101,7 @@ Model {
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1122,7 +1132,7 @@ Model {
       Ports		      [2, 2]
       Position		      [310, 622, 400, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1146,7 +1156,7 @@ Model {
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1170,7 +1180,7 @@ Model {
       Ports		      [2, 1]
       Position		      [625, 622, 715, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1194,7 +1204,7 @@ Model {
       Ports		      [1, 1]
       Position		      [545, 437, 635, 513]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1238,8 +1248,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[1325, 667, 1650, 899]
-	Open			off
+	Location		[1325, 689, 1650, 921]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1380,8 +1390,8 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem1"
-	Location		[848, 552, 1188, 732]
-	Open			off
+	Location		[848, 596, 1188, 776]
+	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1418,10 +1428,10 @@ Model {
 	  BlockType		  Reference
 	  Name			  "sub_Polyblock1"
 	  SID			  84
-	  Ports			  [3, 2]
+	  Ports			  [1, 2]
 	  Position		  [170, 77, 260, 153]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.80"
+	  LibraryVersion	  "1.106"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -1432,10 +1442,10 @@ Model {
 	  RTWMemSecDataConstants  "Inherit from model"
 	  RTWMemSecDataInternal	  "Inherit from model"
 	  RTWMemSecDataParameters "Inherit from model"
-	  P			  "sparse([1 1 0; 3 1 0])"
+	  P			  "sparse([1 1])"
 	  K			  "sparse([1 0.8; 1 1])"
 	  inputs		  "0"
-	  inputScalar		  on
+	  inputScalar		  off
 	  outputScalar		  on
 	}
 	Block {
@@ -1520,7 +1530,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem2"
-	Location		[713, 545, 1421, 878]
+	Location		[713, 567, 1421, 900]
 	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -1600,7 +1610,7 @@ Model {
 	  MaskHideContents	  off
 	  System {
 	    Name		    "Subsubsystem1"
-	    Location		    [784, 504, 1136, 576]
+	    Location		    [784, 526, 1136, 598]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -1676,7 +1686,7 @@ Model {
 	  MaskHideContents	  off
 	  System {
 	    Name		    "Subsubsystem2"
-	    Location		    [784, 504, 1136, 576]
+	    Location		    [784, 526, 1136, 598]
 	    Open		    off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
@@ -2012,12 +2022,6 @@ Model {
       }
     }
     Line {
-      SrcBlock		      "Subsystem"
-      SrcPort		      1
-      DstBlock		      "Polyblock"
-      DstPort		      1
-    }
-    Line {
       SrcBlock		      "From2"
       SrcPort		      1
       Points		      [10, 0; 0, 15]
@@ -2113,6 +2117,19 @@ Model {
       Points		      [0, -20]
       DstBlock		      "Add"
       DstPort		      4
+    }
+    Line {
+      SrcBlock		      "Subsystem"
+      SrcPort		      1
+      DstBlock		      "Demux1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Demux1"
+      SrcPort		      2
+      Points		      [20, 0; 0, -15]
+      DstBlock		      "Polyblock"
+      DstPort		      1
     }
   }
 }
