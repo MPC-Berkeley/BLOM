@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.6"
+    ComputedModelVersion    "1.7"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue May 28 15:11:04 2013"
-  RTWModifiedTimeStamp	  291654660
-  ModelVersionFormat	  "1.%<AutoIncrement:6>"
+  LastModifiedDate	  "Wed May 29 11:26:37 2013"
+  RTWModifiedTimeStamp	  291727591
+  ModelVersionFormat	  "1.%<AutoIncrement:7>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -685,7 +685,7 @@ Model {
   }
   System {
     Name		    "testConvert2Polyblock"
-    Location		    [2890, 82, 3830, 1051]
+    Location		    [490, 82, 1430, 1051]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -719,7 +719,7 @@ Model {
       Name		      "Bias1"
       SID		      79
       Position		      [480, 340, 520, 370]
-      Bias		      "0.0"
+      Bias		      "1"
       SaturateOnIntegerOverflow	off
     }
     Block {
@@ -729,7 +729,7 @@ Model {
       Ports		      [1]
       Position		      [750, 102, 825, 148]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -753,7 +753,7 @@ Model {
       Ports		      [1]
       Position		      [750, 197, 825, 243]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -777,7 +777,7 @@ Model {
       Ports		      [1]
       Position		      [750, 357, 825, 403]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.106"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
