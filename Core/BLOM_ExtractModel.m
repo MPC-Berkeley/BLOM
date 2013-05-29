@@ -1345,11 +1345,16 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     [finalP,finalK] = trimPK(stepP,stepK,optFinalTime);
     
     % create the P and K matrices for all intermediate time steps
-    interP_full = kron(speye(horizon-2),interP);
-    interK_full = kron(speye(horizon-2),interK);
-    
-    fullP = blkdiag(initP,interP_full,finalP);
-    allK = blkdiag(initK,interK_full,finalK);
+    if horizon>1
+        interP_full = kron(speye(horizon-2),interP);
+        interK_full = kron(speye(horizon-2),interK);
+
+        fullP = blkdiag(initP,interP_full,finalP);
+        allK = blkdiag(initK,interK_full,finalK);
+    else
+        fullP = initP;
+        allK = initK;
+    end
     
     % use allVars.PKOptVarIdxReroute to reroute columns of states
     [~,colPLength] = size(fullP);
