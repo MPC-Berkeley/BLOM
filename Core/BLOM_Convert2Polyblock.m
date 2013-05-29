@@ -57,6 +57,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             % FIX: add support for 'Sum' block. the one block that has
             % default inputs on left and bottom and has a circle.
             inputsToAdd = get_param(blockHandle,'Inputs');
+            inputsToAdd(inputsToAdd=='|') = [];
             subtract_indices = inputsToAdd=='-';
             if isempty(inportPlaces.matrix)
                 % for n scalar inputs, P = eye(n), K = ones(1,n). for each ith
@@ -273,8 +274,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             end
         %% bias
         case 'Bias'
-            P = speye(totalInputs*2+1);
-            P(end) = 0;
+            P = speye(totalInputs*2+1,totalInputs*2);
             
             bias = evalin('base',get_param(blockHandle,'Bias'));
             
@@ -296,10 +296,10 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     % sin(x)-cos(x)*y=0 so P=[sin 0;cos 1], K=[1 -1]
                     P=[specialSin*speye(totalInputs) spalloc(totalInputs,totalInputs,0);specialCos*speye(totalInputs) speye(totalInputs)];
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
-                case 'cot'
-                    % cos(x)-sin(x)*y=0 so P=[cos 0;sin 1], K=[1 -1]
-                    P=[specialCos*speye(totalInputs) spalloc(totalInputs,totalInputs,0);specialSin*speye(totalInputs) speye(totalInputs)];
-                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+%                 case 'cot'  %cot block doesn't exist o.O
+%                     cos(x)-sin(x)*y=0 so P=[cos 0;sin 1], K=[1 -1]
+%                     P=[specialCos*speye(totalInputs) spalloc(totalInputs,totalInputs,0);specialSin*speye(totalInputs) speye(totalInputs)];
+%                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
                 case 'asin'
                     % x-sin(y)=0 so P=[1 0;0 sin], K=[1 -1]
                     P=blkdiag(speye(totalInputs),specialSin*speye(totalInputs));
@@ -310,12 +310,12 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
                 case 'atan'
                     % x*cos(y)-sin(y)=0 so P=[1 cos;0 sin], K=[1 -1]
-                    P=sparse([eye(totalInputs) specialCos*eye(totalInputs);zeros(totalInputs) specialSin*eye(totalinputs)]);
+                    P=sparse([eye(totalInputs) specialCos*eye(totalInputs);zeros(totalInputs) specialSin*eye(totalInputs)]);
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
-                case 'acot'
-                    % x*sin(y)-cos(y)=0 so P=[1 sin;0 cos], K=[1 -1]
-                    P=[speye(totalInputs) specialSin*speye(totalInputs);spalloc(totalInputs,totalInputs,0) specialCos*speye(totalinputs)];
-                    K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+%                 case 'acot' %acot block doesn't exist o.O
+%                     % x*sin(y)-cos(y)=0 so P=[1 sin;0 cos], K=[1 -1]
+%                     P=[speye(totalInputs) specialSin*speye(totalInputs);spalloc(totalInputs,totalInputs,0) specialCos*speye(totalinputs)];
+%                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
                 case 'sincos'
                     % Note: one input, two outputs: sin(x)-y_1=0 and
                     % cos(x)-y_2=0  so P=[sin 0 0 0;0 cos 0 0;0 0 1 0;0 0 0
@@ -377,7 +377,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
         %% unary minus
         case 'UnaryMinus'
                     P = speye(totalInputs*2);
-                    K = horzcat(-speye(totalInputs),-1*speye(totalInputs));
+                    K = horzcat(speye(totalInputs),speye(totalInputs));
                     
         %% Math Function
         case 'Math'
@@ -420,7 +420,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     % x^(1/ln(10))-exp(y)=0, P=[1/ln(10) 0;0 exp], K=[1 -1]
                     specialExp=BLOM_FunctionCode('exp');
                     specFunPresence=true;
-                    P=blkdiag(speye(totalInputs)/ln(10),speye(totalInputs)*specialExp);
+                    P=blkdiag(speye(totalInputs)/log(10),speye(totalInputs)*specialExp);
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
                 case 'conj'
                     error('Sorry, BLOM does not support complex numbers.')
@@ -464,40 +464,42 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                 case 'transpose'
                     % only makes a difference if input is a matrix, vector
                     % input, returns the same thing
-                    transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
-                    if length(transposePortDim)>2
-                        % matrix case: if [1 3;2 4] is input, [1;3;2;4] (or
-                        % [1 2;3 4]) i.e. P is identity, K= reordered
-                        % inputs so in the above example
-                        % x1=y1,x2=y3,x3=y2,x4=y4
-                        transposeInports=transposePortDim.Inport(2:3);
-                        transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
-                        transposeInd=transposeInd';
-                        transposeInd=transposeInd(1:end);
-                        KLeft=speye(totalInputs)*-1;
-                        
-                        K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
-                    else
-                        K=horzcat(speye(totalInputs),-1*speye(totalInputs));
-                    end
-                    P=speye(totalInputs*2);
-                case 'hermitian'
-                    % same as transpose case above due to assumption of
-                    % real values
-                    transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
-                    if length(transposePortDim)>2
-                        transposeInports=transposePortDim.Inport(2:3);
-                        transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
-                        transposeInd=transposeInd';
-                        transposeInd=transposeInd(1:end);
-                        KLeft=speye(totalInputs)*-1;
-                        
-                        K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
-                    else
-                        K=horzcat(speye(totalInputs),-1*speye(totalInputs));
-                    end
-                    P=speye(totalInputs*2);
-                    warning('BLOM does not support complex numbers. Proceed with caution.')
+%                     transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
+%                     if length(transposePortDim)>2
+%                         % matrix case: if [1 3;2 4] is input, [1;3;2;4] (or
+%                         % [1 2;3 4]) i.e. P is identity, K= reordered
+%                         % inputs so in the above example
+%                         % x1=y1,x2=y3,x3=y2,x4=y4
+%                         transposeInports=transposePortDim.Inport(2:3);
+%                         transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
+%                         transposeInd=transposeInd';
+%                         transposeInd=transposeInd(1:end);
+%                         KLeft=speye(totalInputs)*-1;
+%                         
+%                         K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
+%                     else
+%                         K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+%                     end
+%                     P=speye(totalInputs*2);
+                    warning('BLOM does not support transpose. Proceed with caution.')
+
+%                 case 'hermitian'
+%                     % same as transpose case above due to assumption of
+%                     % real values
+%                     transposePortDim=get_param(blockHandle,'CompiledPortDimensions');
+%                     if length(transposePortDim)>2
+%                         transposeInports=transposePortDim.Inport(2:3);
+%                         transposeInd=reshape(1:totalInputs,transposeInports(1),transposeInports(2));
+%                         transposeInd=transposeInd';
+%                         transposeInd=transposeInd(1:end);
+%                         KLeft=speye(totalInputs)*-1;
+%                         
+%                         K=horzcat(speye(totalInputs),KLeft(:,transposeInd));
+%                     else
+%                         K=horzcat(speye(totalInputs),-1*speye(totalInputs));
+%                     end
+%                     P=speye(totalInputs*2);
+%                     warning('BLOM does not support complex numbers. Proceed with caution.')
                     
                 otherwise
                     % cases not included above are assumed to have been
