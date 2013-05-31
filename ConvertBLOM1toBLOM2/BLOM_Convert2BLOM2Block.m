@@ -76,9 +76,17 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
             delete_block(BLOM1Block);
             add_block('BLOM_Lib/DiscreteCost', block);
             set_param(block, 'Position', position);
+
+        case 'MPCMdlLib/Input var'
+            delete_block(BLOM1Block);
+            add_block('BLOM_Lib/InputFromSimulink', block);
+            set_param(block, 'Position', position);
             
-
+        case 'MPCMdlLib/External Var'
+            delete_block(BLOM1Block);
+            add_block('BLOM_Lib/ExternalFromSimulink', block);
+            set_param(block, 'Position', position);
+            
     end
-
 
 end
