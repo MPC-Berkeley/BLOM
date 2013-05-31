@@ -13,11 +13,11 @@ Library {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "JJK"
+  LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue May 28 14:51:05 2013"
-  RTWModifiedTimeStamp	  291653463
-  ModelVersionFormat	  "1.%<AutoIncrement:106>"
+  LastModifiedDate	  "Thu May 30 15:35:11 2013"
+  RTWModifiedTimeStamp	  291825584
+  ModelVersionFormat	  "1.%<AutoIncrement:112>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -618,6 +618,24 @@ Library {
       InitialOutput	      "[]"
     }
     Block {
+      BlockType		      Product
+      Inputs		      "2"
+      Multiplication	      "Element-wise(.*)"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Zero"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      "S-Function"
       FunctionName	      "system"
       SFunctionModules	      "''"
@@ -649,7 +667,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [993, 763, 1562, 1204]
+    Location		    [2152, 302, 2721, 743]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -663,7 +681,7 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    61
+    SIDHighWatermark	    78
     Block {
       BlockType		      SubSystem
       Name		      "Bound"
@@ -943,6 +961,247 @@ Library {
     }
     Block {
       BlockType		      SubSystem
+      Name		      "GeneralPolyblock"
+      SID		      72
+      Ports		      [3, 1]
+      Position		      [295, 207, 385, 283]
+      BackgroundColor	      "lightBlue"
+      ShowPortLabels	      "none"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      MaskDescription	      "y = f(x)/g(x)\nwhere f and g are a sum of polynomial and exponential terms, described by "
+      "P and K matricies.\nExample: f=x1*exp(x3)+0.8x1^3*x2\nP_f = [1 0 BLOM_FunctionCode('exp');\n     3 1 0];\nK_f = "
+      "[1 0.8];"
+      MaskPromptString	      "P matrix f(X)|K matrix f(x)|P matrix g(x)	|K matrix g(x)|Input names, comma separated|In"
+      "put(s) as scalar?|Output(s) as scalar?"
+      MaskStyleString	      "edit,edit,edit,edit,edit,checkbox,checkbox"
+      MaskTunableValueString  "on,on,on,on,on,on,on"
+      MaskCallbackString      "||||||"
+      MaskEnableString	      "on,on,on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on,on,on"
+      MaskVariables	      "P_f=@1;K_f=@2;P_g=@3;K_g=@4;inputs=&5;inputScalar=@6;outputScalar=@7;"
+      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb,P_f,K_f,inputs,inputScalar,outputScalar)\n\nif (size(P_f"
+      ",2) ~= size(P_g,2))\n    str =[gcb ': Number of columns of P in f must be equal to number of columns of P in g!'"
+      "]; \n    disp(str);\n    error(str);\nend\n\nif (size(P_f,1) ~= size(K_f,2))\n    str =[gcb ': Number of rows of"
+      " P in f must be equal to number of columns of K in f!'];\n    disp(str);\n    error(str);\nend\n\nif (size(P_g,1"
+      ") ~= size(K_g,2))\n    str =[gcb ': Number of rows of P in g must be equal to number of columns of K in g!'];\n "
+      "   disp(str);\n    error(str);\nend\n\nif (size(K_g,1) ~= 1 && size(K_g,1) ~= size(K_f,1))\n    str =[gcb ': g m"
+      "ust be a scalar function or equal dimension to f'];\n    disp(str);\n    error(str);\nend"
+      MaskDisplay	      "fprintf('Polyblock f(x)/g(x)')"
+      MaskSelfModifiable      on
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|[0 0 0]|[1]|x1,x2,x3|on|on"
+      System {
+	Name			"GeneralPolyblock"
+	Location		[1097, 344, 1648, 742]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	SIDHighWatermark	3
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  73
+	  Position		  [30, 103, 60, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  74
+	  Position		  [30, 133, 60, 147]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  75
+	  Position		  [30, 158, 60, 172]
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux"
+	  SID			  76
+	  Ports			  [1, 1]
+	  Position		  [345, 115, 350, 135]
+	  ShowName		  off
+	  Outputs		  "1"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Divide"
+	  SID			  3
+	  Ports			  [2, 1]
+	  Position		  [290, 107, 320, 138]
+	  Inputs		  "*/"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Floor"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  SID			  77
+	  Ports			  [3, 1]
+	  Position		  [90, 100, 95, 160]
+	  ShowName		  off
+	  Inputs		  "3"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Polyblock"
+	  SID			  1
+	  Ports			  [1, 1]
+	  Position		  [155, 32, 245, 108]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.106"
+	  SourceBlock		  "BLOM_Lib/Polyblock"
+	  SourceType		  ""
+	  ShowPortLabels	  "none"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  P			  "P_f"
+	  K			  "K_f"
+	  inputs		  "x"
+	  inputScalar		  off
+	  outputScalar		  off
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Polyblock1"
+	  SID			  2
+	  Ports			  [1, 1]
+	  Position		  [155, 152, 245, 228]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.106"
+	  SourceBlock		  "BLOM_Lib/Polyblock"
+	  SourceType		  ""
+	  ShowPortLabels	  "none"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  P			  "P_g"
+	  K			  "K_g"
+	  inputs		  "x"
+	  inputScalar		  off
+	  outputScalar		  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  78
+	  Position		  [375, 118, 405, 132]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [0, -10]
+	  DstBlock		  "Mux"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "In3"
+	  SrcPort		  1
+	  DstBlock		  "Mux"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Mux"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 0]
+	  Branch {
+	    Points		    [0, -60]
+	    DstBlock		    "Polyblock"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 60]
+	    DstBlock		    "Polyblock1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Polyblock"
+	  SrcPort		  1
+	  Points		  [10, 0; 0, 45]
+	  DstBlock		  "Divide"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Polyblock1"
+	  SrcPort		  1
+	  Points		  [10, 0; 0, -60]
+	  DstBlock		  "Divide"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Divide"
+	  SrcPort		  1
+	  DstBlock		  "Demux"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
       Name		      "InputFromSimulink"
       SID		      20
       Ports		      [1, 1]
@@ -1092,7 +1351,7 @@ Library {
       Name		      "Polyblock"
       SID		      41
       Ports		      [3, 1]
-      Position		      [55, 222, 145, 298]
+      Position		      [55, 207, 145, 283]
       BackgroundColor	      "lightBlue"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
@@ -1123,8 +1382,8 @@ Library {
       MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
-	Location		[181, 985, 732, 1162]
-	Open			on
+	Location		[197, 323, 748, 500]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1137,6 +1396,7 @@ Library {
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
 	SIDHighWatermark	169
+	SIDPrevWatermark	169
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
