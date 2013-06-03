@@ -87,6 +87,52 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
             add_block('BLOM_Lib/ExternalFromSimulink', block);
             set_param(block, 'Position', position);
             
+        case 'MPCMdlLib/PolyBlock'
+            P = eval(get_param(BLOM1Block, 'A'));
+            K = eval(get_param(BLOM1Block, 'C'));
+            numOutputs = size(K,1);
+            
+            inputCols = P(:,1:end-numOutputs);
+            outputCols = P(:,end-numOutputs+1:end);
+            outputIdx = any(outputCols == 1, 2);
+            if any(any(outputCols ~= 1 & outputCols ~= 0))
+                error('Invalid values in output columns of A.  Must be only 1 or 0')
+            end
+            if any(any(inputCols ~= 0,2) & any(outputCols ~= 0,2))
+                error('Output variables should only be identity.  Should have no relation to inputs');
+            end
+            if any(sum(outputCols,2) > 1)
+                error('Invalid outputs.  Rows in A should not relate multiple outputs.')
+            end
+            if any(sum(outputCols,1) > 1)
+                error('Multiple rows of A for same output variable is redundant. Please remove such that there is only one instance.')
+            end
+            if any(any(K(:,outputIdx) ~= -1 & K(:,outputIdx) ~= 0))
+                error('All entries in C corresponding to output variables in A should be -1');
+            end
+            P(outputIdx,:) = [];
+            P(:,end-numOutputs+1:end) = [];
+            K(:,outputIdx) = [];
+
+            scalarInput = strcmp(get_param(BLOM1Block, 'input_type'), 'Scalar');
+            scalarOutput = strcmp(get_param(BLOM1Block, 'output_type'), 'Scalar');
+            
+            delete_block(BLOM1Block);
+            add_block('BLOM_Lib/Polyblock', block);            
+            set_param(block, 'P', P);
+            set_param(block, 'K', K);
+            if scalarInput
+                set_param(block, 'inputScalar', 'on');
+            else
+                set_param(block, 'inputScalar', 'off');
+            end
+            if scalarOutput
+                set_param(block, 'outputScalar', 'on');
+            else 
+                set_param(block, 'outputScalar', 'off');
+            end
+            set_param(block, 'Position', position);
+
     end
 
 end
