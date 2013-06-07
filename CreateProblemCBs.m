@@ -43,7 +43,7 @@ end
 str = {};
 for i=1:length(AAs)
     for j=1:size(Cs{i},1)
-        str{end+1} = CreatePolyFromMatrix(AAs{i},Cs{i}(j,:),idx_names)  ;
+        str{end+1} = CreatePolyFromMatrix(AAs{i}',Cs{i}(j,:),idx_names)  ;
     end
 end
 
@@ -54,7 +54,7 @@ PrintFunction(eqconstr_name,str);
 
 clear grad;
 for i=1:length(AAs)
-    grad{i} = CreateGradient(AAs{i},Cs{i});
+    grad{i} = CreateGradient(AAs{i}',Cs{i});
 end
 
 for i=1:length(AAs)
@@ -76,7 +76,7 @@ end
 str = {};
 for i = 1:length(ineq.AAs)
         for j=1:size(ineq.Cs{i},1)
-            str{end+1} =  CreatePolyFromMatrix(ineq.AAs{i},ineq.Cs{i}(j,:),idx_names)  ;
+            str{end+1} =  CreatePolyFromMatrix(ineq.AAs{i}',ineq.Cs{i}(j,:),idx_names)  ;
         end
 end
 
@@ -86,12 +86,12 @@ PrintFunction(neqconstr_name,str)
 
 clear grad;
 for i=1:length(ineq.AAs)
-    grad{i} = CreateGradient(ineq.AAs{i},ineq.Cs{i});
+    grad{i} = CreateGradient(ineq.AAs{i}',ineq.Cs{i});
 end
 
 for i=1:length(ineq.AAs)
     for j=1:length(idx_names)
-        str{i,j} = CreatePolyFromMatrix(grad{i}.AAs{j},grad{i}.Cs{j},idx_names);
+        str{i,j} = CreatePolyFromMatrix(grad{i}.AAs{j}',grad{i}.Cs{j},idx_names);
     end
 end
 
@@ -141,10 +141,10 @@ B = [];
 nlAAs = {};
 nlCs  = {};
 for i = 1:length(AAs)
-    if IsLinear(AAs{i})
+    if IsLinear(AAs{i}')
         for j=1:size(Cs{i},1)
-            Matrix(l,:) = Cs{i}(j,:)*AAs{i};
-            idx = find(sum(AAs{i}')==0);% find constant terms
+            Matrix(l,:) = Cs{i}(j,:)*AAs{i}';
+            idx = find(sum(AAs{i})==0);% find constant terms
             if isempty(idx)
                 B(l) = 0;
             else

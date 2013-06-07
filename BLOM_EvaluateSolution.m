@@ -23,13 +23,13 @@ end
 
 Eq = [];
 for i=1:length(ModelSpec.AAs)
-    val = BLOM_EvalPolyBlock(ModelSpec.AAs{i},ModelSpec.Cs{i},xvec);
+    val = BLOM_EvalPolyBlock(ModelSpec.AAs{i}',ModelSpec.Cs{i},xvec);
     Eq = [Eq ; val ];
 end
 
 Ineq = [];
 for i=1:length(ModelSpec.ineq.AAs)
-    val = BLOM_EvalPolyBlock(ModelSpec.ineq.AAs{i},ModelSpec.ineq.Cs{i},xvec);
+    val = BLOM_EvalPolyBlock(ModelSpec.ineq.AAs{i}',ModelSpec.ineq.Cs{i},xvec);
     Ineq = [Ineq ; val ];
 end
 

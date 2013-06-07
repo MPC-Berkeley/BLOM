@@ -50,7 +50,7 @@ Cs = repmat(Csingle, 1, n_time_steps);
 k = 0;
 for t=1:n_time_steps
     for i=1:length(AAsingle)
-        AAs{end+1} = Atrans(:, k + (1:size(AAsingle{i},1)))';
+        AAs{end+1} = Atrans(:, k + (1:size(AAsingle{i},1)));
         k = k + size(AAsingle{i},1);
     end
     
@@ -151,7 +151,7 @@ if (discrete_sys)
                 to_rem_var = idx_discr_state_vars(k)+(t-1)*n;
                 source_var = source+(t-1-d)*n;
                 
-                % The move of the variable is potponed to later phase,
+                % The move of the variable is postponed to later phase,
                 % so that the continuous stats will not interfere with it
 %                 AA_cat = MoveEqualVar(AA_cat, source_var,to_rem_var ); % just copy data, do not remove the column yet
                 toremove_list = [toremove_list, to_rem_var];
@@ -203,6 +203,7 @@ if continouous_sys % continous system
             (i-2)*n, (i-1)*n, n, cont_state_vars, dt, in_vars_single, ...
             ex_vars_single, all_names, all_names_single);
         toremove_list = [toremove_list, toremove_list_tmp];
+        toremove_list_source = [toremove_list_source , toremove_list_tmp];
         Nprev = N;
         N = length(all_names);
         if (N > Nprev)
@@ -217,24 +218,29 @@ if continouous_sys % continous system
     end
     
     % put all the A's together, do the column manipulations all together
-    AA_cat = vertcat(AAs{:});
+    AA_cat = horzcat(AAs{:})';
 end
 
 
 % after handling of continuous states we can take care of the removed
 % variables.
-AA_cat = {AA_cat}; % MoveEqualVar works with cell arrays
-for i = 1:length(toremove_list_source)
-    AA_cat = MoveEqualVar(AA_cat,toremove_list_source(i),toremove_list(i));
-end
-AA_cat = AA_cat{1};
+MoveEqualMatrix =  speye(size(AA_cat,2)) + sparse(toremove_list,toremove_list_source,...
+                toremove_list_source ~= toremove_list ... % put zero if the removed variable does not need to be copied.
+                ,size(AA_cat,2),size(AA_cat,2));
+AA_cat = AA_cat*MoveEqualMatrix;
+
+% AA_cat = {AA_cat'}; % MoveEqualVar works with cell arrays
+% for i = 1:length(toremove_list_source)
+%     AA_cat = MoveEqualVar(AA_cat,toremove_list_source(i),toremove_list(i),'transp');
+% end
+% AA_cat = AA_cat{1}';
 
 
 AA_sizes = zeros(length(AAs),2);
 for i=1:length(AAs)
     AA_sizes(i,:) = size(AAs{i});
 end
-AA_sizesofar = [0; cumsum(AA_sizes(:,1))]; % cumulative sum
+AA_sizesofar = [0; cumsum(AA_sizes(:,2))]; % cumulative sum
 MoveEqualMatrix = speye(size(AA_cat,2));
 
 % filter out input variables that are fixed for more than one time step
@@ -259,6 +265,29 @@ for i=1:length(idx)
     end
 end
 
+% filter out external variables that are fixed for more than one time step
+idx = find(ex_vars_single(1:n) > 1 );
+for i=1:length(idx)
+    for tt = 1:ceil(n_time_steps/ex_vars_single(idx(i)));
+        t = 1 + (tt-1)*ex_vars_single(idx(i));
+        next_vars = idx(i) + (t:(t+ex_vars_single(idx(i))-2))*n;
+        % remove all variables after the last variable
+        next_vars = next_vars(next_vars <= length(all_names));
+        if isempty(next_vars)
+            continue
+        end
+        
+        for j = 1:length(next_vars)
+            all_names{idx(i)+(t-1)*n} = [all_names{idx(i)+(t-1)*n} ';' all_names{next_vars(j)}];
+        end
+        
+        MoveEqualMatrix(next_vars, idx(i)+(t-1)*n) = 1;
+        %AAs = MoveEqualVar(AAs,idx(i)+(t-1)*n,next_vars ); % just copy data, do not remove the column yet
+        toremove_list = [toremove_list, next_vars];
+    end
+end
+
+
 Ns = true(N,1);
 Ns(toremove_list) = false;
 %for i=1:length(AAs)
@@ -277,7 +306,7 @@ Atrans = AA_cat(:, Ns)'; % save transpose because getting columns of a
 % sparse matrix is faster than getting rows
 %AAs_old = AAs;
 for i=1:length(AAs)
-    AAs{i} = Atrans(:, AA_sizesofar(i)+1:AA_sizesofar(i+1))';
+    AAs{i} = Atrans(:, AA_sizesofar(i)+1:AA_sizesofar(i+1));
 end
 %if ~isequal(AAs, AAs_old)
 %   disp('mismatch')
@@ -320,7 +349,7 @@ for i=1:length(AAs)
                 continue;
             end
             %AAs = MoveEqualVar(AAs,origin,to_remove); % just copy data, do not remove the column yet
-            AA_cat = MoveEqualVar(AA_cat,origin,to_remove); % just copy data, do not remove the column yet
+            AA_cat = MoveEqualVar(AA_cat,origin,to_remove,'normal'); % just copy data, do not remove the column yet
             all_names{origin} = [all_names{origin} ';' all_names{to_remove}];
             %             AAs{i}(C~=0,:) = 0; % reset the identity polyblock
             toremove_list = [toremove_list to_remove ];
@@ -407,7 +436,7 @@ protected = in_vars | ex_vars;
 [cost, to_remove_var_cost, all_names, AAs, Cs] = ...
     ExtractVars(all_names, AAs, Cs, cost_vars, protected);
 % protect the cost variables, so they do not get removed
-protected = protected | any(vertcat(cost.AAs{:}),1)';
+protected = protected | any(horzcat(cost.AAs{:}),2);
 [ineq, to_remove_var_ineq, all_names, AAs, Cs] = ...
     ExtractVars(all_names, AAs, Cs, -ineq_vars, protected);
 % minus is to handle definition of inequality
@@ -426,7 +455,7 @@ in_vars = in_vars(stay_places==1);
 ex_vars = ex_vars(stay_places==1);
 state_vars = state_vars(stay_places==1);
 % merge all cost functions
-merged_cost.A = vertcat(cost.AAs{:});
+merged_cost.A = horzcat(cost.AAs{:})';
 merged_cost.C = horzcat(cost.Cs{:});
 
 
@@ -443,7 +472,7 @@ idx = find(vars);
 usage_vec = zeros(size(idx))';
 last_used_vec = usage_vec;
 for j=1:length(AAs)
-    usage_j = any(AAs{j}(:,idx));
+    usage_j = any(AAs{j}(idx,:),2)';
     usage_vec = usage_vec + usage_j;
     last_used_vec(usage_j) = j;
 end
@@ -478,24 +507,24 @@ for i=1:length(idx)
             if (isnan(last_used)) % the function was removed, need to search again
                 last_used = 0;
                 for j=1:length(AAs)
-                    if any(AAs{j}(:,idx(i)))
+                    if any(AAs{j}(idx(i),:))
                         last_used = j;
                         break % we know that there is only one usage.
                     end
                 end
             end % if (isnan(last_used))
-            Atrans_last_used = AAs{last_used}'; % save transpose for row sums
+            Atrans_last_used = AAs{last_used}; % save transpose for row sums
         end
         
         % check if can be unfolded - no high powers or exponents
-        powers = AAs{last_used}(:,idx(i));
+        powers = AAs{last_used}(idx(i),:);
         if max(powers)==1 && min(powers)>-1 && (sum(powers) == 1)
             term = find(powers);
             if (length(term) == 1) && (sum(Atrans_last_used(:,term)) == 1)
                 % no other variables in the term
                 %new_func.AAs{i} = AAs{last_used}([1:term-1 term+1:end],:);
                 new_func.AAs{i} = AAs{last_used};
-                new_func.AAs{i}(term, :) = [];
+                new_func.AAs{i}(:,term) = [];
                 % find where this term is used in C
                 c_line = find(Cs{last_used}(:,term));
                 if (length(c_line) ~= 1)
@@ -518,7 +547,7 @@ for i=1:length(idx)
                     % decrement all functions after the removed one
                     last_used_vec(decrement_bool) = decrement_vals;
                     % whoever participated in this function, now has one usage less
-                    usage_vec = usage_vec - any(AAs{last_used}(:,idx));
+                    usage_vec = usage_vec - any(AAs{last_used}(idx,:),2)';
                     
                     %AAs = {AAs{1:last_used-1} AAs{last_used+1:end}};
                     %Cs =  {Cs{1:last_used-1} Cs{last_used+1:end}};
@@ -536,8 +565,8 @@ for i=1:length(idx)
     end
     
     if (unfolded == 0) %  just use the existing variable
-        new_func.AAs{i} = sparse(1,length(all_names));
-        new_func.AAs{i}(1,idx(i)) = 1;
+        new_func.AAs{i} = sparse(1,length(all_names))';
+        new_func.AAs{i}(idx(i),1) = 1;
         new_func.Cs{i} = vars(idx(i));
     end
 end
@@ -767,7 +796,8 @@ end
 % Mark external vars
 ex_vars = sparse(N,1);
 for i= 1:length(ex_blks)
-    ex_vars(IIs{length(blks) + length(mem_blks)+length(in_blks) + i}) = 1;
+    ex_vars(IIs{length(blks) + length(mem_blks)+length(in_blks) + i}) = ...
+        evalin('base', get_param(ex_blks{i}, 'step_ratio'));
 end
 
 ineq_vars = sparse(N,1);
@@ -889,9 +919,17 @@ function [AAs, Cs, names] = RemoveVariable(AAs, Cs, names, vars_to_remove)
 stay_places = true(length(names),1);
 stay_places(vars_to_remove) = false;
 
-for i=1:length(AAs)
-    AAs{i} = AAs{i}(:,stay_places);
-    %     Cs{i} = Cs{i};
+
+if (size(AAs{1},2) == length(names)) % check what AAs format is used
+    for i=1:length(AAs)
+        AAs{i} = AAs{i}(:,stay_places);
+        %     Cs{i} = Cs{i};
+    end    
+else
+    for i=1:length(AAs)
+        AAs{i} = AAs{i}(stay_places,:);
+        %     Cs{i} = Cs{i};
+    end
 end
 
 names = names(stay_places);
@@ -984,7 +1022,7 @@ else
                 k_start(i) = new_step;
             end
         else
-            k_start(i) = size(AAs{1},2); % remember the previous size
+            k_start(i) = size(AAs{1},1); % remember the previous size
             % Add core_functions and expand all matrices
             [AAs, Cs] = AppendVarsFuncs(AAs, Cs, core_functions);
             % remember what to remove later
@@ -998,7 +1036,7 @@ else
             continue;
         end
         % y_k = y_n + h*sum(a_ij * k_j)
-        A = sparse(length(states), size(AAs{1},2));
+        A = sparse(length(states), size(AAs{1},1));
         C = sparse(length(states), length(states));
         for s=1:length(states) % y_n
             A(s, states(s)+prev_step) = 1;
@@ -1016,13 +1054,13 @@ else
                 C(s, size(A,1)) = ButcherTableau.A(i,j)*dt;
             end
         end
-        AAs = horzcat(AAs, {A});
+        AAs = horzcat(AAs, {A'});
         Cs = horzcat(Cs, {C});
         
         % expand names
         for j=1:length(all_names_single)
-            all_names{end+1} = [ all_names_single{j} '.' 't' ...
-                sprintf('%d',new_step/n+1) 'rk' sprintf('%d',i) ];
+            all_names{end+1} = [ 'BL_' 'rk' sprintf('%d',i) all_names_single{j}(4:end)  '.' 't' ...
+                sprintf('%d',new_step/n+1) ];
         end
         
         % connect all input and external vars to the original time step
@@ -1036,7 +1074,7 @@ else
             end
             
             % just copy data, do not remove the column yet
-            AAs = MoveEqualVar(AAs, source, k_start(i)+v);
+            AAs = MoveEqualVar(AAs, source, k_start(i)+v,'transp');
             remove_var = [remove_var, k_start(i)+v];
         end
         
@@ -1045,7 +1083,7 @@ end
 
 % create equality constraint for y_(n+1)
 % y_(n+1) = y_n + h*sum(b_i * k_i)
-A = sparse(length(states), size(AAs{1},2));
+A = sparse(length(states), size(AAs{1},1));
 C = sparse(length(states), length(states));
 for s=1:length(states) % y_n
     A(s, states(s)+prev_step)=1;
@@ -1072,22 +1110,22 @@ end
 %   disp('mismatch')
 %end
 
-AAs = horzcat(AAs, {A});
+AAs = horzcat(AAs, {A'});
 Cs = horzcat(Cs, {C});
 
 function [AAs, Cs] = AppendVarsFuncs(AAs, Cs, core_functions)
 % Add core_functions and expand all matrices
-prev = size(AAs{1},2);
-N = size(AAs{1},2) + size(core_functions.AAs{1},2);
+prev = size(AAs{1},1);
+N = size(AAs{1},1) + size(core_functions.AAs{1},2);
 for i=1:length(AAs)
-    [I,J,s] = find(AAs{i});
-    [m,n] = size(AAs{i});
-    AAs{i} = sparse(I,J,s,m,N);
+    [I,J,s] = find(AAs{i}');
+    [m,n] = size(AAs{i}');
+    AAs{i} = sparse(I,J,s,m,N)';
 end
 
 for i=1:length(core_functions.AAs)
     [I,J,s] = find(core_functions.AAs{i});
     [m,n] = size(core_functions.AAs{i});
-    AAs{end+1} = sparse(I,J+prev,s,m,N);
+    AAs{end+1} = sparse(I,J+prev,s,m,N)';
     Cs{end+1} = core_functions.Cs{i};
 end

@@ -1,0 +1,3849 @@
+Model {
+  Name			  "Regularization"
+  Version		  7.6
+  MdlSubVersion		  0
+  GraphicalInterface {
+    NumRootInports	    0
+    NumRootOutports	    0
+    ParameterArgumentNames  ""
+    ComputedModelVersion    "1.345"
+    NumModelReferences	    0
+    NumTestPointedSignals   0
+  }
+  SavedCharacterEncoding  "windows-1252"
+  SaveDefaultBlockParams  on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  DataTypeOverrideAppliesTo "AllNumericTypes"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  MaxMDLFileLineLength	  120
+  Created		  "Mon Jan 23 09:35:10 2012"
+  Creator		  "trckam"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "sergv"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Sat Feb 09 14:22:45 2013"
+  RTWModifiedTimeStamp	  282246457
+  ModelVersionFormat	  "1.%<AutoIncrement:345>"
+  ConfigurationManager	  "None"
+  SampleTimeColors	  off
+  SampleTimeAnnotations	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowSignalResolutionIcons on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  BlockNameDataTip	  off
+  BlockParametersDataTip  on
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelSystemTargetFile	  "accel.tlc"
+  AccelTemplateMakefile	  "accel_default_tmf"
+  AccelMakeCommand	  "make_rtw"
+  TryForcingSFcnDF	  off
+  RecordCoverage	  off
+  CovPath		  "/"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  CovForceBlockReductionOff on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeVarName	  "covCumulativeData"
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  CovModelRefEnable	  "Off"
+  CovExternalEMLEnable	  off
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  BufferReuse		  on
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  Array {
+    Type		    "Handle"
+    Dimension		    1
+    Simulink.ConfigSet {
+      $ObjectID		      1
+      Version		      "1.10.0"
+      Array {
+	Type			"Handle"
+	Dimension		8
+	Simulink.SolverCC {
+	  $ObjectID		  2
+	  Version		  "1.10.0"
+	  StartTime		  "0.0"
+	  StopTime		  "60*60*4"
+	  AbsTol		  "auto"
+	  FixedStep		  "300"
+	  InitialStep		  "auto"
+	  MaxNumMinSteps	  "-1"
+	  MaxOrder		  5
+	  ZcThreshold		  "auto"
+	  ConsecutiveZCsStepRelTol "10*128*eps"
+	  MaxConsecutiveZCs	  "1000"
+	  ExtrapolationOrder	  4
+	  NumberNewtonIterations  1
+	  MaxStep		  "auto"
+	  MinStep		  "auto"
+	  MaxConsecutiveMinStep	  "1"
+	  RelTol		  "1e-3"
+	  SolverMode		  "Auto"
+	  ConcurrentTasks	  off
+	  Solver		  "FixedStepDiscrete"
+	  SolverName		  "FixedStepDiscrete"
+	  SolverJacobianMethodControl "auto"
+	  ShapePreserveControl	  "DisableAll"
+	  ZeroCrossControl	  "UseLocalSettings"
+	  ZeroCrossAlgorithm	  "Nonadaptive"
+	  AlgebraicLoopSolver	  "TrustRegion"
+	  SolverResetMethod	  "Fast"
+	  PositivePriorityOrder	  off
+	  AutoInsertRateTranBlk	  off
+	  SampleTimeConstraint	  "Unconstrained"
+	  InsertRTBMode		  "Whenever possible"
+	}
+	Simulink.DataIOCC {
+	  $ObjectID		  3
+	  Version		  "1.10.0"
+	  Decimation		  "1"
+	  ExternalInput		  "[t, u]"
+	  FinalStateName	  "xFinal"
+	  InitialState		  "xInitial"
+	  LimitDataPoints	  on
+	  MaxDataPoints		  "1000"
+	  LoadExternalInput	  off
+	  LoadInitialState	  off
+	  SaveFinalState	  off
+	  SaveCompleteFinalSimState off
+	  SaveFormat		  "Array"
+	  SaveOutput		  on
+	  SaveState		  off
+	  SignalLogging		  on
+	  DSMLogging		  on
+	  InspectSignalLogs	  off
+	  SaveTime		  on
+	  ReturnWorkspaceOutputs  off
+	  StateSaveName		  "xout"
+	  TimeSaveName		  "tout"
+	  OutputSaveName	  "yout"
+	  SignalLoggingName	  "logsout"
+	  DSMLoggingName	  "dsmout"
+	  OutputOption		  "RefineOutputTimes"
+	  OutputTimes		  "[]"
+	  ReturnWorkspaceOutputsName "out"
+	  Refine		  "1"
+	}
+	Simulink.OptimizationCC {
+	  $ObjectID		  4
+	  Version		  "1.10.0"
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    8
+	    Cell		    "BooleansAsBitfields"
+	    Cell		    "PassReuseOutputArgsAs"
+	    Cell		    "PassReuseOutputArgsThreshold"
+	    Cell		    "ZeroExternalMemoryAtStartup"
+	    Cell		    "ZeroInternalMemoryAtStartup"
+	    Cell		    "OptimizeModelRefInitCode"
+	    Cell		    "NoFixptDivByZeroProtection"
+	    Cell		    "UseSpecifiedMinMax"
+	    PropName		    "DisabledProps"
+	  }
+	  BlockReduction	  on
+	  BooleanDataType	  on
+	  ConditionallyExecuteInputs on
+	  InlineParams		  off
+	  UseIntDivNetSlope	  off
+	  UseSpecifiedMinMax	  off
+	  InlineInvariantSignals  off
+	  OptimizeBlockIOStorage  on
+	  BufferReuse		  on
+	  EnhancedBackFolding	  off
+	  StrengthReduction	  off
+	  ExpressionFolding	  on
+	  BooleansAsBitfields	  off
+	  BitfieldContainerType	  "uint_T"
+	  EnableMemcpy		  on
+	  MemcpyThreshold	  64
+	  PassReuseOutputArgsAs	  "Structure reference"
+	  ExpressionDepthLimit	  2147483647
+	  FoldNonRolledExpr	  on
+	  LocalBlockOutputs	  on
+	  RollThreshold		  5
+	  SystemCodeInlineAuto	  off
+	  StateBitsets		  off
+	  DataBitsets		  off
+	  UseTempVars		  off
+	  ZeroExternalMemoryAtStartup on
+	  ZeroInternalMemoryAtStartup on
+	  InitFltsAndDblsToZero	  off
+	  NoFixptDivByZeroProtection off
+	  EfficientFloat2IntCast  off
+	  EfficientMapNaN2IntZero on
+	  OptimizeModelRefInitCode off
+	  LifeSpan		  "inf"
+	  MaxStackSize		  "Inherit from target"
+	  BufferReusableBoundary  on
+	  SimCompilerOptimization "Off"
+	  AccelVerboseBuild	  off
+	}
+	Simulink.DebuggingCC {
+	  $ObjectID		  5
+	  Version		  "1.10.0"
+	  RTPrefix		  "error"
+	  ConsistencyChecking	  "none"
+	  ArrayBoundsChecking	  "none"
+	  SignalInfNanChecking	  "none"
+	  SignalRangeChecking	  "none"
+	  ReadBeforeWriteMsg	  "UseLocalSettings"
+	  WriteAfterWriteMsg	  "UseLocalSettings"
+	  WriteAfterReadMsg	  "UseLocalSettings"
+	  AlgebraicLoopMsg	  "warning"
+	  ArtificialAlgebraicLoopMsg "warning"
+	  SaveWithDisabledLinksMsg "warning"
+	  SaveWithParameterizedLinksMsg	"warning"
+	  CheckSSInitialOutputMsg on
+	  UnderspecifiedInitializationDetection	"Classic"
+	  MergeDetectMultiDrivingBlocksExec "none"
+	  CheckExecutionContextPreStartOutputMsg off
+	  CheckExecutionContextRuntimeOutputMsg	off
+	  SignalResolutionControl "UseLocalSettings"
+	  BlockPriorityViolationMsg "warning"
+	  MinStepSizeMsg	  "warning"
+	  TimeAdjustmentMsg	  "none"
+	  MaxConsecutiveZCsMsg	  "error"
+	  MaskedZcDiagnostic	  "warning"
+	  IgnoredZcDiagnostic	  "warning"
+	  SolverPrmCheckMsg	  "warning"
+	  InheritedTsInSrcMsg	  "warning"
+	  DiscreteInheritContinuousMsg "warning"
+	  MultiTaskDSMMsg	  "error"
+	  MultiTaskCondExecSysMsg "error"
+	  MultiTaskRateTransMsg	  "error"
+	  SingleTaskRateTransMsg  "none"
+	  TasksWithSamePriorityMsg "warning"
+	  SigSpecEnsureSampleTimeMsg "warning"
+	  CheckMatrixSingularityMsg "none"
+	  IntegerOverflowMsg	  "warning"
+	  Int32ToFloatConvMsg	  "warning"
+	  ParameterDowncastMsg	  "error"
+	  ParameterOverflowMsg	  "error"
+	  ParameterUnderflowMsg	  "none"
+	  ParameterPrecisionLossMsg "warning"
+	  ParameterTunabilityLossMsg "warning"
+	  FixptConstUnderflowMsg  "none"
+	  FixptConstOverflowMsg	  "none"
+	  FixptConstPrecisionLossMsg "none"
+	  UnderSpecifiedDataTypeMsg "none"
+	  UnnecessaryDatatypeConvMsg "none"
+	  VectorMatrixConversionMsg "none"
+	  InvalidFcnCallConnMsg	  "error"
+	  FcnCallInpInsideContextMsg "Use local settings"
+	  SignalLabelMismatchMsg  "none"
+	  UnconnectedInputMsg	  "warning"
+	  UnconnectedOutputMsg	  "warning"
+	  UnconnectedLineMsg	  "warning"
+	  SFcnCompatibilityMsg	  "none"
+	  UniqueDataStoreMsg	  "none"
+	  BusObjectLabelMismatch  "warning"
+	  RootOutportRequireBusObject "warning"
+	  AssertControl		  "UseLocalSettings"
+	  EnableOverflowDetection off
+	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceMultiInstanceNormalModeStructChecksumCheck "error"
+	  ModelReferenceVersionMismatchMessage "none"
+	  ModelReferenceIOMismatchMessage "none"
+	  ModelReferenceCSMismatchMessage "none"
+	  UnknownTsInhSupMsg	  "warning"
+	  ModelReferenceDataLoggingMessage "warning"
+	  ModelReferenceSymbolNameMessage "warning"
+	  ModelReferenceExtraNoncontSigs "error"
+	  StateNameClashWarn	  "warning"
+	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  InitInArrayFormatMsg	  "warning"
+	  StrictBusMsg		  "ErrorLevel1"
+	  BusNameAdapt		  "WarnAndRepair"
+	  NonBusSignalsTreatedAsBus "none"
+	  LoggingUnavailableSignals "error"
+	  BlockIODiagnostic	  "none"
+	  SFUnusedDataAndEventsDiag "warning"
+	  SFUnexpectedBacktrackingDiag "warning"
+	  SFInvalidInputDataAccessInChartInitDiag "warning"
+	  SFNoUnconditionalDefaultTransitionDiag "warning"
+	  SFTransitionOutsideNaturalParentDiag "warning"
+	}
+	Simulink.HardwareCC {
+	  $ObjectID		  6
+	  Version		  "1.10.0"
+	  ProdBitPerChar	  8
+	  ProdBitPerShort	  16
+	  ProdBitPerInt		  32
+	  ProdBitPerLong	  32
+	  ProdBitPerFloat	  32
+	  ProdBitPerDouble	  64
+	  ProdBitPerPointer	  32
+	  ProdLargestAtomicInteger "Char"
+	  ProdLargestAtomicFloat  "None"
+	  ProdIntDivRoundTo	  "Undefined"
+	  ProdEndianess		  "Unspecified"
+	  ProdWordSize		  32
+	  ProdShiftRightIntArith  on
+	  ProdHWDeviceType	  "32-bit Generic"
+	  TargetBitPerChar	  8
+	  TargetBitPerShort	  16
+	  TargetBitPerInt	  32
+	  TargetBitPerLong	  32
+	  TargetBitPerFloat	  32
+	  TargetBitPerDouble	  64
+	  TargetBitPerPointer	  32
+	  TargetLargestAtomicInteger "Char"
+	  TargetLargestAtomicFloat "None"
+	  TargetShiftRightIntArith on
+	  TargetIntDivRoundTo	  "Undefined"
+	  TargetEndianess	  "Unspecified"
+	  TargetWordSize	  32
+	  TargetTypeEmulationWarnSuppressLevel 0
+	  TargetPreprocMaxBitsSint 32
+	  TargetPreprocMaxBitsUint 32
+	  TargetHWDeviceType	  "Specified"
+	  TargetUnknown		  off
+	  ProdEqTarget		  on
+	}
+	Simulink.ModelReferenceCC {
+	  $ObjectID		  7
+	  Version		  "1.10.0"
+	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
+	  CheckModelReferenceTargetMessage "error"
+	  EnableParallelModelReferenceBuilds off
+	  ParallelModelReferenceErrorOnInvalidPool on
+	  ParallelModelReferenceMATLABWorkerInit "None"
+	  ModelReferenceNumInstancesAllowed "Multi"
+	  PropagateVarSize	  "Infer from blocks in model"
+	  ModelReferencePassRootInputsByReference on
+	  ModelReferenceMinAlgLoopOccurrences off
+	  PropagateSignalLabelsOutOfModel off
+	  SupportModelReferenceSimTargetCustomCode off
+	}
+	Simulink.SFSimCC {
+	  $ObjectID		  8
+	  Version		  "1.10.0"
+	  SFSimEnableDebug	  on
+	  SFSimOverflowDetection  on
+	  SFSimEcho		  on
+	  SimBlas		  on
+	  SimCtrlC		  on
+	  SimExtrinsic		  on
+	  SimIntegrity		  on
+	  SimUseLocalCustomCode	  off
+	  SimParseCustomCode	  on
+	  SimBuildMode		  "sf_incremental_build"
+	}
+	Simulink.RTWCC {
+	  $BackupClass		  "Simulink.RTWCC"
+	  $ObjectID		  9
+	  Version		  "1.10.0"
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    8
+	    Cell		    "IncludeHyperlinkInReport"
+	    Cell		    "GenerateTraceInfo"
+	    Cell		    "GenerateTraceReport"
+	    Cell		    "GenerateTraceReportSl"
+	    Cell		    "GenerateTraceReportSf"
+	    Cell		    "GenerateTraceReportEml"
+	    Cell		    "GenerateSLWebview"
+	    Cell		    "GenerateCodeMetricsReport"
+	    PropName		    "DisabledProps"
+	  }
+	  SystemTargetFile	  "grt.tlc"
+	  GenCodeOnly		  off
+	  MakeCommand		  "make_rtw"
+	  GenerateMakefile	  on
+	  TemplateMakefile	  "grt_default_tmf"
+	  GenerateReport	  off
+	  SaveLog		  off
+	  RTWVerbose		  on
+	  RetainRTWFile		  off
+	  ProfileTLC		  off
+	  TLCDebug		  off
+	  TLCCoverage		  off
+	  TLCAssert		  off
+	  ProcessScriptMode	  "Default"
+	  ConfigurationMode	  "Optimized"
+	  ConfigAtBuild		  off
+	  RTWUseLocalCustomCode	  off
+	  RTWUseSimCustomCode	  off
+	  IncludeHyperlinkInReport off
+	  LaunchReport		  off
+	  TargetLang		  "C"
+	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
+	  IncludeERTFirstTime	  off
+	  GenerateTraceInfo	  off
+	  GenerateTraceReport	  off
+	  GenerateTraceReportSl	  off
+	  GenerateTraceReportSf	  off
+	  GenerateTraceReportEml  off
+	  GenerateCodeInfo	  off
+	  GenerateSLWebview	  off
+	  RTWCompilerOptimization "Off"
+	  CheckMdlBeforeBuild	  "Off"
+	  CustomRebuildMode	  "OnUpdate"
+	  Array {
+	    Type		    "Handle"
+	    Dimension		    2
+	    Simulink.CodeAppCC {
+	      $ObjectID		      10
+	      Version		      "1.10.0"
+	      Array {
+		Type			"Cell"
+		Dimension		21
+		Cell			"IgnoreCustomStorageClasses"
+		Cell			"IgnoreTestpoints"
+		Cell			"InsertBlockDesc"
+		Cell			"InsertPolySpaceComments"
+		Cell			"SFDataObjDesc"
+		Cell			"MATLABFcnDesc"
+		Cell			"SimulinkDataObjDesc"
+		Cell			"DefineNamingRule"
+		Cell			"SignalNamingRule"
+		Cell			"ParamNamingRule"
+		Cell			"InlinedPrmAccess"
+		Cell			"CustomSymbolStr"
+		Cell			"CustomSymbolStrGlobalVar"
+		Cell			"CustomSymbolStrType"
+		Cell			"CustomSymbolStrField"
+		Cell			"CustomSymbolStrFcn"
+		Cell			"CustomSymbolStrFcnArg"
+		Cell			"CustomSymbolStrBlkIO"
+		Cell			"CustomSymbolStrTmpVar"
+		Cell			"CustomSymbolStrMacro"
+		Cell			"ReqsInCode"
+		PropName		"DisabledProps"
+	      }
+	      ForceParamTrailComments off
+	      GenerateComments	      on
+	      IgnoreCustomStorageClasses on
+	      IgnoreTestpoints	      off
+	      IncHierarchyInIds	      off
+	      MaxIdLength	      31
+	      PreserveName	      off
+	      PreserveNameWithParent  off
+	      ShowEliminatedStatement off
+	      IncAutoGenComments      off
+	      SimulinkDataObjDesc     off
+	      SFDataObjDesc	      off
+	      MATLABFcnDesc	      off
+	      IncDataTypeInIds	      off
+	      MangleLength	      1
+	      CustomSymbolStrGlobalVar "$R$N$M"
+	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrField    "$N$M"
+	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrFcnArg   "rt$I$N$M"
+	      CustomSymbolStrBlkIO    "rtb_$N$M"
+	      CustomSymbolStrTmpVar   "$N$M"
+	      CustomSymbolStrMacro    "$R$N$M"
+	      DefineNamingRule	      "None"
+	      ParamNamingRule	      "None"
+	      SignalNamingRule	      "None"
+	      InsertBlockDesc	      off
+	      InsertPolySpaceComments off
+	      SimulinkBlockComments   on
+	      MATLABSourceComments    off
+	      EnableCustomComments    off
+	      InlinedPrmAccess	      "Literals"
+	      ReqsInCode	      off
+	      UseSimReservedNames     off
+	    }
+	    Simulink.GRTTargetCC {
+	      $BackupClass	      "Simulink.TargetCC"
+	      $ObjectID		      11
+	      Version		      "1.10.0"
+	      Array {
+		Type			"Cell"
+		Dimension		16
+		Cell			"GeneratePreprocessorConditionals"
+		Cell			"IncludeMdlTerminateFcn"
+		Cell			"CombineOutputUpdateFcns"
+		Cell			"SuppressErrorStatus"
+		Cell			"ERTCustomFileBanners"
+		Cell			"GenerateSampleERTMain"
+		Cell			"GenerateTestInterfaces"
+		Cell			"ModelStepFunctionPrototypeControlCompliant"
+		Cell			"CPPClassGenCompliant"
+		Cell			"MultiInstanceERTCode"
+		Cell			"PurelyIntegerCode"
+		Cell			"SupportComplex"
+		Cell			"SupportAbsoluteTime"
+		Cell			"SupportContinuousTime"
+		Cell			"SupportNonInlinedSFcns"
+		Cell			"PortableWordSizes"
+		PropName		"DisabledProps"
+	      }
+	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
+	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
+	      TargetFunctionLibrary   "ANSI_C"
+	      UtilityFuncGeneration   "Auto"
+	      ERTMultiwordTypeDef     "System defined"
+	      ERTCodeCoverageTool     "None"
+	      ERTMultiwordLength      256
+	      MultiwordLength	      2048
+	      GenerateFullHeader      on
+	      GenerateSampleERTMain   off
+	      GenerateTestInterfaces  off
+	      IsPILTarget	      off
+	      ModelReferenceCompliant on
+	      ParMdlRefBuildCompliant on
+	      CompOptLevelCompliant   on
+	      IncludeMdlTerminateFcn  on
+	      GeneratePreprocessorConditionals "Disable all"
+	      CombineOutputUpdateFcns off
+	      CombineSignalStateStructs	off
+	      SuppressErrorStatus     off
+	      ERTFirstTimeCompliant   off
+	      IncludeFileDelimiter    "Auto"
+	      ERTCustomFileBanners    off
+	      SupportAbsoluteTime     on
+	      LogVarNameModifier      "rt_"
+	      MatFileLogging	      on
+	      MultiInstanceERTCode    off
+	      SupportNonFinite	      on
+	      SupportComplex	      on
+	      PurelyIntegerCode	      off
+	      SupportContinuousTime   on
+	      SupportNonInlinedSFcns  on
+	      SupportVariableSizeSignals off
+	      EnableShiftOperators    on
+	      ParenthesesLevel	      "Nominal"
+	      PortableWordSizes	      off
+	      ModelStepFunctionPrototypeControlCompliant off
+	      CPPClassGenCompliant    off
+	      AutosarCompliant	      off
+	      UseMalloc		      off
+	      ExtMode		      off
+	      ExtModeStaticAlloc      off
+	      ExtModeTesting	      off
+	      ExtModeStaticAllocSize  1000000
+	      ExtModeTransport	      0
+	      ExtModeMexFile	      "ext_comm"
+	      ExtModeIntrfLevel	      "Level1"
+	      RTWCAPISignals	      off
+	      RTWCAPIParams	      off
+	      RTWCAPIStates	      off
+	      GenerateASAP2	      off
+	    }
+	    PropName		    "Components"
+	  }
+	}
+	PropName		"Components"
+      }
+      Name		      "Configuration"
+      CurrentDlgPage	      "Solver"
+      ConfigPrmDlgPosition    " [ 516, 131, 1405, 889 ] "
+    }
+    PropName		    "ConfigurationSets"
+  }
+  Simulink.ConfigSet {
+    $PropName		    "ActiveConfigurationSet"
+    $ObjectID		    1
+  }
+  BlockDefaults {
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+    BlockRotation	    0
+    BlockMirror		    off
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
+      LockScale		      off
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+      PreserveConstantTs      off
+    }
+    Block {
+      BlockType		      FromWorkspace
+      VariableName	      "simulink_input"
+      SampleTime	      "-1"
+      Interpolate	      on
+      ZeroCross		      off
+      OutputAfterFinalValue   "Extrapolation"
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
+      BlockType		      Scope
+      ModelBased	      off
+      TickLabels	      "OneTimeTick"
+      ZoomMode		      "on"
+      Grid		      "on"
+      TimeRange		      "auto"
+      YMin		      "-5"
+      YMax		      "5"
+      SaveToWorkspace	      off
+      SaveName		      "ScopeData"
+      LimitDataPoints	      on
+      MaxDataPoints	      "5000"
+      Decimation	      "1"
+      SampleInput	      off
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      VariableName	      "simulink_output"
+      MaxDataPoints	      "1000"
+      Decimation	      "1"
+      SampleTime	      "0"
+      FixptAsFi		      off
+    }
+  }
+  System {
+    Name		    "Regularization"
+    Location		    [2, 74, 1347, 690]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "70"
+    ReportName		    "simulink-default.rpt"
+    SIDHighWatermark	    "267"
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_DAT_HTLimit"
+      SID		      "226"
+      Tag		      "PolyBlock"
+      Ports		      [5, 1]
+      Position		      [530, 510, 645, 570]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0 0 0 1;0 1 0 0 1;0 0 1 0 1;0 1 0 0 0;0 0 0 1 0]"
+      C			      "[cp_air, -cp_air, -cp_air, +eff_hc_max*mdotw_max*cp_w, -eff_hc_max*mdotw_max*cp_w]"
+      gA		      "[0 0 0 0 0]"
+      gC		      "[1]"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "DAT,MAT,dTfan,Twin,mdotsa"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_DATtoVAVs"
+      SID		      "173"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [285, 631, 340, 659]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_VAV_DAT"
+      C			      "C_VAV_DAT"
+      gA		      "zeros(1,37)"
+      gC		      "[1]"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "Thws,mdotsa_SP[1-18],vlv_comd[1-18]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_DATtoZones"
+      SID		      "178"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [440, 705, 495, 735]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_DATtoZones"
+      C			      "C_DATtoZones"
+      gA		      "Ag_DATtoZones"
+      gC		      "Cg_DATtoZones"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_EnergySum"
+      SID		      "10"
+      Tag		      "PolyBlock"
+      Ports		      [5, 1]
+      Position		      [1690, 748, 1865, 822]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_ObjFun"
+      C			      "C_ObjFun"
+      gA		      "zeros(1,size(A_ObjFun,2))"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "Pfan, Qhc, Qrh,slack,slack_weight"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_HC_DAT"
+      SID		      "1"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [80, 722, 120, 748]
+      NamePlacement	      "alternate"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Input var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      step_ratio	      "1"
+      save_name		      "BL_AHU1_HC_DAT"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_HC_Qdot"
+      SID		      "4"
+      Tag		      "PolyBlock"
+      Ports		      [3, 1]
+      Position		      [1360, 316, 1475, 354]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0 1;0 1 1;0 0 1]"
+      C			      "[cp_air, -cp_air, -cp_air]"
+      gA		      "[0 0 0]"
+      gC		      "[1]"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "Thd,Tmix,mdot_a"
+      Port {
+	PortNumber		1
+	Name			"HC"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_MAT"
+      SID		      "15"
+      Tag		      "PolyBlock"
+      Ports		      [3, 1]
+      Position		      [720, 59, 880, 101]
+      BackgroundColor	      "lightBlue"
+      NamePlacement	      "alternate"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 1 0; 0 0 1;1 0 1]"
+      C			      "[1 1 -1]"
+      gA		      "[0 0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "frac,amb, ret"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_OAD"
+      SID		      "144"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [110, 157, 150, 183]
+      NamePlacement	      "alternate"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Input var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      step_ratio	      "1"
+      save_name		      "BL_AHU1_OAD"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_OADtoOAF"
+      SID		      "146"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [230, 151, 345, 189]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_OADtoOAF"
+      C			      "C_OADtoOAF"
+      gA		      "[0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "OAD"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_PFan_Sup"
+      SID		      "17"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1055, 692, 1155, 738]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_fan_sup"
+      C			      "C_fan_sup"
+      gA		      "[0 ]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "mdot_a"
+      Port {
+	PortNumber		1
+	Name			"Fan_p"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_RAT"
+      SID		      "19"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [730, 217, 820, 263]
+      BackgroundColor	      "lightBlue"
+      NamePlacement	      "alternate"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_returnT1"
+      C			      "C_returnT1"
+      gA		      "gA_returnT1"
+      gC		      "Cg_returnT1"
+      input_type	      "Vector"
+      output_type	      "Scalar"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_SumDAT_AHU_VAV"
+      SID		      "176"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [425, 591, 485, 629]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_sum_DAT"
+      C			      "C_sum_DAT"
+      gA		      "zeros(1,19)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_TotalFlow"
+      SID		      "138"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [870, 467, 945, 523]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_ahuflow"
+      C			      "C_ahuflow"
+      gA		      "[ 0] "
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "mdotvav"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_VAVRH_All_Qdot"
+      SID		      "196"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1285, 773, 1370, 797]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "eye(NumVAV1)"
+      C			      "ones(1,NumVAV1)"
+      gA		      "zeros(1,NumVAV1)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Scalar"
+      port_names	      "vav_energy[1-9]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_VAV_Energy"
+      SID		      "188"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [705, 716, 765, 754]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_VAV_Energy"
+      C			      "C_VAV_Energy"
+      gA		      "zeros(1,37)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_mdotSum"
+      SID		      "21"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [545, 396, 660, 434]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_sumMdots1"
+      C			      "C_sumMdots1"
+      gA		      "sparse(1,size(A_sumMdots1,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_mdot_ToVAVs"
+      SID		      "22"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [110, 207, 150, 233]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Input var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      step_ratio	      "1"
+      save_name		      "BL_AHU1_mdot_ToVAVs"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_mdot_ToZones"
+      SID		      "23"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [545, 316, 660, 354]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_mapMatrixVAV2Zones1"
+      C			      "C_mapMatrixVAV2Zones1"
+      gA		      "sparse(1,size(A_mapMatrixVAV2Zones1,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AHU1_vlvComd_ToVAVs"
+      SID		      "164"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [115, 367, 155, 393]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Input var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      step_ratio	      "1"
+      save_name		      "BL_AHU1_vlvComd_ToVAVs"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "AmbientT"
+      SID		      "76"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [210, 1164, 255, 1186]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_AmbientT"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "B7114_HWST"
+      SID		      "162"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [115, 514, 160, 536]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_B7114_HWST"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "BilinearModel"
+      SID		      "24"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [810, 1116, 925, 1154]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "Azone"
+      C			      "Czone"
+      gA		      "sparse(1,size(Azone,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "UU"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant1"
+      SID		      "27"
+      Position		      [30, 205, 60, 235]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "mdotsa_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant10"
+      SID		      "103"
+      Position		      [25, 1030, 55, 1060]
+      ShowName		      off
+      Value		      "SlackVariable_Weight"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant11"
+      SID		      "219"
+      Position		      [25, 985, 55, 1015]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "dTfan_const"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant12"
+      SID		      "229"
+      Position		      [30, 325, 60, 355]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "mdotsa_vav_max"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant13"
+      SID		      "238"
+      Position		      [30, 35, 60, 65]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "OAD_low"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant14"
+      SID		      "239"
+      Position		      [30, 80, 60, 110]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "OAD_high"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant15"
+      SID		      "243"
+      Position		      [35, 410, 65, 440]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "vlvcomd_vav_low"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant16"
+      SID		      "246"
+      Position		      [35, 455, 65, 485]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "vlvcomd_vav_high"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant17"
+      SID		      "265"
+      Position		      [25, 860, 55, 890]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "DAT_min_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant18"
+      SID		      "267"
+      Position		      [25, 915, 55, 945]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "DAT_max_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant2"
+      SID		      "28"
+      Position		      [1130, 1115, 1160, 1145]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "zeros(NumZones1,1)"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant3"
+      SID		      "161"
+      Position		      [35, 510, 65, 540]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "HWST_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant4"
+      SID		      "145"
+      Position		      [30, 155, 60, 185]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "OAD_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant5"
+      SID		      "92"
+      Position		      [1040, 1295, 1070, 1325]
+      ShowName		      off
+      Value		      "MaxZoneT"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant6"
+      SID		      "165"
+      Position		      [30, 365, 60, 395]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "vlvcomd_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant7"
+      SID		      "31"
+      Position		      [25, 720, 55, 750]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "DAT_init"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant8"
+      SID		      "94"
+      Position		      [1045, 1230, 1075, 1260]
+      ShowName		      off
+      Value		      "MinZoneT"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "Constant9"
+      SID		      "214"
+      Position		      [30, 255, 60, 285]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      Value		      "mdotsa_vav_min"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Cost functon"
+      SID		      "33"
+      Tag		      "OptCost"
+      Ports		      [1]
+      Position		      [1950, 768, 2005, 802]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Cost functon"
+      SourceType	      ""
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Cost_du_DAT\n"
+      SID		      "258"
+      Tag		      "OptCost"
+      Ports		      [1]
+      Position		      [1265, 218, 1320, 252]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Cost functon"
+      SourceType	      ""
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DAT_lower_bound"
+      SID		      "220"
+      Tag		      "PolyBlock"
+      Ports		      [3, 1]
+      Position		      [265, 788, 340, 822]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0 0;0 1 0;0 0 1]"
+      C			      "[1 -1 0;1 0 -1]"
+      gA		      "[0 0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Vector"
+      port_names	      "DAT,DAT_min,DAT_min_ext"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DAT_max_ext"
+      SID		      "266"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [80, 919, 125, 941]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_DAT_max_ext"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DAT_min_ext"
+      SID		      "264"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [80, 864, 125, 886]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_DAT_min_ext"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DAT_step"
+      SID		      "257"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [1160, 205, 1225, 265]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[2 0 ; 1 1 ; 0 2]"
+      C			      "[1 -2 1]*DAT_step_cost"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "DAT,prevDAT"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DAT_upper_bound"
+      SID		      "221"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [175, 901, 235, 939]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0;0 1]"
+      C			      "[1 -1]"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "DAT, DAT_max"
+    }
+    Block {
+      BlockType		      FromWorkspace
+      Name		      "From\nWorkspace2"
+      SID		      "35"
+      Position		      [85, 1157, 180, 1183]
+      NamePlacement	      "alternate"
+      ShowName		      off
+      VariableName	      "ext_Toa(3:end,:)"
+      SampleTime	      "300"
+      ZeroCross		      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint"
+      SID		      "38"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [405, 361, 440, 379]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint1"
+      SID		      "39"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [405, 321, 440, 339]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint10"
+      SID		      "182"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [405, 411, 440, 429]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint11"
+      SID		      "222"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [370, 796, 405, 814]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint12"
+      SID		      "41"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1520, 1076, 1555, 1094]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint13"
+      SID		      "249"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [395, 551, 430, 569]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint14"
+      SID		      "43"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1520, 996, 1555, 1014]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint17"
+      SID		      "45"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1330, 1121, 1365, 1139]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint2"
+      SID		      "227"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [695, 551, 730, 569]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint3"
+      SID		      "137"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [325, 916, 360, 934]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint4"
+      SID		      "51"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1150, 541, 1185, 559]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint5"
+      SID		      "52"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1150, 506, 1185, 524]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint6"
+      SID		      "181"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [405, 451, 440, 469]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint7"
+      SID		      "148"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [310, 81, 345, 99]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "< 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint8"
+      SID		      "149"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [310, 41, 345, 59]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Inequality constraint9"
+      SID		      "55"
+      Tag		      "InequalBlock"
+      Ports		      [1]
+      Position		      [1535, 326, 1570, 344]
+      BackgroundColor	      "green"
+      ShowName		      off
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Constraint"
+      SourceType	      ""
+      CompareSign	      "> 0"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux"
+      SID		      "56"
+      Ports		      [2, 1]
+      Position		      [795, 326, 800, 364]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux1"
+      SID		      "57"
+      Ports		      [3, 1]
+      Position		      [1330, 986, 1335, 1024]
+      ShowName		      off
+      Inputs		      "3"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux10"
+      SID		      "241"
+      Ports		      [2, 1]
+      Position		      [245, 369, 255, 416]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux11"
+      SID		      "244"
+      Ports		      [2, 1]
+      Position		      [245, 434, 255, 481]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux2"
+      SID		      "163"
+      Ports		      [3, 1]
+      Position		      [235, 481, 245, 569]
+      ShowName		      off
+      Inputs		      "3"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux3"
+      SID		      "59"
+      Ports		      [3, 1]
+      Position		      [1330, 1066, 1335, 1104]
+      ShowName		      off
+      Inputs		      "3"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux4"
+      SID		      "60"
+      Ports		      [7, 1]
+      Position		      [725, 1015, 735, 1345]
+      ShowName		      off
+      Inputs		      "7"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux5"
+      SID		      "172"
+      Ports		      [2, 1]
+      Position		      [370, 599, 380, 646]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux6"
+      SID		      "179"
+      Ports		      [2, 1]
+      Position		      [385, 702, 395, 753]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux7"
+      SID		      "189"
+      Ports		      [3, 1]
+      Position		      [560, 766, 570, 814]
+      ShowName		      off
+      Inputs		      "3"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux8"
+      SID		      "218"
+      Ports		      [2, 1]
+      Position		      [245, 244, 255, 291]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Mux
+      Name		      "Mux9"
+      SID		      "231"
+      Ports		      [2, 1]
+      Position		      [245, 304, 255, 351]
+      ShowName		      off
+      Inputs		      "2"
+      DisplayOption	      "bar"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "OAD_high"
+      SID		      "240"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [105, 84, 150, 106]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_OAD_high"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "OAD_low"
+      SID		      "237"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [105, 39, 150, 61]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_OAD_low"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Prev2_zoneTemp"
+      SID		      "61"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [645, 1106, 675, 1134]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/state"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      init_val		      "params.y0(1,:)"
+      save_name		      "BL_Prev2_zoneTemp"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Prev_Toa"
+      SID		      "62"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [330, 1206, 360, 1234]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/state"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      init_val		      "ext_Toa(2,2:end)"
+      save_name		      "BL_Prev_Toa"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Prev_zoneTemp"
+      SID		      "65"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [560, 1061, 590, 1089]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/state"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      init_val		      "params.y0(2,:)"
+      save_name		      "BL_Prev_zoneTemp"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "SlackVarWeight"
+      SID		      "104"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [80, 1034, 125, 1056]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_SlackVarWeight"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "SoftConstr"
+      SID		      "70"
+      Tag		      "OptInput"
+      Ports		      [1, 1]
+      Position		      [1185, 1117, 1225, 1143]
+      NamePlacement	      "alternate"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/Input var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      step_ratio	      "1"
+      save_name		      "BL_SoftConstr"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Sum_Slack"
+      SID		      "71"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1375, 848, 1460, 872]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "eye(NumZones1)"
+      C			      "ones(1,NumZones1)"
+      gA		      "zeros(1,NumZones1)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Scalar"
+      port_names	      "slack[1-1000]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Sum_Slack1"
+      SID		      "199"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [1585, 888, 1670, 912]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 1]"
+      C			      "[1]"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "slack,slack_weight"
+      Port {
+	PortNumber		1
+	Name			"Slack"
+	RTWStorageClass		"Auto"
+	DataLoggingNameMode	"SignalName"
+      }
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace"
+      SID		      "72"
+      Ports		      [1]
+      Position		      [1135, 380, 1195, 410]
+      VariableName	      "mdotToZones"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace3"
+      SID		      "74"
+      Ports		      [1]
+      Position		      [935, 915, 995, 945]
+      VariableName	      "zonetemp"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure"
+    }
+    Block {
+      BlockType		      ToWorkspace
+      Name		      "To Workspace4"
+      SID		      "75"
+      Ports		      [1]
+      Position		      [300, 230, 360, 260]
+      NamePlacement	      "alternate"
+      VariableName	      "mdot2VAVs"
+      MaxDataPoints	      "inf"
+      SampleTime	      "-1"
+      SaveFormat	      "Structure"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "ZoneTemp_LB"
+      SID		      "95"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [1115, 1234, 1160, 1256]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_ZoneTemp_LB"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "ZoneTemp_UB"
+      SID		      "93"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [1115, 1299, 1160, 1321]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_ZoneTemp_UB"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "add_lowDATbound"
+      SID		      "224"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [425, 909, 530, 936]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0;0 1]"
+      C			      "[1 1]"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "MAT,dTfan"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "dTfan_est"
+      SID		      "225"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [80, 989, 125, 1011]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_dTfan_est"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "lowerBound1"
+      SID		      "78"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1055, 506, 1120, 524]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1; 0]"
+      C			      "[1 -MinAirFlow1]"
+      gA		      "[0 ]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "x1"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "lowerBound2"
+      SID		      "150"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [215, 40, 275, 60]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0;0 1]"
+      C			      "[1 -1]"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "OAD, OAD_low"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "lowerBound5"
+      SID		      "81"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1375, 978, 1470, 1032]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_Tzone_bounds1"
+      C			      "C_Tzone_boundsMin1"
+      gA		      "sparse(1,size(A_Tzone_bounds1,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "T[1-9],d[1-9],TLB[1-9]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "mdotsa_vav_high"
+      SID		      "230"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [115, 329, 160, 351]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_mdotsa_vav_high"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "mdotsa_vav_low"
+      SID		      "215"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [110, 259, 155, 281]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_mdotsa_vav_low"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "mdotvav_high"
+      SID		      "232"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [310, 335, 370, 355]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_mdots_boundsMax"
+      C			      "C_mdots_boundsMax"
+      gA		      "sparse(1,size(A_mdots_boundsMax,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "mdotvav_low"
+      SID		      "217"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [310, 285, 370, 305]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_mdots_boundsMin"
+      C			      "C_mdots_boundsMin"
+      gA		      "sparse(1,size(A_mdots_boundsMin,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_DAT"
+      SID		      "192"
+      Ports		      [1]
+      Position		      [85, 804, 115, 836]
+      Floating		      off
+      Location		      [124, 117, 1796, 1055]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "6000"
+      YMin		      "21.30200235571261"
+      YMax		      "22.1020023557126"
+      SaveName		      "ScopeData11"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_DATlow"
+      SID		      "248"
+      Ports		      [1]
+      Position		      [325, 859, 355, 891]
+      Floating		      off
+      Location		      [71, 136, 1743, 1074]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "6000"
+      YMin		      "21.30200235571261"
+      YMax		      "22.1020023557126"
+      SaveName		      "ScopeData12"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_DATtoVAVs"
+      SID		      "67"
+      Ports		      [1]
+      Position		      [630, 614, 660, 646]
+      Floating		      off
+      Location		      [234, 67, 1904, 1002]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "6000"
+      YMin		      "21.30200235571261"
+      YMax		      "22.1020023557126"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_DATtoZones"
+      SID		      "180"
+      Ports		      [1]
+      Position		      [630, 684, 660, 716]
+      Floating		      off
+      Location		      [124, 117, 1796, 1055]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "6000"
+      YMin		      "21.30200235571261"
+      YMax		      "22.1020023557126"
+      SaveName		      "ScopeData3"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_MAT"
+      SID		      "191"
+      Ports		      [1]
+      Position		      [1010, 94, 1040, 126]
+      Floating		      off
+      Location		      [182, 141, 1465, 888]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "15000"
+      YMin		      "20"
+      YMax		      "25"
+      SaveName		      "ScopeData10"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_OAF"
+      SID		      "147"
+      Ports		      [1]
+      Position		      [425, 189, 455, 221]
+      Floating		      off
+      Location		      [275, 194, 1559, 941]
+      Open		      off
+      NumInputPorts	      "1"
+      ZoomMode		      "yonly"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "21.25"
+      YMax		      "24.5"
+      SaveName		      "ScopeData7"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_Pfan_sup"
+      SID		      "154"
+      Ports		      [1]
+      Position		      [1360, 604, 1390, 636]
+      Floating		      off
+      Location		      [256, 142, 1540, 889]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "21.25"
+      YMax		      "24.5"
+      SaveName		      "ScopeData2"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_Qhc"
+      SID		      "202"
+      Ports		      [1]
+      Position		      [1640, 599, 1670, 631]
+      Floating		      off
+      Location		      [257, 174, 1541, 921]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "21.25"
+      YMax		      "24.5"
+      SaveName		      "ScopeData13"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_Qhc4"
+      SID		      "207"
+      Ports		      [4]
+      Position		      [1690, 669, 1720, 701]
+      Floating		      off
+      Location		      [257, 174, 1541, 921]
+      Open		      off
+      NumInputPorts	      "4"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+	axes2			"%<SignalLabel>"
+	axes3			"%<SignalLabel>"
+	axes4			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "21.25~-5~-5~-5"
+      YMax		      "24.5~5~5~5"
+      SaveName		      "ScopeData17"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_Qhc_dot"
+      SID		      "134"
+      Ports		      [1]
+      Position		      [1520, 254, 1550, 286]
+      Floating		      off
+      Location		      [33, 77, 1317, 824]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "15000"
+      YMin		      "89"
+      YMax		      "96"
+      SaveName		      "ScopeData6"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_RAT"
+      SID		      "187"
+      Ports		      [1]
+      Position		      [1010, 144, 1040, 176]
+      Floating		      off
+      Location		      [391, 195, 1673, 942]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "9.236459999999999"
+      YMax		      "10.2087"
+      SaveName		      "ScopeData5"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_VAV_Energy"
+      SID		      "190"
+      Ports		      [1]
+      Position		      [670, 879, 700, 911]
+      Floating		      off
+      Location		      [13, 68, 1015, 756]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "6000"
+      YMin		      "8"
+      YMax		      "24"
+      SaveName		      "ScopeData9"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_mdotSum"
+      SID		      "142"
+      Ports		      [1]
+      Position		      [880, 549, 910, 581]
+      Floating		      off
+      Location		      [391, 195, 1675, 942]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      YMin		      "9.23646"
+      YMax		      "10.2087"
+      SaveName		      "ScopeData4"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_mdotToZones"
+      SID		      "69"
+      Ports		      [1]
+      Position		      [1070, 844, 1100, 876]
+      Floating		      off
+      Location		      [-55, 279, 1617, 1247]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      SaveName		      "ScopeData1"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_mdotsaAHU"
+      SID		      "140"
+      Ports		      [1]
+      Position		      [900, 639, 930, 671]
+      Floating		      off
+      Location		      [567, 186, 1850, 933]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "14400"
+      YMin		      "21.25"
+      YMax		      "24.5"
+      SaveName		      "ScopeData8"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "plot_zoneTemp"
+      SID		      "68"
+      Ports		      [1]
+      Position		      [1210, 844, 1240, 876]
+      Floating		      off
+      Location		      [1, 48, 1367, 727]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      YMin		      "21.25"
+      YMax		      "24.5"
+      SaveName		      "ScopeData15"
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "prev_DAT"
+      SID		      "256"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [1080, 216, 1120, 244]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/state"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      init_val		      "20"
+      save_name		      "BL_prev_DAT"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "upperBound2"
+      SID		      "151"
+      Tag		      "PolyBlock"
+      Ports		      [2, 1]
+      Position		      [215, 80, 275, 100]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1 0;0 1]"
+      C			      "[1 -1]"
+      gA		      "[0 0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "OAD,OAD_high"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "upperBound3"
+      SID		      "86"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1055, 540, 1120, 560]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[1;0]"
+      C			      "[1 -MaxAirFlow1]"
+      gA		      "[0]"
+      gC		      "1"
+      input_type	      "Scalar"
+      output_type	      "Scalar"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "upperBound6"
+      SID		      "88"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [1375, 1063, 1485, 1107]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_Tzone_bounds1"
+      C			      "C_Tzone_boundsMax1"
+      gA		      "sparse(1,size(A_Tzone_bounds1,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "T[1-9],d[1-9],TUB[1-9]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "vlvcomd_abs_low"
+      SID		      "251"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [310, 550, 370, 570]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "[eye(NumVAV1); zeros(1,NumVAV1)]"
+      C			      "[eye(NumVAV1)  -vlvComdMin(1:NumVAV1)]"
+      gA		      "sparse(1,NumVAV1,0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "vlv[1-18]"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "vlvcomd_high"
+      SID		      "184"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [310, 450, 370, 470]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_vlvcomd_boundsMax"
+      C			      "C_vlvcomd_boundsMax"
+      gA		      "sparse(1,size(A_vlvcomd_boundsMax,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "vlvcomd_low"
+      SID		      "183"
+      Tag		      "PolyBlock"
+      Ports		      [1, 1]
+      Position		      [310, 385, 370, 405]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/UserFriendly PolyBlock"
+      SourceType	      ""
+      A			      "A_vlvcomd_boundsMin"
+      C			      "C_vlvcomd_boundsMin"
+      gA		      "sparse(1,size(A_vlvcomd_boundsMin,2),0)"
+      gC		      "1"
+      input_type	      "Vector"
+      output_type	      "Vector"
+      port_names	      "x1,x2"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "vlvcomd_vav_high"
+      SID		      "245"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [115, 459, 160, 481]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_vlvcomd_vav_high"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "vlvcomd_vav_low"
+      SID		      "247"
+      Tag		      "OptExternal"
+      Ports		      [1, 1]
+      Position		      [115, 414, 160, 436]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/External Var"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      save_name		      "BL_vlvcomd_vav_low"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "zoneTemp"
+      SID		      "83"
+      Tag		      "OptState"
+      Ports		      [1, 1]
+      Position		      [995, 1121, 1035, 1149]
+      LibraryVersion	      "1.138"
+      SourceBlock	      "MPCMdlLib/state"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      GeneratePreprocessorConditionals off
+      init_val		      "params.y0(3,:)"
+      save_name		      "BL_zoneTemp"
+    }
+    Line {
+      Labels		      [0, 0]
+      SrcBlock		      "Constant1"
+      SrcPort		      1
+      DstBlock		      "AHU1_mdot_ToVAVs"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_mdot_ToVAVs"
+      SrcPort		      1
+      Points		      [49, 0; 0, 90; 1, 0]
+      Branch {
+	Points			[0, -9]
+	Branch {
+	  Points		  [23, 0; 0, 14]
+	  DstBlock		  "Mux9"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, -46]
+	  DstBlock		  "Mux8"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[15, 0]
+	Branch {
+	  DstBlock		  "Mux2"
+	  DstPort		  2
+	}
+	Branch {
+	  Points		  [35, 0]
+	  Branch {
+	    Points		    [10, 0]
+	    Branch {
+	      Points		      [0, -65]
+	      DstBlock		      "To Workspace4"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [195, 0; 0, 95]
+	      Branch {
+		Points			[10, 0]
+		Branch {
+		  Points		  [60, 0]
+		  DstBlock		  "AHU1_mdot_ToZones"
+		  DstPort		  1
+		}
+		Branch {
+		  Labels		  [0, 1]
+		  Points		  [0, 10]
+		  DstBlock		  "AHU1_mdotSum"
+		  DstPort		  1
+		}
+	      }
+	      Branch {
+		Points			[0, 385]
+		DstBlock		"Mux7"
+		DstPort			2
+	      }
+	    }
+	  }
+	  Branch {
+	    Points		    [0, 50; -27, 0; 0, 380]
+	    DstBlock		    "Mux6"
+	    DstPort		    2
+	  }
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "Mux"
+      SrcPort		      1
+      Points		      [9, 0; 0, 49; -103, 0; 0, -154]
+      DstBlock		      "AHU1_RAT"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "mdotvav_high"
+      SrcPort		      1
+      Points		      [12, 0; 0, 25]
+      DstBlock		      "Inequality constraint"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "mdotvav_low"
+      SrcPort		      1
+      Points		      [12, 0; 0, 35]
+      DstBlock		      "Inequality constraint1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "upperBound3"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint4"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "lowerBound1"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint5"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_mdot_ToZones"
+      SrcPort		      1
+      Points		      [60, 0; 0, 65; 35, 0]
+      Branch {
+	Points			[170, 0]
+	Branch {
+	  Points		  [190, 0]
+	  DstBlock		  "To Workspace"
+	  DstPort		  1
+	}
+	Branch {
+	  Labels		  [-1, 1]
+	  Points		  [0, 10; -80, 0; 0, 45; -50, 0; 0, 405; 200, 0]
+	  Branch {
+	    DstBlock		    "plot_mdotToZones"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Labels		    [2, 0]
+	    Points		    [0, 25; -190, 0; 0, 430]
+	    DstBlock		    "Mux4"
+	    DstPort		    7
+	  }
+	}
+      }
+      Branch {
+	Points			[0, -45]
+	DstBlock		"Mux"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_EnergySum"
+      SrcPort		      1
+      DstBlock		      "Cost functon"
+      DstPort		      1
+    }
+    Line {
+      Labels		      [0, 0]
+      SrcBlock		      "Constant7"
+      SrcPort		      1
+      DstBlock		      "AHU1_HC_DAT"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_HC_DAT"
+      SrcPort		      1
+      Points		      [20, 0]
+      Branch {
+	Points			[0, 60]
+	Branch {
+	  Points		  [0, 115]
+	  DstBlock		  "DAT_upper_bound"
+	  DstPort		  1
+	}
+	Branch {
+	  DstBlock		  "DAT_lower_bound"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[5, 0; 0, -5]
+	Branch {
+	  Points		  [0, -20]
+	  Branch {
+	    Points		    [0, -100; 135, 0]
+	    Branch {
+	      DstBlock		      "Mux5"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [0, -115; 215, 0; 0, 25]
+	      DstBlock		      "AHU1_DAT_HTLimit"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    Points		    [15, 0; 0, -30; 25, 0; 0, -395; 875, 0]
+	    Branch {
+	      DstBlock		      "prev_DAT"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [70, 0]
+	      Branch {
+		Points			[210, 0]
+		DstBlock		"AHU1_HC_Qdot"
+		DstPort			1
+	      }
+	      Branch {
+		Points			[0, -35]
+		DstBlock		"DAT_step"
+		DstPort			2
+	      }
+	    }
+	  }
+	}
+	Branch {
+	  Points		  [20, 0; 0, 25]
+	  Branch {
+	    Points		    [15, 0; 0, 20]
+	    DstBlock		    "Mux7"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [-100, 0]
+	    DstBlock		    "plot_DAT"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "upperBound6"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint12"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "lowerBound5"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint14"
+      DstPort		      1
+    }
+    Line {
+      Labels		      [0, 0]
+      SrcBlock		      "Constant2"
+      SrcPort		      1
+      DstBlock		      "SoftConstr"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "SoftConstr"
+      SrcPort		      1
+      Points		      [40, 0]
+      Branch {
+	Points			[0, -45]
+	Branch {
+	  DstBlock		  "Mux3"
+	  DstPort		  2
+	}
+	Branch {
+	  Points		  [0, -80]
+	  Branch {
+	    Points		    [0, -145]
+	    DstBlock		    "Sum_Slack"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Mux1"
+	    DstPort		    2
+	  }
+	}
+      }
+      Branch {
+	DstBlock		"Inequality constraint17"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Mux1"
+      SrcPort		      1
+      DstBlock		      "lowerBound5"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux3"
+      SrcPort		      1
+      DstBlock		      "upperBound6"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "BilinearModel"
+      SrcPort		      1
+      DstBlock		      "zoneTemp"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "zoneTemp"
+      SrcPort		      1
+      Points		      [5, 0; 0, -120]
+      Branch {
+	Points			[0, -35; -170, 0]
+	Branch {
+	  Points		  [-405, 0; 0, 60; 15, 0]
+	  Branch {
+	    Points		    [225, 0]
+	    DstBlock		    "Mux4"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 35]
+	    DstBlock		    "Prev_zoneTemp"
+	    DstPort		    1
+	  }
+	}
+	Branch {
+	  Points		  [0, -50]
+	  DstBlock		  "To Workspace3"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[70, 0; 0, 5; 35, 0]
+	Branch {
+	  Points		  [0, -25]
+	  Branch {
+	    Points		    [0, -135]
+	    Branch {
+	      DstBlock		      "plot_zoneTemp"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Labels		      [3, 0]
+	      Points		      [0, -40; -360, 0; 0, -485]
+	      DstBlock		      "Mux"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    DstBlock		    "Mux1"
+	    DstPort		    1
+	  }
+	}
+	Branch {
+	  Points		  [0, 55]
+	  DstBlock		  "Mux3"
+	  DstPort		  1
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "Prev_zoneTemp"
+      SrcPort		      1
+      Points		      [30, 0; 0, 15]
+      Branch {
+	DstBlock		"Mux4"
+	DstPort			2
+      }
+      Branch {
+	Points			[0, 30]
+	DstBlock		"Prev2_zoneTemp"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "AmbientT"
+      SrcPort		      1
+      Points		      [25, 0]
+      Branch {
+	Points			[0, 45]
+	DstBlock		"Prev_Toa"
+	DstPort			1
+      }
+      Branch {
+	Points			[40, 0]
+	Branch {
+	  Points		  [385, 0]
+	  DstBlock		  "Mux4"
+	  DstPort		  4
+	}
+	Branch {
+	  Points		  [0, -60; -307, 0; 0, -1095; 519, 0; 0, 60]
+	  DstBlock		  "AHU1_MAT"
+	  DstPort		  2
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "From\nWorkspace2"
+      SrcPort		      1
+      Points		      [0, 5]
+      DstBlock		      "AmbientT"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux4"
+      SrcPort		      1
+      Points		      [55, 0]
+      DstBlock		      "BilinearModel"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Prev2_zoneTemp"
+      SrcPort		      1
+      Points		      [30, 0]
+      DstBlock		      "Mux4"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Constant5"
+      SrcPort		      1
+      DstBlock		      "ZoneTemp_UB"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant8"
+      SrcPort		      1
+      DstBlock		      "ZoneTemp_LB"
+      DstPort		      1
+    }
+    Line {
+      Labels		      [2, 0]
+      SrcBlock		      "ZoneTemp_LB"
+      SrcPort		      1
+      Points		      [125, 0; 0, -230]
+      DstBlock		      "Mux1"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "ZoneTemp_UB"
+      SrcPort		      1
+      Points		      [135, 0; 0, -215]
+      DstBlock		      "Mux3"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Constant10"
+      SrcPort		      1
+      DstBlock		      "SlackVarWeight"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Prev_Toa"
+      SrcPort		      1
+      Points		      [345, 0]
+      DstBlock		      "Mux4"
+      DstPort		      5
+    }
+    Line {
+      SrcBlock		      "AHU1_mdotSum"
+      SrcPort		      1
+      Points		      [5, 0; 0, 80]
+      Branch {
+	Points			[0, 20; 155, 0; 0, 50]
+	DstBlock		"plot_mdotSum"
+	DstPort			1
+      }
+      Branch {
+	Labels			[1, 0]
+	DstBlock		"AHU1_TotalFlow"
+	DstPort			1
+      }
+    }
+    Line {
+      Labels		      [0, 0]
+      SrcBlock		      "AHU1_TotalFlow"
+      SrcPort		      1
+      Points		      [0, -55]
+      Branch {
+	Points			[0, -245; 35, 0; 0, 295; 20, 0]
+	Branch {
+	  Points		  [0, 220; -20, 0]
+	  Branch {
+	    Labels		    [1, 0]
+	    Points		    [0, 5]
+	    DstBlock		    "AHU1_PFan_Sup"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [-100, 0]
+	    DstBlock		    "plot_mdotsaAHU"
+	    DstPort		    1
+	  }
+	}
+	Branch {
+	  Points		  [5, 0]
+	  Branch {
+	    Points		    [10, 0]
+	    Branch {
+	      Points		      [0, 60]
+	      DstBlock		      "upperBound3"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [15, 0; 0, 25]
+	      DstBlock		      "lowerBound1"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    Points		    [0, -350; 585, 0; 0, 275; -250, 0]
+	    DstBlock		    "AHU1_HC_Qdot"
+	    DstPort		    3
+	  }
+	}
+      }
+      Branch {
+	Points			[-460, 0; 0, 120]
+	DstBlock		"AHU1_DAT_HTLimit"
+	DstPort			5
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_OAD"
+      SrcPort		      1
+      Points		      [30, 0]
+      Branch {
+	Points			[15, 0]
+	Branch {
+	  DstBlock		  "AHU1_OADtoOAF"
+	  DstPort		  1
+	}
+	Branch {
+	  DstBlock		  "upperBound2"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[0, -125]
+	DstBlock		"lowerBound2"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Constant4"
+      SrcPort		      1
+      DstBlock		      "AHU1_OAD"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "lowerBound2"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint8"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "upperBound2"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint7"
+      DstPort		      1
+    }
+    Line {
+      Name		      "Fan_p"
+      SrcBlock		      "AHU1_PFan_Sup"
+      SrcPort		      1
+      Points		      [65, 0; 0, 35; 45, 0]
+      Branch {
+	Points			[0, 10; 315, 0]
+	Branch {
+	  Labels		  [1, 0]
+	  Points		  [0, -90]
+	  DstBlock		  "plot_Qhc4"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [90, 0]
+	  DstBlock		  "AHU1_EnergySum"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[0, -130]
+	DstBlock		"plot_Pfan_sup"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_OADtoOAF"
+      SrcPort		      1
+      Points		      [35, 0]
+      Branch {
+	Points			[145, 0; 0, -105]
+	DstBlock		"AHU1_MAT"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 35]
+	DstBlock		"plot_OAF"
+	DstPort			1
+      }
+    }
+    Line {
+      Name		      "HC"
+      SrcBlock		      "AHU1_HC_Qdot"
+      SrcPort		      1
+      Points		      [15, 0]
+      Branch {
+	Labels			[1, 0]
+	Points			[0, 440; 105, 0]
+	Branch {
+	  Points		  [0, -90; 10, 0]
+	  Branch {
+	    Labels		    [1, 0]
+	    Points		    [65, 0]
+	    DstBlock		    "plot_Qhc4"
+	    DstPort		    2
+	  }
+	  Branch {
+	    Points		    [0, -70]
+	    DstBlock		    "plot_Qhc"
+	    DstPort		    1
+	  }
+	}
+	Branch {
+	  Points		  [75, 0]
+	  DstBlock		  "AHU1_EnergySum"
+	  DstPort		  2
+	}
+      }
+      Branch {
+	DstBlock		"Inequality constraint9"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -65]
+	DstBlock		"plot_Qhc_dot"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_MAT"
+      SrcPort		      1
+      Points		      [0, 0]
+      Branch {
+	Points			[65, 0]
+	Branch {
+	  Points		  [0, 30]
+	  DstBlock		  "plot_MAT"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [390, 0; 0, 255]
+	  DstBlock		  "AHU1_HC_Qdot"
+	  DstPort		  2
+	}
+      }
+      Branch {
+	Points			[-58, 0; 0, 425; -17, 0]
+	Branch {
+	  Points		  [0, 305; -393, 0; 0, 105]
+	  DstBlock		  "add_lowDATbound"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, -5; -300, 0; 0, 30]
+	  DstBlock		  "AHU1_DAT_HTLimit"
+	  DstPort		  2
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "Constant3"
+      SrcPort		      1
+      DstBlock		      "B7114_HWST"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant6"
+      SrcPort		      1
+      DstBlock		      "AHU1_vlvComd_ToVAVs"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_vlvComd_ToVAVs"
+      SrcPort		      1
+      Points		      [37, 0]
+      Branch {
+	Points			[7, 0]
+	Branch {
+	  DstBlock		  "Mux10"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, 175]
+	  Branch {
+	    DstBlock		    "Mux2"
+	    DstPort		    3
+	  }
+	  Branch {
+	    Points		    [0, 20; 91, 0]
+	    DstBlock		    "vlvcomd_abs_low"
+	    DstPort		    1
+	  }
+	}
+      }
+      Branch {
+	Points			[0, 65]
+	DstBlock		"Mux11"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "B7114_HWST"
+      SrcPort		      1
+      Points		      [5, 0]
+      Branch {
+	Points			[0, -30]
+	DstBlock		"Mux2"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 60; 345, 0]
+	DstBlock		"AHU1_DAT_HTLimit"
+	DstPort			4
+      }
+    }
+    Line {
+      SrcBlock		      "Mux2"
+      SrcPort		      1
+      Points		      [20, 0]
+      DstBlock		      "AHU1_DATtoVAVs"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_DATtoVAVs"
+      SrcPort		      1
+      Points		      [10, 0]
+      DstBlock		      "Mux5"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Mux5"
+      SrcPort		      1
+      Points		      [25, 0]
+      DstBlock		      "AHU1_SumDAT_AHU_VAV"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_SumDAT_AHU_VAV"
+      SrcPort		      1
+      Points		      [40, 0]
+      Branch {
+	Points			[15, 0; 0, 25; 15, 0]
+	Branch {
+	  Points		  [0, -5]
+	  DstBlock		  "plot_DATtoVAVs"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, 45; -190, 0]
+	  DstBlock		  "Mux6"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[0, 195]
+	DstBlock		"Mux7"
+	DstPort			3
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_DATtoZones"
+      SrcPort		      1
+      Points		      [0, 10; 45, 0]
+      Branch {
+	Points			[50, 0; 0, 540]
+	DstBlock		"Mux4"
+	DstPort			6
+      }
+      Branch {
+	Points			[0, -30]
+	DstBlock		"plot_DATtoZones"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Mux6"
+      SrcPort		      1
+      Points		      [25, 0]
+      DstBlock		      "AHU1_DATtoZones"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "vlvcomd_low"
+      SrcPort		      1
+      Points		      [12, 0; 0, 25]
+      DstBlock		      "Inequality constraint10"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "vlvcomd_high"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint6"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux7"
+      SrcPort		      1
+      Points		      [115, 0]
+      DstBlock		      "AHU1_VAV_Energy"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_VAV_Energy"
+      SrcPort		      1
+      Points		      [5, 0; 0, 40]
+      Branch {
+	Points			[-115, 0; 0, -10; -50, 0; 0, 130]
+	DstBlock		"plot_VAV_Energy"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, 20; 495, 0]
+	DstBlock		"AHU1_VAVRH_All_Qdot"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_RAT"
+      SrcPort		      1
+      Points		      [35, 0; 0, -5; 90, 0; 0, -25]
+      Branch {
+	Points			[10, 0; 0, -50]
+	DstBlock		"plot_RAT"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -55; -245, 0]
+	DstBlock		"AHU1_MAT"
+	DstPort			3
+      }
+    }
+    Line {
+      SrcBlock		      "SlackVarWeight"
+      SrcPort		      1
+      Points		      [168, 0; 0, -75; 1197, 0]
+      Branch {
+	Points			[0, -65]
+	DstBlock		"Sum_Slack1"
+	DstPort			2
+      }
+      Branch {
+	Points			[70, 0; 0, -155]
+	DstBlock		"AHU1_EnergySum"
+	DstPort			5
+      }
+    }
+    Line {
+      SrcBlock		      "Sum_Slack"
+      SrcPort		      1
+      Points		      [25, 0]
+      Branch {
+	Points			[0, 35]
+	DstBlock		"Sum_Slack1"
+	DstPort			1
+      }
+      Branch {
+	Points			[65, 0; 0, -60]
+	DstBlock		"AHU1_EnergySum"
+	DstPort			4
+      }
+    }
+    Line {
+      SrcBlock		      "AHU1_VAVRH_All_Qdot"
+      SrcPort		      1
+      Points		      [250, 0]
+      Branch {
+	Points			[0, -95]
+	DstBlock		"plot_Qhc4"
+	DstPort			3
+      }
+      Branch {
+	DstBlock		"AHU1_EnergySum"
+	DstPort			3
+      }
+    }
+    Line {
+      Name		      "Slack"
+      Labels		      [0, 0]
+      SrcBlock		      "Sum_Slack1"
+      SrcPort		      1
+      Points		      [0, -70; -25, 0; 0, -130]
+      DstBlock		      "plot_Qhc4"
+      DstPort		      4
+    }
+    Line {
+      SrcBlock		      "Mux8"
+      SrcPort		      1
+      Points		      [27, 0; 0, 25]
+      DstBlock		      "mdotvav_low"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant9"
+      SrcPort		      1
+      DstBlock		      "mdotsa_vav_low"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "mdotsa_vav_low"
+      SrcPort		      1
+      Points		      [21, 0; 0, 10]
+      DstBlock		      "Mux8"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Constant11"
+      SrcPort		      1
+      DstBlock		      "dTfan_est"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "dTfan_est"
+      SrcPort		      1
+      Points		      [280, 0; 0, -70]
+      Branch {
+	Points			[0, -55; 95, 0; 0, -335]
+	DstBlock		"AHU1_DAT_HTLimit"
+	DstPort			3
+      }
+      Branch {
+	DstBlock		"add_lowDATbound"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "add_lowDATbound"
+      SrcPort		      1
+      Points		      [9, 0; 0, -70; -266, 0]
+      Branch {
+	Points			[0, 20]
+	DstBlock		"plot_DATlow"
+	DstPort			1
+      }
+      Branch {
+	Points			[-28, 0]
+	DstBlock		"DAT_lower_bound"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "DAT_lower_bound"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint11"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "DAT_upper_bound"
+      SrcPort		      1
+      Points		      [35, 0; 0, 5]
+      DstBlock		      "Inequality constraint3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "AHU1_DAT_HTLimit"
+      SrcPort		      1
+      Points		      [0, 20]
+      DstBlock		      "Inequality constraint2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant12"
+      SrcPort		      1
+      DstBlock		      "mdotsa_vav_high"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "mdotsa_vav_high"
+      SrcPort		      1
+      DstBlock		      "Mux9"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Mux9"
+      SrcPort		      1
+      Points		      [11, 0; 0, 15]
+      DstBlock		      "mdotvav_high"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant13"
+      SrcPort		      1
+      DstBlock		      "OAD_low"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant14"
+      SrcPort		      1
+      DstBlock		      "OAD_high"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "OAD_low"
+      SrcPort		      1
+      Points		      [45, 0]
+      DstBlock		      "lowerBound2"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "OAD_high"
+      SrcPort		      1
+      DstBlock		      "upperBound2"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Mux10"
+      SrcPort		      1
+      DstBlock		      "vlvcomd_low"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "vlvcomd_vav_low"
+      SrcPort		      1
+      Points		      [47, 0; 0, -20]
+      DstBlock		      "Mux10"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Constant15"
+      SrcPort		      1
+      DstBlock		      "vlvcomd_vav_low"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Mux11"
+      SrcPort		      1
+      DstBlock		      "vlvcomd_high"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "vlvcomd_vav_high"
+      SrcPort		      1
+      DstBlock		      "Mux11"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Constant16"
+      SrcPort		      1
+      DstBlock		      "vlvcomd_vav_high"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "vlvcomd_abs_low"
+      SrcPort		      1
+      DstBlock		      "Inequality constraint13"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "prev_DAT"
+      SrcPort		      1
+      Points		      [20, 0]
+      DstBlock		      "DAT_step"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "DAT_min_ext"
+      SrcPort		      1
+      Points		      [40, 0; 0, -60]
+      DstBlock		      "DAT_lower_bound"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Constant17"
+      SrcPort		      1
+      DstBlock		      "DAT_min_ext"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Constant18"
+      SrcPort		      1
+      DstBlock		      "DAT_max_ext"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "DAT_max_ext"
+      SrcPort		      1
+      DstBlock		      "DAT_upper_bound"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "DAT_step"
+      SrcPort		      1
+      DstBlock		      "Cost_du_DAT\n"
+      DstPort		      1
+    }
+    Annotation {
+      Position		      [991, 740]
+    }
+    Annotation {
+      Position		      [1670, 253]
+    }
+    Annotation {
+      Position		      [1247, 278]
+    }
+    Annotation {
+      Position		      [681, 790]
+    }
+    Annotation {
+      Position		      [1170, 243]
+    }
+  }
+}

@@ -20,7 +20,7 @@ switch(type)
             end
             
         end        
-        equation{k} = CreatePolyFromMatrix(ModelSpec.AAs{i},ModelSpec.Cs{i}(end-(count-num(k)),:),all_names,'low');
+        equation{k} = CreatePolyFromMatrix(ModelSpec.AAs{i}',ModelSpec.Cs{i}(end-(count-num(k)),:),all_names,'low');
     case 'ineq'
         count = 0;
         for i=1:length(ModelSpec.ineq.AAs)
@@ -31,7 +31,7 @@ switch(type)
             end
             
         end        
-        equation{k} = CreatePolyFromMatrix(ModelSpec.ineq.AAs{i},ModelSpec.ineq.Cs{i}(end-(count-num(k)),:),all_names,'low'); 
+        equation{k} = CreatePolyFromMatrix(ModelSpec.ineq.AAs{i}',ModelSpec.ineq.Cs{i}(end-(count-num(k)),:),all_names,'low'); 
     case 'cost'
         equation{k} = CreatePolyFromMatrix(ModelSpec.cost.A,ModelSpec.cost.C,all_names,'low'); 
         

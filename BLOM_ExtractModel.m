@@ -9,6 +9,9 @@ function ModelSpec = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
 %   dt      -   time step size [s], 1 if not supplied  
 %   disc    -   discretization method {'none','Euler','Trapez','RK4'}
 %   options -   options created by BLOM_optset function.
+% 
+% Output:
+%   ModelSpec - BLOM optimization problem description
 %
 %Examples:
 %   ModelSpec = BLOM_ExportModel; 
@@ -60,10 +63,10 @@ ModelSpec.all_state_vars = all_state_vars;
 ModelSpec.ex_vars = ex_vars;
 
 % merge everything into one array
-ModelSpec.A = vertcat(cost.A, ineq.AAs{:});
+ModelSpec.A = horzcat(cost.A', ineq.AAs{:})';
 ModelSpec.ineq_start_A = size(cost.A,1)+1;
 ModelSpec.ineq_end_A = size(ModelSpec.A,1);
-ModelSpec.A = vertcat(ModelSpec.A, AAs{:});
+ModelSpec.A = horzcat(ModelSpec.A', AAs{:})';
 ModelSpec.eq_start_A = ModelSpec.ineq_end_A  +1;
 ModelSpec.eq_end_A = size(ModelSpec.A,1);
 
