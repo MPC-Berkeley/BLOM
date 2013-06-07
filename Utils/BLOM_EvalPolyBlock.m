@@ -12,24 +12,26 @@ K = K(:,any(K,1));
 
 if 1 % sparse version
     [Prows Pcols Pvals] = find(P);
-    if ~isempty(Pvals)
-        expbool  = (Pvals == BLOM_FunctionCodes.exp);
-        logbool  = (Pvals == BLOM_FunctionCodes.log);
-        sinbool  = (Pvals == BLOM_FunctionCodes.sin);
-        cosbool  = (Pvals == BLOM_FunctionCodes.cos);
-        tanhbool = (Pvals == BLOM_FunctionCodes.tanh);
-        atanbool = (Pvals == BLOM_FunctionCodes.atan);
-        erfbool  = (Pvals == BLOM_FunctionCodes.erf);
-        
-        vx = x(Pcols).^Pvals; % powers of input variables
-        vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
-        vx(logbool)  = log(x(Pcols(logbool))); % logarithms
-        vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
-        vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
-        vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
-        vx(atanbool) = atan(x(Pcols(atanbool))); % arctangents
-        vx(erfbool)  = erf(x(Pcols(erfbool))); % error functions
-    end
+    Prows = Prows(:); % ensure column vector
+    Pcols = Pcols(:); % ensure column vector
+    Pvals = Pvals(:); % ensure column vector
+    
+    expbool  = (Pvals == BLOM_FunctionCodes.exp);
+    logbool  = (Pvals == BLOM_FunctionCodes.log);
+    sinbool  = (Pvals == BLOM_FunctionCodes.sin);
+    cosbool  = (Pvals == BLOM_FunctionCodes.cos);
+    tanhbool = (Pvals == BLOM_FunctionCodes.tanh);
+    atanbool = (Pvals == BLOM_FunctionCodes.atan);
+    erfbool  = (Pvals == BLOM_FunctionCodes.erf);
+    
+    vx = x(Pcols).^Pvals; % powers of input variables
+    vx(expbool)  = exp(x(Pcols(expbool))); % exponentials
+    vx(logbool)  = log(x(Pcols(logbool))); % logarithms
+    vx(sinbool)  = sin(x(Pcols(sinbool))); % sines
+    vx(cosbool)  = cos(x(Pcols(cosbool))); % cosines
+    vx(tanhbool) = tanh(x(Pcols(tanhbool))); % hyperbolic tangents
+    vx(atanbool) = atan(x(Pcols(atanbool))); % arctangents
+    vx(erfbool)  = erf(x(Pcols(erfbool))); % error functions
     
     prods = ones(size(P,1),1); % preallocate products vector
     for v = 1:length(Pvals)
