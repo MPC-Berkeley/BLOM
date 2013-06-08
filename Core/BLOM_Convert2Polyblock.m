@@ -508,15 +508,15 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             
         %% SubSystem.
         case 'SubSystem'
-            if strcmp(get_param(block_handle, 'ReferenceBlock'), 'GeneralPolyblock')
+            if strcmp(get_param(blockHandle, 'ReferenceBlock'), 'GeneralPolyblock')
                 % P = [P_f 0
                 %      P_g (K_g~=0)']
                 % K = [K_f -K_g]
                 % if g outputs scalar, repeat K_g such that outputs a vector
-                Pf = eval(get_param(block_handle, 'P_f'));
-                Pg = eval(get_param(block_handle, 'P_g'));
-                Kf = eval(get_param(block_handle, 'K_f'));
-                Kg = eval(get_param(block_handle, 'K_g'));
+                Pf = eval(get_param(blockHandle, 'P_f'));
+                Pg = eval(get_param(blockHandle, 'P_g'));
+                Kf = eval(get_param(blockHandle, 'K_f'));
+                Kg = eval(get_param(blockHandle, 'K_g'));
                 if size(Kg,1) == 1
                    Kg = repmat(Kg,size(Kf,1),1); 
                 end
