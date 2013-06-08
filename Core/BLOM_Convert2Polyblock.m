@@ -326,8 +326,6 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     error('Sorry, BLOM does not support sinh.')
                 case 'cosh'
                     error('Sorry, BLOM does not support cosh.')
-                case 'tanh'
-                    error('Sorry, BLOM does not support tanh.')
                 case 'asinh'
                     error('Sorry, BLOM does not support asinh.')
                 case 'acosh'
@@ -380,7 +378,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     K = horzcat(speye(totalInputs),speye(totalInputs));
                     
         %% Math Function
-        case 'Math'
+        case {'Math', 'Sqrt'}
             % Currently expresses exp, log, log10, conj, rem,
             % mod using a unique value e20 for each special function. The
             % other special functions will be expressed using P and K
@@ -412,7 +410,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                     P=blkdiag(speye(totalInputs)*2,speye(totalInputs));
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
                     warning('BLOM does not support complex numbers. Proceed with caution.')
-                case '1/sqrt'
+                case {'1/sqrt', 'rSqrt'}
                     % x^-0.5=y so P=[-0.5 0;0 1], K=[1 -1]
                     P=blkdiag(speye(totalInputs)*-0.5,speye(totalInputs));
                     K=horzcat(speye(totalInputs),-1*speye(totalInputs));
