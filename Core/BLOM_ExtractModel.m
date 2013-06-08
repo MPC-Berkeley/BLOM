@@ -947,8 +947,8 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
             case 'bound'
                 % fill in bound parameters for different time steps
                 boundHandle = varargin{1};
-                lowerBound = eval(get_param(boundHandle,'lb'));
-                upperBound = eval(get_param(boundHandle,'ub'));
+                lowerBound = evalin('base',get_param(boundHandle,'lb'));
+                upperBound = evalin('base',get_param(boundHandle,'ub'));
 
                 % find out for which time steps these bounds are relevant
                 init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
