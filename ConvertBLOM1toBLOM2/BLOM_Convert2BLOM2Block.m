@@ -44,6 +44,7 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
             end
             
             set_param(block, 'Position', position);
+
             
         case 'MPCMdlLib/Constraint'
             positive = strcmp(get_param(BLOM1Block, 'CompareSign'), '> 0');
