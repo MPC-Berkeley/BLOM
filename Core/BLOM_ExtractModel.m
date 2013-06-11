@@ -86,7 +86,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         allVars = createAllVars(stepVars,horizon);
         
         block = expandBlock(block,horizon,stepVars,allVars);
-        
+              
         stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
         allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
@@ -264,6 +264,9 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     % add all the outport handles of the fromSimulink blocks. The BFS
     % will stop at these handles
     for idx = 1:length(fromSimulinkPorts);
+        if length(fromSimulinkPorts)==1
+            fromSimulinkPorts = {fromSimulinkPorts};
+        end
         currentOutports = fromSimulinkPorts{idx}.Outport;
         sOutportLength = length(currentOutports);
         sOutportHandles(sOutportIdx:(sOutportIdx+sOutportLength-1)) = ...
@@ -1872,16 +1875,28 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     
     varNameParentChar = char(block.names(stepVars.block(allVars.stepVarIdx)));
     varNameParent = cellstr(varNameParentChar(:,(length(name)+2):end));
-    varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
+    for ii = 1:length(varNameParent)
+        varNameParent{ii}(varNameParent{ii}=='/') = '_';
+    end
+    stepVarOutputNum = zeros(stepVars.zeroIdx-1,1);
+    for blockIdx = 1:block.zeroIdx-1      
+        for outputIdx = 1:length(block.stepOutputIdx{blockIdx})
+            stepVarOutputNum(block.stepOutputIdx{blockIdx}(outputIdx)) = outputIdx;
+        end
+    end
+    varNameOutputNum = num2str(stepVarOutputNum(allVars.stepVarIdx));
     varNameTimeStep = num2str(allVars.timeStep);
-    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNamePortNum, '.t', varNameTimeStep,';');
+    varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
+    varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
+    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
     
+    
+    numOptVars = max(allVars.optVarIdx);
     %create all_names field
-    ModelSpec.all_names = cell(max(allVars.optVarIdx),1);
-    vec_idx = allVars.optVarIdx;
+    ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
-        ModelSpec.all_names{vec_idx(idx)} = ...
-            strcat(ModelSpec.all_names{vec_idx(idx)}, varNameAllVars{idx});
+        ModelSpec.all_names{allVars.optVarIdx(idx)} = ...
+            strcat(ModelSpec.all_names{allVars.optVarIdx(idx)}, varNameAllVars{idx});
     end
     
     for idx = 1:size(ModelSpec.all_names)
@@ -1889,19 +1904,31 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     end
    
     
-    numOptVars = max(allVars.optVarIdx);
-    
+
+
     %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
     if isempty(ModelSpec.all_names)
-       all_fields = cell(1,3);
+       all_fields = cell(1,5);
     else
-        all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%d','Delimiter','.;');
+        all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
     end
+    
+    vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
+    vec_idx(terms_so_far(1:end-1)+1) = 1:numOptVars; % first of each
+    twoterms = find(num_terms == 2);
+    vec_idx(terms_so_far(twoterms)+2) = twoterms; % 2nd of each
+    multiterms = find(num_terms > 2); % multiples, should be fewer of these
+    for i = 1:length(multiterms)
+        vec_idx(terms_so_far(multiterms(i))+2 : ...
+            terms_so_far(multiterms(i)+1)) = multiterms(i);
+    end
+    
     ModelSpec.all_names_struct.terms_so_far = terms_so_far;
     ModelSpec.all_names_struct.all_fields = all_fields;
     ModelSpec.all_names_struct.vec_idx = vec_idx; 
+
     
     %create inequality polyblocks
     ModelSpec.ineq.AAs = speye(numOptVars+1, numOptVars);
