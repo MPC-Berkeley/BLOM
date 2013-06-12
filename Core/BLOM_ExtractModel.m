@@ -1867,8 +1867,13 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.dt = dt;
     ModelSpec.options = options;
 
-    ModelSpec.in_vars = stepVars.input;
-    ModelSpec.ex_vars = stepVars.external;
+    numOptVars = max(allVars.optVarIdx);
+
+    
+    ModelSpec.in_vars = false(numOptVars,1);
+    ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
+    ModelSpec.ex_vars = false(numOptVars,1);
+    ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
     
     ModelSpec.AAs = {allP};
     ModelSpec.Cs = {allK};
@@ -1891,7 +1896,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
     
     
-    numOptVars = max(allVars.optVarIdx);
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
@@ -1969,6 +1973,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.eq_end_C = len_cost_C + len_ineq_C + len_eq_C;
     
     %create all_state_vars
-    ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1));
+    ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1), numOptVars,1);
  
 end
