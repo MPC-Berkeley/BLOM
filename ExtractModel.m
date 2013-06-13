@@ -55,9 +55,8 @@ for t=1:n_time_steps
     end
     
     all_names((t-1)*length(all_names_single) + (1:length(all_names_single))) = ...
-        strcat(strrep(all_names((t-1)*length(all_names_single) + ...
-        (1:length(all_names_single))), ';', ['.t' sprintf('%d',t) ';']), ...
-        repmat({['.t' sprintf('%d',t)]}, 1, length(all_names_single)));
+        strcat(strrep(all_names_single, ';', sprintf('.t%d;',t)), ...
+        repmat({sprintf('.t%d',t)}, 1, length(all_names_single)));
     %{
     for i=1:length(all_names_single)
         [name R] = strtok(all_names_single{i},';');
@@ -111,7 +110,7 @@ toremove_list_source = [];
     
 if (discrete_sys)
     
-    [idx_discr_state_vars j s] =  find(state_vars_type == 2)
+    [idx_discr_state_vars j s] =  find(state_vars_type == 2);
     disc_state_vars = sparse(idx_discr_state_vars, j, state_vars(idx_discr_state_vars),size(state_vars,1),size(state_vars,2));
 
     % introduce equality constraint at state variables between time steps
@@ -612,7 +611,7 @@ all_blks = vertcat(blks, demuxes, muxes, mem_blks, in_blks, ex_blks);
 eval([name '([],[],[],''compile'');'])
 
 % Get all common block properties
-for i= 1:length(all_blks)
+for i = 1:length(all_blks)
     
     connect{i} = get_param(all_blks{i},'PortConnectivity');
     % dim has two important fields: Inport and Outport. The format is as
@@ -620,12 +619,12 @@ for i= 1:length(all_blks)
     % Each vector is of the following format: [m1 n1 m2 n2 .... ] where m1
     % is the number of columns of the first port and n1 is the number of
     % rows of the first port. m is 1 for vector variables.
-    dim{i}     = get_param(all_blks{i}, 'CompiledPortDimensions');
+    dim{i} = get_param(all_blks{i}, 'CompiledPortDimensions');
     if (i > length(blks)+length(mem_blks)+length(demuxes)+length(muxes))
         % store only output port for other than polyblocks and states
         connect{i} = connect{i}(2);
     end
-    names{i} =  GetBlockName(all_blks{i});
+    names{i} = GetBlockName(all_blks{i});
     handles(i) = get_param(all_blks{i},'handle');
     
 end
@@ -634,20 +633,20 @@ end
 eval([name '([],[],[],''term'');']);
 
 % store all functions from polyblocks
-for i= 1:length(blks)
-    userdata =  get_param(all_blks{i},'UserData');
+for i = 1:length(blks)
+    userdata = get_param(all_blks{i},'UserData');
     As{i} = userdata{1};
     Cs{i} = userdata{2};
 end
 
 % represent demux as a identity function.
-for i= length(blks)+1:length(blks)+length(demuxes)
+for i = length(blks)+1:length(blks)+length(demuxes)
     As{i} = speye(dim{i}.Inport(2)*2);
     Cs{i} = [speye(dim{i}.Inport(2)), -speye(dim{i}.Inport(2))];
 end
 
 % represent mux as a identity function.
-for i= length(blks)+1+length(demuxes):length(blks)+length(demuxes)+length(muxes)
+for i = length(blks)+1+length(demuxes):length(blks)+length(demuxes)+length(muxes)
     As{i} = speye(dim{i}.Outport(2)*2);
     Cs{i} = [speye(dim{i}.Outport(2)), -speye(dim{i}.Outport(2))];
 end
@@ -659,12 +658,12 @@ mem_handles = [];
 cost_handles = [];
 ineq_handles = [];
 
-for i= 1:length(mem_blks)
+for i = 1:length(mem_blks)
     mem_names{i} = GetBlockName(mem_blks{i});
     mem_handles(i) = get_param(mem_blks{i},'handle');
 end
 
-for i= 1:length(ineq_blks)
+for i = 1:length(ineq_blks)
     ineq_handles(i) = get_param(ineq_blks{i},'handle');
     if (strcmp(get_param(ineq_blks{i}, 'CompareSign'),'> 0'))
         ineq_sign(i) = 1;
@@ -788,14 +787,14 @@ end
 
 % Store step ratio of input vars
 in_vars = sparse(N,1);
-for i= 1:length(in_blks)
+for i = 1:length(in_blks)
     in_vars(IIs{length(blks) + length(mem_blks)+i}) = ...
         evalin('base', get_param(in_blks{i}, 'step_ratio'));
 end
 
 % Mark external vars
 ex_vars = sparse(N,1);
-for i= 1:length(ex_blks)
+for i = 1:length(ex_blks)
     ex_vars(IIs{length(blks) + length(mem_blks)+length(in_blks) + i}) = ...
         evalin('base', get_param(ex_blks{i}, 'step_ratio'));
 end
