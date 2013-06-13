@@ -509,20 +509,12 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
         %% SubSystem.
         case 'SubSystem'
             if strcmp(get_param(blockHandle, 'ReferenceBlock'), 'BLOM_Lib/GeneralPolyblock')
-                % P = [P_f 0
-                %      P_g (K_g~=0)']
-                % K = [K_f -K_g]
-                % if g outputs scalar, repeat K_g such that outputs a vector
                 Pf = evalin('base', get_param(blockHandle, 'P_f'));
                 Pg = evalin('base', get_param(blockHandle, 'P_g'));
                 Kf = evalin('base', get_param(blockHandle, 'K_f'));
                 Kg = evalin('base', get_param(blockHandle, 'K_g'));
-                if size(Kg,1) == 1
-                   Kg = repmat(Kg,size(Kf,1),1); 
-                end
-                
-                P = [Pf zeros(size(Kf')); Pg (Kg~=0)'];
-                K = [Kf -Kg];
+
+                [P K] = CombineFandG(Pf,Kf,Pg,Kg);
                 
             else
                 P = [];
