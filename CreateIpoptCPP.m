@@ -1,8 +1,8 @@
 function CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
 
 
-n_eq = length(AAs);
-n_ineq = length(ineq.AAs);
+n_eq = sum(cellfun(@(x) size(x,1), Cs));
+n_ineq = sum(cellfun(@(x) size(x,1), ineq.Cs));
 i_fixed = n_eq+n_ineq+1;
 %clear iAAs  iCs  tAAs tCs 
 
