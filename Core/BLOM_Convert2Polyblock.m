@@ -27,13 +27,13 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
     outportDim = get_param(outports,'CompiledPortDimensions');
     
     % figure out total number of outputs
-    total_outputs = 0;
+    totalOutputs = 0;
     for i = 1:length(outportDim)
         class_outportDim = outportDim;
         if iscell(class_outportDim)
-            total_outputs = total_outputs + prod(outportDim{i});
+            totalOutputs = totalOutputs + prod(outportDim{i});
         else
-            total_outputs = prod(outportDim);
+            totalOutputs = prod(outportDim);
         end
     end
     
@@ -67,7 +67,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             
             inputsToAdd = get_param(blockHandle,'Inputs');
             inputsToAdd(inputsToAdd == '|') = [];
-            subtract_indices = (inputsToAdd == '-');
+            subtractIndices = (inputsToAdd == '-');
             if isempty(inportPlaces.matrix)
                 % for n scalar inputs, P = eye(n), K = ones(1,n). for each ith
                 % input that is subtracted, that index in K should equal -1
@@ -75,7 +75,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                 P = speye(totalInputs);
                 K = ones(1,totalInputs); 
 
-                K(subtract_indices) = -1;
+                K(subtractIndices) = -1;
             elseif length(inportPlaces.matrix) == 1 
                 % one matrix/vector and the rest scalars
                 P = speye(totalInputs);
@@ -87,14 +87,14 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                 for i = 1:length(inports)
                     if any(inportPlaces.scalar == i)
                         % current column is just the scalar input
-                        if subtract_indices(i)
+                        if subtractIndices(i)
                             % current column is subtracted
                             K(:,col) = -1;
                         end
                         col = col+1;
                     else
                         %current column is the beginning of the vector
-                        if subtract_indices(i)
+                        if subtractIndices(i)
                         % if the matrix/vector is being subtracted
                             K(:,(col:(vectLength+col-1))) = -eye(vectLength);
                         else
@@ -114,7 +114,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                 K = zeros(vectLength,vectLength*numVect);
                 j = 1;
                 for i = 1:vectLength:(numVect*vectLength)
-                    if subtract_indices(j)
+                    if subtractIndices(j)
                         K(:,(i:(i+vectLength-1))) = -eye(vectLength);
                     else
                         K(:,(i:(i+vectLength-1))) = eye(vectLength);
@@ -133,14 +133,14 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                 for i = 1:length(inports)
                     if any(inportPlaces.scalar == i)
                         % current column is just the scalar input
-                        if subtract_indices(i)
+                        if subtractIndices(i)
                             % current column is subtracted
                             K(:,col) = -1;
                         end
                         col = col+1;
                     else
                         %current column is the beginning of the vector
-                        if subtract_indices(i)
+                        if subtractIndices(i)
                         % if the matrix/vector is being subtracted
                             K(:,(col:(vectLength+col-1))) = -eye(vectLength);
                         else
@@ -158,8 +158,8 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
 
             % go from user friendly form of P and K to proper P and K
             % matricies
-            P = blkdiag(P,speye(total_outputs));
-            K = horzcat(K,-speye(total_outputs));
+            P = blkdiag(P,speye(totalOutputs));
+            K = horzcat(K,-speye(totalOutputs));
             
         %% absolute value (only for costs)    
         case 'Abs'
@@ -176,7 +176,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             digitInput = isstrprop(inputs,'digit');
             division = any(digitInput == 0);
             if division
-                divide_indices = (inputs == '/');
+                divideIndices = (inputs == '/');
             end
             
             mult_type = get_param(blockHandle,'Multiplication');
@@ -193,7 +193,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                         P = ones(1,totalInputs);
                         K = 1;
                         if division
-                            P(divide_indices) = -1;
+                            P(divideIndices) = -1;
                         end
                     elseif isempty(inportPlaces.scalar)
                         % all vectors/matrices of same size. multiply
@@ -203,10 +203,10 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                         numVect = length(inports);
                         P = zeros(vectLength,vectLength*numVect);
                         K = speye(vectLength);
-                        divide_index = 1;
+                        divideIndex = 1;
                         for i = 1:vectLength:(numVect*vectLength)
                             if division
-                                if divide_indices(divide_index)
+                                if divideIndices(divideIndex)
                                     P(:,(i:(i+vectLength-1))) = -eye(vectLength);
                                 else
                                     P(:,(i:(i+vectLength-1))) = eye(vectLength);
@@ -214,7 +214,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                             else
                                 P(:,(i:(i+vectLength-1))) = eye(vectLength);
                             end
-                            divide_index = divide_index+1;
+                            divideIndex = divideIndex+1;
                         end
                     elseif ~isempty(inportPlaces.scalar) && ~isempty(inportPlaces.matrix)
                         % one or more vectors/matrices and one or more
@@ -227,28 +227,28 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
                         P = ones(vectLength,vectLength*length(inportPlaces.matrix)...
                             +length(inportPlaces.scalar));
                         col = 1;
-                        divide_index = 1;
+                        divideIndex = 1;
                         for i = 1:length(inports)
                             if any(inportPlaces.matrix == i)
                                 % current column is the vector
                                 if division
-                                    if divide_indices(divide_index)
+                                    if divideIndices(divideIndex)
                                         P(:,(col:(vectLength+col-1))) = -eye(vectLength);
                                     else
                                         P(:,(col:(vectLength+col-1))) = eye(vectLength);
                                     end
                                     col = col+vectLength;
-                                    divide_index = divide_index+1;
+                                    divideIndex = divideIndex+1;
                                 else
                                     P(:,(col:(vectLength+col-1))) = eye(vectLength);
                                     col = col+vectLength;
                                 end
                             else
                                 if division
-                                    if divide_indices(divide_index)
+                                    if divideIndices(divideIndex)
                                         P(:,col) = -1;
                                     end
-                                    divide_index=divide_index+1;
+                                    divideIndex=divideIndex+1;
                                 end
                                 col = col+1;
                             end
@@ -263,27 +263,27 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             
             % go from user friendly form of P and K to proper P and K
             % matricies
-            P = blkdiag(P,speye(total_outputs));
-            K = horzcat(K,-speye(total_outputs));
+            P = blkdiag(P,speye(totalOutputs));
+            K = horzcat(K,-speye(totalOutputs));
         %% constant    
         case 'Constant'
-            P = speye(total_outputs+1, total_outputs);
+            P = speye(totalOutputs+1, totalOutputs);
             constVal = get_param(blockHandle,'Value');
             constVal = evalin('base',constVal);
-            K = horzcat(-speye(total_outputs),constVal.*ones(total_outputs,1));
+            K = horzcat(-speye(totalOutputs),constVal.*ones(totalOutputs,1));
         %% gain
         case 'Gain'
-            P = speye(totalInputs*2);
+            P = speye(totalInputs + totalOutputs);
             gain = evalin('base',get_param(blockHandle,'Gain'));
             mult_type = get_param(blockHandle,'Multiplication');
             switch mult_type
                 case 'Element-wise(K.*u)'
-                    K = horzcat(sparse(1:totalInputs,1:totalInputs,gain), ...
-                        -speye(totalInputs));
+                    K = horzcat(sparse(1:totalOutputs,1:totalInputs,gain), ...
+                        -speye(totalOutputs));
                 case 'Matrix(u*K)'
                     error('Right matrix multiplication currently not supported by BLOM');
                 otherwise
-                    K = horzcat(gain, -speye(totalInputs));
+                    K = horzcat(gain, -speye(totalOutputs));
             end
         %% bias
         case 'Bias'
@@ -556,7 +556,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
         otherwise 
             P = [];
             K = [];
-            [blockType ' is currently not supported by BLOM. Sorry']
+            error([blockType ' is currently not supported by BLOM'])
 
     end
 
