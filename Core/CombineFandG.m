@@ -13,15 +13,15 @@
 function [P K] = CombineFandG(P_f,K_f,P_g,K_g)
 
 if (size(K_g,1)==1)
-        P = [P_f zeros(size(P_f,1),size(K_f,1)) ; repmat(P_g,size(K_f,1),1) kron(eye( size(K_f,1)),ones(size(P_g,1),1))  ];
-        K = [K_f kron(eye(size(K_f,1)),-K_g)];
+    P = [P_f, sparse(size(P_f,1),size(K_f,1)); ...
+        repmat(P_g,size(K_f,1),1), kron(speye(size(K_f,1)),ones(size(P_g,1),1))];
+    K = [K_f, kron(speye(size(K_f,1)),-K_g)];
 elseif size(K_g,1)==size(K_f,1)
-        P = [P_f zeros(size(P_f,1),size(K_f,1)) ; repmat(P_g,size(K_f,1),1) kron(eye( size(K_f,1)),ones(size(P_g,1),1))  ];
-        K = [K_f zeros(size(K_g,1),size(K_g,2)*size(K_g,1))];
-        for i=1:size(K_g,1)
-            K(i,size(K_f,2)+1 + ((i-1)*size(K_g,2):(i*size(K_g,2)-1))) = -K_g(i,:);       
-        end   
+    P = [P_f, sparse(size(P_f,1),size(K_f,1)); ...
+        repmat(P_g,size(K_f,1),1), kron(speye(size(K_f,1)),ones(size(P_g,1),1))];
+    K_g_cell = num2cell(K_g, 2); % cell array of rows of K_g
+    K = [K_f, -blkdiag(K_g_cell{:})];
 else
-    error('number of lines in C matrices of f and g must be either the same, or K_f of g be a row matrix');
+    error('Number of rows in K matrices of f and g must be the same, or K_f of g must be a single row');
 end
 % input_type, output_type
