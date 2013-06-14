@@ -1,13 +1,13 @@
 %> @file BLOM_SetDataLogging.m
 %> @brief sets data logging to on for all variables and labels them
 %>
-%> @param BLOM1system String for name of system.  BLOM1system must be open
+%> @param BLOMSystem String for name of system.  BLOMSystem must be open
 %>
 %======================================================================
 
-function BLOM_SetDataLogging(BLOM1System)
-    subsystems = find_system({BLOM1System});
-    systemNameLength = length(BLOM1System);
+function BLOM_SetDataLogging(BLOMSystem)
+    subsystems = find_system({BLOMSystem});
+    systemNameLength = length(BLOMSystem);
     subsystems(1) = [];
     for k = 1:length(subsystems)
         blockType = get_param(subsystems{k}, 'BlockType');
@@ -22,7 +22,7 @@ function BLOM_SetDataLogging(BLOM1System)
             end
             
             parent = get_param(subsystems{k}, 'Parent');
-            if ~strcmp(parent, BLOM1System)
+            if ~strcmp(parent, BLOMSystem)
                 parent(1:systemNameLength+1) = [];
                 name = [parent '/' name];
                 name(name=='/') = '_';
@@ -30,18 +30,11 @@ function BLOM_SetDataLogging(BLOM1System)
             portHandles = get_param(subsystems{k}, 'PortHandles');
             outports = portHandles.Outport;
 
-            if length(outports) == 1
-                set_param(outports, 'DataLoggingNameMode', 'custom');
-                set_param(outports, 'DataLogging', 'on');
-                set_param(outports, 'DataLoggingName', [name '_1']);
-            else
-                for k = 1:length(outports)   
-                    set_param(outports(k), 'DataLoggingNameMode', 'custom');
-                    set_param(outports(k), 'DataLogging', 'on');
-                    set_param(outports(k), 'DataLoggingName', [name '_' num2str(k)]);
-                end          
+            for j = 1:length(outports)
+                set_param(outports(j), 'DataLoggingNameMode', 'custom');
+                set_param(outports(j), 'DataLogging', 'on');
+                set_param(outports(j), 'DataLoggingName', sprintf('%s_%d', name, j));
             end
-            
-        end    
+        end
     end
 end
