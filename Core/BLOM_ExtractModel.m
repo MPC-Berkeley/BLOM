@@ -1935,15 +1935,21 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
 
     
     %create inequality polyblocks
-    ModelSpec.ineq.AAs = speye(numOptVars+1, numOptVars);
-    optVarsBounds = zeros(numOptVars,2);
+    optVarsBounds = zeros(numOptVars,2);   
     optVarsBounds(allVars.optVarIdx,1) = allVars.lowerBound;
     optVarsBounds(allVars.optVarIdx,2) = allVars.upperBound;
-    ineqCsM = [(1:numOptVars)*2-1 (1:numOptVars)*2 (1:numOptVars)*2-1 (1:numOptVars)*2];
-    ineqCsN = [1:numOptVars 1:numOptVars ones(1,2*numOptVars)*(numOptVars+1)];
-    ineqCsVals = [ones(1,numOptVars) -ones(1,numOptVars) -optVarsBounds(:,2)' optVarsBounds(:,1)'];
-    ModelSpec.ineq.Cs = sparse(ineqCsM, ineqCsN, ineqCsVals,2*numOptVars, numOptVars+1);
-    ModelSpec.ineq.Cs(isinf(ModelSpec.ineq.Cs(:,numOptVars+1)),:) = [];
+    lowBounded = ~isinf(optVarsBounds(:,1));
+    upBounded = ~isinf(optVarsBounds(:,2));
+    numBounds = sum(lowBounded)+sum(upBounded);
+    lowBounds = optVarsBounds(lowBounded,1);
+    upBounds = optVarsBounds(upBounded,2); 
+    
+    ModelSpec.ineq.AAs = {sparse(1:numBounds, [find(upBounded)' find(lowBounded)'], ones(1,numBounds), numBounds+1, numOptVars)};
+   
+    ineqCsM = [1:numBounds 1:numBounds];
+    ineqCsN = [1:numBounds (numBounds+1)*ones(1,numBounds)];
+    ineqCsVals = [ones(1,sum(upBounded)) -ones(1,sum(lowBounded)) -upBounds' lowBounds'];
+    ModelSpec.ineq.Cs = {sparse(ineqCsM, ineqCsN, ineqCsVals,numBounds, numBounds+1)};
     
     %create cost polyblocks
     optVarCosts = zeros(numOptVars,1);
@@ -1954,13 +1960,13 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
     
     %create A,C polyblocks
-    ModelSpec.A = [ModelSpec.cost.A; ModelSpec.ineq.AAs; ModelSpec.AAs{1}];
-    ModelSpec.C = blkdiag(ModelSpec.cost.C, ModelSpec.ineq.Cs, ModelSpec.Cs{1});
+    ModelSpec.A = [ModelSpec.cost.A; ModelSpec.ineq.AAs{1}; ModelSpec.AAs{1}];
+    ModelSpec.C = blkdiag(ModelSpec.cost.C, ModelSpec.ineq.Cs{1}, ModelSpec.Cs{1});
     [len_cost_A,~] = size(ModelSpec.cost.A);
-    [len_ineq_A,~] = size(ModelSpec.ineq.AAs);
+    [len_ineq_A,~] = size(ModelSpec.ineq.AAs{1});
     [len_eq_A,~] = size(ModelSpec.AAs{1});
     [len_cost_C,~] = size(ModelSpec.cost.C);
-    [len_ineq_C,~] = size(ModelSpec.ineq.Cs);
+    [len_ineq_C,~] = size(ModelSpec.ineq.Cs{1});
     [len_eq_C,~] = size(ModelSpec.Cs{1});        
     
     ModelSpec.ineq_start_A = len_cost_A + 1;
