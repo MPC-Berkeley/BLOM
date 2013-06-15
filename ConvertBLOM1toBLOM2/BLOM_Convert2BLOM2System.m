@@ -8,6 +8,7 @@
 %======================================================================
 
 function BLOM_Convert2BLOM2System(BLOM1System)
+    load_system('BLOM_Lib') % make sure BLOM2 library is loaded
     subsystems = find_system({BLOM1System});
     subsystems(1) = [];
     for k = 1:length(subsystems)
