@@ -5,7 +5,7 @@ if (size(i,1) == 1)
 else
     data_dump = [i,j,val]';
 end
-if (data(end,end) == 0) % no last element
+if isempty(data) || (data(end,end) == 0) % no last element
     data_dump = [data_dump [size(data,1); size(data,2); 0]];
 end
 
