@@ -644,7 +644,7 @@ function [outportHandles,iZero,stepVars,block] =...
             outLength = length(outportFound);
             % in case outportHandles is too short 
             if outLength > length(outportHandles)-iZero+1;
-                if outlength > length(outportHandles)
+                if outLength > length(outportHandles)
                     outportHandles = [outportHandles; zeros(outLength*2,1)];
                 else
                     outportHandles = [outportHandles; ...
