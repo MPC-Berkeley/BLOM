@@ -1944,20 +1944,37 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     lowBounds = optVarsBounds(lowBounded,1);
     upBounds = optVarsBounds(upBounded,2); 
     
-    ModelSpec.ineq.AAs = {sparse(1:numBounds, [find(upBounded)' find(lowBounded)'], ones(1,numBounds), numBounds+1, numOptVars)};
-   
-    ineqCsM = [1:numBounds 1:numBounds];
-    ineqCsN = [1:numBounds (numBounds+1)*ones(1,numBounds)];
-    ineqCsVals = [ones(1,sum(upBounded)) -ones(1,sum(lowBounded)) -upBounds' lowBounds'];
-    ModelSpec.ineq.Cs = {sparse(ineqCsM, ineqCsN, ineqCsVals,numBounds, numBounds+1)};
+    if numBounds > 0
+        ModelSpec.ineq.AAs = {sparse(1:numBounds, [find(upBounded)' find(lowBounded)'], ones(1,numBounds), numBounds+1, numOptVars)};
+        
+        ineqCsM = [1:numBounds 1:numBounds];
+        ineqCsN = [1:numBounds (numBounds+1)*ones(1,numBounds)];
+        ineqCsVals = [ones(1,sum(upBounded)) -ones(1,sum(lowBounded)) -upBounds' lowBounds'];
+        ModelSpec.ineq.Cs = {sparse(ineqCsM, ineqCsN, ineqCsVals,numBounds, numBounds+1)};
+    else
+        % FIX: check if this works with BLOM1 solver interfaces for
+        % problems without inequalities
+        ModelSpec.ineq.AAs = {[]};
+        ModelSpec.ineq.Cs = {[]};
+    end
     
     %create cost polyblocks
     optVarCosts = zeros(numOptVars,1);
     optVarCosts(allVars.optVarIdx) = allVars.cost;
     nonzeroOptVarCosts = optVarCosts~=0;
-    ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
-        optVarCosts(nonzeroOptVarCosts), sum(nonzeroOptVarCosts), numOptVars);
-    ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
+    if any(nonzeroOptVarCosts)
+        ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
+            optVarCosts(nonzeroOptVarCosts), sum(nonzeroOptVarCosts), numOptVars);
+        ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
+    elseif numOptVars > 0
+        % cost is 0, this is a feasibility problem
+        ModelSpec.cost.A = sparse(1, numOptVars);
+        ModelSpec.cost.C = 0;
+    else
+        % no optimization variables?
+        ModelSpec.cost.A = [];
+        ModelSpec.cost.C = [];
+    end
     
     %create A,C polyblocks
     ModelSpec.A = [ModelSpec.cost.A; ModelSpec.ineq.AAs{1}; ModelSpec.AAs{1}];
@@ -1979,6 +1996,8 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.eq_end_C = len_cost_C + len_ineq_C + len_eq_C;
     
     %create all_state_vars
+    % FIX: this should probably not mix stepVars and allVars, since some
+    % of stepVars might not be included in allVars for first time step
     ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1), numOptVars,1);
  
 end
