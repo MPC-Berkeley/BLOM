@@ -270,7 +270,7 @@ function [P,K,specFunPresence] = BLOM_Convert2Polyblock(blockHandle)
             P = speye(totalOutputs+1, totalOutputs);
             constVal = get_param(blockHandle,'Value');
             constVal = evalin('base',constVal);
-            K = horzcat(-speye(totalOutputs),constVal.*ones(totalOutputs,1));
+            K = horzcat(-speye(totalOutputs),constVal(:).*ones(totalOutputs,1));
         %% gain
         case 'Gain'
             P = speye(totalInputs + totalOutputs);
