@@ -50,7 +50,7 @@ for i=1:length(names)
         continue;
     end
     data_i = eval([names{i} '.Data']);
-    data_i(1,:) = [];
+    %data_i(1,:) = [];
     
     % convert times and port #'s for this signal name into 1d indices
     time_indices_i = time_index(index(I(i)+1:I(i+1)));
