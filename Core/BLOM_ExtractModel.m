@@ -62,6 +62,15 @@
 function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     % load system. does nothing if model is not open
     load_system(name);
+    if ~exist('dt','var')
+        dt = 1;
+    end
+    if ~exist('integ_method','var')
+        integ_method = 'None';
+    end
+    if ~exist('options','var')
+        options = [];
+    end
     % evaluate model to get dimensions
     eval([name '([],[],[],''compile'');']); 
     try
@@ -134,7 +143,9 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
             inportsOutport = zeros(length(currentInports),1);
             for index = 1:length(currentInports)
                 currentLine = get_param(currentInports(index),'Line');
-                inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
+                if currentLine > 0
+                    inportsOutport(index) = get_param(currentLine,'SrcPortHandle');
+                end
             end
             
             currentBlockInports = zeros(length(block.stepInputIdx{i}),1);
@@ -1539,9 +1550,9 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     stepVars.interTime = false(stepVars.zeroIdx-1,1);
     stepVars.finalTime = false(stepVars.zeroIdx-1,1);
     
-    blockIdxs = 1:block.zeroIdx-1;
+    blockIdxs = (1:block.zeroIdx-1)';
     
-    startBlock = [blockIdxs(block.bound | block.cost) zeros(1,10)];
+    startBlock = [blockIdxs(block.bound | block.cost); zeros(10,1)];
     startBlockIdx = 1;
     startBlockZeroIdx = sum(startBlock ~= 0)+1;
     while startBlockIdx ~= startBlockZeroIdx
@@ -1871,9 +1882,14 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
 
     
     ModelSpec.in_vars = false(numOptVars,1);
-    ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
+%     ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
     ModelSpec.ex_vars = false(numOptVars,1);
-    ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
+%     ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
+    for ii = 1:allVars.totalLength
+       ModelSpec.in_vars(allVars.optVarIdx(ii)) = ModelSpec.in_vars(allVars.optVarIdx(ii)) || stepVars.input(allVars.stepVarIdx(ii));
+       ModelSpec.ex_vars(allVars.optVarIdx(ii)) = ModelSpec.ex_vars(allVars.optVarIdx(ii)) || stepVars.external(allVars.stepVarIdx(ii));
+    end
+
     
     ModelSpec.AAs = {allP};
     ModelSpec.Cs = {allK};
