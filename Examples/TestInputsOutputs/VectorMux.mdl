@@ -6,9 +6,63 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.5"
+    ComputedModelVersion    "1.6"
     NumModelReferences	    0
-    NumTestPointedSignals   0
+    NumTestPointedSignals   6
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/Constant"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Constant_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/Constant1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Constant1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/Gain"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Gain_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/InputFromSimulink"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "InputFromSimulink_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/InputFromSimulink1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "InputFromSimulink1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "VectorMux/Product"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Product_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
   }
   SavedCharacterEncoding  "windows-1252"
   SaveDefaultBlockParams  on
@@ -23,11 +77,11 @@ Model {
   Creator		  "Tony"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Tony"
+  LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jun 14 20:07:23 2013"
-  RTWModifiedTimeStamp	  293140051
-  ModelVersionFormat	  "1.%<AutoIncrement:5>"
+  LastModifiedDate	  "Wed Jun 19 16:11:11 2013"
+  RTWModifiedTimeStamp	  293559061
+  ModelVersionFormat	  "1.%<AutoIncrement:6>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -651,7 +705,7 @@ Model {
   }
   System {
     Name		    "VectorMux"
-    Location		    [115, 127, 1030, 416]
+    Location		    [2376, -274, 3291, 76]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -673,6 +727,13 @@ Model {
       Position		      [40, 76, 95, 114]
       Value		      "1:10"
       SampleTime	      "1"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Constant_1"
+      }
     }
     Block {
       BlockType		      Constant
@@ -681,6 +742,13 @@ Model {
       Position		      [40, 161, 95, 199]
       Value		      "1:10"
       SampleTime	      "1"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Constant1_1"
+      }
     }
     Block {
       BlockType		      Reference
@@ -725,6 +793,13 @@ Model {
       OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Gain_1"
+      }
     }
     Block {
       BlockType		      Reference
@@ -745,6 +820,13 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       interpType	      "Zero-Order Hold"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"InputFromSimulink_1"
+      }
     }
     Block {
       BlockType		      Reference
@@ -765,6 +847,13 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       interpType	      "Zero-Order Hold"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"InputFromSimulink1_1"
+      }
     }
     Block {
       BlockType		      Mux
@@ -786,6 +875,13 @@ Model {
       OutDataTypeMode	      "Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Product_1"
+      }
     }
     Line {
       SrcBlock		      "Constant"

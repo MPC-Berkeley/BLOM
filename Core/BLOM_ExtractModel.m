@@ -1013,7 +1013,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
             case 'mux'
                 % points to the outports that go into the mux
                 sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = sameOptIndex;
+                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = (sameOptIndex):(sameOptIndex+lengthOut-1);
             case 'rememberIndex'
                 varargout{1} = stepVars.zeroIdx;
             case 'unitDelay'
@@ -1856,6 +1856,27 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);    
 
 end
+
+%%
+%===============================================================
+%> @brief make sure all allVars fields are consistent with optVars
+%>
+%> @param allVars all Variables
+%> @param stepVars variabels 1 timestep
+%===================================================================
+function allVars = remapAllVarsFields(allVars, stepVars)
+    optVarInput = false(allVars.totalLength,1);
+    optVarExternal = false(allVars.totalLength,1);
+    for ii = 1:allVars.totalLength
+       optVarInput(allVars.optVarIdx(ii)) = optVarInput(allVars.optVarIdx(ii)) || stepVars.input(allVars.stepVarIdx(ii));
+       optVarExternal(allVars.optVarIdx(ii)) = optVarExternal(allVars.optVarIdx(ii)) || stepVars.external(allVars.stepVarIdx(ii));
+    end
+    allVars.input = optVarInput(allVars.optVarIdx);
+    allVars.external = optVarExternal(allVars.optVarIdx);
+    
+    allVars.state = (allVars.timeStep == 1) & stepVars.state(allVars.stepVarIdx);
+end
+
 
 
 %%
