@@ -295,7 +295,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     stepVars.block = zeros(initialSize,1); % the index of the block
     stepVars.outportNum = zeros(initialSize,1); % outport number. e.g. if there are multiple outports of a block
     stepVars.outportHandle = zeros(initialSize,1); % handle of specific outport
-    stepVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
+    stepVars.outportIndex = zeros(initialSize,1); % index of specific outports. normally just 1 (will be more than 1 if the outport is a vector)
     stepVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     stepVars.initCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at initial time step
     stepVars.interCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at intermediate time steps
@@ -324,7 +324,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.K = cell(initialSize,1); % K matrix of block, if relevant
     block.stepInputIdx = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
     block.stepOutputIdx = cell(initialSize,1); % the stepVar indices of the outports of that block
-    block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
+    block.dimensions = cell(initialSize,1); % dimensions of each outports. first value is outport #, then second two values are dimensions of outport
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
     block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block and not a BLOM block
@@ -375,20 +375,20 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     end
  
     while 1
-        if outport.outportHandles(outports.searchIdx) == 0
+        if outports.outportHandles(outports.searchIdx) == 0
             % all handles have been found and searched
             break
-        elseif any(outport.outportHandles(outports.searchIdx)==sOutportHandles)
+        elseif any(outports.outportHandles(outports.searchIdx)==sOutportHandles)
             % if the current handle is equal to any of the external or input
             % from simulink, then continue with the loop and do not look
             % for more branches from that block
             % in this case do we not need to run addToBFS
-            currentOutport = outport.outportHandles(outports.searchIdx);
+            currentOutport = outports.outportHandles(outports.searchIdx);
             [block, currentBlockIndex] = updateBlock(block,currentOutport);
             [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
             outports.searchIdx = outports.searchIdx + 1;
             continue
-        elseif outports.searchIndex > length(outports.outportHandles)
+        elseif outports.searchIdx> length(outports.outportHandles)
             % should not reach here, put here just in case
             break
         elseif ~outports.outportHandles(end) == 0
@@ -400,22 +400,72 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         % call updateBlock here somehow
         % call addtobfs here
         % rerouting case
+        currentOutport = outports.outportHandles(outports.searchIdx);
+        [block, currentBlockIndex] = updateBlock(block,currentOutport);
+        [outports,allOutportsFound] = addToBFS(outports,currentOutport,block,currentBlockIndex);
         
+        if block.reroute(currentBlockIndex)
+            % this block will need some rerouting. mux and demux will
+            % require special rerouting
+            if block.mux(currentBlockIndex)
+                % special rerouting for mux
+                % the original variables are the outports connected to the
+                % mux
+                mux_optVarIdx = zeros(length(allOutportsFound),1);
+                for idx=1:length(allOutportsFound)
+                    tempOutport = allOutportsFound(idx);
+                    [block,tempBlockIndex] =...
+                        updateBlock(block,tempOutport);
+                    [stepVars,block,sameOptIndex] =...
+                        updateStepVars(stepVars,block,tempBlockIndex,tempOutport);
+                    mux_optVarIdx(idx) = sameOptIndex;
+                end
+                
+                [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,mux_optVarIdx);
+                
+            elseif~block.demux(currentBlockIndex)
+                % special rerouting for demux
+                tempOutport = allOutportsFound;
+                [block,tempBlockIndex] =...
+                    updateBlock(block,tempOutport);
+                [stepVars,block,sameOptIndex] =...
+                    updateStepVars(stepVars,block,tempBlockIndex,tempOutport);
+                
+                demuxPorts = get_param(block.handles(currentBlockIndex),'PortHandles');
+                demuxOutports = [demuxPorts.Outport];
+                
+                for ii = 1:length(demuxOutports)
+                    [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,optVarIdx+ii-1);
+                end
+                
+            else
+                % rerouting procedure for Subsystems (going in and out),
+                % from/goto blocks. There should only be one outport
+                [block, tempBlockIndex] = updateBlock(block,allOutportsFound);
+                % first fill in stepVars for the "original" variable
+                [stepVars,block,sameOptIndex] = updateStepVars(stepVars,block,tempBlockIndex,allOutportsFound);
+                % then fill in the rerouting 
+                [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,sameOptIndex);
+            end
+        else
+            % all other blocks
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
+        end
         
-        
-        
+        outports.searchIdx = outports.searchIdx + 1;
+
     end
     
     
     
     if any(outports.outportHandles==0)
-        outportHandles = outportHandles(1:iZero-1);
+        outports.outportHandles = outports.outportHandles(1:outports.zeroIdx-1);
     end
     
-    block = updateInputsField(block,stepVars,outportHandles);
+    block = updateInputsField(block,stepVars,outports.outportHandles);
     
     %check if any handles are -1 and remove them
-    if any(outportHandles==-1)
+    if any(outports.outportHandles==-1)
         % FIX PRINT STATEMENT. NOT NECESSARILY TRUE
         fprintf('One or more of the blocks are missing a connection\n');
         stop = 1;
@@ -481,19 +531,18 @@ function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBl
         inports = [portH.Inport];
     end
 
-    % FIX THIS
-%     if block.fromBlock(currentBlockIndex)
-%         tag = inports{1};
-%         name = inports{2};
-%         % there should only be one goto block associated with this from
-%         % block
-%         gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
-%         gotoPorts = get_param(gotoBlock{1},'PortHandles');
-%         % note: there should only be one outport associated with each goto
-%         % block
-%         inports = [gotoPorts.Inport];
-%         
-%     end
+    if block.fromBlock(currentBlockIndex)
+        tag = get_param(block.handles(currentBlockIndex),'GoToTag');
+        name = get_param(block.handles(currentBlockIndex),'Parent');
+        % there should only be one goto block associated with this from
+        % block
+        gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
+        gotoPorts = get_param(gotoBlock{1},'PortHandles');
+        % note: there should only be one outport associated with each goto
+        % block
+        inports = [gotoPorts.Inport];
+        
+    end
    
     % found outports connected to inports provided
     allOutportsFound=zeros(length(inports),1);
@@ -515,7 +564,7 @@ function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBl
         
         diffOutports = setdiff(outportFound,outports.outportHandles);
         diffLength = length(diffOutports);
-        outport.outportHandles(outports.zeroIdx:(diffLength+outports.zeroIdx-1))...
+        outports.outportHandles(outports.zeroIdx:(diffLength+outports.zeroIdx-1))...
             = diffOutports;
         outports.zeroIdx = outports.zeroIdx + diffLength;
     end
@@ -833,6 +882,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
 %this function populates stepVars structure
     dimension = get_param(currentOutport,'CompiledPortDimensions');
     lengthOut = dimension(1)*dimension(2);
+    
     if sum(any(stepVars.outportHandle==currentOutport)) == 0
         %only add general information for outports which haven't been looked at
         currentIndices = 1:lengthOut;
@@ -887,10 +937,16 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         stepVars.outportIndex(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentIndices;
         
         block.stepOutputIdx{currentBlockIndex}(portNumber) = stepVars.zeroIdx;
-        fromIndex = stepVars.zeroIdx;
+        varIdx = stepVars.zeroIdx;
         stepVars.zeroIdx = stepVars.zeroIdx+lengthOut;
     else
-        fromIndex = find(stepVars.outportHandle==currentOutport,1);
+        varIdx = find(stepVars.outportHandle==currentOutport,1);
+    end
+    
+    if nargout == 3
+        % if the nargout = 3, that means that we need to output the
+        % optVarIdx for rerouting
+        varargout{1} = varIdx;
     end
     
     % Here we do the switching for different types of blocks
@@ -907,52 +963,66 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
         
         % take into consideration current upper and lower bounds
-        currentInitLB = stepVars.initLowerBound(fromIndex);
-        currentInterLB = stepVars.interLowerBound(fromIndex);
-        currentFinalLB = stepVars.finalLowerBound(fromIndex);
+        currentInitLB = stepVars.initLowerBound(varIdx);
+        currentInterLB = stepVars.interLowerBound(varIdx);
+        currentFinalLB = stepVars.finalLowerBound(varIdx);
         
-        currentInitUB = stepVars.initUpperBound(fromIndex);
-        currentInterUB = stepVars.interUpperBound(fromIndex);
-        currentFinalUB = stepVars.finalUpperBound(fromIndex);
+        currentInitUB = stepVars.initUpperBound(varIdx);
+        currentInterUB = stepVars.interUpperBound(varIdx);
+        currentFinalUB = stepVars.finalUpperBound(varIdx);
         
         if init
             if lowerBound > currentInitLB
-                stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                stepVars.initLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
             end
             if upperBound < currentInitUB
-                stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                stepVars.initUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
             end
         end
         
         if inter
             if lowerBound > currentInterLB
-                stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                stepVars.interLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
             end
             if upperBound < currentInterUB
-                stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                stepVars.interUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
             end
         end
         
         if final
             if lowerBound > currentFinalLB
-                stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+                stepVars.finalLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
             end
             if upperBound < currentFinalUB
-                stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+                stepVars.finalUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
             end
         end
     elseif block.cost(currentBlockIndex)
         % fill in cost field
         costHandle = block.handles(currentBlockIndex);
-        stepVars.initCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
-        stepVars.interCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
-        stepVars.finalCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
+        stepVars.initCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
+        stepVars.interCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
+        stepVars.finalCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
     elseif block.inputBlock(currentBlockIndex)
         % fill in input field
-        stepVars.input(fromIndex:(fromIndex+lengthOut-1)) = true;
+        stepVars.input(varIdx:(varIdx+lengthOut-1)) = true;
     elseif block.externalBlock(currentBlockIndex)
         % fill in external field
-        stepVars.external(fromIndex:(fromIndex+lengthOut-1)) = true;
+        stepVars.external(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.fromBlock(currentBlockIndex) || block.subsystem(currentBlockIndex) || block.subsystemInput(currentBlockIndex)...
+            || block.demux(currentBlockIndex)
+        % for from, subsystem and subsystem inport blocks, "point" to the
+        % original outport
+        sameOptIndex = varargin{1};
+        stepVars.optVarIdx(varIdx:(varIdx+lengthOut-1)) = ...
+            (sameOptIndex):(sameOptIndex+lengthOut-1);
+    elseif block.delay(currentBlockIndex)
+        % Unit Delay (or state case)
+        stepVars.state(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.mux(currentBlockIndex)
+        % Mux rerouting
+        sameOptIndex = varargin{1};
+        stepVars.optVarIdx(varIdx:(varIdx+lengthOut-1)) = sameOptIndex;
     else 
         % do nothing for all non special cases
         
@@ -1030,7 +1100,8 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         elseif isempty(block.refBlock{block.zeroIdx}) && strcmp(block.blockType{block.zeroIdx},'Subsystem')
             % Subsystem that is not a BLOM block
             block.subsystem(block.zeroIdx) = true;
-        elseif strcmp(block.blockType{block.zeroidx},'From')
+            block.reroute(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'From')
             % this is a from block
             block.fromBlock(block.zeroIdx) = true;
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromSimulink') ||...
@@ -1041,6 +1112,16 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
             % this is one of the BLOM external blocks
             block.externalBlock(block.zeroIdx) = true;
+        elseif strcmp(block.refBlock{block.zeroIdx},'UnitDelay')
+            % Unit Delay Label
+            block.delay(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Inport')
+            parentOfBlock = get_param(block.blockType{block.zeroIdx},'Parent');
+            parentType = get_param(parentOfBlock,'BlockType');
+            if strcmp(parentType,'Subsystem')
+                block.subsystemInput(block.zeroIdx) = true;
+            end
+            
         else
             % store P and K matricies for the other blocks, as well as
             % boolean 1 if special function required and 0 ottherwise
@@ -1420,9 +1501,9 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
                 blockHandle = block.handles(blocks(idx));
                     
-%                 if block.subsystem(blocks(idx))
-%                     block.names(idx) %should never be here
-                if block.subsystemInput(blocks(idx))
+                if block.subsystem(blocks(idx))
+                    block.names(idx) %should never be here
+                elseif block.subsystemInput(blocks(idx))
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
                     parentSubsystem = get_param(blockHandle,'Parent');
@@ -1477,19 +1558,18 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 inputBlocks = stepVars.block(inputs);
                 while any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
                     for inputIdx = 1:length(inputs)
-                        %
-%                         if block.subsystem(inputBlocks(inputIdx))
-%                             subsystemHandle = block.handles(inputBlocks(inputIdx));
-%                             outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-%                             outportNum = stepVars.outportNum(inputs(inputIdx));
-%                             outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
-%                             outportInputHandle = outportBlockPort.Inport;
-%                             line = get_param(outportInputHandle, 'Line');
-%                             srcPortHandle = get_param(line, 'SrcPortHandle');
-%                             inputVector = find(stepVars.outportHandle == srcPortHandle);
-%                             vectorIndex = stepVars.outportIndex(inputs(inputIdx));
-%                             inputs(inputIdx) = inputVector(vectorIndex);
-%                         end
+                        if block.subsystem(inputBlocks(inputIdx))
+                            subsystemHandle = block.handles(inputBlocks(inputIdx));
+                            outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
+                            outportNum = stepVars.outportNum(inputs(inputIdx));
+                            outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
+                            outportInputHandle = outportBlockPort.Inport;
+                            line = get_param(outportInputHandle, 'Line');
+                            srcPortHandle = get_param(line, 'SrcPortHandle');
+                            inputVector = find(stepVars.outportHandle == srcPortHandle);
+                            vectorIndex = stepVars.outportIndex(inputs(inputIdx));
+                            inputs(inputIdx) = inputVector(vectorIndex);
+                        end
                         if block.mux(inputBlocks(inputIdx))
                             vectorIndex = find(block.stepOutputIdx{inputBlocks(inputIdx)}==inputs(inputIdx),1,'first');
                             inputVector = block.stepInputIdx{inputBlocks(inputIdx)};
