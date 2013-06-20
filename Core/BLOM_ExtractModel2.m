@@ -349,7 +349,6 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     outports.searchIdx = 1; % the current index we're looking at in the BFS
     
     % get all outports connected to the bounds 
-    state = 'bound';
     for i = 1:length(boundHandles)
         portH = get_param(boundHandles(i),'PortHandles');
         % costs and bounds should only have one inport
@@ -361,8 +360,16 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         end
     end
     
+    % get all outports connected to costs
     for i = 1:length(costHandles)
-        
+        portH = get_param(costHandles(i),'PortHandles');
+        % costs and bounds should only have one inport
+        currentInport = [portH.Inport];
+        [block, currentBlockIndex] = updateBlock(block,currentInport);
+        [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
+        for currentOutport = allOutportsFound
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
+        end
     end
  
     while 1
@@ -876,6 +883,7 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
     % Here we do the switching for different types of blocks
     
     if block.bound(currentBlockIndex)
+        % fill in proper bounds
         boundHandle = block.handles(currentBlockIndex);
         lowerBound = eval(get_param(boundHandle,'lb'));
         upperBound = eval(get_param(boundHandle,'ub'));
@@ -920,8 +928,12 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
             end
         end
-    elseif 0
-        
+    elseif block.cost(currentBlockIndex)
+        % fill in proper cost
+        costHandle = block.handles(currentBlockIndex);
+        stepVars.initCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
+        stepVars.interCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
+        stepVars.finalCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
     else 
         % do nothing for all non special cases
         
