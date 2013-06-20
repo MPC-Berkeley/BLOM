@@ -355,9 +355,10 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         % costs and bounds should only have one inport
         currentInport = [portH.Inport];
         [block, currentBlockIndex] = updateBlock(block,currentInport);
-        [outportHandles,iZero,stepVars,block] = ...
-            updateVars(currentInport,outportHandles,iZero,...
-            stepVars,block,state,iZero,portH,boundHandles(i));
+        [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
+        for currentOutport = allOutportsFound
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
+        end
     end
     
     for i = 1:length(costHandles)
@@ -445,9 +446,11 @@ end
 %> @retval iZero updates current index of the first zero
 %======================================================================
 
-function [outports] = addToBFS(outports,block,currentBlockIndex)
-
-    if block.intoSubsys(currentBlockIndex) %FIX: may want to look into special BLOM blocks here
+function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBlockIndex)
+    
+    currentOutport = outports.outportHandles(outports.searchIdx);
+    
+    if block.subsystem(currentBlockIndex) %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
         % outports of subsystem
         parent = get_param(currentOutport,'Parent');
@@ -457,7 +460,45 @@ function [outports] = addToBFS(outports,block,currentBlockIndex)
         portH = get_param(handle,'PortHandles');
         inports = [portH.Inport];
     end
-    
+
+    % FIX THIS
+%     if block.fromBlock(currentBlockIndex)
+%         tag = inports{1};
+%         name = inports{2};
+%         % there should only be one goto block associated with this from
+%         % block
+%         gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
+%         gotoPorts = get_param(gotoBlock{1},'PortHandles');
+%         % note: there should only be one outport associated with each goto
+%         % block
+%         inports = [gotoPorts.Inport];
+%         
+%     end
+   
+    % found outports connected to inports provided
+    allOutportsFound=zeros(length(inports),1);
+    for i = 1:length(inports);
+        currentLine = get_param(inports(i),'Line');
+        % this gives the all the outports connected to this line
+        outportFound = get_param(currentLine,'SrcPorthandle');
+        allOutportsFound(i) = outportFound;
+        outLength = length(outportFound);
+        % in case outportHandles is too short
+        if outLength > length(outports.outportHandles)-outports.zeroIdx+1;
+            if outLength > length(outports.outportHandles)
+                outports.outportHandles = [outports.outportHandles; zeros(outLength*2,1)];
+            else
+                outports.outportHandles = [outports.outportHandles; ...
+                    zeros(length(outportHandles),1)];
+            end
+        end
+        
+        diffOutports = setdiff(outportFound,outports.outportHandles);
+        diffLength = length(diffOutports);
+        outport.outportHandles(outports.zeroIdx:(diffLength+outports.zeroIdx-1))...
+            = diffOutports;
+        outports.zeroIdx = outports.zeroIdx + diffLength;
+    end
 
 end
 
@@ -768,13 +809,12 @@ end
 %======================================================================
 
 function [stepVars,block,varargout] = updateStepVars(stepVars,...
-    block,currentBlockIndex,currentOutport,stepVarsState,varargin)
+    block,currentBlockIndex,currentOutport,varargin)
 %this function populates stepVars structure
-%state can be 'bound', 'cost' 
+    dimension = get_param(currentOutport,'CompiledPortDimensions');
+    lengthOut = dimension(1)*dimension(2);
     if sum(any(stepVars.outportHandle==currentOutport)) == 0
-        %only add outports which haven't been looked at
-        dimension = get_param(currentOutport,'CompiledPortDimensions');
-        lengthOut = dimension(1)*dimension(2);
+        %only add general information for outports which haven't been looked at
         currentIndices = 1:lengthOut;
         portNumber = get_param(currentOutport,'PortNumber');
         
@@ -826,189 +866,68 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         stepVars.outportHandle(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentOutport;
         stepVars.outportIndex(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentIndices;
         
-        switch stepVarsState
-            case 'bound'
-                % fill in bound parameters for different time steps
-                boundHandle = varargin{1};
-                lowerBound = evalin('base',get_param(boundHandle,'lb'));
-                upperBound = evalin('base',get_param(boundHandle,'ub'));
-
-                % find out for which time steps these bounds are relevant
-                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
-                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
-                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
-                
-                if init
-                    stepVars.initLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.initUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                
-                if inter
-                    stepVars.interLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.interUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                
-                if final
-                    stepVars.finalLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.finalUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                    
-            case 'cost'
-                stepVars.initCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(1);
-                stepVars.interCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(2);
-                stepVars.finalCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(3);
-            case 'subSysInport'
-                % points to original variable
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'from'
-                % points to the original outport
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'intoSubsys'    
-                % points to the original outport
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'demux'
-                % the outport that goes into the demux points to the demux
-                % outports. NOTE: This assumes that 
-                sameOptIndex = varargin{1};
-                outportNumber = varargin{2};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) =...
-                    (sameOptIndex+outportNumber-1);
-            case 'mux'
-                % points to the outports that go into the mux
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = sameOptIndex;
-            case 'rememberIndex'
-                varargout{1} = stepVars.zeroIdx;
-            case 'unitDelay'
-                stepVars.state(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'input'
-                stepVars.input(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'external'
-                stepVars.external(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'normal'
-                % do nothing
-            otherwise
-                % do nothing
-        end
-        
-        % populate block.stepOutputIdx with index of the first stepVars
-        % variable. Does not take into consideration redundancies. This
-        % will be taken care of later.
         block.stepOutputIdx{currentBlockIndex}(portNumber) = stepVars.zeroIdx;
-        
+        fromIndex = stepVars.zeroIdx;
         stepVars.zeroIdx = stepVars.zeroIdx+lengthOut;
     else
-        dimension = get_param(currentOutport,'CompiledPortDimensions');
-        lengthOut = dimension(1)*dimension(2);
-        switch stepVarsState
-            case 'bound'
-                fromIndex = find(stepVars.outportHandle==currentOutport,1);
-                % sometimes there will be two bound blocks connected to the
-                % same outport. This means that the bounds are different at
-                % different time steps
-                boundHandle = varargin{1};
-                lowerBound = eval(get_param(boundHandle,'lb'));
-                upperBound = eval(get_param(boundHandle,'ub'));
-
-                % find out for which time steps these bounds are relevant
-                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
-                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
-                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
-                
-                % take into consideration current upper and lower bounds
-                currentInitLB = stepVars.initLowerBound(fromIndex);
-                currentInterLB = stepVars.interLowerBound(fromIndex);
-                currentFinalLB = stepVars.finalLowerBound(fromIndex);
-                
-                currentInitUB = stepVars.initUpperBound(fromIndex);
-                currentInterUB = stepVars.interUpperBound(fromIndex);
-                currentFinalUB = stepVars.finalUpperBound(fromIndex);
-                
-                if init
-                    if lowerBound > currentInitLB
-                        stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentInitUB
-                        stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-                
-                if inter
-                    if lowerBound > currentInterLB
-                        stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentInterUB
-                        stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-                
-                if final
-                    if lowerBound > currentFinalLB
-                        stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentFinalUB
-                        stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-            case 'rememberIndex'
-            % if this outport has already been found but we need the index for
-            % the sameOptVar field
-                varargout{1} = find(stepVars.outportHandle==currentOutport,1);
-            case 'from'
-                % points to the original outport
-                fromIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(fromIndex:(fromIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'subSysInport'
-                % points to the original outport
-                inportIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(inportIndex:(inportIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'intoSubsys'    
-                % points to the original outport
-                subsysIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(subsysIndex:(subsysIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-                
-            case 'demux'
-                % the outport that goes into the demux points to the demux
-                % outports. NOTE: This assumes that 
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                outportNumber = varargin{2};
-                stepVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) =...
-                    (sameOptIndex+outportNumber-1);
-            case 'mux'
-                % points to the outports that go into the mux
-                sameOptIndex = varargin{1};
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) = sameOptIndex;
-                
-            case 'unitDelay'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.state(varIndex:(varIndex+lengthOut-1)) = true;
-                
-            case 'input'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.input(varIndex:(varIndex+lengthOut-1)) = true;  
-                
-            case 'external'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.external(varIndex:(varIndex+lengthOut-1)) = true;
-                
-            otherwise
-                % do nothing
-        end
+        fromIndex = find(stepVars.outportHandle==currentOutport,1);
     end
+    
+    % Here we do the switching for different types of blocks
+    
+    if block.bound(currentBlockIndex)
+        boundHandle = block.handles(currentBlockIndex);
+        lowerBound = eval(get_param(boundHandle,'lb'));
+        upperBound = eval(get_param(boundHandle,'ub'));
+        
+        % find out for which time steps these bounds are relevant
+        init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
+        final = strcmp(get_param(boundHandle, 'final_step'), 'on');
+        inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
+        
+        % take into consideration current upper and lower bounds
+        currentInitLB = stepVars.initLowerBound(fromIndex);
+        currentInterLB = stepVars.interLowerBound(fromIndex);
+        currentFinalLB = stepVars.finalLowerBound(fromIndex);
+        
+        currentInitUB = stepVars.initUpperBound(fromIndex);
+        currentInterUB = stepVars.interUpperBound(fromIndex);
+        currentFinalUB = stepVars.finalUpperBound(fromIndex);
+        
+        if init
+            if lowerBound > currentInitLB
+                stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+            end
+            if upperBound < currentInitUB
+                stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+            end
+        end
+        
+        if inter
+            if lowerBound > currentInterLB
+                stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+            end
+            if upperBound < currentInterUB
+                stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+            end
+        end
+        
+        if final
+            if lowerBound > currentFinalLB
+                stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
+            end
+            if upperBound < currentFinalUB
+                stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
+            end
+        end
+    elseif 0
+        
+    else 
+        % do nothing for all non special cases
+        
+    end
+    
+        
 end
 
 %%
@@ -1062,7 +981,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.blockType{block.zeroIdx} = get_param(currentBlockHandle,'BlockType');
         block.refBlock{block.zeroIdx} = get_param(currentBlockHandle,'ReferenceBlock');
         block.handles(block.zeroIdx) = currentBlockHandle;
-        if strcmp(block.refBlock,'BLOM_Lib/Polyblock')
+        if strcmp(block.refBlock{block.zeroIdx},'BLOM_Lib/Polyblock')
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
             block.K{block.zeroIdx} = eval(get_param(currentBlockHandle,'K'));
@@ -1073,10 +992,15 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             totalOutputs = size(block.K{block.zeroIdx},1);
             block.P{block.zeroIdx} = blkdiag(block.P{block.zeroIdx},speye(totalOutputs));
             block.K{block.zeroIdx} = horzcat(block.K{block.zeroIdx},-speye(totalOutputs));
-        elseif strcmp(block.refBlock, 'BLOM_Lib/Bound')
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/Bound')
             block.bound(block.zeroIdx) = true;
-        elseif strcmp(block.refBlock, 'BLOM_Lib/DiscreteCost')
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/DiscreteCost')
             block.cost(block.zeroIdx) = true;
+        elseif isempty(block.refBlock{block.zeroIdx}) && strcmp(block.blockType{block.zeroIdx},'Subsystem')
+            % Subsystem that is not a BLOM block
+            block.subsystem{block.zeroIdx} = true;
+        elseif strcmp(block.blockType{block.zeroidx},'From')
+            block.fromBlock{block.zeroIdx} = true;
         else
             % store P and K matricies for the other blocks, as well as
             % boolean 1 if special function required and 0 ottherwise
@@ -1456,9 +1380,9 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
             if(~any(blocks(idx)==blocks(1:idx-1)) && ~any(block.handles(blocks(idx))==inputAndExternalHandles))
                 blockHandle = block.handles(blocks(idx));
                     
-                if block.subsystem(blocks(idx))
-                    block.names(idx) %should never be here
-                elseif block.subsystemInput(blocks(idx))
+%                 if block.subsystem(blocks(idx))
+%                     block.names(idx) %should never be here
+                if block.subsystemInput(blocks(idx))
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
                     parentSubsystem = get_param(blockHandle,'Parent');
