@@ -327,7 +327,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
-    block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block
+    block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block and not a BLOM block
     block.mux = false(initialSize,1);% indicator to whether block is a mux block
     block.demux = false(initialSize,1);% indicator to whether block is a demux block
     block.delay = false(initialSize,1);% indicator to whether block is a delay block
@@ -1511,20 +1511,21 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 end
 
                 inputBlocks = stepVars.block(inputs);
-                while any(block.subsystem(inputBlocks)) || any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
+                while any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
                     for inputIdx = 1:length(inputs)
-                        if block.subsystem(inputBlocks(inputIdx))
-                            subsystemHandle = block.handles(inputBlocks(inputIdx));
-                            outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
-                            outportNum = stepVars.outportNum(inputs(inputIdx));
-                            outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
-                            outportInputHandle = outportBlockPort.Inport;
-                            line = get_param(outportInputHandle, 'Line');
-                            srcPortHandle = get_param(line, 'SrcPortHandle');
-                            inputVector = find(stepVars.outportHandle == srcPortHandle);
-                            vectorIndex = stepVars.outportIndex(inputs(inputIdx));
-                            inputs(inputIdx) = inputVector(vectorIndex);
-                        end
+                        %
+%                         if block.subsystem(inputBlocks(inputIdx))
+%                             subsystemHandle = block.handles(inputBlocks(inputIdx));
+%                             outportBlocks = find_system(subsystemHandle,'SearchDepth',1,'regexp','on','BlockType','Outport');
+%                             outportNum = stepVars.outportNum(inputs(inputIdx));
+%                             outportBlockPort = get_param(outportBlocks(outportNum), 'PortHandles');
+%                             outportInputHandle = outportBlockPort.Inport;
+%                             line = get_param(outportInputHandle, 'Line');
+%                             srcPortHandle = get_param(line, 'SrcPortHandle');
+%                             inputVector = find(stepVars.outportHandle == srcPortHandle);
+%                             vectorIndex = stepVars.outportIndex(inputs(inputIdx));
+%                             inputs(inputIdx) = inputVector(vectorIndex);
+%                         end
                         if block.mux(inputBlocks(inputIdx))
                             vectorIndex = find(block.stepOutputIdx{inputBlocks(inputIdx)}==inputs(inputIdx),1,'first');
                             inputVector = block.stepInputIdx{inputBlocks(inputIdx)};
