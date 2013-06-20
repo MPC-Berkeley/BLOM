@@ -333,6 +333,10 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.delay = false(initialSize,1);% indicator to whether block is a delay block
     block.subsystemInput = false(initialSize,1);% indicator to whether block is a input block within subsystem
     block.fromBlock = false(initialSize,1);% indicator to whether block is a from block
+    block.blockType = cell(initialSize,1);% store the blockType for block for BFS switching
+    block.refBlock = cell(initialSize,1);% store the refblock for block for BFS switching
+    block.reroute = false(initialSize,1);% true if this block will need to reroute variables in one way or another
+    
 
 
     
@@ -340,216 +344,50 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     % ports from there. fill in stepVars and block structures as necessary
     
     % iZero is index of first zero of outportHandles
-    iZero = 1;
-    outportHandles = zeros(initialSize,1);
+    outports.outportHandles = zeros(initialSize,1);
+    outports.zeroIdx = 1; % the index of the first zero of this outportHandles
+    outports.searchIdx = 1; % the current index we're looking at in the BFS
     
     % get all outports connected to the bounds 
     state = 'bound';
     for i = 1:length(boundHandles)
         portH = get_param(boundHandles(i),'PortHandles');
-        % costs and bounds should only have one inport and line
+        % costs and bounds should only have one inport
         currentInport = [portH.Inport];
-        [block, ~] = updateBlock(block,currentInport);
+        [block, currentBlockIndex] = updateBlock(block,currentInport);
         [outportHandles,iZero,stepVars,block] = ...
             updateVars(currentInport,outportHandles,iZero,...
             stepVars,block,state,iZero,portH,boundHandles(i));
     end
- 
     
-    % get all outports connected to costs
-    state = 'cost';
     for i = 1:length(costHandles)
-        portH = get_param(costHandles(i),'PortHandles');
-        varargin = [false false false];
-        varargin(1) = double(strcmp(get_param(costHandles(i), 'initial_step'), 'on'));
-        varargin(2) = double(strcmp(get_param(costHandles(i), 'intermediate_step'), 'on'));
-        varargin(3) = double(strcmp(get_param(costHandles(i), 'final_step'), 'on'));
-        % costs and bounds should only have one inport and line
-        currentInports = [portH.Inport];
-        [block, ~] = updateBlock(block, currentInports);
-        [outportHandles,iZero,stepVars,block] = ...
-            updateVars(currentInports,outportHandles,iZero,...
-            stepVars,block,state,varargin);        
+        
     end
-    
-    
-    % iOut is current outport handle we are looking at
-	iOut = 1;
+ 
     while 1
-        if outportHandles(iOut) == 0
+        if outport.outportHandles(outports.searchIdx) == 0
             % all handles have been found and searched
             break
-        elseif any(outportHandles(iOut)==sOutportHandles)
+        elseif any(outport.outportHandles(outports.searchIdx)==sOutportHandles)
             % if the current handle is equal to any of the external or input
             % from simulink, then continue with the loop and do not look
             % for more branches from that block
-            state = 'fromSimulink';
-            sourceInports = 0;
-            sourcePorts = 0;
-            [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceInports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
             
-            iOut = iOut+1;
-            continue
-        elseif iOut > length(outportHandles)
-            % should not reach here, just in case
-            break
-        elseif ~outportHandles(end)==0
-            % no more space for more handles, allocate more space
-            outportHandles = [outportHandles; zeros(length(outportHandles)*2,1)];
+            
         end
         
-        sourceBlock = get_param(outportHandles(iOut),'Parent');
-        sourcePorts = get_param(sourceBlock,'PortHandles');
-        sourceInports = [sourcePorts.Inport];
-        sourceType = get_param(sourceBlock,'BlockType');
-        refBlock = get_param(sourceBlock,'ReferenceBlock');
-
+        % call updateBlock here somehow
+        % call addtobfs here
+        % rerouting case
         
-        if strcmp(sourceType,'SubSystem')
-            if isempty(refBlock)
-                % if the current block is a subsystem and not from BLOM, 
-                % want to look under the subsystem and get the appropriate
-                % blocks there
-                
-                state = 'intoSubsys';                          
-                sourceOutports = [sourcePorts.Outport];
-                [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceOutports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
-                block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-
-            elseif strncmp(refBlock,'BLOM_Lib',8)
-                % subsystem that's a BLOM block
-                state = 'BLOM';
-                [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceInports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
-            end
-                
-        elseif strcmp(sourceType,'From')
-            % the current block is a from block, find goto block and see
-            % what is connected to the goto block
-            % NOTE: sourceInports is really the tag of the from block ONLY
-            % in this From block case. in the updateVars code, it takes
-            % this into consideration and finds the proper blocks
-            sourceInports{1} = get_param(sourceBlock,'GotoTag');
-            sourceInports{2} = name;
-
-            state = 'from';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            block.fromBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif strcmp(sourceType,'Demux')
-            % block is a demux. Here we want to fill in field sameOptVar to
-            % point to the original variable
-            
-            state = 'demux';                
-            sourceOutports = [sourcePorts.Outport];
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts,sourceOutports);
-            block.demux(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-        elseif strcmp(sourceType,'Mux')
-            % block is a mux. Here we want to fill in field sameOptVar to
-            % point to the original variable
-            
-            state='mux';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            block.mux(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif strcmp(sourceType,'UnitDelay')       
-            state = 'unitDelay';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);  
-            block.delay(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif length(sourceInports) > 1
-            % currently do nothing special if there is more than one input
-            % except look for what's connected. 
-            % FIX: check to see which inports affect which outports. Not
-            % all inports may be relevant
-            state = 'norm';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            
-        elseif isempty(sourceInports)
-            % if there are no inports, no need to search this outport
-            % anymore. However, if the block is an inport of a subsystem,
-            % we must see what is connected to that block
-            parentOfBlock = get_param(sourceBlock,'Parent');
-            if ~strcmp(parentOfBlock,name)
-                % FIX: Is this still necessary?
-                parentType = get_param(parentOfBlock,'BlockType');
-                if strcmp(sourceType,'Inport') && strcmp(parentType,'SubSystem')
-                    % in this case, there may actually be more inports
-                    % connected
-                    
-                    sourcePorts = get_param(parentOfBlock,'PortHandles');
-                    sourceInports = [sourcePorts.Inport];
-                    % find the specific inport index of 
-                    portNumber = eval(get_param(sourceBlock,'Port'));
-                    % storing the inport itself is not important. what we
-                    % need to store is what is connected to the inport of
-                    % the subsystem. so, store information for that inport,
-                    % but continue BFS from the subsystem itself.
-
-                    if ~isempty(sourceInports)
-                        state = 'subSysInport';
-                        [outportHandles,iZero,stepVars,block] = ...
-                            updateVars(sourceInports(portNumber),outportHandles,iZero,...
-                            stepVars,block,state,iOut,sourcePorts);
-                        block.subsystemInput(block.handles==get_param(sourceBlock, 'handle')) = true;
-                    else
-                        % This case should NOT be reached because of an
-                        % inport exists, there is almost certainly a
-                        % corresponding inport for the entire subsystem
-                        % itself. It is here as asafeguard. 
-                        stepVarsState = 'normal';
-                        fprintf('Have you forgotten to connect one of the inports to subsystem: %s? ', parentOfBlock);
-                    end
-                else
-                    stepVarsState = 'normal';
-                    [block,currentBlockIndex] =...
-                        updateBlock(block,outportHandles(iOut));
-                    [stepVars,block] = updateStepVars(stepVars,...
-                        block,currentBlockIndex,outportHandles(iOut),stepVarsState);
-                end
-            else
-                stepVarsState = 'normal';
-                [block,currentBlockIndex] =...
-                    updateBlock(block,outportHandles(iOut));
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,outportHandles(iOut),stepVarsState);
-                iOut = iOut+1;
-                continue
-            end
-        else
-            % in the case of one inport, it must affect the outport, so
-            % find the relevant outports
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,2,iOut,sourcePorts);
-        end
-        % FIX: should check to see if BLOM supports the blocks that is
-        % found right here
-        iOut = iOut+1;
+        
+        
+        
     end
     
     
-    if any(outportHandles==0)
+    
+    if any(outports.outportHandles==0)
         outportHandles = outportHandles(1:iZero-1);
     end
     
@@ -590,6 +428,37 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     % order
     % outportHandles = setdiff(outportHandles,[-1]);
     
+end
+
+%======================================================================
+%> @brief From given inports, see which outports are relevant and update
+%> the list of outports accordingly
+%>
+%> More detailed description of the problem.
+%>
+%> @param inports inports of current source
+%> @param existingOutports current outports found. used to check for
+%> redundancy
+%> @param iZero current index of the first zero 
+%>
+%> @retval outportHandles new outports found
+%> @retval iZero updates current index of the first zero
+%======================================================================
+
+function [outports] = addToBFS(outports,block,currentBlockIndex)
+
+    if block.intoSubsys(currentBlockIndex) %FIX: may want to look into special BLOM blocks here
+        % if there's a subsystem, inports is actually an array of the
+        % outports of subsystem
+        parent = get_param(currentOutport,'Parent');
+        index = inports==currentOutport;
+        outportBlocks = find_system(parent,'SearchDepth',1,'regexp','on','BlockType','Outport');
+        handle = get_param(outportBlocks{index},'Handle');
+        portH = get_param(handle,'PortHandles');
+        inports = [portH.Inport];
+    end
+    
+
 end
 
 %======================================================================
@@ -1161,13 +1030,11 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
 
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
     sourcePorts = get_param(currentBlockHandle,'PortHandles');
-    referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
-    
     
     % if the size of block equals the block.zeroIdx, need to double to
     % length of block
     if block.zeroIdx == length(block.handles)
-        for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
+        for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions','blockType','refBlock'}
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
@@ -1177,18 +1044,25 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.mux = [block.mux; false(block.zeroIdx,1)];
         block.demux = [block.demux; false(block.zeroIdx,1)];
         block.delay = [block.delay; false(block.zeroIdx,1)];
+        block.reroute = [block.reroute; false(block.zeroIdx,1)];
         block.subsystemInput = [block.subsystemInput; false(block.zeroIdx,1)];
         block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
+        block.intoSubsys = [block.intoSubsys; false(block.zeroIdx,1)];
 
     end
     
 
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
+        
         currentBlockName = get_param(currentOutport,'Parent');
         block.names{block.zeroIdx} = currentBlockName;
+        
+        % add the block type and reference block for specific cases
+        block.blockType{block.zeroIdx} = get_param(currentBlockHandle,'BlockType');
+        block.refBlock{block.zeroIdx} = get_param(currentBlockHandle,'ReferenceBlock');
         block.handles(block.zeroIdx) = currentBlockHandle;
-        if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
+        if strcmp(block.refBlock,'BLOM_Lib/Polyblock')
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
             block.K{block.zeroIdx} = eval(get_param(currentBlockHandle,'K'));
@@ -1199,9 +1073,9 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             totalOutputs = size(block.K{block.zeroIdx},1);
             block.P{block.zeroIdx} = blkdiag(block.P{block.zeroIdx},speye(totalOutputs));
             block.K{block.zeroIdx} = horzcat(block.K{block.zeroIdx},-speye(totalOutputs));
-        elseif strcmp(referenceBlock, 'BLOM_Lib/Bound')
+        elseif strcmp(block.refBlock, 'BLOM_Lib/Bound')
             block.bound(block.zeroIdx) = true;
-        elseif strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost')
+        elseif strcmp(block.refBlock, 'BLOM_Lib/DiscreteCost')
             block.cost(block.zeroIdx) = true;
         else
             % store P and K matricies for the other blocks, as well as
