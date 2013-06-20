@@ -332,6 +332,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.demux = false(initialSize,1);% indicator to whether block is a demux block
     block.delay = false(initialSize,1);% indicator to whether block is a delay block
     block.subsystemInput = false(initialSize,1);% indicator to whether block is a input block within subsystem
+    block.inputBlock = false(initialSize,1); % indicator for whether this is a InputFromSimulink OR InputFromWorkspace
+    block.externalBlock = false(initialSize,1); % indicator for whether this is an ExternalFromWorkSpace OR ExternalFromSimulink
     block.fromBlock = false(initialSize,1);% indicator to whether block is a from block
     block.blockType = cell(initialSize,1);% store the blockType for block for BFS switching
     block.refBlock = cell(initialSize,1);% store the refblock for block for BFS switching
@@ -380,8 +382,19 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             % if the current handle is equal to any of the external or input
             % from simulink, then continue with the loop and do not look
             % for more branches from that block
-            
-            
+            % in this case do we not need to run addToBFS
+            currentOutport = outport.outportHandles(outports.searchIdx);
+            [block, currentBlockIndex] = updateBlock(block,currentOutport);
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
+            outports.searchIdx = outports.searchIdx + 1;
+            continue
+        elseif outports.searchIndex > length(outports.outportHandles)
+            % should not reach here, put here just in case
+            break
+        elseif ~outports.outportHandles(end) == 0
+            % no more space for more handles, allocate more space
+            outports.outportHandles = [outports.outportHandles;...
+                zeros(length(outports.outportHandles)*2,1)];
         end
         
         % call updateBlock here somehow
@@ -929,11 +942,17 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
             end
         end
     elseif block.cost(currentBlockIndex)
-        % fill in proper cost
+        % fill in cost field
         costHandle = block.handles(currentBlockIndex);
         stepVars.initCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
         stepVars.interCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
         stepVars.finalCost(fromIndex:(fromIndex+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
+    elseif block.inputBlock(currentBlockIndex)
+        % fill in input field
+        stepVars.input(fromIndex:(fromIndex+lengthOut-1)) = true;
+    elseif block.externalBlock(currentBlockIndex)
+        % fill in external field
+        stepVars.external(fromIndex:(fromIndex+lengthOut-1)) = true;
     else 
         % do nothing for all non special cases
         
@@ -1010,9 +1029,18 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             block.cost(block.zeroIdx) = true;
         elseif isempty(block.refBlock{block.zeroIdx}) && strcmp(block.blockType{block.zeroIdx},'Subsystem')
             % Subsystem that is not a BLOM block
-            block.subsystem{block.zeroIdx} = true;
+            block.subsystem(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroidx},'From')
-            block.fromBlock{block.zeroIdx} = true;
+            % this is a from block
+            block.fromBlock(block.zeroIdx) = true;
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromSimulink') ||...
+                strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromWorkspace')
+            % this is one of the BLOM input blocks
+            block.inputBlock(block.zeroIdx) = true;
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromSimulink') ||...
+                strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
+            % this is one of the BLOM external blocks
+            block.externalBlock(block.zeroIdx) = true;
         else
             % store P and K matricies for the other blocks, as well as
             % boolean 1 if special function required and 0 ottherwise
