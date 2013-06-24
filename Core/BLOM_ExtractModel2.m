@@ -95,7 +95,11 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
         allVars = createAllVars(stepVars,horizon);
         
         block = expandBlock(block,horizon,stepVars,allVars);
-              
+        
+        stepVars = setBounds(block, stepVars);
+        
+        stepVars = setCosts(block, stepVars);
+        
         stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
         allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
@@ -338,7 +342,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.blockType = cell(initialSize,1);% store the blockType for block for BFS switching
     block.refBlock = cell(initialSize,1);% store the refblock for block for BFS switching
     block.reroute = false(initialSize,1);% true if this block will need to reroute variables in one way or another
-    
+    block.specialFunPresence = false(initialSize,1);% true if this block contains a special function
 
 
     
@@ -357,9 +361,6 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         currentInport = [portH.Inport];
         [block, currentBlockIndex] = updateBlock(block,currentInport);
         [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
-%         for currentOutport = allOutportsFound
-%             [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
-%         end
     end
     
     % get all outports connected to costs
@@ -369,9 +370,6 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         currentInport = [portH.Inport];
         [block, currentBlockIndex] = updateBlock(block,currentInport);
         [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
-%         for currentOutport = allOutportsFound
-%             [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
-%         end
     end
  
     while 1
@@ -472,19 +470,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     end
     
     % remove empty and 0 entries in blocks
-    for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
+    for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions',...
+            'handles', 'bound', 'cost', 'subsystem', 'mux', 'demux', 'delay',...
+            'subsystemInput', 'fromBlock', 'inputBlock', 'externalBlock', ...
+            'blockType', 'refBlock', 'reroute', 'specialFunPresence'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
-    block.handles = block.handles(1:(block.zeroIdx-1));
-    block.bound = block.bound(1:(block.zeroIdx-1));
-    block.cost = block.cost(1:(block.zeroIdx-1));
-    block.subsystem = block.subsystem(1:(block.zeroIdx-1));
-    block.mux = block.mux(1:(block.zeroIdx-1));
-    block.demux = block.demux(1:(block.zeroIdx-1));
-    block.delay = block.delay(1:(block.zeroIdx-1));
-    block.subsystemInput = block.subsystemInput(1:(block.zeroIdx-1));
-    block.fromBlock = block.fromBlock(1:(block.zeroIdx-1));
-
 
     
     % remove empty and 0 entries in stepVars
@@ -961,51 +952,9 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
     % Here we do the switching for different types of blocks
     
     if block.bound(currentBlockIndex)
-        % fill in proper bounds
-        boundHandle = block.handles(currentBlockIndex);
-        lowerBound = eval(get_param(boundHandle,'lb'));
-        upperBound = eval(get_param(boundHandle,'ub'));
+        % should never be here
+       warning('Adding variable to bound block...WHY?')
         
-        % find out for which time steps these bounds are relevant
-        init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
-        final = strcmp(get_param(boundHandle, 'final_step'), 'on');
-        inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
-        
-        % take into consideration current upper and lower bounds
-        currentInitLB = stepVars.initLowerBound(varIdx);
-        currentInterLB = stepVars.interLowerBound(varIdx);
-        currentFinalLB = stepVars.finalLowerBound(varIdx);
-        
-        currentInitUB = stepVars.initUpperBound(varIdx);
-        currentInterUB = stepVars.interUpperBound(varIdx);
-        currentFinalUB = stepVars.finalUpperBound(varIdx);
-        
-        if init
-            if lowerBound > currentInitLB
-                stepVars.initLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
-            end
-            if upperBound < currentInitUB
-                stepVars.initUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
-            end
-        end
-        
-        if inter
-            if lowerBound > currentInterLB
-                stepVars.interLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
-            end
-            if upperBound < currentInterUB
-                stepVars.interUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
-            end
-        end
-        
-        if final
-            if lowerBound > currentFinalLB
-                stepVars.finalLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
-            end
-            if upperBound < currentFinalUB
-                stepVars.finalUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
-            end
-        end
     elseif block.cost(currentBlockIndex)
         % fill in cost field
         costHandle = block.handles(currentBlockIndex);
@@ -1082,6 +1031,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
         block.inputBlock = [block.inputBlock; false(block.zeroIdx,1)];
         block.externalBlock = [block.externalBlock; false(block.zeroIdx,1)];
+        block.specialFunPresence = [block.specialFunPresence; false(block.zeroIdx,1)];
     end
 
     if ~any(block.handles==currentBlockHandle)
@@ -1125,7 +1075,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
             % this is one of the BLOM external blocks
             block.externalBlock(block.zeroIdx) = true;
-        elseif strcmp(block.refBlock{block.zeroIdx},'UnitDelay')
+        elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
             % Unit Delay Label
             block.delay(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroIdx},'Inport')
@@ -1142,7 +1092,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             [P,K,specialFunPresence] = BLOM_Convert2Polyblock(currentBlockHandle);
             block.P{block.zeroIdx} = P;
             block.K{block.zeroIdx}= K;
-            block.specialFunPresence{block.zeroIdx}=specialFunPresence;
+            block.specialFunPresence(block.zeroIdx)=specialFunPresence;
         end
 
         if isempty(block.stepOutputIdx{block.zeroIdx})
@@ -1424,43 +1374,97 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
     [~,~,optVarIdx] = unique(optVarIdx);
 end
 
-
 %%
-%==========================================================================
-%> @brief checks for cycles within vector (currently slower than check as you go)
-%>
-%> @param vector v you are trying to check
-%>
-%> @retval hasCycle boolean for whether a cycle exists in vector
-%==========================================================================
-function hasCycle = checkForCycle(v)
-    hasCycle = false;
-    visited = false(size(v));
+%====================================================================
+
+% FILL ME INNNNN
+
+
+%======================================================================
+function stepVars = setBounds(block, stepVars)
     
-    for i = 1:length(v)
-        if (v(i) == i)
-            visited(i) = true;
+    searchIndices = find(block.bound);
+    for currentBlockIndex = searchIndices'
+        boundHandle = block.handles(currentBlockIndex);
+        lowerBound = eval(get_param(boundHandle,'lb'));
+        upperBound = eval(get_param(boundHandle,'ub'));
+        
+        % find out for which time steps these bounds are relevant
+        init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
+        final = strcmp(get_param(boundHandle, 'final_step'), 'on');
+        inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
+        
+        for varIdx = block.stepInputIdx{currentBlockIndex}'
+            currentOutport = stepVars.outportHandle(varIdx);
+            dimension = get_param(currentOutport,'CompiledPortDimensions');
+            lengthOut = dimension(1)*dimension(2);
+            % take into consideration current upper and lower bounds
+            currentInitLB = stepVars.initLowerBound(varIdx);
+            currentInterLB = stepVars.interLowerBound(varIdx);
+            currentFinalLB = stepVars.finalLowerBound(varIdx);
+
+            currentInitUB = stepVars.initUpperBound(varIdx);
+            currentInterUB = stepVars.interUpperBound(varIdx);
+            currentFinalUB = stepVars.finalUpperBound(varIdx);
+
+            if init
+                if lowerBound > currentInitLB
+                    stepVars.initLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentInitUB
+                    stepVars.initUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
+
+            if inter
+                if lowerBound > currentInterLB
+                    stepVars.interLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentInterUB
+                    stepVars.interUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
+
+            if final
+                if lowerBound > currentFinalLB
+                    stepVars.finalLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentFinalUB
+                    stepVars.finalUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
         end
     end
 
-    for i = 1:length(v)
-        target = i;
-        traversedTargets = zeros(size(v));
-        k = 1;
-        while (~visited(target) || any(traversedTargets == target))
-            if(any(traversedTargets == target))
-                hasCycle = true;
-                return
-            end
-            visited(target) = true;
-            traversedTargets(k) = target;
-            k = k + 1;
-            target = v(target);
-        end
-    end
-    
 end
 
+
+
+%%
+%====================================================================
+
+% FILL ME INNNNN
+
+
+%======================================================================
+function stepVars = setCosts(block, stepVars)
+    searchIndices = find(block.cost);
+    for currentBlockIndex = searchIndices'
+        costHandle = block.handles(currentBlockIndex);
+        initCost =  strcmp(get_param(costHandle, 'initial_step'), 'on');
+        interCost = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
+        finalCost = strcmp(get_param(costHandle, 'final_step'), 'on');   
+        for varIdx = block.stepInputIdx{currentBlockIndex}'                   
+            currentOutport = stepVars.outportHandle(varIdx);
+            dimension = get_param(currentOutport,'CompiledPortDimensions');
+            lengthOut = dimension(1)*dimension(2);
+           
+            stepVars.initCost(varIdx:(varIdx+lengthOut-1)) = initCost;
+            stepVars.interCost(varIdx:(varIdx+lengthOut-1)) = interCost;
+            stepVars.finalCost(varIdx:(varIdx+lengthOut-1)) = finalCost;
+        end
+    end
+end
 %%
 %======================================================================
 %> @brief traverse graph from cost and bound blocks then add fields to
@@ -1516,8 +1520,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 blockHandle = block.handles(blocks(idx));
                     
                 if block.subsystem(blocks(idx))
-                    wrongBlock = block.names(blocks(idx));
-                    warning(wrongBlock{1}) %should never be here
+                    block.names(idx) %should never be here
                 elseif block.subsystemInput(blocks(idx))
                     % for the case of inport, we need to find the output
                     % connected to the subsystem and that specific inport
@@ -1571,7 +1574,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                 end
 
                 inputBlocks = stepVars.block(inputs);
-                while any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
+                while any(block.subsystem(inputBlocks)) || any(block.mux(inputBlocks)) || any(block.demux(inputBlocks))
                     for inputIdx = 1:length(inputs)
                         if block.subsystem(inputBlocks(inputIdx))
                             subsystemHandle = block.handles(inputBlocks(inputIdx));
@@ -1628,6 +1631,8 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     end
 
 end
+
+
 
 %%
 %=====================================================================
