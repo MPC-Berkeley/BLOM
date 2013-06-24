@@ -681,21 +681,20 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
        warning('Adding variable to bound block...WHY?')
         
     elseif block.cost(currentBlockIndex)
-        % fill in cost field
+        % COST
         costHandle = block.handles(currentBlockIndex);
         stepVars.initCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
         stepVars.interCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
         stepVars.finalCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
     elseif block.inputBlock(currentBlockIndex)
-        % fill in input field
+        % INPUT
         stepVars.input(varIdx:(varIdx+lengthOut-1)) = true;
     elseif block.externalBlock(currentBlockIndex)
-        % fill in external field
+        % EXTERNAL
         stepVars.external(varIdx:(varIdx+lengthOut-1)) = true;
     elseif block.fromBlock(currentBlockIndex) || block.subsystem(currentBlockIndex) || block.subsystemInput(currentBlockIndex)...
             || block.demux(currentBlockIndex)
-        % for from, subsystem and subsystem inport blocks, "point" to the
-        % original outport
+        % FROM, SUBSYSTEM, SUBSYSTEM INPUT, DEMUX REROUTING
         if ~isempty(varargin)
             sameOptIndex = varargin{1};
             stepVars.optVarIdx(varIdx:(varIdx+lengthOut-1)) = ...
@@ -745,18 +744,12 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
-        block.bound = [block.bound; false(block.zeroIdx,1)];
-        block.cost = [block.cost; false(block.zeroIdx,1)];
-        block.subsystem = [block.subsystem; false(block.zeroIdx,1)];
-        block.mux = [block.mux; false(block.zeroIdx,1)];
-        block.demux = [block.demux; false(block.zeroIdx,1)];
-        block.delay = [block.delay; false(block.zeroIdx,1)];
-        block.reroute = [block.reroute; false(block.zeroIdx,1)];
-        block.subsystemInput = [block.subsystemInput; false(block.zeroIdx,1)];
-        block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
-        block.inputBlock = [block.inputBlock; false(block.zeroIdx,1)];
-        block.externalBlock = [block.externalBlock; false(block.zeroIdx,1)];
-        block.specialFunPresence = [block.specialFunPresence; false(block.zeroIdx,1)];
+        
+        for field = {'bound', 'cost', 'subsystem', 'mux', 'demux',...
+                'delay','reroute','subsystemInput','fromBlock','inputBlock',...
+                'externalBlock','specialFunPresence'}
+            block.(field{1}) = [block.(field{1}); false(block.zeroIdx,1)];
+        end
     end
 
     if ~any(block.handles==currentBlockHandle)
