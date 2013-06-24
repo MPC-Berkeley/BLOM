@@ -432,7 +432,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 demuxOutports = [demuxPorts.Outport];
                 
                 for ii = 1:length(demuxOutports)
-                    [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,sameOptIndex+ii-1);
+                    [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,demuxOutports(ii),sameOptIndex+ii-1);
                 end
                 
             else
@@ -787,9 +787,11 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             block.reroute(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroIdx},'Demux')
             % DEMUX
+            block.reroute(block.zeroIdx) = true;
             block.demux(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroIdx},'Mux')
             % MUX
+            block.reroute(block.zeroIdx) = true;
             block.mux(block.zeroIdx) = true;
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromSimulink') ||...
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromWorkspace')
