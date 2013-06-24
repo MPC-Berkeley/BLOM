@@ -359,7 +359,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         % costs and bounds should only have one inport
         currentInport = [portH.Inport];
         [block, currentBlockIndex] = updateBlock(block,currentInport);
-        [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
+        [outports,~] = addToBFS(outports,currentInport,block,currentBlockIndex);
     end
     
     % get all outports connected to costs
@@ -368,7 +368,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         % costs and bounds should only have one inport
         currentInport = [portH.Inport];
         [block, currentBlockIndex] = updateBlock(block,currentInport);
-        [outports,allOutportsFound] = addToBFS(outports,currentInport,block,currentBlockIndex);
+        [outports,~] = addToBFS(outports,currentInport,block,currentBlockIndex);
     end
  
     while 1
@@ -792,6 +792,12 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             % this is a from block
             block.fromBlock(block.zeroIdx) = true;       
             block.reroute(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Demux')
+            % DEMUX
+            block.demux(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Mux')
+            % MUX
+            block.mux(block.zeroIdx) = true;
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromSimulink') ||...
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromWorkspace')
             % this is one of the BLOM input blocks
