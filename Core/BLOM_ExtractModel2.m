@@ -77,6 +77,8 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
         [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
         [block,stepVars,stop] = ...
             searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
+        stepVars = setBounds(block, stepVars);
+        stepVars = setCosts(block, stepVars);
         % FIX: should implement something that stops the code after analyzing
         % all the blocks and finding an error in the structure of the model
         
@@ -95,10 +97,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
         allVars = createAllVars(stepVars,horizon);
         
         block = expandBlock(block,horizon,stepVars,allVars);
-        
-        stepVars = setBounds(block, stepVars);
-        
-        stepVars = setCosts(block, stepVars);
+
         
         stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
         
