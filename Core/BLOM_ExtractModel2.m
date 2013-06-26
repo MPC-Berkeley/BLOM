@@ -212,7 +212,6 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
     end
     % close evaluation of models
     eval([name '([],[],[],''term'');']);
-    BLOM_SetDataLogging(name);
 end
 
 %%
