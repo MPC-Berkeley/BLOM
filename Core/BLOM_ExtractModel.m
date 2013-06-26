@@ -1692,7 +1692,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     if any(nonzeroOptVarCosts)
         ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
             ones(sum(nonzeroOptVarCosts),1), sum(nonzeroOptVarCosts), numOptVars);
-        ModelSpec.cost.C = optVarCosts(nonzeroOptVarCosts);
+        ModelSpec.cost.C = optVarCosts(nonzeroOptVarCosts)';
     elseif numOptVars > 0
         % cost is 0, this is a feasibility problem
         ModelSpec.cost.A = sparse(1, numOptVars);
