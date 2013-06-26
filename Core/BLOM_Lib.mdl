@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu May 30 15:35:11 2013"
-  RTWModifiedTimeStamp	  291825584
-  ModelVersionFormat	  "1.%<AutoIncrement:112>"
+  LastModifiedDate	  "Wed Jun 26 12:26:09 2013"
+  RTWModifiedTimeStamp	  294150364
+  ModelVersionFormat	  "1.%<AutoIncrement:113>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -667,7 +667,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [2152, 302, 2721, 743]
+    Location		    [2137, -156, 2706, 285]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -697,15 +697,15 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "Please specify the upper and lower bounds of this variable."
-      MaskPromptString	      "Upper bound:|Lower bound:|Apply at the initial time step?|Apply at the final time step?|"
-      "Apply at all other time steps?"
+      MaskPromptString	      "Upper bound:|Lower bound:|Apply at the initial time step?|Apply at all other time steps?"
+      "|Apply at the final time step?"
       MaskStyleString	      "edit,edit,checkbox,checkbox,checkbox"
       MaskTunableValueString  "on,on,on,on,on"
       MaskCallbackString      "||||"
       MaskEnableString	      "on,on,on,on,on"
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
-      MaskVariables	      "ub=@1;lb=@2;initial_step=@3;final_step=@4;intermediate_step=@5;"
+      MaskVariables	      "ub=@1;lb=@2;initial_step=@3;intermediate_step=@4;final_step=@5;"
       MaskDisplay	      "fprintf('Bound')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
@@ -763,15 +763,15 @@ Library {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
-      MaskPromptString	      "Does signal add to cost at the initial time step?|Does signal add to cost at the final t"
-      "ime step?|Does signal add to cost at all other time steps?"
+      MaskPromptString	      "Does signal add to cost at the initial time step?|Does signal add to cost at all other t"
+      "ime steps?|Does signal add to cost at the final time step?"
       MaskStyleString	      "checkbox,checkbox,checkbox"
       MaskTunableValueString  "on,on,on"
       MaskCallbackString      "||"
       MaskEnableString	      "on,on,on"
       MaskVisibilityString    "on,on,on"
       MaskToolTipString	      "on,on,on"
-      MaskVariables	      "initial_step=@1;final_step=@2;intermediate_step=@3;"
+      MaskVariables	      "initial_step=@1;intermediate_step=@2;final_step=@3;"
       MaskDisplay	      "fprintf('Discrete Cost')"
       MaskIconFrame	      on
       MaskIconOpaque	      on
@@ -1090,10 +1090,10 @@ Library {
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.106"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  ""
+	  SourceType		  "Unknown"
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
+	  FunctionWithSeparateData "off"
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1102,8 +1102,8 @@ Library {
 	  P			  "P_f"
 	  K			  "K_f"
 	  inputs		  "x"
-	  inputScalar		  off
-	  outputScalar		  off
+	  inputScalar		  "off"
+	  outputScalar		  "off"
 	}
 	Block {
 	  BlockType		  Reference
@@ -1114,10 +1114,10 @@ Library {
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.106"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  ""
+	  SourceType		  "Unknown"
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
+	  FunctionWithSeparateData "off"
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1126,8 +1126,8 @@ Library {
 	  P			  "P_g"
 	  K			  "K_g"
 	  inputs		  "x"
-	  inputScalar		  off
-	  outputScalar		  off
+	  inputScalar		  "off"
+	  outputScalar		  "off"
 	}
 	Block {
 	  BlockType		  Outport
