@@ -1601,17 +1601,11 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.options = options;
 
     numOptVars = max(allVars.optVarIdx);
-
     
     ModelSpec.in_vars = false(numOptVars,1);
-%     ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
+    ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
     ModelSpec.ex_vars = false(numOptVars,1);
-%     ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
-    for ii = 1:allVars.totalLength
-       ModelSpec.in_vars(allVars.optVarIdx(ii)) = ModelSpec.in_vars(allVars.optVarIdx(ii)) || stepVars.input(allVars.stepVarIdx(ii));
-       ModelSpec.ex_vars(allVars.optVarIdx(ii)) = ModelSpec.ex_vars(allVars.optVarIdx(ii)) || stepVars.external(allVars.stepVarIdx(ii));
-    end
-
+    ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
     
     ModelSpec.AAs = {allP};
     ModelSpec.Cs = {allK};
@@ -1632,8 +1626,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
     varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
     varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
-    
-    
+        
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
@@ -1644,9 +1637,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     for idx = 1:size(ModelSpec.all_names)
        ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
     end
-   
-    
-
 
     %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
