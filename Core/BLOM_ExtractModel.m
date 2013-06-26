@@ -62,10 +62,10 @@
 function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,integ_method,options)
     % load system. does nothing if model is not open
     load_system(name);
-    if ~exist('dt','var')
+    if ~exist('dt','var') || isempty(dt)
         dt = 1;
     end
-    if ~exist('integ_method','var')
+    if ~exist('integ_method','var') || isempty(integ_method)
         integ_method = 'None';
     end
     if ~exist('options','var')
@@ -77,16 +77,17 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         [boundHandles,costHandles,inputAndExternalHandles] = findBlocks(name);
         [block,stepVars,stop] = ...
             searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
+        stepVars = setBounds(block, stepVars);
+        stepVars = setCosts(block, stepVars);
+        stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
+        stepVars = consolidateStepVars(stepVars);
+        
         % FIX: should implement something that stops the code after analyzing
         % all the blocks and finding an error in the structure of the model
         
         % expands all the inport and outport indexes such that it points to
         % each scalar instead of just to first entry
         block = expandInportOutportIdx(block);
-        
-        if stop == 1
-            % break the code somehow?
-        end
         
         stepVars = labelTimeRelevance(stepVars,block,inputAndExternalHandles);
                 
@@ -95,9 +96,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         allVars = createAllVars(stepVars,horizon);
         
         block = expandBlock(block,horizon,stepVars,allVars);
-              
-        stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
-        
+   
         allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
         
         % create large P and K matrix for entire problem
@@ -213,7 +212,6 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
     end
     % close evaluation of models
     eval([name '([],[],[],''term'');']);
-    
 end
 
 %%
@@ -295,7 +293,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     stepVars.block = zeros(initialSize,1); % the index of the block
     stepVars.outportNum = zeros(initialSize,1); % outport number. e.g. if there are multiple outports of a block
     stepVars.outportHandle = zeros(initialSize,1); % handle of specific outport
-    stepVars.outportIndex = zeros(initialSize,1); % index of specific outport. normally just 1 (will be more than 1 if the outport is a vector)
+    stepVars.outportIndex = zeros(initialSize,1); % index of specific outports. normally just 1 (will be more than 1 if the outport is a vector)
     stepVars.optVarIdx = (1:initialSize)'; % points to the true optimization variable index. (will usually point to itself, otherwise, some "true" variable)
     stepVars.initCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at initial time step
     stepVars.interCost = zeros(initialSize,1); %default cost is zero. 1 if we see that it's part of the cost at intermediate time steps
@@ -324,15 +322,21 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.K = cell(initialSize,1); % K matrix of block, if relevant
     block.stepInputIdx = cell(initialSize,1); % the stepVar indices of the outports connected to the inports of that block
     block.stepOutputIdx = cell(initialSize,1); % the stepVar indices of the outports of that block
-    block.dimensions = cell(initialSize,1); % dimensions of each outport. first value is outport #, then second two values are dimensions of outport
+    block.dimensions = cell(initialSize,1); % dimensions of each outports. first value is outport #, then second two values are dimensions of outport
     block.bound = false(initialSize,1); % indicator to whether block is a bound block
     block.cost = false(initialSize,1); % indicator to whether block is a cost block
-    block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block
+    block.subsystem = false(initialSize,1);% indicator to whether block is a subsystem block and not a BLOM block
     block.mux = false(initialSize,1);% indicator to whether block is a mux block
     block.demux = false(initialSize,1);% indicator to whether block is a demux block
     block.delay = false(initialSize,1);% indicator to whether block is a delay block
     block.subsystemInput = false(initialSize,1);% indicator to whether block is a input block within subsystem
+    block.inputBlock = false(initialSize,1); % indicator for whether this is a InputFromSimulink OR InputFromWorkspace
+    block.externalBlock = false(initialSize,1); % indicator for whether this is an ExternalFromWorkSpace OR ExternalFromSimulink
     block.fromBlock = false(initialSize,1);% indicator to whether block is a from block
+    block.blockType = cell(initialSize,1);% store the blockType for block for BFS switching
+    block.refBlock = cell(initialSize,1);% store the refblock for block for BFS switching
+    block.reroute = false(initialSize,1);% true if this block will need to reroute variables in one way or another
+    block.specialFunPresence = false(initialSize,1);% true if this block contains a special function
 
 
     
@@ -340,242 +344,132 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     % ports from there. fill in stepVars and block structures as necessary
     
     % iZero is index of first zero of outportHandles
-    iZero = 1;
-    outportHandles = zeros(initialSize,1);
+    outports.outportHandles = zeros(initialSize,1);
+    outports.zeroIdx = 1; % the index of the first zero of this outportHandles
+    outports.searchIdx = 1; % the current index we're looking at in the BFS
     
     % get all outports connected to the bounds 
-    state = 'bound';
     for i = 1:length(boundHandles)
         portH = get_param(boundHandles(i),'PortHandles');
-        % costs and bounds should only have one inport and line
+        % costs and bounds should only have one inport
         currentInport = [portH.Inport];
-        [block, ~] = updateBlock(block,currentInport);
-        [outportHandles,iZero,stepVars,block] = ...
-            updateVars(currentInport,outportHandles,iZero,...
-            stepVars,block,state,iZero,portH,boundHandles(i));
+        [block, currentBlockIndex] = updateBlock(block,currentInport);
+        [outports,~] = addToBFS(outports,currentInport,block,currentBlockIndex);
     end
- 
     
     % get all outports connected to costs
-    state = 'cost';
     for i = 1:length(costHandles)
         portH = get_param(costHandles(i),'PortHandles');
-        varargin = [false false false];
-        varargin(1) = double(strcmp(get_param(costHandles(i), 'initial_step'), 'on'));
-        varargin(2) = double(strcmp(get_param(costHandles(i), 'intermediate_step'), 'on'));
-        varargin(3) = double(strcmp(get_param(costHandles(i), 'final_step'), 'on'));
-        % costs and bounds should only have one inport and line
-        currentInports = [portH.Inport];
-        [block, ~] = updateBlock(block, currentInports);
-        [outportHandles,iZero,stepVars,block] = ...
-            updateVars(currentInports,outportHandles,iZero,...
-            stepVars,block,state,varargin);        
+        % costs and bounds should only have one inport
+        currentInport = [portH.Inport];
+        [block, currentBlockIndex] = updateBlock(block,currentInport);
+        [outports,~] = addToBFS(outports,currentInport,block,currentBlockIndex);
     end
-    
-    
-    % iOut is current outport handle we are looking at
-	iOut = 1;
+ 
     while 1
-        if outportHandles(iOut) == 0
+        if outports.outportHandles(outports.searchIdx) == 0
             % all handles have been found and searched
             break
-        elseif any(outportHandles(iOut)==sOutportHandles)
+        elseif any(outports.outportHandles(outports.searchIdx)==sOutportHandles)
             % if the current handle is equal to any of the external or input
             % from simulink, then continue with the loop and do not look
             % for more branches from that block
-            state = 'fromSimulink';
-            sourceInports = 0;
-            sourcePorts = 0;
-            [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceInports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
-            
-            iOut = iOut+1;
+            % in this case do we not need to run addToBFS
+            currentOutport = outports.outportHandles(outports.searchIdx);
+            [block, currentBlockIndex] = updateBlock(block,currentOutport);
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
+            outports.searchIdx = outports.searchIdx + 1;
             continue
-        elseif iOut > length(outportHandles)
-            % should not reach here, just in case
+        elseif outports.searchIdx> length(outports.outportHandles)
+            % should not reach here, put here just in case
             break
-        elseif ~outportHandles(end)==0
+        elseif ~outports.outportHandles(end) == 0
             % no more space for more handles, allocate more space
-            outportHandles = [outportHandles; zeros(length(outportHandles)*2,1)];
+            outports.outportHandles = [outports.outportHandles;...
+                zeros(length(outports.outportHandles)*2,1)];
         end
         
-        sourceBlock = get_param(outportHandles(iOut),'Parent');
-        sourcePorts = get_param(sourceBlock,'PortHandles');
-        sourceInports = [sourcePorts.Inport];
-        sourceType = get_param(sourceBlock,'BlockType');
-        refBlock = get_param(sourceBlock,'ReferenceBlock');
-
+        % call updateBlock here somehow
+        % call addtobfs here
+        % rerouting case
+        currentOutport = outports.outportHandles(outports.searchIdx);
+        [block, currentBlockIndex] = updateBlock(block,currentOutport);
+        [outports,allOutportsFound] = addToBFS(outports,currentOutport,block,currentBlockIndex);
         
-        if strcmp(sourceType,'SubSystem')
-            if isempty(refBlock)
-                % if the current block is a subsystem and not from BLOM, 
-                % want to look under the subsystem and get the appropriate
-                % blocks there
-                
-                state = 'intoSubsys';                          
-                sourceOutports = [sourcePorts.Outport];
-                [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceOutports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
-                block.subsystem(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-
-            elseif strncmp(refBlock,'BLOM_Lib',8)
-                % subsystem that's a BLOM block
-                state = 'BLOM';
-                [outportHandles,iZero,stepVars,block] = ...
-                    updateVars(sourceInports,outportHandles,iZero,...
-                    stepVars,block,state,iOut,sourcePorts);
-            end
-                
-        elseif strcmp(sourceType,'From')
-            % the current block is a from block, find goto block and see
-            % what is connected to the goto block
-            % NOTE: sourceInports is really the tag of the from block ONLY
-            % in this From block case. in the updateVars code, it takes
-            % this into consideration and finds the proper blocks
-            sourceInports{1} = get_param(sourceBlock,'GotoTag');
-            sourceInports{2} = name;
-
-            state = 'from';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            block.fromBlock(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif strcmp(sourceType,'Demux')
-            % block is a demux. Here we want to fill in field sameOptVar to
-            % point to the original variable
-            
-            state = 'demux';                
-            sourceOutports = [sourcePorts.Outport];
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts,sourceOutports);
-            block.demux(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-        elseif strcmp(sourceType,'Mux')
-            % block is a mux. Here we want to fill in field sameOptVar to
-            % point to the original variable
-            
-            state='mux';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            block.mux(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif strcmp(sourceType,'UnitDelay')       
-            state = 'unitDelay';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);  
-            block.delay(block.handles==get_param(sourceBlock, 'handle')) = true;
-
-            
-        elseif length(sourceInports) > 1
-            % currently do nothing special if there is more than one input
-            % except look for what's connected. 
-            % FIX: check to see which inports affect which outports. Not
-            % all inports may be relevant
-            state = 'norm';
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,state,iOut,sourcePorts);
-            
-        elseif isempty(sourceInports)
-            % if there are no inports, no need to search this outport
-            % anymore. However, if the block is an inport of a subsystem,
-            % we must see what is connected to that block
-            parentOfBlock = get_param(sourceBlock,'Parent');
-            if ~strcmp(parentOfBlock,name)
-                % FIX: Is this still necessary?
-                parentType = get_param(parentOfBlock,'BlockType');
-                if strcmp(sourceType,'Inport') && strcmp(parentType,'SubSystem')
-                    % in this case, there may actually be more inports
-                    % connected
-                    
-                    sourcePorts = get_param(parentOfBlock,'PortHandles');
-                    sourceInports = [sourcePorts.Inport];
-                    % find the specific inport index of 
-                    portNumber = eval(get_param(sourceBlock,'Port'));
-                    % storing the inport itself is not important. what we
-                    % need to store is what is connected to the inport of
-                    % the subsystem. so, store information for that inport,
-                    % but continue BFS from the subsystem itself.
-
-                    if ~isempty(sourceInports)
-                        state = 'subSysInport';
-                        [outportHandles,iZero,stepVars,block] = ...
-                            updateVars(sourceInports(portNumber),outportHandles,iZero,...
-                            stepVars,block,state,iOut,sourcePorts);
-                        block.subsystemInput(block.handles==get_param(sourceBlock, 'handle')) = true;
-                    else
-                        % This case should NOT be reached because of an
-                        % inport exists, there is almost certainly a
-                        % corresponding inport for the entire subsystem
-                        % itself. It is here as asafeguard. 
-                        stepVarsState = 'normal';
-                        fprintf('Have you forgotten to connect one of the inports to subsystem: %s? ', parentOfBlock);
-                    end
-                else
-                    stepVarsState = 'normal';
-                    [block,currentBlockIndex] =...
-                        updateBlock(block,outportHandles(iOut));
-                    [stepVars,block] = updateStepVars(stepVars,...
-                        block,currentBlockIndex,outportHandles(iOut),stepVarsState);
+        if block.reroute(currentBlockIndex)
+            % this block will need some rerouting. mux and demux will
+            % require special rerouting
+            if block.mux(currentBlockIndex)
+                % special rerouting for mux
+                % the original variables are the outports connected to the
+                % mux
+                mux_optVarIdx = zeros(length(allOutportsFound),1);
+                for idx=1:length(allOutportsFound)
+                    tempOutport = allOutportsFound(idx);
+                    [block,tempBlockIndex] =...
+                        updateBlock(block,tempOutport);
+                    [stepVars,block,sameOptIndex] =...
+                        updateStepVars(stepVars,block,tempBlockIndex,tempOutport);
+                    mux_optVarIdx(idx) = sameOptIndex;
                 end
+                
+                [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,mux_optVarIdx);
+                
+            elseif block.demux(currentBlockIndex)
+                % special rerouting for demux
+                tempOutport = allOutportsFound;
+                [block,tempBlockIndex] =...
+                    updateBlock(block,tempOutport);
+                [stepVars,block,sameOptIndex] =...
+                    updateStepVars(stepVars,block,tempBlockIndex,tempOutport);
+                
+                demuxPorts = get_param(block.handles(currentBlockIndex),'PortHandles');
+                demuxOutports = [demuxPorts.Outport];
+                
+                for ii = 1:length(demuxOutports)
+                    [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,demuxOutports(ii),sameOptIndex+ii-1);
+                end
+                
             else
-                stepVarsState = 'normal';
-                [block,currentBlockIndex] =...
-                    updateBlock(block,outportHandles(iOut));
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,outportHandles(iOut),stepVarsState);
-                iOut = iOut+1;
-                continue
+                % rerouting procedure for Subsystems (going in and out),
+                % from/goto blocks. There should only be one outport
+                [block, tempBlockIndex] = updateBlock(block,allOutportsFound);
+                % first fill in stepVars for the "original" variable
+                [stepVars,block,sameOptIndex] = updateStepVars(stepVars,block,tempBlockIndex,allOutportsFound);
+                % then fill in the rerouting 
+                [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,sameOptIndex);
             end
         else
-            % in the case of one inport, it must affect the outport, so
-            % find the relevant outports
-            [outportHandles,iZero,stepVars,block] = ...
-                updateVars(sourceInports,outportHandles,iZero,...
-                stepVars,block,2,iOut,sourcePorts);
+            % all other blocks
+            [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport);
         end
-        % FIX: should check to see if BLOM supports the blocks that is
-        % found right here
-        iOut = iOut+1;
+        
+        outports.searchIdx = outports.searchIdx + 1;
+
     end
     
     
-    if any(outportHandles==0)
-        outportHandles = outportHandles(1:iZero-1);
+    
+    if any(outports.outportHandles==0)
+        outports.outportHandles = outports.outportHandles(1:outports.zeroIdx-1);
     end
     
-    block = updateInputsField(block,stepVars,outportHandles);
+    block = updateInputsField(block,stepVars,outports.outportHandles);
     
     %check if any handles are -1 and remove them
-    if any(outportHandles==-1)
+    if any(outports.outportHandles==-1)
         % FIX PRINT STATEMENT. NOT NECESSARILY TRUE
         fprintf('One or more of the blocks are missing a connection\n');
         stop = 1;
     end
     
     % remove empty and 0 entries in blocks
-    for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
+    for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions',...
+            'handles', 'bound', 'cost', 'subsystem', 'mux', 'demux', 'delay',...
+            'subsystemInput', 'fromBlock', 'inputBlock', 'externalBlock', ...
+            'blockType', 'refBlock', 'reroute', 'specialFunPresence'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
-    block.handles = block.handles(1:(block.zeroIdx-1));
-    block.bound = block.bound(1:(block.zeroIdx-1));
-    block.cost = block.cost(1:(block.zeroIdx-1));
-    block.subsystem = block.subsystem(1:(block.zeroIdx-1));
-    block.mux = block.mux(1:(block.zeroIdx-1));
-    block.demux = block.demux(1:(block.zeroIdx-1));
-    block.delay = block.delay(1:(block.zeroIdx-1));
-    block.subsystemInput = block.subsystemInput(1:(block.zeroIdx-1));
-    block.fromBlock = block.fromBlock(1:(block.zeroIdx-1));
-
 
     
     % remove empty and 0 entries in stepVars
@@ -593,8 +487,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
 end
 
 %======================================================================
-%> @brief From given inports, see which outports are relevant. Also, given
-%> the current outport, populate the block and stepVars structures
+%> @brief From given inports, see which outports are relevant and update
+%> the list of outports accordingly
 %>
 %> More detailed description of the problem.
 %>
@@ -607,33 +501,22 @@ end
 %> @retval iZero updates current index of the first zero
 %======================================================================
 
-function [outportHandles,iZero,stepVars,block] =...
-    updateVars(inports,existingOutports,iZero,stepVars,...
-    block,state,varargin)
-
-    outportHandles = existingOutports;
-
+function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBlockIndex)
     
-    if ~isempty(varargin) && ~strcmp(state, 'cost')
-        iOut = varargin{1};
-        sourcePorts = varargin{2};
-        currentOutport = existingOutports(iOut);
-    end
+    currentOutport = outports.outportHandles(outports.searchIdx);
     
-    if strcmp(state,'intoSubsys') %FIX: may want to look into special BLOM blocks here
+    if block.subsystem(currentBlockIndex) %FIX: may want to look into special BLOM blocks here
         % if there's a subsystem, inports is actually an array of the
         % outports of subsystem
         parent = get_param(currentOutport,'Parent');
-        index = inports==currentOutport;
+        index = get_param(currentOutport, 'PortNumber');
         outportBlocks = find_system(parent,'SearchDepth',1,'regexp','on','BlockType','Outport');
         handle = get_param(outportBlocks{index},'Handle');
         portH = get_param(handle,'PortHandles');
         inports = [portH.Inport];
-    end
-    
-    if strcmp(state,'from')
-        tag = inports{1};
-        name = inports{2};
+    elseif block.fromBlock(currentBlockIndex)
+        tag = get_param(block.handles(currentBlockIndex),'GoToTag');
+        name = get_param(block.handles(currentBlockIndex),'Parent');
         % there should only be one goto block associated with this from
         % block
         gotoBlock = find_system(name,'BlockType','Goto','GotoTag',tag);
@@ -641,231 +524,53 @@ function [outportHandles,iZero,stepVars,block] =...
         % note: there should only be one outport associated with each goto
         % block
         inports = [gotoPorts.Inport];
-        
+    elseif block.subsystemInput(currentBlockIndex)
+        parentOfBlock = get_param(block.handles(currentBlockIndex),'Parent');
+        sourcePorts = get_param(parentOfBlock,'PortHandles');
+        portNumber = eval(get_param(block.handles(currentBlockIndex),'Port'));
+        inports = [sourcePorts.Inport];
+        inports = inports(portNumber);
+    else
+        % from outport, find relevant inports
+        parent = get_param(inports ,'Parent');
+        portHandles = get_param(parent, 'PortHandles');
+        inports = [portHandles.Inport];        
     end
    
     % found outports connected to inports provided
-    if inports ~= 0
-        allOutportsFound=zeros(length(inports),1);
-        for i = 1:length(inports);
-            currentLine = get_param(inports(i),'Line');
-            % this gives the all the outports connected to this line
-            outportFound = get_param(currentLine,'SrcPorthandle');
-            allOutportsFound(i) = outportFound;
-            outLength = length(outportFound);
-            % in case outportHandles is too short 
-            if outLength > length(outportHandles)-iZero+1;
-                if outLength > length(outportHandles)
-                    outportHandles = [outportHandles; zeros(outLength*2,1)];
-                else
-                    outportHandles = [outportHandles; ...
-                        zeros(length(outportHandles),1)];
-                end
-            end
-
-            diffOutports = setdiff(outportFound,outportHandles);
-            diffLength = length(diffOutports);
-            outportHandles(iZero:(diffLength+iZero-1)) = diffOutports;
-            iZero = iZero + diffLength;
+    allOutportsFound=zeros(length(inports),1);
+    for i = 1:length(inports);
+        currentLine = get_param(inports(i),'Line');
+        if currentLine <=0
+            error('Negative line handle found. Make sure all inports are connected')
         end
-    end
-    
-    switch state
-        case 'bound'
-            % bound case. for all the outports found here, include the
-            % bounds for these
-            stepVarsState = 'bound';
-            boundHandle = varargin{3};
-            
-            % go through each of the outports connected through bound.
-            % Because bound has only one inport, the for loop above only
-            % goes through one iteration, so the variable outportFound
-            % will include all the outports found
-            for currentOutport = outportFound
-                [block,currentBlockIndex] =...
-                    updateBlock(block,currentOutport);
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,boundHandle);
-            end
-            
-        case 'cost'
-            stepVarsState = 'cost';
-            % go through each of the outports connected through cost
-            % Because cost has only one inport, the for loop above only
-            % goes through one iteration, so the variable outportFound
-            % will include all the outports found
-            for currentOutport = outportFound
-                [block,currentBlockIndex] =...
-                    updateBlock(block,currentOutport);
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,varargin{1});
-            end
-            
-        case 'fromSimulink'
-            % for the fromSimulink blocks, we need a special case to look
-            % at that specific outport even though we stop the BFS here
-            
-%             stepVarsState = 'normal';
-%             currentOutport = existingOutports(iOut);
-%             [block,currentBlockIndex] =...
-%                 updateBlock(block,currentOutport);
-%             [stepVars,block] = updateStepVars(stepVars,...
-%                 block,currentBlockIndex,currentOutport,stepVarsState);
-%             
-            sourceBlock = get_param(outportHandles(iOut),'Parent');
-            refBlock = get_param(sourceBlock,'ReferenceBlock');
-
-            if strcmp(refBlock, 'BLOM_Lib/InputFromSimulink') || ...
-               strcmp(refBlock, 'BLOM_Lib/InputFromWorkspace')
-                stepVarsState = 'input';
-
-                currentOutport = existingOutports(iOut);
-                [block,currentBlockIndex] =...
-                    updateBlock(block,currentOutport);
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState);
-            elseif strcmp(refBlock, 'BLOM_Lib/ExternalFromWorkspace') || ...
-                   strcmp(refBlock, 'BLOM_Lib/ExternalFromSimulink')
-            
-                stepVarsState = 'external';
-
-                currentOutport = existingOutports(iOut);
-                [block,currentBlockIndex] =...
-                    updateBlock(block,currentOutport);
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState);
+        % this gives the all the outports connected to this line
+        outportFound = get_param(currentLine,'SrcPorthandle');
+        allOutportsFound(i) = outportFound;
+        outLength = length(outportFound);
+        % in case outportHandles is too short
+        if outLength > length(outports.outportHandles)-outports.zeroIdx+1;
+            if outLength > length(outports.outportHandles)
+                outports.outportHandles = [outports.outportHandles; zeros(outLength*2,1)];
             else
-                %should never reach here
+                outports.outportHandles = [outports.outportHandles; ...
+                    zeros(length(outports.outportHandles),1)];
             end
-            
-        case 'subSysInport'
-            % Here we fill in the optVarIdx field have the inport point to
-            % the outport connected to the inport of the subsystem
-
-            % the current outport changes here because we want the outport
-            % connected to the subsystem which is connected to the inport
-            % to the subsystem to have a reference that it's a duplicate
-            % variable
-            stepVarsState = 'rememberIndex';
-            currentOutport = outportFound;
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block,sameOptIndex] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState);
-            
-            stepVarsState = 'subSysInport';
-            currentOutport = existingOutports(iOut);
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,sameOptIndex);
-        case 'from'
-            % in this case, we want to be able to fill in the sameOptVar
-            % field in stepVars so that we don't create a separate
-            % optimization variable but rather know that this is a duplicate
-            stepVarsState = 'rememberIndex';
-            % the currentOutport in this case is the outport that goes to
-            % the GoTo block
-            currentOutport = outportFound;
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block,sameOptIndex] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState);
-            % save information for from block here
-            stepVarsState = 'from';
-            currentOutport = existingOutports(iOut);
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,sameOptIndex);
-                
-        case 'intoSubsys'
-            % for this case, we want to fill in the sameOptVar variable for
-            % the subsystems outport and say the original variable is the
-            % outport of whatever is inside the subsystem
-            stepVarsState = 'rememberIndex';
-            % the currentOutport in this case is the outport that goes to
-            % the subsystem
-            currentOutport = outportFound;
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block,sameOptIndex] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState);
-            
-            % save information for subsystem outport here
-            stepVarsState = 'intoSubsys';
-            currentOutport = existingOutports(iOut);
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState,sameOptIndex);
-                
-        case 'demux'
-            % the original variable is going to be the outport connected to
-            % the demux
-            
-            stepVarsState = 'rememberIndex';
-            % should only be one outport connected to the demux.
-            currentOutport = outportFound;
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block,sameOptIndex] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState);
-            
-            % fill in optVarIdx for the demux's outports to the outport
-            % that goes into demux
-            sourceOutports = varargin{3};
-            for i = 1:length(sourceOutports)
-                % store information for the rest of the demux outports
-                stepVarsState = 'demux';
-                [block,currentBlockIndex] =...
-                    updateBlock(block,sourceOutports(i));
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,sourceOutports(i),stepVarsState,sameOptIndex,i);
-            end
-                
-            
-            
-        case 'mux'           
-            % the original variables are the outports connected to the mux
-            mux_optVarIdx = zeros(length(allOutportsFound),1);
-            for idx=1:length(allOutportsFound)
-                   currentOutport = allOutportsFound(idx);                
-                   stepVarsState = 'rememberIndex';
-                    [block,currentBlockIndex] =...
-                        updateBlock(block,currentOutport);
-                    [stepVars,block,sameOptIndex] = updateStepVars(stepVars,...
-                        block,currentBlockIndex,currentOutport,stepVarsState);
-                    mux_optVarIdx(idx) = sameOptIndex;
-             end    
-              % save information for mux outport here   
-                stepVarsState = 'mux';
-                currentOutport=existingOutports(iOut);
-                [block,currentBlockIndex] =...
-                    updateBlock(block,currentOutport);
-                [stepVars,block] = updateStepVars(stepVars,...
-                    block,currentBlockIndex,currentOutport,stepVarsState,mux_optVarIdx);  
-
-        case 'unitDelay'
-            stepVarsState = 'unitDelay';
-            %update block structure
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState);
-            
-        otherwise 
-            % not looking at bounds or costs
-            stepVarsState = 'normal';
-            %update block structure
-            [block,currentBlockIndex] =...
-                updateBlock(block,currentOutport);
-            [stepVars,block] = updateStepVars(stepVars,...
-                block,currentBlockIndex,currentOutport,stepVarsState);
-    end
+        end
         
+        diffOutports = setdiff(outportFound,outports.outportHandles);
+        diffLength = length(diffOutports);
+        outports.outportHandles(outports.zeroIdx:(diffLength+outports.zeroIdx-1))...
+            = diffOutports;
+        outports.zeroIdx = outports.zeroIdx + diffLength;
+    end
+
+    if any(allOutportsFound <=0)
+        error('Negative outport handle found. Make sure all wires are connected')
+    end
     
 end
+
 
 %%
 %======================================================================
@@ -899,13 +604,13 @@ end
 %======================================================================
 
 function [stepVars,block,varargout] = updateStepVars(stepVars,...
-    block,currentBlockIndex,currentOutport,stepVarsState,varargin)
+    block,currentBlockIndex,currentOutport,varargin)
 %this function populates stepVars structure
-%state can be 'bound', 'cost' 
+    dimension = get_param(currentOutport,'CompiledPortDimensions');
+    lengthOut = dimension(1)*dimension(2);
+    
     if sum(any(stepVars.outportHandle==currentOutport)) == 0
-        %only add outports which haven't been looked at
-        dimension = get_param(currentOutport,'CompiledPortDimensions');
-        lengthOut = dimension(1)*dimension(2);
+        %only add general information for outports which haven't been looked at
         currentIndices = 1:lengthOut;
         portNumber = get_param(currentOutport,'PortNumber');
         
@@ -957,189 +662,61 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         stepVars.outportHandle(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentOutport;
         stepVars.outportIndex(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = currentIndices;
         
-        switch stepVarsState
-            case 'bound'
-                % fill in bound parameters for different time steps
-                boundHandle = varargin{1};
-                lowerBound = evalin('base',get_param(boundHandle,'lb'));
-                upperBound = evalin('base',get_param(boundHandle,'ub'));
-
-                % find out for which time steps these bounds are relevant
-                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
-                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
-                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
-                
-                if init
-                    stepVars.initLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.initUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                
-                if inter
-                    stepVars.interLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.interUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                
-                if final
-                    stepVars.finalLowerBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = lowerBound;
-                    stepVars.finalUpperBound(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = upperBound;
-                end
-                    
-            case 'cost'
-                stepVars.initCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(1);
-                stepVars.interCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(2);
-                stepVars.finalCost(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = varargin{1}(3);
-            case 'subSysInport'
-                % points to original variable
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'from'
-                % points to the original outport
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'intoSubsys'    
-                % points to the original outport
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'demux'
-                % the outport that goes into the demux points to the demux
-                % outports. NOTE: This assumes that 
-                sameOptIndex = varargin{1};
-                outportNumber = varargin{2};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) =...
-                    (sameOptIndex+outportNumber-1);
-            case 'mux'
-                % points to the outports that go into the mux
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'rememberIndex'
-                varargout{1} = stepVars.zeroIdx;
-            case 'unitDelay'
-                stepVars.state(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'input'
-                stepVars.input(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'external'
-                stepVars.external(stepVars.zeroIdx:(stepVars.zeroIdx+lengthOut-1)) = true;
-            case 'normal'
-                % do nothing
-            otherwise
-                % do nothing
-        end
-        
-        % populate block.stepOutputIdx with index of the first stepVars
-        % variable. Does not take into consideration redundancies. This
-        % will be taken care of later.
         block.stepOutputIdx{currentBlockIndex}(portNumber) = stepVars.zeroIdx;
-        
+        varIdx = stepVars.zeroIdx;
         stepVars.zeroIdx = stepVars.zeroIdx+lengthOut;
     else
-        dimension = get_param(currentOutport,'CompiledPortDimensions');
-        lengthOut = dimension(1)*dimension(2);
-        switch stepVarsState
-            case 'bound'
-                fromIndex = find(stepVars.outportHandle==currentOutport,1);
-                % sometimes there will be two bound blocks connected to the
-                % same outport. This means that the bounds are different at
-                % different time steps
-                boundHandle = varargin{1};
-                lowerBound = eval(get_param(boundHandle,'lb'));
-                upperBound = eval(get_param(boundHandle,'ub'));
-
-                % find out for which time steps these bounds are relevant
-                init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
-                final = strcmp(get_param(boundHandle, 'final_step'), 'on');
-                inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
-                
-                % take into consideration current upper and lower bounds
-                currentInitLB = stepVars.initLowerBound(fromIndex);
-                currentInterLB = stepVars.interLowerBound(fromIndex);
-                currentFinalLB = stepVars.finalLowerBound(fromIndex);
-                
-                currentInitUB = stepVars.initUpperBound(fromIndex);
-                currentInterUB = stepVars.interUpperBound(fromIndex);
-                currentFinalUB = stepVars.finalUpperBound(fromIndex);
-                
-                if init
-                    if lowerBound > currentInitLB
-                        stepVars.initLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentInitUB
-                        stepVars.initUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-                
-                if inter
-                    if lowerBound > currentInterLB
-                        stepVars.interLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentInterUB
-                        stepVars.interUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-                
-                if final
-                    if lowerBound > currentFinalLB
-                        stepVars.finalLowerBound(fromIndex:(fromIndex+lengthOut-1)) = lowerBound;
-                    end
-                    if upperBound < currentFinalUB
-                        stepVars.finalUpperBound(fromIndex:(fromIndex+lengthOut-1)) = upperBound;
-                    end
-                end
-            case 'rememberIndex'
-            % if this outport has already been found but we need the index for
-            % the sameOptVar field
-                varargout{1} = find(stepVars.outportHandle==currentOutport,1);
-            case 'from'
-                % points to the original outport
-                fromIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(fromIndex:(fromIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'subSysInport'
-                % points to the original outport
-                inportIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(inportIndex:(inportIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-            case 'intoSubsys'    
-                % points to the original outport
-                subsysIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                stepVars.optVarIdx(subsysIndex:(subsysIndex+lengthOut-1)) = ...
-                    (sameOptIndex):(sameOptIndex+lengthOut-1);
-                
-            case 'demux'
-                % the outport that goes into the demux points to the demux
-                % outports. NOTE: This assumes that 
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                sameOptIndex = varargin{1};
-                outportNumber = varargin{2};
-                stepVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) =...
-                    (sameOptIndex+outportNumber-1);
-            case 'mux'
-                % points to the outports that go into the mux
-                sameOptIndex = varargin{1};
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.optVarIdx(varIndex:(varIndex+lengthOut-1)) = sameOptIndex;
-                
-            case 'unitDelay'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.state(varIndex:(varIndex+lengthOut-1)) = true;
-                
-            case 'input'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.input(varIndex:(varIndex+lengthOut-1)) = true;  
-                
-            case 'external'
-                varIndex = find(stepVars.outportHandle==currentOutport,1);
-                stepVars.external(varIndex:(varIndex+lengthOut-1)) = true;
-                
-            otherwise
-                % do nothing
-        end
+        varIdx = find(stepVars.outportHandle==currentOutport,1);
     end
+    
+    if nargout == 3
+        % if the nargout = 3, that means that we need to output the
+        % optVarIdx for rerouting
+        varargout{1} = varIdx;
+    end
+    
+
+    % Here we do the switching for different types of blocks
+    
+    if block.bound(currentBlockIndex)
+        % should never be here
+       warning('Adding variable to bound block...WHY?')
+        
+    elseif block.cost(currentBlockIndex)
+        % COST
+        costHandle = block.handles(currentBlockIndex);
+        stepVars.initCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'initial_step'), 'on');
+        stepVars.interCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
+        stepVars.finalCost(varIdx:(varIdx+lengthOut-1)) = strcmp(get_param(costHandle, 'final_step'), 'on');
+    elseif block.inputBlock(currentBlockIndex)
+        % INPUT
+        stepVars.input(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.externalBlock(currentBlockIndex)
+        % EXTERNAL
+        stepVars.external(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.fromBlock(currentBlockIndex) || block.subsystem(currentBlockIndex) || block.subsystemInput(currentBlockIndex)...
+            || block.demux(currentBlockIndex)
+        % FROM, SUBSYSTEM, SUBSYSTEM INPUT, DEMUX REROUTING
+        if ~isempty(varargin)
+            sameOptIndex = varargin{1};
+            stepVars.optVarIdx(varIdx:(varIdx+lengthOut-1)) = ...
+                (sameOptIndex):(sameOptIndex+lengthOut-1);
+        end
+    elseif block.delay(currentBlockIndex)
+        % Unit Delay (or state case)
+        stepVars.state(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.mux(currentBlockIndex)
+        % Mux rerouting
+        if ~isempty(varargin)
+            sameOptIndex = varargin{1};
+            stepVars.optVarIdx(varIdx:(varIdx+lengthOut-1)) = sameOptIndex;
+        end
+    else 
+        % do nothing for all non special cases
+        
+    end
+    
+        
 end
 
 %%
@@ -1161,34 +738,33 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
 
     currentBlockHandle = get_param(currentOutport,'ParentHandle');
     sourcePorts = get_param(currentBlockHandle,'PortHandles');
-    referenceBlock = get_param(currentBlockHandle,'ReferenceBlock');
-    
     
     % if the size of block equals the block.zeroIdx, need to double to
     % length of block
     if block.zeroIdx == length(block.handles)
-        for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions'}
+        for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions','blockType','refBlock'}
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
-        block.bound = [block.bound; false(block.zeroIdx,1)];
-        block.cost = [block.cost; false(block.zeroIdx,1)];
-        block.subsystem = [block.subsystem; false(block.zeroIdx,1)];
-        block.mux = [block.mux; false(block.zeroIdx,1)];
-        block.demux = [block.demux; false(block.zeroIdx,1)];
-        block.delay = [block.delay; false(block.zeroIdx,1)];
-        block.subsystemInput = [block.subsystemInput; false(block.zeroIdx,1)];
-        block.fromBlock = [block.fromBlock; false(block.zeroIdx,1)];
-
+        
+        for field = {'bound', 'cost', 'subsystem', 'mux', 'demux',...
+                'delay','reroute','subsystemInput','fromBlock','inputBlock',...
+                'externalBlock','specialFunPresence'}
+            block.(field{1}) = [block.(field{1}); false(block.zeroIdx,1)];
+        end
     end
-    
 
     if ~any(block.handles==currentBlockHandle)
         % no duplicate blocks, add this block
+        
         currentBlockName = get_param(currentOutport,'Parent');
         block.names{block.zeroIdx} = currentBlockName;
+        
+        % add the block type and reference block for specific cases
+        block.blockType{block.zeroIdx} = get_param(currentBlockHandle,'BlockType');
+        block.refBlock{block.zeroIdx} = get_param(currentBlockHandle,'ReferenceBlock');
         block.handles(block.zeroIdx) = currentBlockHandle;
-        if strcmp(referenceBlock,'BLOM_Lib/Polyblock')
+        if strcmp(block.refBlock{block.zeroIdx},'BLOM_Lib/Polyblock')
             % store P&K matricies if the current block is a polyblock
             block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
             block.K{block.zeroIdx} = eval(get_param(currentBlockHandle,'K'));
@@ -1199,17 +775,52 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             totalOutputs = size(block.K{block.zeroIdx},1);
             block.P{block.zeroIdx} = blkdiag(block.P{block.zeroIdx},speye(totalOutputs));
             block.K{block.zeroIdx} = horzcat(block.K{block.zeroIdx},-speye(totalOutputs));
-        elseif strcmp(referenceBlock, 'BLOM_Lib/Bound')
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/Bound')
             block.bound(block.zeroIdx) = true;
-        elseif strcmp(referenceBlock, 'BLOM_Lib/DiscreteCost')
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/DiscreteCost')
             block.cost(block.zeroIdx) = true;
+        elseif isempty(block.refBlock{block.zeroIdx}) && strcmp(block.blockType{block.zeroIdx},'SubSystem')
+            % Subsystem that is not a BLOM block
+            block.subsystem(block.zeroIdx) = true;
+            block.reroute(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'From')
+            % this is a from block
+            block.fromBlock(block.zeroIdx) = true;       
+            block.reroute(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Demux')
+            % DEMUX
+            block.reroute(block.zeroIdx) = true;
+            block.demux(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Mux')
+            % MUX
+            block.reroute(block.zeroIdx) = true;
+            block.mux(block.zeroIdx) = true;
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromSimulink') ||...
+                strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromWorkspace')
+            % this is one of the BLOM input blocks
+            block.inputBlock(block.zeroIdx) = true;
+        elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromSimulink') ||...
+                strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
+            % this is one of the BLOM external blocks
+            block.externalBlock(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
+            % Unit Delay Label
+            block.delay(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx},'Inport')
+            parentOfBlock = get_param(block.handles(block.zeroIdx),'Parent');
+            parentType = get_param(parentOfBlock,'BlockType');
+            if strcmp(parentType,'SubSystem')
+                block.subsystemInput(block.zeroIdx) = true;
+                block.reroute(block.zeroIdx) = true;
+            end
+            
         else
             % store P and K matricies for the other blocks, as well as
             % boolean 1 if special function required and 0 ottherwise
             [P,K,specialFunPresence] = BLOM_Convert2Polyblock(currentBlockHandle);
             block.P{block.zeroIdx} = P;
             block.K{block.zeroIdx}= K;
-            block.specialFunPresence{block.zeroIdx}=specialFunPresence;
+            block.specialFunPresence(block.zeroIdx)=specialFunPresence;
         end
 
         if isempty(block.stepOutputIdx{block.zeroIdx})
@@ -1491,43 +1102,103 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
     [~,~,optVarIdx] = unique(optVarIdx);
 end
 
-
 %%
-%==========================================================================
-%> @brief checks for cycles within vector (currently slower than check as you go)
+%====================================================================
+%> @brief sets bounds in stepVars
 %>
-%> @param vector v you are trying to check
+%> @param block all blocks from BFS
+%> @param stepVars all stepVars from BFS
 %>
-%> @retval hasCycle boolean for whether a cycle exists in vector
-%==========================================================================
-function hasCycle = checkForCycle(v)
-    hasCycle = false;
-    visited = false(size(v));
+%> @retval stepVars with fields initLowerBound, initUpperBound,
+%> interLowerBound, interUpperBound, finalLowerBound, finalUpperBound
+%> filled in
+%======================================================================
+function stepVars = setBounds(block, stepVars)
     
-    for i = 1:length(v)
-        if (v(i) == i)
-            visited(i) = true;
+    searchIndices = find(block.bound);
+    for currentBlockIndex = searchIndices'
+        boundHandle = block.handles(currentBlockIndex);
+        lowerBound = eval(get_param(boundHandle,'lb'));
+        upperBound = eval(get_param(boundHandle,'ub'));
+        
+        % find out for which time steps these bounds are relevant
+        init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
+        final = strcmp(get_param(boundHandle, 'final_step'), 'on');
+        inter = strcmp(get_param(boundHandle, 'intermediate_step'), 'on');
+        
+        for varIdx = block.stepInputIdx{currentBlockIndex}'
+            currentOutport = stepVars.outportHandle(varIdx);
+            dimension = get_param(currentOutport,'CompiledPortDimensions');
+            lengthOut = dimension(1)*dimension(2);
+            % take into consideration current upper and lower bounds
+            currentInitLB = stepVars.initLowerBound(varIdx);
+            currentInterLB = stepVars.interLowerBound(varIdx);
+            currentFinalLB = stepVars.finalLowerBound(varIdx);
+
+            currentInitUB = stepVars.initUpperBound(varIdx);
+            currentInterUB = stepVars.interUpperBound(varIdx);
+            currentFinalUB = stepVars.finalUpperBound(varIdx);
+
+            if init
+                if lowerBound > currentInitLB
+                    stepVars.initLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentInitUB
+                    stepVars.initUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
+
+            if inter
+                if lowerBound > currentInterLB
+                    stepVars.interLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentInterUB
+                    stepVars.interUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
+
+            if final
+                if lowerBound > currentFinalLB
+                    stepVars.finalLowerBound(varIdx:(varIdx+lengthOut-1)) = lowerBound;
+                end
+                if upperBound < currentFinalUB
+                    stepVars.finalUpperBound(varIdx:(varIdx+lengthOut-1)) = upperBound;
+                end
+            end
         end
     end
 
-    for i = 1:length(v)
-        target = i;
-        traversedTargets = zeros(size(v));
-        k = 1;
-        while (~visited(target) || any(traversedTargets == target))
-            if(any(traversedTargets == target))
-                hasCycle = true;
-                return
-            end
-            visited(target) = true;
-            traversedTargets(k) = target;
-            k = k + 1;
-            target = v(target);
-        end
-    end
-    
 end
 
+
+
+%%
+%====================================================================
+%> @brief sets cost boolean in stepVars
+%>
+%> @param block all blocks from BFS
+%> @param stepVars all stepVars from BFS
+%>
+%> @retval stepVars with fields initCost, interCost, finalCost filled in
+%======================================================================
+function stepVars = setCosts(block, stepVars)
+    searchIndices = find(block.cost);
+    for currentBlockIndex = searchIndices'
+        costHandle = block.handles(currentBlockIndex);
+        initCost =  strcmp(get_param(costHandle, 'initial_step'), 'on');
+        interCost = strcmp(get_param(costHandle, 'intermediate_step'), 'on');
+        finalCost = strcmp(get_param(costHandle, 'final_step'), 'on');   
+        for varIdx = block.stepInputIdx{currentBlockIndex}'                   
+            currentOutport = stepVars.outportHandle(varIdx);
+            dimension = get_param(currentOutport,'CompiledPortDimensions');
+            lengthOut = dimension(1)*dimension(2);
+           
+            stepVars.initCost(varIdx:(varIdx+lengthOut-1)) = initCost;
+            stepVars.interCost(varIdx:(varIdx+lengthOut-1)) = interCost;
+            stepVars.finalCost(varIdx:(varIdx+lengthOut-1)) = finalCost;
+        end
+    end
+end
 %%
 %======================================================================
 %> @brief traverse graph from cost and bound blocks then add fields to
@@ -1695,6 +1366,8 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
 
 end
 
+
+
 %%
 %=====================================================================
 %> @brief creates expands fields of block to account for multiple time
@@ -1848,7 +1521,23 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx,1);
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
 
-            allVars.optVarIdx(allVars.optVarIdx == oldOptVarIdx) = newOptVarIdx;
+            %consolidate allVars
+            idxs1 = allVars.optVarIdx == oldOptVarIdx;
+            idxs2 = allVars.optVarIdx == newOptVarIdx;
+            idxs = idxs1 | idxs2;
+            totalLength = sum(idxs);
+
+            lowerBound = max([allVars.lowerBound(idxs1); allVars.lowerBound(idxs2)]);
+            upperBound = min([allVars.upperBound(idxs1); allVars.upperBound(idxs2)]);
+            cost1 = allVars.cost(idxs1);
+            cost2 = allVars.cost(idxs2);
+            cost = cost1(1) + cost2(1);
+            
+            allVars.lowerBound(idxs) = lowerBound * ones(totalLength,1);
+            allVars.upperBound(idxs) = upperBound * ones(totalLength,1);
+            allVars.cost(idxs) = cost * ones(totalLength,1);
+            
+            allVars.optVarIdx(idxs1) = newOptVarIdx;
             allVars.PKOptVarIdxReroute(oldOptVarIdx) = newOptVarIdx;
         end
     end
@@ -1858,26 +1547,37 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
 end
 
 %%
-%===============================================================
-%> @brief make sure all allVars fields are consistent with optVars
+%======================================================================
+%> @brief called after BFS and cleanupOptVarIdx before allVars is created 
+%> using stepVars, consolidates stepVars variables such that all stepVars
+%> with the same optVarIdx have matching fields
+%> 
+%> @param stepVars stepVars struct with fields to be consolidated
 %>
-%> @param allVars all Variables
-%> @param stepVars variabels 1 timestep
-%===================================================================
-function allVars = remapAllVarsFields(allVars, stepVars)
-    optVarInput = false(allVars.totalLength,1);
-    optVarExternal = false(allVars.totalLength,1);
-    for ii = 1:allVars.totalLength
-       optVarInput(allVars.optVarIdx(ii)) = optVarInput(allVars.optVarIdx(ii)) || stepVars.input(allVars.stepVarIdx(ii));
-       optVarExternal(allVars.optVarIdx(ii)) = optVarExternal(allVars.optVarIdx(ii)) || stepVars.external(allVars.stepVarIdx(ii));
-    end
-    allVars.input = optVarInput(allVars.optVarIdx);
-    allVars.external = optVarExternal(allVars.optVarIdx);
+%> @retval stepVars stepVars struct with fields consolidated
+%======================================================================
+function stepVars = consolidateStepVars(stepVars)
     
-    allVars.state = (allVars.timeStep == 1) & stepVars.state(allVars.stepVarIdx);
+    for optVar = 1:max(stepVars.optVarIdx)
+        idxs = stepVars.optVarIdx == optVar;
+        numVars = sum(idxs);
+        if numVars ~= 1
+            %consolidate stepVars
+            stepVars.initLowerBound(idxs) = max(stepVars.initLowerBound(idxs));
+            stepVars.interLowerBound(idxs) = max(stepVars.interLowerBound(idxs));
+            stepVars.finalLowerBound(idxs) = max(stepVars.finalLowerBound(idxs));
+            stepVars.initUpperBound(idxs) = min(stepVars.initUpperBound(idxs));
+            stepVars.interUpperBound(idxs) = min(stepVars.interUpperBound(idxs));
+            stepVars.finalUpperBound(idxs) = min(stepVars.finalUpperBound(idxs));
+            stepVars.input(idxs) = any(stepVars.input(idxs));
+            stepVars.external(idxs) = any(stepVars.external(idxs));
+            stepVars.initCost(idxs) = sum(stepVars.initCost(idxs));
+            stepVars.interCost(idxs) = sum(stepVars.interCost(idxs));
+            stepVars.finalCost(idxs) = sum(stepVars.finalCost(idxs));
+        end
+    end
+
 end
-
-
 
 %%
 %======================================================================
@@ -1900,17 +1600,11 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.options = options;
 
     numOptVars = max(allVars.optVarIdx);
-
     
     ModelSpec.in_vars = false(numOptVars,1);
-%     ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
+    ModelSpec.in_vars(allVars.optVarIdx) = stepVars.input(allVars.stepVarIdx);
     ModelSpec.ex_vars = false(numOptVars,1);
-%     ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
-    for ii = 1:allVars.totalLength
-       ModelSpec.in_vars(allVars.optVarIdx(ii)) = ModelSpec.in_vars(allVars.optVarIdx(ii)) || stepVars.input(allVars.stepVarIdx(ii));
-       ModelSpec.ex_vars(allVars.optVarIdx(ii)) = ModelSpec.ex_vars(allVars.optVarIdx(ii)) || stepVars.external(allVars.stepVarIdx(ii));
-    end
-
+    ModelSpec.ex_vars(allVars.optVarIdx) = stepVars.external(allVars.stepVarIdx);
     
     ModelSpec.AAs = {allP};
     ModelSpec.Cs = {allK};
@@ -1931,8 +1625,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
     varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
     varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
-    
-    
+        
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
@@ -1943,9 +1636,6 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     for idx = 1:size(ModelSpec.all_names)
        ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
     end
-   
-    
-
 
     %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
@@ -2001,8 +1691,8 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     nonzeroOptVarCosts = optVarCosts~=0;
     if any(nonzeroOptVarCosts)
         ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
-            optVarCosts(nonzeroOptVarCosts), sum(nonzeroOptVarCosts), numOptVars);
-        ModelSpec.cost.C = ones(1, sum(nonzeroOptVarCosts));
+            ones(sum(nonzeroOptVarCosts),1), sum(nonzeroOptVarCosts), numOptVars);
+        ModelSpec.cost.C = optVarCosts(nonzeroOptVarCosts);
     elseif numOptVars > 0
         % cost is 0, this is a feasibility problem
         ModelSpec.cost.A = sparse(1, numOptVars);
