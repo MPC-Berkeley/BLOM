@@ -79,16 +79,15 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
             searchSources(boundHandles,costHandles,inputAndExternalHandles,name);
         stepVars = setBounds(block, stepVars);
         stepVars = setCosts(block, stepVars);
+        stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
+        stepVars = consolidateStepVars(stepVars);
+        
         % FIX: should implement something that stops the code after analyzing
         % all the blocks and finding an error in the structure of the model
         
         % expands all the inport and outport indexes such that it points to
         % each scalar instead of just to first entry
         block = expandInportOutportIdx(block);
-        
-        if stop == 1
-            % break the code somehow?
-        end
         
         stepVars = labelTimeRelevance(stepVars,block,inputAndExternalHandles);
                 
@@ -97,10 +96,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
         allVars = createAllVars(stepVars,horizon);
         
         block = expandBlock(block,horizon,stepVars,allVars);
-
-        
-        stepVars.optVarIdx = cleanupOptVarIdx(stepVars.optVarIdx);
-        
+   
         allVars = allOptVarIdxs(allVars,block,stepVars,horizon);
         
         % create large P and K matrix for entire problem
@@ -216,7 +212,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel2(name,horizon,dt
     end
     % close evaluation of models
     eval([name '([],[],[],''term'');']);
-    
+    BLOM_SetDataLogging(name);
 end
 
 %%
@@ -546,6 +542,9 @@ function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBl
     allOutportsFound=zeros(length(inports),1);
     for i = 1:length(inports);
         currentLine = get_param(inports(i),'Line');
+        if currentLine <=0
+            error('Negative line handle found. Make sure all inports are connected')
+        end
         % this gives the all the outports connected to this line
         outportFound = get_param(currentLine,'SrcPorthandle');
         allOutportsFound(i) = outportFound;
@@ -567,6 +566,10 @@ function [outports,allOutportsFound] = addToBFS(outports,inports,block,currentBl
         outports.zeroIdx = outports.zeroIdx + diffLength;
     end
 
+    if any(allOutportsFound <=0)
+        error('Negative outport handle found. Make sure all wires are connected')
+    end
+    
 end
 
 
@@ -1519,7 +1522,23 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             blockInputOutputIdx = find(block.stepOutputIdx{blockIdx}== stepVarIdx,1);
             newOptVarIdx = allVars.optVarIdx(block.allInputMatrix{blockIdx}(blockInputOutputIdx,timeStep-1));
 
-            allVars.optVarIdx(allVars.optVarIdx == oldOptVarIdx) = newOptVarIdx;
+            %consolidate allVars
+            idxs1 = allVars.optVarIdx == oldOptVarIdx;
+            idxs2 = allVars.optVarIdx == newOptVarIdx;
+            idxs = idxs1 | idxs2;
+            totalLength = sum(idxs);
+
+            lowerBound = max([allVars.lowerBound(idxs1); allVars.lowerBound(idxs2)]);
+            upperBound = min([allVars.upperBound(idxs1); allVars.upperBound(idxs2)]);
+            cost1 = allVars.cost(idxs1);
+            cost2 = allVars.cost(idxs2);
+            cost = cost1(1) + cost2(1);
+            
+            allVars.lowerBound(idxs) = lowerBound * ones(totalLength,1);
+            allVars.upperBound(idxs) = upperBound * ones(totalLength,1);
+            allVars.cost(idxs) = cost * ones(totalLength,1);
+            
+            allVars.optVarIdx(idxs1) = newOptVarIdx;
             allVars.PKOptVarIdxReroute(oldOptVarIdx) = newOptVarIdx;
         end
     end
@@ -1528,6 +1547,38 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
 
 end
 
+%%
+%======================================================================
+%> @brief called after BFS and cleanupOptVarIdx before allVars is created 
+%> using stepVars, consolidates stepVars variables such that all stepVars
+%> with the same optVarIdx have matching fields
+%> 
+%> @param stepVars stepVars struct with fields to be consolidated
+%>
+%> @retval stepVars stepVars struct with fields consolidated
+%======================================================================
+function stepVars = consolidateStepVars(stepVars)
+    
+    for optVar = 1:max(stepVars.optVarIdx)
+        idxs = stepVars.optVarIdx == optVar;
+        numVars = sum(idxs);
+        if numVars ~= 1
+            %consolidate stepVars
+            stepVars.initLowerBound(idxs) = max(stepVars.initLowerBound(idxs));
+            stepVars.interLowerBound(idxs) = max(stepVars.interLowerBound(idxs));
+            stepVars.finalLowerBound(idxs) = max(stepVars.finalLowerBound(idxs));
+            stepVars.initUpperBound(idxs) = min(stepVars.initUpperBound(idxs));
+            stepVars.interUpperBound(idxs) = min(stepVars.interUpperBound(idxs));
+            stepVars.finalUpperBound(idxs) = min(stepVars.finalUpperBound(idxs));
+            stepVars.input(idxs) = any(stepVars.input(idxs));
+            stepVars.external(idxs) = any(stepVars.external(idxs));
+            stepVars.initCost(idxs) = sum(stepVars.initCost(idxs));
+            stepVars.interCost(idxs) = sum(stepVars.interCost(idxs));
+            stepVars.finalCost(idxs) = sum(stepVars.finalCost(idxs));
+        end
+    end
+
+end
 
 %%
 %======================================================================
