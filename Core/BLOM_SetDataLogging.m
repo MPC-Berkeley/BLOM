@@ -6,6 +6,8 @@
 %======================================================================
 
 function BLOM_SetDataLogging(BLOMSystem)
+    set_param(BLOMSystem, 'StrictBusMsg', 'ErrorLevel1')
+
     subsystems = find_system({BLOMSystem});
     systemNameLength = length(BLOMSystem);
     subsystems(1) = [];

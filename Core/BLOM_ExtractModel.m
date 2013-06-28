@@ -607,7 +607,11 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
     block,currentBlockIndex,currentOutport,varargin)
 %this function populates stepVars structure
     dimension = get_param(currentOutport,'CompiledPortDimensions');
-    lengthOut = dimension(1)*dimension(2);
+    if dimension(1) == -2
+        lengthOut = sum(dimension(3:2:end) .* dimension(4:2:end));
+    else
+        lengthOut = dimension(1)*dimension(2);
+    end
     
     if sum(any(stepVars.outportHandle==currentOutport)) == 0
         %only add general information for outports which haven't been looked at
@@ -1727,4 +1731,8 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     % of stepVars might not be included in allVars for first time step
     ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1), numOptVars,1);
  
+    ModelSpec.allVars = allVars;
+    ModelSpec.stepVars = stepVars;
+    ModelSpec.block = block;
+    
 end
