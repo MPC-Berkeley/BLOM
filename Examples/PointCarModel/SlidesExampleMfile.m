@@ -4,7 +4,9 @@ addpath(genpath('H:\trunk'))
 %% Convert model to optimization problem
 y0=-20;
 
-ModelSpec = BLOM_ExtractModel2('SlidesExampleNew',120,0.5);
+ModelSpec = BLOM_ExtractModel('SlidesExampleNew',120,0.5);
+
+BLOM_SetDataLogging('SlidesExampleNew')
 
 RunResults = BLOM_RunModel(ModelSpec);
 
