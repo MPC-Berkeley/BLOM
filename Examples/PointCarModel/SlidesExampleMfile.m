@@ -1,12 +1,11 @@
 clear
-clc
+
 addpath(genpath('H:\trunk'))
 %% Convert model to optimization problem
 y0=-20;
 
-ModelSpec = BLOM_ExtractModel('SlidesExampleNew',120,0.5);
-
-BLOM_SetDataLogging('SlidesExampleNew')
+BLOM_SetDataLogging('SlidesExampleNew_example')
+ModelSpec = BLOM_ExtractModel('SlidesExampleNew_example',120,0.5);
 
 RunResults = BLOM_RunModel(ModelSpec);
 
@@ -18,6 +17,7 @@ SolverStructData =  BLOM_SetProblemData(SolverStruct,ModelSpec,OptGuess, ExtVars
 
 SolverResult  =  BLOM_RunSolver(SolverStructData,ModelSpec);
 %% plot the results
+figure
 subplot(311);
 plot(SolverResult.System_yk);
 ylabel('y');

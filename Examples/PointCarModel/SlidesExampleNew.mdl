@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.65"
+    ComputedModelVersion    "1.66"
     NumModelReferences	    0
     NumTestPointedSignals   11
     TestPointedSignal {
@@ -124,15 +124,15 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jun 26 15:54:35 2013"
-  RTWModifiedTimeStamp	  294162803
-  ModelVersionFormat	  "1.%<AutoIncrement:65>"
+  LastModifiedDate	  "Fri Jun 28 18:52:38 2013"
+  RTWModifiedTimeStamp	  294333295
+  ModelVersionFormat	  "1.%<AutoIncrement:66>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
-  WideLines		  off
-  ShowLineDimensions	  off
+  WideLines		  on
+  ShowLineDimensions	  on
   ShowPortDataTypes	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
@@ -384,7 +384,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "ErrorLevel1"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
 	}
@@ -731,7 +731,7 @@ Model {
   }
   System {
     Name		    "SlidesExampleNew"
-    Location		    [160, 80, 1190, 724]
+    Location		    [158, 50, 1192, 747]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -789,7 +789,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[180, 109, 1259, 791]
+	Location		[23, 122, 1102, 804]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200

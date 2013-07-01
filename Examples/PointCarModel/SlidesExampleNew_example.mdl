@@ -1,17 +1,17 @@
 Model {
-  Name			  "SlidesExampleNew"
+  Name			  "SlidesExampleNew_example"
   Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.65"
+    ComputedModelVersion    "1.73"
     NumModelReferences	    0
-    NumTestPointedSignals   11
+    NumTestPointedSignals   24
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/Constant"
+      FullBlockPath	      "SlidesExampleNew_example/Constant"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Constant_1"
@@ -20,7 +20,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/Constant1"
+      FullBlockPath	      "SlidesExampleNew_example/Constant1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Constant1_1"
@@ -29,7 +29,133 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/cost"
+      FullBlockPath	      "SlidesExampleNew_example/System/Bias"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Bias_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Bias1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Bias1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Constant"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Constant_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Constant1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Constant1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Constant2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Constant2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Gain"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Gain_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Product"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Product_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Product1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Product1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Squared"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Squared_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Squared1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Squared1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/Squared2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Squared2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/UnaryMinus"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_UnaryMinus_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/UnaryMinus1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_UnaryMinus1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/cosine"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_cosine_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SlidesExampleNew_example/System/cost"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_cost_1"
@@ -38,25 +164,16 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/inputConstraint1"
+      FullBlockPath	      "SlidesExampleNew_example/System/sin"
       LogSignal		      1
       UseCustomName	      1
-      LogName		      "System_inputConstraint1_1"
+      LogName		      "System_sin_1"
       MaxPoints		      5000
       Decimation	      2
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/inputConstraint2"
-      LogSignal		      1
-      UseCustomName	      1
-      LogName		      "System_inputConstraint2_1"
-      MaxPoints		      5000
-      Decimation	      2
-    }
-    TestPointedSignal {
-      SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/theta"
+      FullBlockPath	      "SlidesExampleNew_example/System/theta"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_theta_1"
@@ -65,7 +182,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/v"
+      FullBlockPath	      "SlidesExampleNew_example/System/v"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_v_1"
@@ -74,7 +191,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/x"
+      FullBlockPath	      "SlidesExampleNew_example/System/x"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_x_1"
@@ -83,7 +200,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/xk"
+      FullBlockPath	      "SlidesExampleNew_example/System/xk"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_xk_1"
@@ -92,7 +209,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/y"
+      FullBlockPath	      "SlidesExampleNew_example/System/y"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_y_1"
@@ -101,7 +218,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/yk"
+      FullBlockPath	      "SlidesExampleNew_example/System/yk"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_yk_1"
@@ -124,15 +241,15 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jun 26 15:54:35 2013"
-  RTWModifiedTimeStamp	  294162803
-  ModelVersionFormat	  "1.%<AutoIncrement:65>"
+  LastModifiedDate	  "Fri Jun 28 15:18:23 2013"
+  RTWModifiedTimeStamp	  294333041
+  ModelVersionFormat	  "1.%<AutoIncrement:73>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
-  WideLines		  off
-  ShowLineDimensions	  off
+  WideLines		  on
+  ShowLineDimensions	  on
   ShowPortDataTypes	  off
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
@@ -278,7 +395,7 @@ Model {
 	    Cell		    "OptimizeModelRefInitCode"
 	    PropName		    "DisabledProps"
 	  }
-	  BlockReduction	  on
+	  BlockReduction	  off
 	  BooleanDataType	  on
 	  ConditionallyExecuteInputs on
 	  InlineParams		  off
@@ -384,7 +501,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "ErrorLevel1"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
 	}
@@ -623,8 +740,8 @@ Model {
 	PropName		"Components"
       }
       Name		      "Configuration"
-      CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 200, 85, 1080, 715 ] "
+      CurrentDlgPage	      "Diagnostics/Connectivity"
+      ConfigPrmDlgPosition    " [ 1994, -295, 2806, 440 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -665,6 +782,11 @@ Model {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Bias
+      Bias		      "0"
+      SaturateOnIntegerOverflow	on
+    }
+    Block {
       BlockType		      Constant
       Value		      "1"
       VectorParams1D	      on
@@ -679,6 +801,37 @@ Model {
       LockScale		      off
       SampleTime	      "inf"
       FramePeriod	      "inf"
+    }
+    Block {
+      BlockType		      From
+      IconDisplay	      "Tag"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "fixdt(1,16,0)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "[]"
+      ParamDataTypeStr	      "Inherit: Same as input"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Goto
+      IconDisplay	      "Tag"
     }
     Block {
       BlockType		      Inport
@@ -703,6 +856,50 @@ Model {
       Interpolate	      on
     }
     Block {
+      BlockType		      Math
+      Operator		      "exp"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
+    }
+    Block {
+      BlockType		      Mux
+      Inputs		      "4"
+      DisplayOption	      "none"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      NonVirtualBus	      off
+    }
+    Block {
+      BlockType		      Product
+      Inputs		      "2"
+      Multiplication	      "Element-wise(.*)"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Zero"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      SubSystem
       ShowPortLabels	      "FromPortIcon"
       Permissions	      "ReadWrite"
@@ -722,6 +919,36 @@ Model {
       MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Trigonometry
+      Operator		      "sin"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      UnaryMinus
+      SampleTime	      "-1"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
       BlockType		      UnitDelay
       X0		      "0"
       SampleTime	      "1"
@@ -730,7 +957,7 @@ Model {
     }
   }
   System {
-    Name		    "SlidesExampleNew"
+    Name		    "SlidesExampleNew_example"
     Location		    [160, 80, 1190, 724]
     Open		    on
     ModelBrowserVisibility  off
@@ -745,7 +972,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    33
+    SIDHighWatermark	    63
     Block {
       BlockType		      Constant
       Name		      "Constant"
@@ -789,7 +1016,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[180, 109, 1259, 791]
+	Location		[1451, -95, 2530, 587]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -813,16 +1040,46 @@ Model {
 	  BlockType		  Inport
 	  Name			  "theta_in"
 	  SID			  14
-	  Position		  [20, 253, 50, 267]
+	  Position		  [20, 248, 50, 262]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Bias
+	  Name			  "Bias"
+	  SID			  34
+	  Position		  [180, 295, 220, 325]
+	  Bias			  "-pi/2"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Bias_1"
+	  }
+	}
+	Block {
+	  BlockType		  Bias
+	  Name			  "Bias1"
+	  SID			  37
+	  Position		  [180, 145, 220, 175]
+	  Bias			  "-1"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Bias1_1"
+	  }
+	}
+	Block {
 	  BlockType		  Reference
-	  Name			  "Constraint1"
-	  SID			  22
+	  Name			  "Bound"
+	  SID			  62
 	  Ports			  [1]
-	  Position		  [325, 178, 380, 212]
+	  Position		  [275, 317, 330, 353]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/Bound"
@@ -842,11 +1099,59 @@ Model {
 	  final_step		  on
 	}
 	Block {
+	  BlockType		  Constant
+	  Name			  "Constant"
+	  SID			  47
+	  Position		  [375, 85, 405, 115]
+	  Value			  ".5"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Constant_1"
+	  }
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant1"
+	  SID			  54
+	  Position		  [700, 285, 730, 315]
+	  Value			  "25"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Constant1_1"
+	  }
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant2"
+	  SID			  58
+	  Position		  [425, 270, 455, 300]
+	  Value			  ".5"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Constant2_1"
+	  }
+	}
+	Block {
 	  BlockType		  Reference
-	  Name			  "Constraint3"
-	  SID			  23
+	  Name			  "Constraint2"
+	  SID			  40
 	  Ports			  [1]
-	  Position		  [325, 313, 380, 347]
+	  Position		  [275, 173, 330, 207]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/Bound"
@@ -870,7 +1175,7 @@ Model {
 	  Name			  "CostFuncton"
 	  SID			  24
 	  Ports			  [1]
-	  Position		  [875, 233, 930, 267]
+	  Position		  [850, 258, 905, 292]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/DiscreteCost"
@@ -888,30 +1193,218 @@ Model {
 	  final_step		  on
 	}
 	Block {
-	  BlockType		  Reference
-	  Name			  "cost"
-	  SID			  25
+	  BlockType		  From
+	  Name			  "From"
+	  SID			  59
+	  Position		  [365, 301, 405, 329]
+	  GotoTag		  "v"
+	}
+	Block {
+	  BlockType		  From
+	  Name			  "From1"
+	  SID			  61
+	  Position		  [630, 196, 670, 224]
+	  GotoTag		  "v"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  53
+	  Position		  [700, 335, 740, 365]
+	  Gain			  "-10"
+	  ParameterDataTypeMode	  "Inherit via internal rule"
+	  ParameterDataType	  "fixdt(1, 16)"
+	  ParameterScaling	  "2^0"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Gain_1"
+	  }
+	}
+	Block {
+	  BlockType		  Goto
+	  Name			  "Goto"
+	  SID			  60
+	  Position		  [195, 80, 235, 110]
+	  GotoTag		  "v"
+	  TagVisibility		  "local"
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux"
+	  SID			  36
+	  Ports			  [2, 1]
+	  Position		  [245, 313, 250, 357]
+	  ShowName		  off
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Mux
+	  Name			  "Mux1"
+	  SID			  38
+	  Ports			  [2, 1]
+	  Position		  [245, 171, 250, 209]
+	  ShowName		  off
+	  Inputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Product"
+	  SID			  43
 	  Ports			  [3, 1]
-	  Position		  [680, 231, 850, 269]
-	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
-	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
-	  SourceType		  ""
-	  ShowPortLabels	  "none"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  P_f			  "[0 2 0; 0 0 2;2 0 0;1 0 0;0 0 0]"
-	  K_f			  "[1 1 1 -10 25]"
-	  P_g			  "[0 0 0] "
-	  K_g			  "1"
-	  inputs		  "yk,vk,thetak"
-	  inputScalar		  on
-	  outputScalar		  on
+	  Position		  [440, 83, 470, 187]
+	  Inputs		  "3"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Product_1"
+	  }
+	}
+	Block {
+	  BlockType		  Product
+	  Name			  "Product1"
+	  SID			  56
+	  Ports			  [3, 1]
+	  Position		  [490, 269, 520, 361]
+	  Inputs		  "***"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Floor"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Product1_1"
+	  }
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Squared"
+	  SID			  49
+	  Ports			  [1, 1]
+	  Position		  [700, 385, 730, 415]
+	  Operator		  "square"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Squared_1"
+	  }
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Squared1"
+	  SID			  51
+	  Ports			  [1, 1]
+	  Position		  [700, 195, 730, 225]
+	  Operator		  "square"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Squared1_1"
+	  }
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Squared2"
+	  SID			  52
+	  Ports			  [1, 1]
+	  Position		  [700, 240, 730, 270]
+	  Operator		  "square"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Squared2_1"
+	  }
+	}
+	Block {
+	  BlockType		  UnaryMinus
+	  Name			  "UnaryMinus"
+	  SID			  35
+	  Position		  [185, 345, 215, 375]
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_UnaryMinus_1"
+	  }
+	}
+	Block {
+	  BlockType		  UnaryMinus
+	  Name			  "UnaryMinus1"
+	  SID			  39
+	  Position		  [190, 200, 220, 230]
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_UnaryMinus1_1"
+	  }
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "cosine"
+	  SID			  46
+	  Ports			  [1, 1]
+	  Position		  [375, 155, 405, 185]
+	  Operator		  "cos"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_cosine_1"
+	  }
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "cost"
+	  SID			  50
+	  Ports			  [5, 1]
+	  Position		  [795, 227, 830, 323]
+	  Inputs		  "5"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
@@ -921,69 +1414,17 @@ Model {
 	  }
 	}
 	Block {
-	  BlockType		  Reference
-	  Name			  "inputConstraint1"
-	  SID			  26
+	  BlockType		  Trigonometry
+	  Name			  "sin"
+	  SID			  57
 	  Ports			  [1, 1]
-	  Position		  [165, 169, 305, 221]
-	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
-	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
-	  SourceType		  ""
-	  ShowPortLabels	  "none"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  P_f			  "[1  ;  0 ]"
-	  K_f			  "[1 -1 ; -1 0]"
-	  P_g			  "[0 ] "
-	  K_g			  "1"
-	  inputs		  "v"
-	  inputScalar		  on
-	  outputScalar		  off
+	  Position		  [425, 330, 455, 360]
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
 	    DataLoggingNameMode	    "Custom"
-	    DataLoggingName	    "System_inputConstraint1_1"
-	  }
-	}
-	Block {
-	  BlockType		  Reference
-	  Name			  "inputConstraint2"
-	  SID			  27
-	  Ports			  [1, 1]
-	  Position		  [150, 302, 290, 358]
-	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
-	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
-	  SourceType		  ""
-	  ShowPortLabels	  "none"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  P_f			  "[1;0]"
-	  K_f			  "[1 -pi/2; -1  0]"
-	  P_g			  "[0]"
-	  K_g			  "1"
-	  inputs		  "theta"
-	  inputScalar		  on
-	  outputScalar		  off
-	  Port {
-	    PortNumber		    1
-	    RTWStorageClass	    "Auto"
-	    DataLogging		    on
-	    DataLoggingNameMode	    "Custom"
-	    DataLoggingName	    "System_inputConstraint2_1"
+	    DataLoggingName	    "System_sin_1"
 	  }
 	}
 	Block {
@@ -991,7 +1432,7 @@ Model {
 	  Name			  "theta"
 	  SID			  28
 	  Ports			  [1, 1]
-	  Position		  [75, 247, 115, 273]
+	  Position		  [85, 242, 125, 268]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/InputFromSimulink"
@@ -1044,7 +1485,7 @@ Model {
 	  BlockType		  UnitDelay
 	  Name			  "x"
 	  SID			  30
-	  Position		  [630, 121, 670, 149]
+	  Position		  [565, 116, 605, 144]
 	  SampleTime		  "-1"
 	  Port {
 	    PortNumber		    1
@@ -1055,30 +1496,17 @@ Model {
 	  }
 	}
 	Block {
-	  BlockType		  Reference
+	  BlockType		  Sum
 	  Name			  "xk"
-	  SID			  31
-	  Ports			  [3, 1]
-	  Position		  [480, 109, 590, 161]
-	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
-	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
-	  SourceType		  ""
-	  ShowPortLabels	  "none"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  P_f			  "[1 0 0;0 1 BLOM_FunctionCode('cos')]"
-	  K_f			  "[1 0.5]"
-	  P_g			  "[0 0 0] "
-	  K_g			  "1"
-	  inputs		  "xk,vk,thetak"
-	  inputScalar		  on
-	  outputScalar		  on
+	  SID			  41
+	  Ports			  [2, 1]
+	  Position		  [515, 112, 545, 143]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
@@ -1091,7 +1519,7 @@ Model {
 	  BlockType		  UnitDelay
 	  Name			  "y"
 	  SID			  32
-	  Position		  [710, 301, 750, 329]
+	  Position		  [605, 296, 645, 324]
 	  X0			  "y0"
 	  SampleTime		  "-1"
 	  Port {
@@ -1103,30 +1531,17 @@ Model {
 	  }
 	}
 	Block {
-	  BlockType		  Reference
+	  BlockType		  Sum
 	  Name			  "yk"
-	  SID			  33
-	  Ports			  [3, 1]
-	  Position		  [500, 285, 610, 335]
-	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
-	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
-	  SourceType		  ""
-	  ShowPortLabels	  "none"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  P_f			  "[1 0 0; 0 1 BLOM_FunctionCode('sin')]"
-	  K_f			  "[1 0.5]"
-	  P_g			  "[0 0 0] "
-	  K_g			  "1"
-	  inputs		  "yk,vk,thetak"
-	  inputScalar		  on
-	  outputScalar		  on
+	  SID			  55
+	  Ports			  [2, 1]
+	  Position		  [550, 291, 580, 324]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
@@ -1136,65 +1551,45 @@ Model {
 	  }
 	}
 	Line {
-	  SrcBlock		  "xk"
-	  SrcPort		  1
-	  DstBlock		  "x"
-	  DstPort		  1
-	}
-	Line {
 	  SrcBlock		  "x"
 	  SrcPort		  1
-	  Points		  [30, 0; 0, -50; -270, 0; 0, 35]
+	  Points		  [20, 0; 0, -35; -140, 0; 0, 25]
 	  DstBlock		  "xk"
 	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "v"
 	  SrcPort		  1
-	  Points		  [15, 0]
+	  Points		  [35, 0]
 	  Branch {
-	    Labels		    [1, 0]
-	    Points		    [255, 0]
+	    Points		    [-10, 0; 0, 25]
 	    Branch {
-	      Points		      [0, 115]
-	      DstBlock		      "cost"
+	      Points		      [0, 55]
+	      DstBlock		      "UnaryMinus1"
+	      DstPort		      1
+	    }
+	    Branch {
+	      DstBlock		      "Bias1"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    Points		    [-10, 0]
+	    Branch {
+	      Points		      [0, -5; 0, -35]
+	      DstBlock		      "Goto"
+	      DstPort		      1
+	    }
+	    Branch {
+	      DstBlock		      "Product"
 	      DstPort		      2
 	    }
-	    Branch {
-	      Points		      [15, 0]
-	      Branch {
-		DstBlock		"xk"
-		DstPort			2
-	      }
-	      Branch {
-		Points			[0, 175]
-		DstBlock		"yk"
-		DstPort			2
-	      }
-	    }
 	  }
-	  Branch {
-	    Points		    [0, 65]
-	    DstBlock		    "inputConstraint1"
-	    DstPort		    1
-	  }
-	}
-	Line {
-	  SrcBlock		  "cost"
-	  SrcPort		  1
-	  DstBlock		  "CostFuncton"
-	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "v_in"
 	  SrcPort		  1
 	  DstBlock		  "v"
-	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "inputConstraint1"
-	  SrcPort		  1
-	  DstBlock		  "Constraint1"
 	  DstPort		  1
 	}
 	Line {
@@ -1206,41 +1601,56 @@ Model {
 	Line {
 	  SrcBlock		  "theta"
 	  SrcPort		  1
-	  Points		  [10, 0]
+	  Points		  [25, 0]
 	  Branch {
-	    Points		    [0, 70]
-	    DstBlock		    "inputConstraint2"
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [260, 0]
+	    Points		    [190, 0]
 	    Branch {
-	      Points		      [50, 0]
+	      Points		      [0, -25; 0, 25]
 	      Branch {
-		Points			[0, -110]
-		DstBlock		"xk"
-		DstPort			3
+		Points			[0, -85]
+		DstBlock		"cosine"
+		DstPort			1
 	      }
 	      Branch {
-		DstBlock		"cost"
-		DstPort			3
+		DstBlock		"Squared2"
+		DstPort			1
 	      }
 	    }
 	    Branch {
-	      Points		      [95, 0]
-	      DstBlock		      "yk"
-	      DstPort		      3
+	      Points		      [0, 90]
+	      DstBlock		      "sin"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    Points		    [0, 55]
+	    Branch {
+	      Points		      [0, 50]
+	      DstBlock		      "UnaryMinus"
+	      DstPort		      1
+	    }
+	    Branch {
+	      DstBlock		      "Bias"
+	      DstPort		      1
 	    }
 	  }
 	}
 	Line {
 	  SrcBlock		  "yk"
 	  SrcPort		  1
-	  Points		  [0, 5; 35, 0]
+	  Points		  [5, 0]
 	  Branch {
-	    Points		    [0, -75]
-	    DstBlock		    "cost"
-	    DstPort		    1
+	    Points		    [0, 0]
+	    Branch {
+	      Points		      [0, 90]
+	      DstBlock		      "Squared"
+	      DstPort		      1
+	    }
+	    Branch {
+	      Points		      [0, 40]
+	      DstBlock		      "Gain"
+	      DstPort		      1
+	    }
 	  }
 	  Branch {
 	    DstBlock		    "y"
@@ -1250,15 +1660,151 @@ Model {
 	Line {
 	  SrcBlock		  "y"
 	  SrcPort		  1
-	  Points		  [120, 0; 0, 50; -410, 0; 0, -70]
+	  Points		  [20, 0; 0, -35; -135, 0]
 	  DstBlock		  "yk"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "inputConstraint2"
+	  SrcBlock		  "Bias"
 	  SrcPort		  1
-	  DstBlock		  "Constraint3"
+	  Points		  [5, 0]
+	  DstBlock		  "Mux"
 	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "UnaryMinus"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  DstBlock		  "Mux"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Bias1"
+	  SrcPort		  1
+	  Points		  [5, 0]
+	  DstBlock		  "Mux1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "UnaryMinus1"
+	  SrcPort		  1
+	  Points		  [5, 0]
+	  DstBlock		  "Mux1"
+	  DstPort		  2
+	}
+	Line {
+	  Labels		  [1, 0]
+	  SrcBlock		  "Mux1"
+	  SrcPort		  1
+	  DstBlock		  "Constraint2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "xk"
+	  SrcPort		  1
+	  DstBlock		  "x"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Product"
+	  SrcPort		  1
+	  DstBlock		  "xk"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "cosine"
+	  SrcPort		  1
+	  DstBlock		  "Product"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Constant"
+	  SrcPort		  1
+	  DstBlock		  "Product"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Product1"
+	  SrcPort		  1
+	  DstBlock		  "yk"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "sin"
+	  SrcPort		  1
+	  DstBlock		  "Product1"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Constant2"
+	  SrcPort		  1
+	  DstBlock		  "Product1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "cost"
+	  SrcPort		  1
+	  DstBlock		  "CostFuncton"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Squared1"
+	  SrcPort		  1
+	  Points		  [25, 0; 0, 25]
+	  DstBlock		  "cost"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Squared2"
+	  SrcPort		  1
+	  DstBlock		  "cost"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Constant1"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -25]
+	  DstBlock		  "cost"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -55]
+	  DstBlock		  "cost"
+	  DstPort		  4
+	}
+	Line {
+	  SrcBlock		  "Squared"
+	  SrcPort		  1
+	  Points		  [45, 0]
+	  DstBlock		  "cost"
+	  DstPort		  5
+	}
+	Line {
+	  SrcBlock		  "From"
+	  SrcPort		  1
+	  DstBlock		  "Product1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "From1"
+	  SrcPort		  1
+	  DstBlock		  "Squared1"
+	  DstPort		  1
+	}
+	Line {
+	  Labels		  [0, 0]
+	  SrcBlock		  "Mux"
+	  SrcPort		  1
+	  DstBlock		  "Bound"
+	  DstPort		  1
+	}
+	Annotation {
+	  Position		  [209, 333]
+	}
+	Annotation {
+	  Position		  [209, 188]
 	}
       }
     }
