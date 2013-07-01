@@ -1,11 +1,10 @@
 clear
 
-addpath(genpath('H:\trunk'))
 %% Convert model to optimization problem
 y0=-20;
 
-BLOM_SetDataLogging('SlidesExampleNew_example')
-ModelSpec = BLOM_ExtractModel('SlidesExampleNew_example',120,0.5);
+BLOM_SetDataLogging('TrajectoryExample_Regular')
+ModelSpec = BLOM_ExtractModel('TrajectoryExample_Regular',120,0.5);
 
 RunResults = BLOM_RunModel(ModelSpec);
 
