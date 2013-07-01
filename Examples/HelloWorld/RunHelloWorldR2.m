@@ -1,7 +1,7 @@
 clear
 
 %% Convert model to optimization problem
-[ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel('HelloWorldNew',10,1,'Euler',1);
+[ModelSpec,block2,stepVars2,allVars2] = BLOM_ExtractModel2('HelloWorldNew',10,1,'Euler',1);
 %%
 [RunResults ResultsVec] = BLOM_RunModel(ModelSpec);
 %%

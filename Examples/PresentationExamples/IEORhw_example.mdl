@@ -1,16 +1,97 @@
 Model {
-  Name			  "testSubsystem"
+  Name			  "IEORhw_example"
   Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.6"
+    ComputedModelVersion    "1.12"
     NumModelReferences	    0
-    NumTestPointedSignals   0
+    NumTestPointedSignals   9
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/Add"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Add_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/Polyblock2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Polyblock2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/UnaryMinus"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "UnaryMinus_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/x1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "x1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/x2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "x2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/x3"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "x3_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/Subsystem/Add"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_Add_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/Subsystem/MathFunction1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_MathFunction1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "IEORhw_example/Subsystem/MathFunction2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_MathFunction2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
   }
-  SavedCharacterEncoding  "ISO-8859-1"
+  SavedCharacterEncoding  "windows-1252"
   SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
@@ -19,22 +100,22 @@ Model {
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
-  Created		  "Tue Apr 16 15:29:37 2013"
-  Creator		  "Eric"
+  Created		  "Mon Jun 24 15:06:23 2013"
+  Creator		  "Kyle"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon May 20 16:50:48 2013"
-  RTWModifiedTimeStamp	  290966569
-  ModelVersionFormat	  "1.%<AutoIncrement:6>"
+  LastModifiedDate	  "Fri Jun 28 13:02:13 2013"
+  RTWModifiedTimeStamp	  294325286
+  ModelVersionFormat	  "1.%<AutoIncrement:12>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
-  WideLines		  off
+  WideLines		  on
   ShowLineDimensions	  off
-  ShowPortDataTypes	  off
+  ShowPortDataTypes	  on
   ShowLoopsOnError	  on
   IgnoreBidirectionalLines off
   ShowStorageClass	  off
@@ -533,7 +614,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 280, 124, 1160, 754 ] "
+      ConfigPrmDlgPosition    " [ 520, 225, 1400, 855 ] "
     }
     PropName		    "ConfigurationSets"
   }
@@ -574,22 +655,6 @@ Model {
   }
   BlockParameterDefaults {
     Block {
-      BlockType		      Constant
-      Value		      "1"
-      VectorParams1D	      on
-      SamplingMode	      "Sample based"
-      OutMin		      "[]"
-      OutMax		      "[]"
-      OutDataTypeMode	      "Inherit from 'Constant value'"
-      OutDataType	      "fixdt(1,16,0)"
-      ConRadixGroup	      "Use specified scaling"
-      OutScaling	      "[]"
-      OutDataTypeStr	      "Inherit: Inherit from 'Constant value'"
-      LockScale		      off
-      SampleTime	      "inf"
-      FramePeriod	      "inf"
-    }
-    Block {
       BlockType		      Inport
       Port		      "1"
       UseBusObject	      off
@@ -610,6 +675,24 @@ Model {
       LatchByDelayingOutsideSignal off
       LatchByCopyingInsideSignal off
       Interpolate	      on
+    }
+    Block {
+      BlockType		      Math
+      Operator		      "exp"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
     }
     Block {
       BlockType		      Outport
@@ -653,16 +736,33 @@ Model {
       MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
-      BlockType		      UnitDelay
-      X0		      "0"
-      SampleTime	      "1"
-      StateMustResolveToSignalObject off
-      RTWStateStorageClass    "Auto"
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      UnaryMinus
+      SampleTime	      "-1"
+      SaturateOnIntegerOverflow	off
     }
   }
   System {
-    Name		    "testSubsystem"
-    Location		    [1853, 83, 2433, 343]
+    Name		    "IEORhw_example"
+    Location		    [1721, 277, 2460, 639]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -676,15 +776,36 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    15
+    SIDHighWatermark	    24
+    Block {
+      BlockType		      Sum
+      Name		      "Add"
+      SID		      16
+      Ports		      [2, 1]
+      Position		      [410, 127, 440, 158]
+      Inputs		      "+-"
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^-10"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Add_1"
+      }
+    }
     Block {
       BlockType		      Reference
-      Name		      "Bound"
+      Name		      "Bound1"
       SID		      5
       Ports		      [1]
-      Position		      [430, 92, 505, 138]
+      Position		      [580, 122, 655, 168]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.80"
+      LibraryVersion	      "1.113"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -696,25 +817,118 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       ub		      "1"
-      lb		      "0"
+      lb		      "-inf"
       initial_step	      on
-      final_step	      on
       intermediate_step	      on
+      final_step	      on
     }
     Block {
-      BlockType		      Constant
-      Name		      "Constant"
+      BlockType		      Reference
+      Name		      "Bound2"
+      SID		      6
+      Ports		      [1]
+      Position		      [230, 177, 305, 223]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "inf"
+      lb		      "0"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound3"
       SID		      4
-      Position		      [135, 95, 165, 125]
-      OutDataType	      "fixdt(1, 16)"
-      OutScaling	      "2^0"
+      Ports		      [1]
+      Position		      [580, 47, 655, 93]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "5"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "DiscreteCost"
+      SID		      10
+      Ports		      [1]
+      Position		      [580, 207, 655, 253]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/DiscreteCost"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Polyblock2"
+      SID		      9
+      Ports		      [3, 1]
+      Position		      [380, 192, 470, 268]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/Polyblock"
+      SourceType	      ""
+      ShowPortLabels	      "none"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      P			      "[1 0 0; 0 1 0; 0 0 2; 0 0 1]"
+      K			      "[3 1 -1 2]"
+      inputs		      "x1,x2,x3"
+      inputScalar	      on
+      outputScalar	      on
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Polyblock2_1"
+      }
     }
     Block {
       BlockType		      SubSystem
       Name		      "Subsystem"
-      SID		      1
-      Ports		      [1, 1]
-      Position		      [250, 94, 350, 136]
+      SID		      18
+      Ports		      [2, 1]
+      Position		      [395, 49, 495, 91]
       LibraryVersion	      "1.762"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -725,7 +939,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"Subsystem"
-	Location		[1883, 403, 2381, 703]
+	Location		[1615, 493, 2113, 793]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -740,162 +954,292 @@ Model {
 	ZoomFactor		"100"
 	Block {
 	  BlockType		  Inport
-	  Name			  "In1"
-	  SID			  2
-	  Position		  [110, 103, 140, 117]
+	  Name			  "inX1"
+	  SID			  19
+	  Position		  [105, 73, 135, 87]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
 	Block {
-	  BlockType		  SubSystem
-	  Name			  "Subsystem"
-	  SID			  7
-	  Ports			  [1, 1]
-	  Position		  [255, 89, 355, 131]
-	  LibraryVersion	  "1.762"
-	  MinAlgLoopOccurrences	  off
-	  PropExecContextOutsideSubsystem off
-	  RTWSystemCode		  "Auto"
-	  FunctionWithSeparateData off
-	  Opaque		  off
-	  RequestExecContextInheritance	off
-	  MaskHideContents	  off
-	  System {
-	    Name		    "Subsystem"
-	    Location		    [1871, 763, 2369, 1063]
-	    Open		    on
-	    ModelBrowserVisibility  off
-	    ModelBrowserWidth	    200
-	    ScreenColor		    "white"
-	    PaperOrientation	    "landscape"
-	    PaperPositionMode	    "auto"
-	    PaperType		    "usletter"
-	    PaperUnits		    "inches"
-	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
-	    TiledPageScale	    1
-	    ShowPageBoundaries	    off
-	    ZoomFactor		    "100"
-	    Block {
-	      BlockType		      Inport
-	      Name		      "In1"
-	      SID		      8
-	      Position		      [110, 103, 140, 117]
-	      IconDisplay	      "Port number"
-	      OutDataType	      "fixdt(1, 16)"
-	      OutScaling	      "2^0"
-	    }
-	    Block {
-	      BlockType		      Reference
-	      Name		      "Bound1"
-	      SID		      15
-	      Ports		      [1]
-	      Position		      [210, 152, 285, 198]
-	      BackgroundColor	      "lightBlue"
-	      LibraryVersion	      "1.80"
-	      SourceBlock	      "BLOM_Lib/Bound"
-	      SourceType	      ""
-	      ShowPortLabels	      "FromPortIcon"
-	      SystemSampleTime	      "-1"
-	      FunctionWithSeparateData off
-	      RTWMemSecFuncInitTerm   "Inherit from model"
-	      RTWMemSecFuncExecute    "Inherit from model"
-	      RTWMemSecDataConstants  "Inherit from model"
-	      RTWMemSecDataInternal   "Inherit from model"
-	      RTWMemSecDataParameters "Inherit from model"
-	      ub		      "2"
-	      lb		      "1"
-	      initial_step	      on
-	      final_step	      on
-	      intermediate_step	      on
-	    }
-	    Block {
-	      BlockType		      UnitDelay
-	      Name		      "Unit Delay"
-	      SID		      14
-	      Position		      [210, 93, 245, 127]
-	      SampleTime	      "-1"
-	    }
-	    Block {
-	      BlockType		      Outport
-	      Name		      "Out1"
-	      SID		      9
-	      Position		      [360, 103, 390, 117]
-	      IconDisplay	      "Port number"
-	      OutDataType	      "fixdt(1, 16)"
-	      OutScaling	      "2^0"
-	    }
-	    Line {
-	      SrcBlock		      "In1"
-	      SrcPort		      1
-	      Points		      [20, 0]
-	      Branch {
-		DstBlock		"Unit Delay"
-		DstPort			1
-	      }
-	      Branch {
-		Points			[0, 65]
-		DstBlock		"Bound1"
-		DstPort			1
-	      }
-	    }
-	    Line {
-	      SrcBlock		      "Unit Delay"
-	      SrcPort		      1
-	      DstBlock		      "Out1"
-	      DstPort		      1
-	    }
+	  BlockType		  Inport
+	  Name			  "inX2"
+	  SID			  21
+	  Position		  [105, 123, 135, 137]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Add"
+	  SID			  24
+	  Ports			  [2, 1]
+	  Position		  [275, 87, 305, 118]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "Subsystem_Add_1"
 	  }
 	}
 	Block {
-	  BlockType		  UnitDelay
-	  Name			  "Unit Delay"
-	  SID			  13
-	  Position		  [175, 83, 210, 117]
-	  SampleTime		  "-1"
+	  BlockType		  Math
+	  Name			  "MathFunction1"
+	  SID			  23
+	  Ports			  [1, 1]
+	  Position		  [185, 65, 215, 95]
+	  Operator		  "magnitude^2"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "Subsystem_MathFunction1_1"
+	  }
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "MathFunction2"
+	  SID			  22
+	  Ports			  [1, 1]
+	  Position		  [185, 115, 215, 145]
+	  Operator		  "magnitude^2"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "Subsystem_MathFunction2_1"
+	  }
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "Out1"
-	  SID			  3
-	  Position		  [400, 103, 430, 117]
+	  SID			  20
+	  Position		  [360, 98, 390, 112]
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
 	}
 	Line {
-	  SrcBlock		  "In1"
+	  SrcBlock		  "inX1"
 	  SrcPort		  1
-	  Points		  [15, 0]
-	  DstBlock		  "Unit Delay"
+	  DstBlock		  "MathFunction1"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Subsystem"
+	  SrcBlock		  "inX2"
+	  SrcPort		  1
+	  DstBlock		  "MathFunction2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Add"
 	  SrcPort		  1
 	  DstBlock		  "Out1"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Unit Delay"
+	  SrcBlock		  "MathFunction1"
 	  SrcPort		  1
-	  Points		  [10, 0; 0, 10]
-	  DstBlock		  "Subsystem"
+	  Points		  [25, 0; 0, 15]
+	  DstBlock		  "Add"
 	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MathFunction2"
+	  SrcPort		  1
+	  Points		  [25, 0; 0, -20]
+	  DstBlock		  "Add"
+	  DstPort		  2
+	}
+      }
+    }
+    Block {
+      BlockType		      UnaryMinus
+      Name		      "UnaryMinus"
+      SID		      11
+      Position		      [510, 215, 540, 245]
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"UnaryMinus_1"
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "x1"
+      SID		      12
+      Ports		      [1, 1]
+      Position		      [170, 39, 270, 81]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/InputFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"x1_1"
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "x2"
+      SID		      13
+      Ports		      [1, 1]
+      Position		      [100, 129, 200, 171]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/InputFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"x2_1"
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "x3"
+      SID		      14
+      Ports		      [1, 1]
+      Position		      [100, 234, 200, 276]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.113"
+      SourceBlock	      "BLOM_Lib/InputFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"x3_1"
+      }
+    }
+    Line {
+      SrcBlock		      "x1"
+      SrcPort		      1
+      Points		      [70, 0]
+      Branch {
+	Points			[0, 75]
+	Branch {
+	  DstBlock		  "Add"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, 70]
+	  DstBlock		  "Polyblock2"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	DstBlock		"Subsystem"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "x2"
+      SrcPort		      1
+      Points		      [115, 0]
+      Branch {
+	Points			[0, 80]
+	DstBlock		"Polyblock2"
+	DstPort			2
+      }
+      Branch {
+	Points			[0, 0]
+	Branch {
+	  DstBlock		  "Add"
+	  DstPort		  2
+	}
+	Branch {
+	  Points		  [0, -70]
+	  DstBlock		  "Subsystem"
+	  DstPort		  2
 	}
       }
     }
     Line {
-      SrcBlock		      "Constant"
+      SrcBlock		      "Subsystem"
       SrcPort		      1
-      Points		      [30, 0; 0, 5]
-      DstBlock		      "Subsystem"
+      DstBlock		      "Bound3"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Subsystem"
+      SrcBlock		      "x3"
       SrcPort		      1
-      DstBlock		      "Bound"
+      Points		      [10, 0]
+      Branch {
+	DstBlock		"Bound2"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Polyblock2"
+	DstPort			3
+      }
+    }
+    Line {
+      SrcBlock		      "Polyblock2"
+      SrcPort		      1
+      DstBlock		      "UnaryMinus"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "UnaryMinus"
+      SrcPort		      1
+      DstBlock		      "DiscreteCost"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Add"
+      SrcPort		      1
+      DstBlock		      "Bound1"
       DstPort		      1
     }
   }
