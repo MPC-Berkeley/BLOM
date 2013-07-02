@@ -212,6 +212,7 @@ classdef BLOM_Variable < handle
             out = power(in1, BLOM_FunctionCode('erf'));
         end
         
+        % norm
         % horzcat
         % vertcat
         % repmat

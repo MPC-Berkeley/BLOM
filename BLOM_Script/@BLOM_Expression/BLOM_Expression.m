@@ -203,8 +203,9 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
                 in1_Kt = in1.K'; % save transpose because getting columns
                 % of a sparse matrix is faster than getting rows
                 for i = 1:size(in1.K, 1) % should vectorize this loop
-                    out = out * BLOM_Expression(in1.problem, ...
+                    elem_i = BLOM_Expression(in1.problem, ...
                         in1_Kt(:, i)', in1.Pt, in1.specialFunction);
+                    out = out * elem_i.removeUnusedTerms;
                 end
             elseif ~isnumeric(dim) || numel(dim) > 1
                 error('dimension input must be a scalar constant')
@@ -265,6 +266,7 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
             out = power(in1, BLOM_FunctionCode('erf'));
         end
         
+        % norm
         % horzcat
         % vertcat
         % repmat

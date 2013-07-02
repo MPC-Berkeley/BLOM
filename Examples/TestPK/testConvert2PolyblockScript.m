@@ -1,4 +1,4 @@
-warning off;
+%warning off;
 %% initialize
 simin = [0 1];
 horizon = 1;
@@ -225,4 +225,4 @@ end
 
 testConvert2Polyblock([],[],[],'term');
 
-warning on;
+%warning on;

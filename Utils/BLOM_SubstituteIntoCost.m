@@ -1,7 +1,7 @@
 function [P K vars_removed] = ...
     BLOM_SubstituteIntoCost(P, K, lb, ub, vars_not_to_remove)
-% This function finds and eliminates any unbounded variables that appear
-% in the cost function and only one constraint, except for any variables
+% This function finds and eliminates unbounded variables that appear in
+% the cost function and only one simple constraint, except for variables
 % specified in the optional last input. The last output vars_removed is
 % a logical array with length equal to the original number of variables.
 

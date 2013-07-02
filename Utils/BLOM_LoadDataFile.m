@@ -2,7 +2,7 @@ function data = BLOM_LoadDataFile(filename, formatstr)
 % This function loads a data file into a Matlab variable, in the format
 %   specified by the formatstr argument
 % Input arguments:
-% filename - the file name to save to
+% filename - the file name to load from
 % formatstr - a string indicating the data format (case insensitive),
 %   where the valid choices are:
 %   tripletmat_binary for a sparse matrix in binary triplet [row col val] format
