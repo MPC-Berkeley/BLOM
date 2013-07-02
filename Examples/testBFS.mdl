@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.72"
+    ComputedModelVersion    "1.73"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jun 21 14:03:56 2013"
-  RTWModifiedTimeStamp	  293724235
-  ModelVersionFormat	  "1.%<AutoIncrement:72>"
+  LastModifiedDate	  "Tue Jul 02 16:12:18 2013"
+  RTWModifiedTimeStamp	  294682332
+  ModelVersionFormat	  "1.%<AutoIncrement:73>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -758,7 +758,7 @@ Model {
   }
   System {
     Name		    "testBFS"
-    Location		    [2518, -263, 3222, 579]
+    Location		    [368, 29, 1089, 871]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -826,7 +826,7 @@ Model {
       Ports		      [1]
       Position		      [305, 242, 380, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -840,8 +840,8 @@ Model {
       ub		      "8"
       lb		      "-8"
       initial_step	      on
-      final_step	      on
       intermediate_step	      on
+      final_step	      on
     }
     Block {
       BlockType		      Reference
@@ -850,7 +850,7 @@ Model {
       Ports		      [1]
       Position		      [625, 242, 700, 288]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -864,8 +864,8 @@ Model {
       ub		      "6"
       lb		      "-6"
       initial_step	      on
-      final_step	      on
       intermediate_step	      off
+      final_step	      on
     }
     Block {
       BlockType		      Reference
@@ -874,7 +874,7 @@ Model {
       Ports		      [1]
       Position		      [625, 307, 700, 353]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -888,8 +888,8 @@ Model {
       ub		      "10"
       lb		      "-10"
       initial_step	      off
-      final_step	      off
       intermediate_step	      on
+      final_step	      off
     }
     Block {
       BlockType		      Reference
@@ -898,7 +898,7 @@ Model {
       Ports		      [1]
       Position		      [310, 557, 385, 603]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -912,8 +912,8 @@ Model {
       ub		      "inf"
       lb		      "-inf"
       initial_step	      on
-      final_step	      on
       intermediate_step	      on
+      final_step	      on
     }
     Block {
       BlockType		      Constant
@@ -968,7 +968,7 @@ Model {
       Ports		      [1]
       Position		      [510, 32, 585, 78]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -980,8 +980,8 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       initial_step	      on
-      final_step	      on
       intermediate_step	      on
+      final_step	      on
     }
     Block {
       BlockType		      Reference
@@ -990,7 +990,7 @@ Model {
       Ports		      [1, 1]
       Position		      [270, 374, 370, 416]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1010,7 +1010,7 @@ Model {
       Ports		      [0, 1]
       Position		      [270, 309, 370, 351]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/ExternalFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1105,7 +1105,7 @@ Model {
       Ports		      [1, 1]
       Position		      [125, 164, 225, 206]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1125,7 +1125,7 @@ Model {
       Ports		      [0, 1]
       Position		      [125, 19, 225, 61]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/InputFromWorkspace"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1156,7 +1156,7 @@ Model {
       Ports		      [2, 2]
       Position		      [310, 622, 400, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1180,7 +1180,7 @@ Model {
       Ports		      [1, 2]
       Position		      [270, 147, 360, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1204,7 +1204,7 @@ Model {
       Ports		      [2, 1]
       Position		      [625, 622, 715, 698]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1228,7 +1228,7 @@ Model {
       Ports		      [1, 1]
       Position		      [545, 437, 635, 513]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.112"
+      LibraryVersion	      "1.115"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -1273,7 +1273,7 @@ Model {
       System {
 	Name			"Subsystem"
 	Location		[992, 425, 1317, 657]
-	Open			on
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1455,7 +1455,7 @@ Model {
 	  Ports			  [1, 2]
 	  Position		  [170, 77, 260, 153]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -1467,7 +1467,7 @@ Model {
 	  RTWMemSecDataInternal	  "Inherit from model"
 	  RTWMemSecDataParameters "Inherit from model"
 	  P			  "sparse([1 1])"
-	  K			  "sparse([1 0.8; 1 1])"
+	  K			  "sparse([1; 1])"
 	  inputs		  "0"
 	  inputScalar		  off
 	  outputScalar		  on
