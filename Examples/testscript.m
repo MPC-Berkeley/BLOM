@@ -3,7 +3,7 @@ simin = [0 1];
 
 %profile on;
 horizon = 3;
-[a,block,stepVars,allVars] = BLOM_ExtractModel2('testBFS',horizon,1,1,1);
+[a,block,stepVars,allVars] = BLOM_ExtractModel('testBFS',horizon);
 %profile viewer;
 
 %% note, should find the following blocks in the BFS search (parentheses
@@ -21,7 +21,7 @@ testBFS_Blocks = {'Add1','Unit Delay2','Add','InputFromWorkspace','InputFromSimu
     'Subsystem2','Subsystem2/In1','Subsystem2/In2','Subsystem2/Add4','Subsystem2/Gain','Subsystem2/Integrator1',...
     'Subsystem2/Subsubsystem1', 'Subsystem2/Subsubsystem1/In1', 'Subsystem2/Subsubsystem1/Gain',...
     'Subsystem2/Subsubsystem2', 'Subsystem2/Subsubsystem2/In1', 'Subsystem2/Subsubsystem2/Gain',...
-    'Bound', 'Bound1', 'DiscreteCost','Bound2','Demux1'};
+    'Bound', 'Bound1', 'DiscreteCost','Bound2','Demux1','Bound3'};
 
 for i = 1:length(testBFS_Blocks)
     testBFS_Blocks{i} = ['testBFS/' testBFS_Blocks{i}];
