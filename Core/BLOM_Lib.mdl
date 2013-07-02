@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jun 26 12:26:09 2013"
-  RTWModifiedTimeStamp	  294150364
-  ModelVersionFormat	  "1.%<AutoIncrement:113>"
+  LastModifiedDate	  "Tue Jul 02 10:55:17 2013"
+  RTWModifiedTimeStamp	  294663244
+  ModelVersionFormat	  "1.%<AutoIncrement:115>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -667,7 +667,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [2137, -156, 2706, 285]
+    Location		    [3035, 284, 3591, 725]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -963,9 +963,10 @@ Library {
       BlockType		      SubSystem
       Name		      "GeneralPolyblock"
       SID		      72
-      Ports		      [3, 1]
-      Position		      [295, 207, 385, 283]
+      Ports		      [2, 1]
+      Position		      [290, 221, 390, 259]
       BackgroundColor	      "lightBlue"
+      MoveFcn		      "set_param(gcb,'P',get_param(gcb,'P'))"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -977,6 +978,7 @@ Library {
       MaskDescription	      "y = f(x)/g(x)\nwhere f and g are a sum of polynomial and exponential terms, described by "
       "P and K matricies.\nExample: f=x1*exp(x3)+0.8x1^3*x2\nP_f = [1 0 BLOM_FunctionCode('exp');\n     3 1 0];\nK_f = "
       "[1 0.8];"
+      MaskHelp		      "x1*x2\n"
       MaskPromptString	      "P matrix f(X)|K matrix f(x)|P matrix g(x)	|K matrix g(x)|Input names, comma separated|In"
       "put(s) as scalar?|Output(s) as scalar?"
       MaskStyleString	      "edit,edit,edit,edit,edit,checkbox,checkbox"
@@ -992,15 +994,23 @@ Library {
       " P in f must be equal to number of columns of K in f!'];\n    disp(str);\n    error(str);\nend\n\nif (size(P_g,1"
       ") ~= size(K_g,2))\n    str =[gcb ': Number of rows of P in g must be equal to number of columns of K in g!'];\n "
       "   disp(str);\n    error(str);\nend\n\nif (size(K_g,1) ~= 1 && size(K_g,1) ~= size(K_f,1))\n    str =[gcb ': g m"
-      "ust be a scalar function or equal dimension to f'];\n    disp(str);\n    error(str);\nend"
-      MaskDisplay	      "fprintf('Polyblock f(x)/g(x)')"
+      "ust be a scalar function or equal dimension to f'];\n    disp(str);\n    error(str);\nend\n\n\n\npos = get_param"
+      "(gcb,'position');\nwidth = pos(3)-pos(1);\nheight = pos(4)-pos(2);\nletter_width = 5; % pixels\nletter_height = "
+      "15; % pixels\nmax_length = (width-15)/letter_width;\nmax_rows = max(1,floor((height-10)/letter_height));\n\nname"
+      "s  = BLOM_ParseNames(inputs,size(P_f,2));\n\nfull_name = BLOM_GetPolyBlockEquation(P_f,K_f,P_g,K_g,names,max_row"
+      "s,max_length);\n\nlabels = [ 'fprintf(full_name)' char(13) char(10) ];\nif inputScalar == 1\n    for idx = 1:len"
+      "gth(names)\n        thisLabel = sprintf('port_label(''input'',%d,''%s'')',idx,names{idx});\n        labels = [la"
+      "bels thisLabel char(13) char(10)];\n    end\n    labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\n"
+      "if strcmp(get_param(bdroot,'Open'),'on')\n    help_name = BLOM_GetPolyBlockEquation(P_f,K_f,P_g,K_g,names,1000,1"
+      "000);\n    set(gcbh,'MaskHelp',help_name);\nend"
+      MaskDisplay	      "fprintf(full_name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|[0 0 0]|[1]|x1,x2,x3|on|on"
+      MaskValueString	      "sparse([1 1])|sparse([1])|[0 0 ]|[1]|x1,x2|on|on"
       System {
 	Name			"GeneralPolyblock"
 	Location		[1097, 344, 1648, 742]
@@ -1037,16 +1047,6 @@ Library {
 	  OutScaling		  "2^0"
 	}
 	Block {
-	  BlockType		  Inport
-	  Name			  "In3"
-	  SID			  75
-	  Position		  [30, 158, 60, 172]
-	  Port			  "3"
-	  IconDisplay		  "Port number"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
 	  BlockType		  Demux
 	  Name			  "Demux"
 	  SID			  76
@@ -1075,10 +1075,10 @@ Library {
 	  BlockType		  Mux
 	  Name			  "Mux"
 	  SID			  77
-	  Ports			  [3, 1]
-	  Position		  [90, 100, 95, 160]
+	  Ports			  [2, 1]
+	  Position		  [80, 40, 85, 80]
 	  ShowName		  off
-	  Inputs		  "3"
+	  Inputs		  "2"
 	  DisplayOption		  "bar"
 	}
 	Block {
@@ -1088,12 +1088,12 @@ Library {
 	  Ports			  [1, 1]
 	  Position		  [155, 32, 245, 108]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.106"
+	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  "Unknown"
+	  SourceType		  ""
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData "off"
+	  FunctionWithSeparateData off
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1102,8 +1102,8 @@ Library {
 	  P			  "P_f"
 	  K			  "K_f"
 	  inputs		  "x"
-	  inputScalar		  "off"
-	  outputScalar		  "off"
+	  inputScalar		  off
+	  outputScalar		  off
 	}
 	Block {
 	  BlockType		  Reference
@@ -1112,12 +1112,12 @@ Library {
 	  Ports			  [1, 1]
 	  Position		  [155, 152, 245, 228]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.106"
+	  LibraryVersion	  "1.113"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  "Unknown"
+	  SourceType		  ""
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData "off"
+	  FunctionWithSeparateData off
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1126,8 +1126,8 @@ Library {
 	  P			  "P_g"
 	  K			  "K_g"
 	  inputs		  "x"
-	  inputScalar		  "off"
-	  outputScalar		  "off"
+	  inputScalar		  off
+	  outputScalar		  off
 	}
 	Block {
 	  BlockType		  Outport
@@ -1153,20 +1153,13 @@ Library {
 	Line {
 	  SrcBlock		  "In2"
 	  SrcPort		  1
-	  Points		  [0, -10]
 	  DstBlock		  "Mux"
 	  DstPort		  2
 	}
 	Line {
-	  SrcBlock		  "In3"
-	  SrcPort		  1
-	  DstBlock		  "Mux"
-	  DstPort		  3
-	}
-	Line {
 	  SrcBlock		  "Mux"
 	  SrcPort		  1
-	  Points		  [15, 0; 0, 0]
+	  Points		  [25, 0; 0, 70]
 	  Branch {
 	    Points		    [0, -60]
 	    DstBlock		    "Polyblock"
@@ -1350,9 +1343,10 @@ Library {
       BlockType		      SubSystem
       Name		      "Polyblock"
       SID		      41
-      Ports		      [3, 1]
-      Position		      [55, 207, 145, 283]
+      Ports		      [2, 1]
+      Position		      [60, 221, 160, 259]
       BackgroundColor	      "lightBlue"
+      MoveFcn		      "set_param(gcb,'P',get_param(gcb,'P'))"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -1363,6 +1357,7 @@ Library {
       MaskHideContents	      off
       MaskDescription	      "y = f(x)\nwhere f is a sum of polynomial and exponential terms, described by P and K matr"
       "icies.\nExample: f=x1*exp(x3)+0.8x1^3*x2\nP = [1 0 BLOM_FunctionCode('exp');\n     3 1 0];\nK = [1 0.8];"
+      MaskHelp		      "x1*x2\n"
       MaskPromptString	      "P matrix|K matrix|Input names, comma separated|Input(s) as scalar?|Output(s) as scalar?"
       MaskStyleString	      "edit,edit,edit,checkbox,checkbox"
       MaskTunableValueString  "on,on,on,on,on"
@@ -1371,15 +1366,23 @@ Library {
       MaskVisibilityString    "on,on,on,on,on"
       MaskToolTipString	      "on,on,on,on,on"
       MaskVariables	      "P=@1;K=@2;inputs=&3;inputScalar=@4;outputScalar=@5;"
-      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb,P,K,inputs,inputScalar,outputScalar)"
-      MaskDisplay	      "fprintf('Polyblock')"
+      MaskInitialization      "BLOM_PolyblockChangeInputs(gcb,P,K,inputs,inputScalar,outputScalar)\n\npos = get_param("
+      "gcb,'position');\nwidth = pos(3)-pos(1);\nheight = pos(4)-pos(2);\nletter_width = 5; % pixels\nletter_height = 1"
+      "5; % pixels\nmax_length = (width-15)/letter_width;\nmax_rows = max(1,floor((height-10)/letter_height));\n\nnames"
+      "  = BLOM_ParseNames(inputs,size(P,2));\n\nfull_name = BLOM_GetPolyBlockEquation(P,K,0,1,names,max_rows,max_lengt"
+      "h);\n\nlabels = [ 'fprintf(full_name)' char(13) char(10) ];\nif inputScalar == 1\n    for idx = 1:length(names)\n"
+      "        thisLabel = sprintf('port_label(''input'',%d,''%s'')',idx,names{idx});\n        labels = [labels thisLab"
+      "el char(13) char(10)];\n    end\n    labels(end) = [];\nend\nset_param(gcb,'MaskDisplay',labels);\n\nif strcmp(g"
+      "et_param(bdroot,'Open'),'on')\n    help_name = BLOM_GetPolyBlockEquation(P,K,0,1,names,1000,1000);\n    set(gcbh"
+      ",'MaskHelp',help_name);\nend\n"
+      MaskDisplay	      "fprintf(full_name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')"
       MaskSelfModifiable      on
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "sparse([1 1 0; 3 1 0])|sparse([1 0.8])|x1,x2|on|on"
+      MaskValueString	      "sparse([1 1 ])|sparse([1])|x1,x2|on|on"
       System {
 	Name			"Polyblock"
 	Location		[197, 323, 748, 500]
@@ -1417,16 +1420,6 @@ Library {
 	  OutScaling		  "2^0"
 	}
 	Block {
-	  BlockType		  Inport
-	  Name			  "In3"
-	  SID			  166
-	  Position		  [20, 98, 50, 112]
-	  Port			  "3"
-	  IconDisplay		  "Port number"
-	  OutDataType		  "fixdt(1, 16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
 	  BlockType		  Demux
 	  Name			  "Demux"
 	  SID			  138
@@ -1440,10 +1433,10 @@ Library {
 	  BlockType		  Mux
 	  Name			  "Mux"
 	  SID			  125
-	  Ports			  [3, 1]
-	  Position		  [80, 40, 85, 100]
+	  Ports			  [2, 1]
+	  Position		  [80, 40, 85, 80]
 	  ShowName		  off
-	  Inputs		  "3"
+	  Inputs		  "2"
 	  DisplayOption		  "bar"
 	}
 	Block {
@@ -1487,6 +1480,7 @@ Library {
 	Line {
 	  SrcBlock		  "Mux"
 	  SrcPort		  1
+	  Points		  [0, 10]
 	  DstBlock		  "S-Function"
 	  DstPort		  1
 	}
@@ -1496,12 +1490,6 @@ Library {
 	  Points		  [10, 0]
 	  DstBlock		  "Demux"
 	  DstPort		  1
-	}
-	Line {
-	  SrcBlock		  "In3"
-	  SrcPort		  1
-	  DstBlock		  "Mux"
-	  DstPort		  3
 	}
       }
     }
