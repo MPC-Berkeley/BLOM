@@ -337,6 +337,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.refBlock = cell(initialSize,1);% store the refblock for block for BFS switching
     block.reroute = false(initialSize,1);% true if this block will need to reroute variables in one way or another
     block.specialFunPresence = false(initialSize,1);% true if this block contains a special function
+    block.integrator = false(initialSize,1); %true if this block is an integrator
 
 
     
@@ -467,7 +468,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions',...
             'handles', 'bound', 'cost', 'subsystem', 'mux', 'demux', 'delay',...
             'subsystemInput', 'fromBlock', 'inputBlock', 'externalBlock', ...
-            'blockType', 'refBlock', 'reroute', 'specialFunPresence'}
+            'blockType', 'refBlock', 'reroute', 'specialFunPresence', 'integrator'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
 
@@ -753,7 +754,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         
         for field = {'bound', 'cost', 'subsystem', 'mux', 'demux',...
                 'delay','reroute','subsystemInput','fromBlock','inputBlock',...
-                'externalBlock','specialFunPresence'}
+                'externalBlock','specialFunPresence', 'integrator'}
             block.(field{1}) = [block.(field{1}); false(block.zeroIdx,1)];
         end
     end
@@ -810,6 +811,9 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
             % Unit Delay Label
             block.delay(block.zeroIdx) = true;
+        elseif strcmp(block.blockType{block.zeroIdx}, 'Integrator')
+            % Label Integrator
+            block.integrator(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroIdx},'Inport')
             parentOfBlock = get_param(block.handles(block.zeroIdx),'Parent');
             parentType = get_param(parentOfBlock,'BlockType');
@@ -959,9 +963,9 @@ end
 %> steps
 %========================================================================
 
-function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
+function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,butcherTableau)
     % get a mapping of which optVarIdx are relevant at each time step
-    
+      
     sizeTimes = length(stepVars.initTime);
     optInitTime = stepVars.initTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
     optInterTime = stepVars.interTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
@@ -978,6 +982,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
         interP_full = kron(speye(horizon-2),interP);
         interK_full = kron(speye(horizon-2),interK);
 
+        
         fullP = blkdiag(initP,interP_full,finalP);
         allK = blkdiag(initK,interK_full,finalK);
     else
@@ -985,9 +990,9 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
         allK = initK;
     end
     
-    % use allVars.PKOptVarIdxReroute to reroute columns of states
+    % use allVars.PKOptVarIdxDtStateReroute to reroute columns of states
     [~,colPLength] = size(fullP);
-    [~,~,rerouteIdx] = unique(allVars.PKOptVarIdxReroute);
+    [~,~,rerouteIdx] = unique(allVars.PKOptVarIdxDtStateReroute);
     
     % create a matrix that finds which columns of the entire P (with
     % states) to add to the columns of P without states
@@ -995,7 +1000,68 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars)
     
     % create the final allP that has proper states.
     allP = fullP*toAddCol;
+    
+    if exist('butcherTableau','var')   
+        numMinorSteps = length(butcherTableau.c); 
+        
+        %create P,K for 1 minor timestep for values
+        optMinorTime = stepVars.minorTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;       
+        [minorP,minorK] = trimPK(stepP,stepK,optMinorTime);
+        
+        %use PK for 1 timestep create PK for all minor timesteps
+        minorP_full_value = kron(speye((horizon-1)*numMinorSteps),minorP);
+        minorK_full_value = kron(speye((horizon-1)*numMinorSteps),minorK); 
+           
+        %using PK for 1 timestep for values, create PK for slope
+        [minorP_slope minorK_slope] = slopePK(minorP, minorK); %currently function does nothing
+        minorP_full_slope = kron(speye((horizon-1)*numMinorSteps),minorP_slope);
+        minorK_full_slope = kron(speye((horizon-1)*numMinorSteps),minorK_slope);
+                      
+        %combine PKs for values and slopes
+        minorP_full = [minorP_full_value, sparse(size(minorP_full_value)); minorP_full_slope];
+        minorK_full = blkdiag(minorK_full_value, minorK_full_slope);
+        
+        %Runge Kutta equality constraint for 1 timestep
+        
+        % NEED TO IMPLEMENT COLUMNS OF ZEROS FOR VARIABLES ONLY IN MINOR
+        % TIME
+        
+        stepP_RK = [];  %FILL IN
+        stepK_RK = [];  %FILL IN
+        
+        %Runge Kutta equality constraints accross all timesteps
+        P_RK = [];  %FILL IN
+        K_RK = [];  %FILL IN
+        
+        %modifying allP and allK using minor timestep info
+        allP = blkdiag(allP,minorP_full);
+        allP = [allP;P_RK];
+        allK = blkdiag(allK,minorK_full,K_RK);       
+    end
+    
 end
+
+%%
+%==================================================================
+%> @brief using P K matrices create PK matrices for slopes.  Used in
+%> creating PK for minor timesteps, as there are constraints on slopes:
+%> [f(x)]' = f'(x)*x'
+%> 
+%> @param P P matrix for value equality constraint
+%> @param K K matrix for value equality constraint
+%>
+%> @retval P_slope P matrix for slope equality constraint
+%> @retval K_slope K matrix for slope equality constraint
+
+%==================================================================
+function [P_slope, K_slope] = slopePK(P,K)
+
+    P_slope = P;    %FILL IN
+    K_slope = K;    %FILL IN
+    
+
+end
+
 
 %%
 %================================================================
@@ -1224,6 +1290,7 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     stepVars.initTime = false(stepVars.zeroIdx-1,1);
     stepVars.interTime = false(stepVars.zeroIdx-1,1);
     stepVars.finalTime = false(stepVars.zeroIdx-1,1);
+    stepVars.minorTime = false(stepVars.zeroIdx-1,1);
     
     blockIdxs = (1:block.zeroIdx-1)';
     
@@ -1232,19 +1299,24 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
     startBlockZeroIdx = sum(startBlock ~= 0)+1;
     while startBlockIdx ~= startBlockZeroIdx
         startBlockHandle = block.handles(startBlock(startBlockIdx));
-        startBlockType = get_param(startBlockHandle, 'BlockType');
 
-        if strcmp(startBlockType, 'UnitDelay')
+        if block.delay(startBlock(startBlockIdx))
             outputVarIdxs = block.stepOutputIdx{startBlock(startBlockIdx)};
             
-            final = stepVars.finalTime(outputVarIdxs(1));
-            inter = final || stepVars.interTime(outputVarIdxs(1));
-            init = inter || stepVars.initTime(outputVarIdxs(1));
-            
+            minor = false;
+            final = any(stepVars.finalTime(outputVarIdxs));
+            inter = final || any(stepVars.interTime(outputVarIdxs)) || any(stepVars.minorTime(outputVarIdxs));
+            init = inter || any(stepVars.initTime(outputVarIdxs)) || any(stepVars.minorTime(outputVarIdxs));
+        elseif block.integrator(startBlock(startBlockIdx))
+            minor = true;
+            init = false;
+            inter = false;
+            final = false;
         else
             init = strcmp(get_param(startBlockHandle, 'initial_step'), 'on');
             final = strcmp(get_param(startBlockHandle, 'final_step'), 'on');
             inter = strcmp(get_param(startBlockHandle, 'intermediate_step'), 'on');
+            minor = false;
         end
         blocks = [startBlock(startBlockIdx); zeros(10,1)];
         
@@ -1287,10 +1359,20 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     inputInit = stepVars.initTime(inputVarIdxs(1));
 
                     if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0 && ...
-                            (inputFinal ~= final || inputInter ~= (inter || final) || inputInit ~= (final || inter || init))
+                            (inputFinal ~= final || inputInter ~= (inter || final || minor) || inputInit ~= (final || inter || init || minor))
                         startBlock(startBlockZeroIdx) = blocks(idx);
                         startBlockZeroIdx = startBlockZeroIdx + 1;
                         
+                        if startBlockZeroIdx > length(startBlock)
+                            startBlock = [startBlock zeros(1, length(startBlock))];
+                        end
+                    end
+                    inputs = [];
+                    
+                elseif block.integrator(blocks(idx)) && (idx ~= 1)
+                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0
+                        startBlock(startBlockZeroIdx) = blocks(idx);
+                        startBlockZeroIdx = startBlockZeroIdx +1;
                         if startBlockZeroIdx > length(startBlock)
                             startBlock = [startBlock zeros(1, length(startBlock))];
                         end
@@ -1301,14 +1383,17 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     inputs = block.stepInputIdx{blocks(idx)};
                 end
                 
-                if(init)
+                if init
                     stepVars.initTime(inputs) = true;
                 end
-                if(final)
+                if final
                     stepVars.finalTime(inputs) = true;
                 end
-                if(inter)
+                if inter
                     stepVars.interTime(inputs) = true;
+                end
+                if minor
+                    stepVars.minorTime(inputs) = true;
                 end
 
                 inputBlocks = stepVars.block(inputs);
@@ -1347,6 +1432,9 @@ function stepVars = labelTimeRelevance(stepVars, block, inputAndExternalHandles)
                     end
                     if(inter)
                         stepVars.interTime(inputs) = true;
+                    end
+                    if minor
+                        stepVars.minorTime(inputs) = true;
                     end
                 end
                 
@@ -1478,7 +1566,7 @@ end
 
 %%
 %========================================================================
-%> @brief creates allVars.optVarIdx and allVars.PKOptVarIdxReroute
+%> @brief creates allVars.optVarIdx and allVars.PKOptVarIdxDtStateReroute
 %>
 %> @param allVars to fill in
 %>
@@ -1489,7 +1577,7 @@ end
 %> 
 %> @param horizon for problem
 %>
-%> @retval allVars with allVars.optVarIdx and allVars.PKOptVarIdxReroute
+%> @retval allVars with allVars.optVarIdx and allVars.PKOptVarIdxDtStateReroute
 %> filled in
 %======================================================================
 function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
@@ -1515,7 +1603,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     % k+1 is same as optvaridx of inut at timestep k
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
         
-    allVars.PKOptVarIdxReroute = (1:max(allVars.optVarIdx))';
+    allVars.PKOptVarIdxDtStateReroute = (1:max(allVars.optVarIdx))';
     for idx = initialLength+1:totalLength
         stepVarIdx = allVars.stepVarIdx(idx);
         if stepVars.state(stepVarIdx)
@@ -1542,7 +1630,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
             allVars.cost(idxs) = cost * ones(totalLength,1);
             
             allVars.optVarIdx(idxs1) = newOptVarIdx;
-            allVars.PKOptVarIdxReroute(oldOptVarIdx) = newOptVarIdx;
+            allVars.PKOptVarIdxDtStateReroute(oldOptVarIdx) = newOptVarIdx;
         end
     end
     
