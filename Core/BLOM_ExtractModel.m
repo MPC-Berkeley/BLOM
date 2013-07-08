@@ -965,17 +965,20 @@ end
 
 function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,butcherTableau)
     % get a mapping of which optVarIdx are relevant at each time step
+    % optVarIdx are in following order: values at major timesteps, values at minor
+    % timesteps, slopes at minor timesteps
       
     sizeTimes = length(stepVars.initTime);
     optInitTime = stepVars.initTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
     optInterTime = stepVars.interTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
     optFinalTime = stepVars.finalTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
+    optMinorTime = stepVars.minorTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
     
     % first get truncated P and K matrices with the relevant times and
     % variables
-    [initP,initK] = trimPK(stepP,stepK,optInitTime);
-    [interP,interK] = trimPK(stepP,stepK,optInterTime);
-    [finalP,finalK] = trimPK(stepP,stepK,optFinalTime);
+    [initP,initK] = trimPK(stepP,stepK,optInitTime,optMinorTime);
+    [interP,interK] = trimPK(stepP,stepK,optInterTime,optMinorTime);
+    [finalP,finalK] = trimPK(stepP,stepK,optFinalTime,false(size(optFinalTime)));
     
     % create the P and K matrices for all intermediate time steps
     if horizon>1
@@ -1021,11 +1024,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,butcherT
         minorP_full = [minorP_full_value, sparse(size(minorP_full_value)); minorP_full_slope];
         minorK_full = blkdiag(minorK_full_value, minorK_full_slope);
         
-        %Runge Kutta equality constraint for 1 timestep
-        
-        % NEED TO IMPLEMENT COLUMNS OF ZEROS FOR VARIABLES ONLY IN MINOR
-        % TIME
-        
+        %Runge Kutta equality constraint for 1 timestep        
         stepP_RK = [];  %FILL IN
         stepK_RK = [];  %FILL IN
         
@@ -1075,9 +1074,9 @@ end
 %> @retval trimK K matrix for that time
 %========================================================================
 
-function [trimP,trimK] = trimPK(stepP,stepK,relevantTimes)
+function [trimP,trimK] = trimPK(stepP,stepK,relevantTimes,minorTimes)
     % first create the P and K for initialTime
-    trimP = stepP(:,relevantTimes);
+    trimP = stepP(:,relevantTimes|minorTimes);
     % remove initP rows if the row had a value in the columns that were
     % removed. 
     removeP_rows = any(stepP(:,~relevantTimes)~=0,2);
@@ -1516,50 +1515,56 @@ function allVars = createAllVars(stepVars,horizon)
 
     % first find length of allVars (this includes redundancies)
     initialLength = sum(stepVars.initTime);
+    initialLength_full = sum(stepVars.initTime | stepVars.minorTime);
     interLength = sum(stepVars.interTime);
+    interLength_full = sum(stepVars.interTime | stepVars.minorTime);
     finalLength = sum(stepVars.finalTime);
-    totalLength = initialLength+interLength*(horizon-2)+finalLength;
+    totalLength = initialLength_full+interLength_full*(horizon-2)+finalLength;
     
     allVars.totalLength = totalLength;
     
     % initialize allVars fields.
-    allVars.lowerBound = zeros(totalLength,1);
-    allVars.upperBound = zeros(totalLength,1);
+    allVars.lowerBound = -inf(totalLength,1);
+    allVars.upperBound = inf(totalLength,1);
     allVars.stepVarIdx = zeros(totalLength,1);
     allVars.optVarIdx = zeros(totalLength,1);
     allVars.timeStep = zeros(totalLength,1);
     allVars.cost = zeros(totalLength,1);
     
+    initTimes = find(stepVars.initTime(stepVars.initTime | stepVars.minorTime));
+    interTimes = find(stepVars.interTime(stepVars.interTime | stepVars.minorTime))*ones(1,horizon-2)+ ones(interLength,1)*(0:horizon-3)*interLength_full+initialLength_full; 
+
+    
     % label what timestep each variable exists in
-    allVars.timeStep(1:initialLength) = ones(initialLength,1);
-    interSteps = ones(interLength,1) * (2:horizon-1);
-    allVars.timeStep(initialLength+1:end-finalLength) = interSteps(:);
+    allVars.timeStep(1:initialLength_full) = ones(initialLength_full,1);
+    interSteps = ones(interLength_full,1) * (2:horizon-1);
+    allVars.timeStep(initialLength_full+1:totalLength-finalLength) = interSteps(:);
     allVars.timeStep(end-finalLength+1:end) = horizon * ones(finalLength,1);
     
     % set variable cost
-    allVars.cost(1:initialLength) = stepVars.initCost(stepVars.initTime);
-    allVars.cost(initialLength+1:end-finalLength) =...
+    allVars.cost(initTimes) = stepVars.initCost(stepVars.initTime);
+    allVars.cost(interTimes) =...
         kron(ones(horizon-2,1),stepVars.interCost(stepVars.interTime));
     allVars.cost(end-finalLength+1:end) = stepVars.finalCost(stepVars.finalTime);   
     
     % because each variable has it's own time step, we can simply set
     % lowerBound and upperBound
-    allVars.lowerBound(1:initialLength) = stepVars.initLowerBound(stepVars.initTime);
-    allVars.lowerBound(initialLength+1:end-finalLength) =...
+    allVars.lowerBound(initTimes) = stepVars.initLowerBound(stepVars.initTime);
+    allVars.lowerBound(interTimes(:)) =...
         kron(ones(horizon-2,1),stepVars.interLowerBound(stepVars.interTime));
     allVars.lowerBound(end-finalLength+1:end) = stepVars.finalLowerBound(stepVars.finalTime);
     
-    allVars.upperBound(1:initialLength) = stepVars.initUpperBound(stepVars.initTime);
-    allVars.upperBound(initialLength+1:end-finalLength) =...
+    allVars.upperBound(initTimes) = stepVars.initUpperBound(stepVars.initTime);
+    allVars.upperBound(interTimes) =...
         kron(ones(horizon-2,1),stepVars.interUpperBound(stepVars.interTime));
     allVars.upperBound(end-finalLength+1:end) = stepVars.finalUpperBound(stepVars.finalTime);
     
     % allVars.stepVarIdx points to the stepVarIdx that each index
     % corresponds to
     stepVarsIndices = 1:(stepVars.zeroIdx-1);
-    allVars.stepVarIdx(1:initialLength) = stepVarsIndices(stepVars.initTime);
-    allVars.stepVarIdx(initialLength+1:end-finalLength) =...
-        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime))';
+    allVars.stepVarIdx(1:initialLength_full) = stepVarsIndices(stepVars.initTime | stepVars.minorTime);
+    allVars.stepVarIdx(initialLength_full+1:end-finalLength) =...
+        kron(ones(horizon-2,1),stepVarsIndices(stepVars.interTime | stepVars.minorTime))';
     allVars.stepVarIdx(end-finalLength+1:end) = stepVarsIndices(stepVars.finalTime);
 
 end
@@ -1582,16 +1587,16 @@ end
 %======================================================================
 function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     
-    initialLength = sum(stepVars.initTime);
-    interLength = sum(stepVars.interTime);
+    initialLength = sum(stepVars.initTime | stepVars.minorTime);
+    interLength = sum(stepVars.interTime | stepVars.minorTime);
     finalLength = sum(stepVars.finalTime);
     totalLength = initialLength+interLength*(horizon-2)+finalLength;
 
     % init Time
     stepVarLength = stepVars.zeroIdx - 1;
-    allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime);
+    allVars.optVarIdx(1:initialLength) = stepVars.optVarIdx(stepVars.initTime | stepVars.minorTime);
     % inter Time
-    repeatedInterOptVarIdx = repmat(stepVars.optVarIdx(stepVars.interTime),horizon-2,1);
+    repeatedInterOptVarIdx = repmat(stepVars.optVarIdx(stepVars.interTime|stepVars.minorTime),horizon-2,1);
     incrementInterOptVarIdxMat = stepVarLength * ones(interLength,1) * (1:horizon-2);
     incrementInterOptVarIdxVector = incrementInterOptVarIdxMat(:);
     allVars.optVarIdx(initialLength+1:initialLength+interLength*(horizon-2)) = ...
