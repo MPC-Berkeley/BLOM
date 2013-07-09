@@ -12,6 +12,7 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
     position = get_param(BLOM1Block, 'Position');
     parent = get_param(BLOM1Block, 'Parent');
     name = get_param(BLOM1Block, 'Name');
+    orientation = get_param(BLOM1Block, 'Orientation');
     block = [parent '/' name];
 
     switch refBlock
@@ -43,15 +44,15 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
                 set_param(block, 'outputScalar', 'off');
             end
             
+            set_param(block, 'Orientation', orientation);
             set_param(block, 'Position', position);
 
             
         case 'MPCMdlLib/Constraint'
             positive = strcmp(get_param(BLOM1Block, 'CompareSign'), '> 0');
             
-            delete_block(BLOM1Block);
+            
             add_block('BLOM_Lib/Bound', block);
-            set_param(block, 'Position', position);
 
             set_param(block, 'initial_step', 'on');
             set_param(block, 'final_step', 'on');
@@ -64,6 +65,10 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
                 set_param(block, 'lb', '-inf');
             end
             
+            delete_block(BLOM1Block);
+            set_param(block, 'Orientation', orientation);
+            set_param(block, 'Position', position);
+            
         case 'MPCMdlLib/state'
             initialCondition = get_param(BLOM1Block, 'init_val');
             
@@ -72,10 +77,21 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
             set_param(block, 'Position', position);
             
             set_param(block, 'X0', initialCondition);
+        
+        case 'MPCMdlLib/Continuous state'
+            initialCondition = get_param(BLOM1Block, 'init_val');
+            
+            delete_block(BLOM1Block);
+            add_block('simulink/Continuous/Integrator', block);
+            set_param(block, 'Orientation', orientation);
+            set_param(block, 'Position', position);
+            
+            set_param(block, 'InitialCondition', initialCondition);
             
         case 'MPCMdlLib/Cost functon'
             delete_block(BLOM1Block);
             add_block('BLOM_Lib/DiscreteCost', block);
+            set_param(block, 'Orientation', orientation);
             set_param(block, 'Position', position);
 
         case 'MPCMdlLib/Input var'
@@ -86,6 +102,7 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
         case 'MPCMdlLib/External Var'
             delete_block(BLOM1Block);
             add_block('BLOM_Lib/ExternalFromSimulink', block);
+            set_param(block, 'Orientation', orientation);
             set_param(block, 'Position', position);
             
         case 'MPCMdlLib/PolyBlock'
@@ -132,6 +149,7 @@ function BLOM_Convert2BLOM2Block(BLOM1Block)
             else 
                 set_param(block, 'outputScalar', 'off');
             end
+            set_param(block, 'Orientation', orientation);
             set_param(block, 'Position', position);
 
     end
