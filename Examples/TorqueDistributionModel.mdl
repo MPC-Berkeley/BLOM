@@ -1,0 +1,1870 @@
+Model {
+  Name			  "TorqueDistributionModel"
+  Version		  7.4
+  MdlSubVersion		  0
+  GraphicalInterface {
+    NumRootInports	    0
+    NumRootOutports	    0
+    ParameterArgumentNames  ""
+    ComputedModelVersion    "1.6"
+    NumModelReferences	    0
+    NumTestPointedSignals   0
+  }
+  SavedCharacterEncoding  "windows-1252"
+  SaveDefaultBlockParams  on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  MaxMDLFileLineLength	  120
+  Created		  "Thu Aug 08 14:34:22 2013"
+  Creator		  "Kyle"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "Kyle"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Thu Aug 08 16:53:41 2013"
+  RTWModifiedTimeStamp	  297875300
+  ModelVersionFormat	  "1.%<AutoIncrement:6>"
+  ConfigurationManager	  "None"
+  SampleTimeColors	  off
+  SampleTimeAnnotations	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  on
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  on
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowSignalResolutionIcons on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelSystemTargetFile	  "accel.tlc"
+  AccelTemplateMakefile	  "accel_default_tmf"
+  AccelMakeCommand	  "make_rtw"
+  TryForcingSFcnDF	  off
+  RecordCoverage	  off
+  CovPath		  "/"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  CovForceBlockReductionOff on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeVarName	  "covCumulativeData"
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  CovModelRefEnable	  "Off"
+  CovExternalEMLEnable	  off
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  BufferReuse		  on
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  Array {
+    Type		    "Handle"
+    Dimension		    1
+    Simulink.ConfigSet {
+      $ObjectID		      1
+      Version		      "1.6.0"
+      Array {
+	Type			"Handle"
+	Dimension		8
+	Simulink.SolverCC {
+	  $ObjectID		  2
+	  Version		  "1.6.0"
+	  StartTime		  "0.0"
+	  StopTime		  "10.0"
+	  AbsTol		  "auto"
+	  FixedStep		  "auto"
+	  InitialStep		  "auto"
+	  MaxNumMinSteps	  "-1"
+	  MaxOrder		  5
+	  ZcThreshold		  "auto"
+	  ConsecutiveZCsStepRelTol "10*128*eps"
+	  MaxConsecutiveZCs	  "1000"
+	  ExtrapolationOrder	  4
+	  NumberNewtonIterations  1
+	  MaxStep		  "auto"
+	  MinStep		  "auto"
+	  MaxConsecutiveMinStep	  "1"
+	  RelTol		  "1e-3"
+	  SolverMode		  "Auto"
+	  Solver		  "ode45"
+	  SolverName		  "ode45"
+	  ShapePreserveControl	  "DisableAll"
+	  ZeroCrossControl	  "UseLocalSettings"
+	  ZeroCrossAlgorithm	  "Nonadaptive"
+	  AlgebraicLoopSolver	  "TrustRegion"
+	  SolverResetMethod	  "Fast"
+	  PositivePriorityOrder	  off
+	  AutoInsertRateTranBlk	  off
+	  SampleTimeConstraint	  "Unconstrained"
+	  InsertRTBMode		  "Whenever possible"
+	}
+	Simulink.DataIOCC {
+	  $ObjectID		  3
+	  Version		  "1.6.0"
+	  Decimation		  "1"
+	  ExternalInput		  "[t, u]"
+	  FinalStateName	  "xFinal"
+	  InitialState		  "xInitial"
+	  LimitDataPoints	  on
+	  MaxDataPoints		  "1000"
+	  LoadExternalInput	  off
+	  LoadInitialState	  off
+	  SaveFinalState	  off
+	  SaveCompleteFinalSimState off
+	  SaveFormat		  "Array"
+	  SaveOutput		  on
+	  SaveState		  off
+	  SignalLogging		  on
+	  InspectSignalLogs	  off
+	  SaveTime		  on
+	  ReturnWorkspaceOutputs  off
+	  StateSaveName		  "xout"
+	  TimeSaveName		  "tout"
+	  OutputSaveName	  "yout"
+	  SignalLoggingName	  "logsout"
+	  OutputOption		  "RefineOutputTimes"
+	  OutputTimes		  "[]"
+	  ReturnWorkspaceOutputsName "out"
+	  Refine		  "1"
+	}
+	Simulink.OptimizationCC {
+	  $ObjectID		  4
+	  Version		  "1.6.0"
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    7
+	    Cell		    "BooleansAsBitfields"
+	    Cell		    "PassReuseOutputArgsAs"
+	    Cell		    "PassReuseOutputArgsThreshold"
+	    Cell		    "ZeroExternalMemoryAtStartup"
+	    Cell		    "ZeroInternalMemoryAtStartup"
+	    Cell		    "OptimizeModelRefInitCode"
+	    Cell		    "NoFixptDivByZeroProtection"
+	    PropName		    "DisabledProps"
+	  }
+	  BlockReduction	  on
+	  BooleanDataType	  on
+	  ConditionallyExecuteInputs on
+	  InlineParams		  off
+	  UseIntDivNetSlope	  off
+	  InlineInvariantSignals  off
+	  OptimizeBlockIOStorage  on
+	  BufferReuse		  on
+	  EnhancedBackFolding	  off
+	  StrengthReduction	  off
+	  EnforceIntegerDowncast  on
+	  ExpressionFolding	  on
+	  BooleansAsBitfields	  off
+	  EnableMemcpy		  on
+	  MemcpyThreshold	  64
+	  PassReuseOutputArgsAs	  "Structure reference"
+	  ExpressionDepthLimit	  2147483647
+	  FoldNonRolledExpr	  on
+	  LocalBlockOutputs	  on
+	  RollThreshold		  5
+	  SystemCodeInlineAuto	  off
+	  StateBitsets		  off
+	  DataBitsets		  off
+	  UseTempVars		  off
+	  ZeroExternalMemoryAtStartup on
+	  ZeroInternalMemoryAtStartup on
+	  InitFltsAndDblsToZero	  off
+	  NoFixptDivByZeroProtection off
+	  EfficientFloat2IntCast  off
+	  EfficientMapNaN2IntZero on
+	  OptimizeModelRefInitCode off
+	  LifeSpan		  "inf"
+	  BufferReusableBoundary  on
+	  SimCompilerOptimization "Off"
+	  AccelVerboseBuild	  off
+	}
+	Simulink.DebuggingCC {
+	  $ObjectID		  5
+	  Version		  "1.6.0"
+	  RTPrefix		  "error"
+	  ConsistencyChecking	  "none"
+	  ArrayBoundsChecking	  "none"
+	  SignalInfNanChecking	  "none"
+	  SignalRangeChecking	  "none"
+	  ReadBeforeWriteMsg	  "UseLocalSettings"
+	  WriteAfterWriteMsg	  "UseLocalSettings"
+	  WriteAfterReadMsg	  "UseLocalSettings"
+	  AlgebraicLoopMsg	  "warning"
+	  ArtificialAlgebraicLoopMsg "warning"
+	  SaveWithDisabledLinksMsg "warning"
+	  SaveWithParameterizedLinksMsg	"warning"
+	  CheckSSInitialOutputMsg on
+	  UnderspecifiedInitializationDetection	"Classic"
+	  MergeDetectMultiDrivingBlocksExec "none"
+	  CheckExecutionContextPreStartOutputMsg off
+	  CheckExecutionContextRuntimeOutputMsg	off
+	  SignalResolutionControl "UseLocalSettings"
+	  BlockPriorityViolationMsg "warning"
+	  MinStepSizeMsg	  "warning"
+	  TimeAdjustmentMsg	  "none"
+	  MaxConsecutiveZCsMsg	  "error"
+	  SolverPrmCheckMsg	  "warning"
+	  InheritedTsInSrcMsg	  "warning"
+	  DiscreteInheritContinuousMsg "warning"
+	  MultiTaskDSMMsg	  "error"
+	  MultiTaskCondExecSysMsg "error"
+	  MultiTaskRateTransMsg	  "error"
+	  SingleTaskRateTransMsg  "none"
+	  TasksWithSamePriorityMsg "warning"
+	  SigSpecEnsureSampleTimeMsg "warning"
+	  CheckMatrixSingularityMsg "none"
+	  IntegerOverflowMsg	  "warning"
+	  Int32ToFloatConvMsg	  "warning"
+	  ParameterDowncastMsg	  "error"
+	  ParameterOverflowMsg	  "error"
+	  ParameterUnderflowMsg	  "none"
+	  ParameterPrecisionLossMsg "warning"
+	  ParameterTunabilityLossMsg "warning"
+	  FixptConstUnderflowMsg  "none"
+	  FixptConstOverflowMsg	  "none"
+	  FixptConstPrecisionLossMsg "none"
+	  UnderSpecifiedDataTypeMsg "none"
+	  UnnecessaryDatatypeConvMsg "none"
+	  VectorMatrixConversionMsg "none"
+	  InvalidFcnCallConnMsg	  "error"
+	  FcnCallInpInsideContextMsg "Use local settings"
+	  SignalLabelMismatchMsg  "none"
+	  UnconnectedInputMsg	  "warning"
+	  UnconnectedOutputMsg	  "warning"
+	  UnconnectedLineMsg	  "warning"
+	  SFcnCompatibilityMsg	  "none"
+	  UniqueDataStoreMsg	  "none"
+	  BusObjectLabelMismatch  "warning"
+	  RootOutportRequireBusObject "warning"
+	  AssertControl		  "UseLocalSettings"
+	  EnableOverflowDetection off
+	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceVersionMismatchMessage "none"
+	  ModelReferenceIOMismatchMessage "none"
+	  ModelReferenceCSMismatchMessage "none"
+	  UnknownTsInhSupMsg	  "warning"
+	  ModelReferenceDataLoggingMessage "warning"
+	  ModelReferenceSymbolNameMessage "warning"
+	  ModelReferenceExtraNoncontSigs "error"
+	  StateNameClashWarn	  "warning"
+	  SimStateInterfaceChecksumMismatchMsg "warning"
+	  StrictBusMsg		  "Warning"
+	  LoggingUnavailableSignals "error"
+	  BlockIODiagnostic	  "none"
+	}
+	Simulink.HardwareCC {
+	  $ObjectID		  6
+	  Version		  "1.6.0"
+	  ProdBitPerChar	  8
+	  ProdBitPerShort	  16
+	  ProdBitPerInt		  32
+	  ProdBitPerLong	  32
+	  ProdIntDivRoundTo	  "Undefined"
+	  ProdEndianess		  "Unspecified"
+	  ProdWordSize		  32
+	  ProdShiftRightIntArith  on
+	  ProdHWDeviceType	  "32-bit Generic"
+	  TargetBitPerChar	  8
+	  TargetBitPerShort	  16
+	  TargetBitPerInt	  32
+	  TargetBitPerLong	  32
+	  TargetShiftRightIntArith on
+	  TargetIntDivRoundTo	  "Undefined"
+	  TargetEndianess	  "Unspecified"
+	  TargetWordSize	  32
+	  TargetTypeEmulationWarnSuppressLevel 0
+	  TargetPreprocMaxBitsSint 32
+	  TargetPreprocMaxBitsUint 32
+	  TargetHWDeviceType	  "Specified"
+	  TargetUnknown		  off
+	  ProdEqTarget		  on
+	}
+	Simulink.ModelReferenceCC {
+	  $ObjectID		  7
+	  Version		  "1.6.0"
+	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
+	  CheckModelReferenceTargetMessage "error"
+	  ModelReferenceNumInstancesAllowed "Multi"
+	  ModelReferencePassRootInputsByReference on
+	  ModelReferenceMinAlgLoopOccurrences off
+	}
+	Simulink.SFSimCC {
+	  $ObjectID		  8
+	  Version		  "1.6.0"
+	  SFSimEnableDebug	  on
+	  SFSimOverflowDetection  on
+	  SFSimEcho		  on
+	  SimBlas		  on
+	  SimCtrlC		  on
+	  SimExtrinsic		  on
+	  SimIntegrity		  on
+	  SimUseLocalCustomCode	  off
+	  SimBuildMode		  "sf_incremental_build"
+	}
+	Simulink.RTWCC {
+	  $BackupClass		  "Simulink.RTWCC"
+	  $ObjectID		  9
+	  Version		  "1.6.0"
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    6
+	    Cell		    "IncludeHyperlinkInReport"
+	    Cell		    "GenerateTraceInfo"
+	    Cell		    "GenerateTraceReport"
+	    Cell		    "GenerateTraceReportSl"
+	    Cell		    "GenerateTraceReportSf"
+	    Cell		    "GenerateTraceReportEml"
+	    PropName		    "DisabledProps"
+	  }
+	  SystemTargetFile	  "grt.tlc"
+	  GenCodeOnly		  off
+	  MakeCommand		  "make_rtw"
+	  GenerateMakefile	  on
+	  TemplateMakefile	  "grt_default_tmf"
+	  GenerateReport	  off
+	  SaveLog		  off
+	  RTWVerbose		  on
+	  RetainRTWFile		  off
+	  ProfileTLC		  off
+	  TLCDebug		  off
+	  TLCCoverage		  off
+	  TLCAssert		  off
+	  ProcessScriptMode	  "Default"
+	  ConfigurationMode	  "Optimized"
+	  ConfigAtBuild		  off
+	  RTWUseLocalCustomCode	  off
+	  RTWUseSimCustomCode	  off
+	  IncludeHyperlinkInReport off
+	  LaunchReport		  off
+	  TargetLang		  "C"
+	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
+	  IncludeERTFirstTime	  off
+	  GenerateTraceInfo	  off
+	  GenerateTraceReport	  off
+	  GenerateTraceReportSl	  off
+	  GenerateTraceReportSf	  off
+	  GenerateTraceReportEml  off
+	  GenerateCodeInfo	  off
+	  RTWCompilerOptimization "Off"
+	  CheckMdlBeforeBuild	  "Off"
+	  Array {
+	    Type		    "Handle"
+	    Dimension		    2
+	    Simulink.CodeAppCC {
+	      $ObjectID		      10
+	      Version		      "1.6.0"
+	      Array {
+		Type			"Cell"
+		Dimension		19
+		Cell			"IgnoreCustomStorageClasses"
+		Cell			"IgnoreTestpoints"
+		Cell			"InsertBlockDesc"
+		Cell			"SFDataObjDesc"
+		Cell			"SimulinkDataObjDesc"
+		Cell			"DefineNamingRule"
+		Cell			"SignalNamingRule"
+		Cell			"ParamNamingRule"
+		Cell			"InlinedPrmAccess"
+		Cell			"CustomSymbolStr"
+		Cell			"CustomSymbolStrGlobalVar"
+		Cell			"CustomSymbolStrType"
+		Cell			"CustomSymbolStrField"
+		Cell			"CustomSymbolStrFcn"
+		Cell			"CustomSymbolStrFcnArg"
+		Cell			"CustomSymbolStrBlkIO"
+		Cell			"CustomSymbolStrTmpVar"
+		Cell			"CustomSymbolStrMacro"
+		Cell			"ReqsInCode"
+		PropName		"DisabledProps"
+	      }
+	      ForceParamTrailComments off
+	      GenerateComments	      on
+	      IgnoreCustomStorageClasses on
+	      IgnoreTestpoints	      off
+	      IncHierarchyInIds	      off
+	      MaxIdLength	      31
+	      PreserveName	      off
+	      PreserveNameWithParent  off
+	      ShowEliminatedStatement off
+	      IncAutoGenComments      off
+	      SimulinkDataObjDesc     off
+	      SFDataObjDesc	      off
+	      IncDataTypeInIds	      off
+	      MangleLength	      1
+	      CustomSymbolStrGlobalVar "$R$N$M"
+	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrField    "$N$M"
+	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrFcnArg   "rt$I$N$M"
+	      CustomSymbolStrBlkIO    "rtb_$N$M"
+	      CustomSymbolStrTmpVar   "$N$M"
+	      CustomSymbolStrMacro    "$R$N$M"
+	      DefineNamingRule	      "None"
+	      ParamNamingRule	      "None"
+	      SignalNamingRule	      "None"
+	      InsertBlockDesc	      off
+	      SimulinkBlockComments   on
+	      EnableCustomComments    off
+	      InlinedPrmAccess	      "Literals"
+	      ReqsInCode	      off
+	      UseSimReservedNames     off
+	    }
+	    Simulink.GRTTargetCC {
+	      $BackupClass	      "Simulink.TargetCC"
+	      $ObjectID		      11
+	      Version		      "1.6.0"
+	      Array {
+		Type			"Cell"
+		Dimension		17
+		Cell			"GeneratePreprocessorConditionals"
+		Cell			"IncludeMdlTerminateFcn"
+		Cell			"CombineOutputUpdateFcns"
+		Cell			"SuppressErrorStatus"
+		Cell			"ERTCustomFileBanners"
+		Cell			"GenerateSampleERTMain"
+		Cell			"GenerateTestInterfaces"
+		Cell			"ModelStepFunctionPrototypeControlCompliant"
+		Cell			"CPPClassGenCompliant"
+		Cell			"MultiInstanceERTCode"
+		Cell			"PurelyIntegerCode"
+		Cell			"SupportNonFinite"
+		Cell			"SupportComplex"
+		Cell			"SupportAbsoluteTime"
+		Cell			"SupportContinuousTime"
+		Cell			"SupportNonInlinedSFcns"
+		Cell			"PortableWordSizes"
+		PropName		"DisabledProps"
+	      }
+	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
+	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
+	      TargetFunctionLibrary   "ANSI_C"
+	      UtilityFuncGeneration   "Auto"
+	      ERTMultiwordTypeDef     "System defined"
+	      ERTMultiwordLength      256
+	      MultiwordLength	      2048
+	      GenerateFullHeader      on
+	      GenerateSampleERTMain   off
+	      GenerateTestInterfaces  off
+	      IsPILTarget	      off
+	      ModelReferenceCompliant on
+	      ParMdlRefBuildCompliant on
+	      CompOptLevelCompliant   on
+	      IncludeMdlTerminateFcn  on
+	      GeneratePreprocessorConditionals "Disable all"
+	      CombineOutputUpdateFcns off
+	      SuppressErrorStatus     off
+	      ERTFirstTimeCompliant   off
+	      IncludeFileDelimiter    "Auto"
+	      ERTCustomFileBanners    off
+	      SupportAbsoluteTime     on
+	      LogVarNameModifier      "rt_"
+	      MatFileLogging	      on
+	      MultiInstanceERTCode    off
+	      SupportNonFinite	      on
+	      SupportComplex	      on
+	      PurelyIntegerCode	      off
+	      SupportContinuousTime   on
+	      SupportNonInlinedSFcns  on
+	      SupportVariableSizeSignals off
+	      EnableShiftOperators    on
+	      ParenthesesLevel	      "Nominal"
+	      PortableWordSizes	      off
+	      ModelStepFunctionPrototypeControlCompliant off
+	      CPPClassGenCompliant    off
+	      AutosarCompliant	      off
+	      UseMalloc		      off
+	      ExtMode		      off
+	      ExtModeStaticAlloc      off
+	      ExtModeTesting	      off
+	      ExtModeStaticAllocSize  1000000
+	      ExtModeTransport	      0
+	      ExtModeMexFile	      "ext_comm"
+	      ExtModeIntrfLevel	      "Level1"
+	      RTWCAPISignals	      off
+	      RTWCAPIParams	      off
+	      RTWCAPIStates	      off
+	      GenerateASAP2	      off
+	    }
+	    PropName		    "Components"
+	  }
+	}
+	PropName		"Components"
+      }
+      Name		      "Configuration"
+      CurrentDlgPage	      "Solver"
+      ConfigPrmDlgPosition    " [ 520, 225, 1400, 855 ] "
+    }
+    PropName		    "ConfigurationSets"
+  }
+  Simulink.ConfigSet {
+    $PropName		    "ActiveConfigurationSet"
+    $ObjectID		    1
+  }
+  BlockDefaults {
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+    BlockRotation	    0
+    BlockMirror		    off
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Helvetica"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Helvetica"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      From
+      IconDisplay	      "Tag"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      IconDisplay	      "Tag"
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Math
+      Operator		      "exp"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      DataType		      "auto"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      SourceOfInitialOutputValue "Dialog"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Product
+      Inputs		      "2"
+      Multiplication	      "Element-wise(.*)"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Zero"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Trigonometry
+      Operator		      "sin"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+    }
+  }
+  System {
+    Name		    "TorqueDistributionModel"
+    Location		    [2, 74, 1918, 1059]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    SIDHighWatermark	    84
+    Block {
+      BlockType		      Reference
+      Name		      "Bound"
+      SID		      49
+      Ports		      [1]
+      Position		      [670, 87, 745, 133]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "u*F_flz"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound1"
+      SID		      50
+      Ports		      [1]
+      Position		      [670, 207, 745, 253]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "u*F_frz"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound2"
+      SID		      57
+      Ports		      [1]
+      Position		      [230, 102, 305, 148]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "F_fl_max"
+      lb		      "F_fl_min"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound3"
+      SID		      58
+      Ports		      [1]
+      Position		      [230, 222, 305, 268]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "F_fr_max"
+      lb		      "F_fr_min"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound4"
+      SID		      59
+      Ports		      [1]
+      Position		      [230, 337, 305, 383]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "F_rl_max"
+      lb		      "F_rl_min"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound5"
+      SID		      60
+      Ports		      [1]
+      Position		      [230, 472, 305, 518]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "F_rr_max"
+      lb		      "F_rr_min"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound6"
+      SID		      61
+      Ports		      [1]
+      Position		      [670, 337, 745, 383]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "u*F_rlz"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound7"
+      SID		      62
+      Ports		      [1]
+      Position		      [670, 462, 745, 508]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "u*F_rrz"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Bound8"
+      SID		      70
+      Ports		      [1]
+      Position		      [945, 437, 1020, 483]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Bound"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      ub		      "F_clutch_max"
+      lb		      "-inf"
+      initial_step	      on
+      intermediate_step	      on
+      final_step	      on
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Equals"
+      SID		      63
+      Ports		      [2]
+      Position		      [815, 199, 855, 241]
+      LibraryVersion	      "1.762"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Equals"
+	Location		[433, 403, 931, 703]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "F_fl"
+	  SID			  64
+	  Position		  [110, 103, 140, 117]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "F_fr"
+	  SID			  66
+	  Position		  [110, 163, 140, 177]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Add"
+	  SID			  67
+	  Ports			  [2, 1]
+	  Position		  [185, 127, 215, 158]
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Bound"
+	  SID			  68
+	  Ports			  [1]
+	  Position		  [270, 122, 345, 168]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.115"
+	  SourceBlock		  "BLOM_Lib/Bound"
+	  SourceType		  ""
+	  ShowPortLabels	  "FromPortIcon"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  ub			  "0"
+	  lb			  "0"
+	  initial_step		  on
+	  intermediate_step	  on
+	  final_step		  on
+	}
+	Line {
+	  SrcBlock		  "F_fl"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 25]
+	  DstBlock		  "Add"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "F_fr"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, -20]
+	  DstBlock		  "Add"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Add"
+	  SrcPort		  1
+	  DstBlock		  "Bound"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "F_bias"
+      SID		      69
+      Ports		      [2, 1]
+      Position		      [815, 442, 845, 473]
+      Inputs		      "-+"
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^-10"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "F_fl"
+      SID		      7
+      Ports		      [1, 1]
+      Position		      [90, 144, 190, 186]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/InputFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+    }
+    Block {
+      BlockType		      Product
+      Name		      "F_flx"
+      SID		      38
+      Ports		      [2, 1]
+      Position		      [500, 117, 530, 148]
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^0"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Product
+      Name		      "F_fly"
+      SID		      37
+      Ports		      [2, 1]
+      Position		      [500, 67, 530, 98]
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^0"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "F_fr"
+      SID		      8
+      Ports		      [1, 1]
+      Position		      [90, 264, 190, 306]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/InputFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+    }
+    Block {
+      BlockType		      Product
+      Name		      "F_frx"
+      SID		      36
+      Ports		      [2, 1]
+      Position		      [500, 237, 530, 268]
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^0"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Product
+      Name		      "F_fry"
+      SID		      35
+      Ports		      [2, 1]
+      Position		      [500, 187, 530, 218]
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^0"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "F_powertrain"
+      SID		      10
+      Ports		      [4, 1]
+      Position		      [1200, 319, 1230, 386]
+      Inputs		      "4"
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      OutDataType	      "fixdt(1, 16)"
+      OutScaling	      "2^-10"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      From
+      Name		      "F_rl1"
+      SID		      71
+      Position		      [120, 391, 160, 419]
+      GotoTag		      "F_rl"
+    }
+    Block {
+      BlockType		      From
+      Name		      "F_rr1"
+      SID		      72
+      Position		      [120, 521, 160, 549]
+      GotoTag		      "F_rr"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From"
+      SID		      79
+      Position		      [1260, 361, 1300, 389]
+      GotoTag		      "F_fl"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From1"
+      SID		      80
+      Position		      [1260, 406, 1300, 434]
+      GotoTag		      "F_fr"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From2"
+      SID		      81
+      Position		      [1260, 451, 1300, 479]
+      GotoTag		      "F_bias"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto"
+      SID		      74
+      Position		      [1200, 150, 1240, 180]
+      GotoTag		      "F_fl"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto1"
+      SID		      75
+      Position		      [1055, 235, 1095, 265]
+      GotoTag		      "F_fr"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto2"
+      SID		      82
+      Position		      [1530, 340, 1570, 370]
+      GotoTag		      "F_rl"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto3"
+      SID		      83
+      Position		      [1530, 390, 1570, 420]
+      GotoTag		      "F_rr"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto4"
+      SID		      78
+      Position		      [890, 415, 930, 445]
+      GotoTag		      "F_bias"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Polyblock"
+      SID		      73
+      Ports		      [4, 2]
+      Position		      [1395, 347, 1495, 423]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/Polyblock"
+      SourceType	      ""
+      ShowPortLabels	      "none"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      P			      "speye(4)"
+      K			      "sparse([.5 -.5 -.5 -.5; .5 -.5 -.5 .5])"
+      inputs		      "F_powertrain,F_fl,F_fr,F_bias"
+      inputScalar	      on
+      outputScalar	      on
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem"
+      SID		      39
+      Ports		      [2, 1]
+      Position		      [555, 89, 650, 131]
+      LibraryVersion	      "1.762"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem"
+	Location		[433, 403, 931, 703]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  40
+	  Position		  [80, 93, 110, 107]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  42
+	  Position		  [80, 123, 110, 137]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Math\nFunction"
+	  SID			  45
+	  Ports			  [1, 1]
+	  Position		  [255, 100, 285, 130]
+	  Operator		  "sqrt"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Polyblock"
+	  SID			  48
+	  Ports			  [2, 1]
+	  Position		  [135, 96, 235, 134]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.115"
+	  SourceBlock		  "BLOM_Lib/Polyblock"
+	  SourceType		  ""
+	  ShowPortLabels	  "none"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  P			  "sparse([2 0; 0 2 ])"
+	  K			  "sparse([1 -1])"
+	  inputs		  "x1,x2"
+	  inputScalar		  on
+	  outputScalar		  on
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  41
+	  Position		  [315, 108, 345, 122]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, 5]
+	  DstBlock		  "Polyblock"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [0, -5]
+	  DstBlock		  "Polyblock"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Polyblock"
+	  SrcPort		  1
+	  DstBlock		  "Math\nFunction"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Math\nFunction"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem1"
+      SID		      51
+      Ports		      [2, 1]
+      Position		      [555, 209, 650, 251]
+      LibraryVersion	      "1.762"
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem1"
+	Location		[433, 403, 931, 703]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  52
+	  Position		  [80, 93, 110, 107]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  53
+	  Position		  [80, 123, 110, 137]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Math\nFunction"
+	  SID			  54
+	  Ports			  [1, 1]
+	  Position		  [255, 100, 285, 130]
+	  Operator		  "sqrt"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Polyblock"
+	  SID			  55
+	  Ports			  [2, 1]
+	  Position		  [135, 96, 235, 134]
+	  BackgroundColor	  "lightBlue"
+	  LibraryVersion	  "1.115"
+	  SourceBlock		  "BLOM_Lib/Polyblock"
+	  SourceType		  ""
+	  ShowPortLabels	  "none"
+	  SystemSampleTime	  "-1"
+	  FunctionWithSeparateData off
+	  RTWMemSecFuncInitTerm	  "Inherit from model"
+	  RTWMemSecFuncExecute	  "Inherit from model"
+	  RTWMemSecDataConstants  "Inherit from model"
+	  RTWMemSecDataInternal	  "Inherit from model"
+	  RTWMemSecDataParameters "Inherit from model"
+	  P			  "sparse([2 0; 0 2 ])"
+	  K			  "sparse([1 -1])"
+	  inputs		  "x1,x2"
+	  inputScalar		  on
+	  outputScalar		  on
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  56
+	  Position		  [315, 108, 345, 122]
+	  IconDisplay		  "Port number"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, 5]
+	  DstBlock		  "Polyblock"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [0, -5]
+	  DstBlock		  "Polyblock"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Polyblock"
+	  SrcPort		  1
+	  DstBlock		  "Math\nFunction"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Math\nFunction"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "cosDelta"
+      SID		      23
+      Position		      [295, 825, 335, 855]
+      GotoTag		      "cosd"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      From
+      Name		      "cosDelta1"
+      SID		      24
+      Position		      [425, 111, 465, 139]
+      GotoTag		      "cosd"
+    }
+    Block {
+      BlockType		      From
+      Name		      "cosDelta2"
+      SID		      25
+      Position		      [425, 231, 465, 259]
+      GotoTag		      "cosd"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "delta"
+      SID		      84
+      Ports		      [1, 1]
+      Position		      [90, 799, 190, 841]
+      BackgroundColor	      "lightBlue"
+      LibraryVersion	      "1.115"
+      SourceBlock	      "BLOM_Lib/ExternalFromSimulink"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      interpType	      "Zero-Order Hold"
+    }
+    Block {
+      BlockType		      Trigonometry
+      Name		      "sinCosDelta"
+      SID		      21
+      Ports		      [1, 2]
+      Position		      [225, 802, 255, 833]
+      Operator		      "sincos"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "sinDelta"
+      SID		      22
+      Position		      [295, 780, 335, 810]
+      GotoTag		      "sind"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      From
+      Name		      "sinDelta1"
+      SID		      17
+      Position		      [425, 61, 465, 89]
+      GotoTag		      "sind"
+    }
+    Block {
+      BlockType		      From
+      Name		      "sinDelta2"
+      SID		      26
+      Position		      [425, 181, 465, 209]
+      GotoTag		      "sind"
+    }
+    Line {
+      SrcBlock		      "F_fl"
+      SrcPort		      1
+      Points		      [15, 0]
+      Branch {
+	Points			[265, 0]
+	Branch {
+	  Points		  [0, -25; 0, 0]
+	  Branch {
+	    Labels		    [1, 0]
+	    Points		    [0, -50]
+	    DstBlock		    "F_fly"
+	    DstPort		    2
+	  }
+	  Branch {
+	    DstBlock		    "F_flx"
+	    DstPort		    2
+	  }
+	}
+	Branch {
+	  Points		  [320, 0]
+	  Branch {
+	    Points		    [0, 45]
+	    DstBlock		    "Equals"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [380, 0]
+	    Branch {
+	      Points		      [0, 0; 0, 165]
+	      DstBlock		      "F_powertrain"
+	      DstPort		      1
+	    }
+	    Branch {
+	      DstBlock		      "Goto"
+	      DstPort		      1
+	    }
+	  }
+	}
+      }
+      Branch {
+	Points			[0, -40]
+	DstBlock		"Bound2"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "F_rl1"
+      SrcPort		      1
+      Points		      [45, 0]
+      Branch {
+	Points			[0, -45]
+	DstBlock		"Bound4"
+	DstPort			1
+      }
+      Branch {
+	Points			[265, 0]
+	Branch {
+	  Points		  [0, -45]
+	  DstBlock		  "Bound6"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [325, 0]
+	  Branch {
+	    DstBlock		    "F_bias"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [365, 0; 0, -45]
+	    DstBlock		    "F_powertrain"
+	    DstPort		    3
+	  }
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "F_rr1"
+      SrcPort		      1
+      Points		      [45, 0]
+      Branch {
+	Points			[0, -40]
+	DstBlock		"Bound5"
+	DstPort			1
+      }
+      Branch {
+	Points			[265, 0]
+	Branch {
+	  Points		  [0, -50]
+	  DstBlock		  "Bound7"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [325, 0]
+	  Branch {
+	    DstBlock		    "F_bias"
+	    DstPort		    2
+	  }
+	  Branch {
+	    Points		    [375, 0; 0, -160]
+	    DstBlock		    "F_powertrain"
+	    DstPort		    4
+	  }
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "delta"
+      SrcPort		      1
+      DstBlock		      "sinCosDelta"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "sinCosDelta"
+      SrcPort		      1
+      Points		      [15, 0; 0, -15]
+      DstBlock		      "sinDelta"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "sinCosDelta"
+      SrcPort		      2
+      Points		      [15, 0; 0, 15]
+      DstBlock		      "cosDelta"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "F_fr"
+      SrcPort		      1
+      Points		      [15, 0]
+      Branch {
+	Points			[265, 0]
+	Branch {
+	  Points		  [0, -25]
+	  Branch {
+	    Points		    [0, -50]
+	    DstBlock		    "F_fry"
+	    DstPort		    2
+	  }
+	  Branch {
+	    DstBlock		    "F_frx"
+	    DstPort		    2
+	  }
+	}
+	Branch {
+	  Points		  [320, 0]
+	  Branch {
+	    Points		    [0, -55]
+	    DstBlock		    "Equals"
+	    DstPort		    2
+	  }
+	  Branch {
+	    Points		    [245, 0]
+	    Branch {
+	      Points		      [125, 0; 0, 60]
+	      DstBlock		      "F_powertrain"
+	      DstPort		      2
+	    }
+	    Branch {
+	      DstBlock		      "Goto1"
+	      DstPort		      1
+	    }
+	  }
+	}
+      }
+      Branch {
+	Points			[0, -40]
+	DstBlock		"Bound3"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "cosDelta2"
+      SrcPort		      1
+      DstBlock		      "F_frx"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "sinDelta2"
+      SrcPort		      1
+      DstBlock		      "F_fry"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "sinDelta1"
+      SrcPort		      1
+      DstBlock		      "F_fly"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "cosDelta1"
+      SrcPort		      1
+      DstBlock		      "F_flx"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "F_fly"
+      SrcPort		      1
+      Points		      [5, 0]
+      DstBlock		      "Subsystem"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "F_flx"
+      SrcPort		      1
+      Points		      [5, 0]
+      DstBlock		      "Subsystem"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Subsystem"
+      SrcPort		      1
+      DstBlock		      "Bound"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Subsystem1"
+      SrcPort		      1
+      DstBlock		      "Bound1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "F_fry"
+      SrcPort		      1
+      Points		      [5, 0]
+      DstBlock		      "Subsystem1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "F_frx"
+      SrcPort		      1
+      Points		      [5, 0]
+      DstBlock		      "Subsystem1"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "F_bias"
+      SrcPort		      1
+      Points		      [20, 0]
+      Branch {
+	DstBlock		"Bound8"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -30]
+	DstBlock		"Goto4"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "F_powertrain"
+      SrcPort		      1
+      DstBlock		      "Polyblock"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From"
+      SrcPort		      1
+      DstBlock		      "Polyblock"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "From1"
+      SrcPort		      1
+      Points		      [30, 0; 0, -25]
+      DstBlock		      "Polyblock"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "From2"
+      SrcPort		      1
+      Points		      [45, 0; 0, -50]
+      DstBlock		      "Polyblock"
+      DstPort		      4
+    }
+    Line {
+      SrcBlock		      "Polyblock"
+      SrcPort		      1
+      Points		      [15, 0]
+      DstBlock		      "Goto2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Polyblock"
+      SrcPort		      2
+      Points		      [15, 0]
+      DstBlock		      "Goto3"
+      DstPort		      1
+    }
+  }
+}
