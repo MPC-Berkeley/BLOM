@@ -1079,7 +1079,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                             (size(allP,2)+size(minorP_full,2)));
                         K_RKm_new = [];
                         for s = 1:size(butcherTableau.A,1)
-                            K_KRm_new = [K_KRm_new; kron(speye(horizon-1),[1 -1]) kron(speye(horizon-1),dt*butcherTableau.A(s,:))]; %assuming butcherTableau.b is row vector
+                            K_RKm_new = [K_RKm_new; kron(speye(horizon-1),[1 -1]) kron(speye(horizon-1),dt*butcherTableau.A(s,:))]; %assuming butcherTableau.b is row vector
                         end
                         P_RKm = [P_RKm; P_RKm_new];
                         K_RKm = blkdiag(K_RKm, K_RKm_new);
