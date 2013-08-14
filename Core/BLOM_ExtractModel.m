@@ -1878,7 +1878,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     upBounds = optVarsBounds(upBounded,2); 
     
     if numBounds > 0
-        ModelSpec.ineq.AAs = {sparse(1:numBounds, [find(upBounded)' find(lowBounded)'], ones(1,numBounds), numBounds+1, numOptVars)};
+        ModelSpec.ineq.AAs = {sparse(1:numBounds, [find(upBounded)' find(lowBounded)'], ones(1,numBounds), numBounds+1, size(allP,2))};
         
         ineqCsM = [1:numBounds 1:numBounds];
         ineqCsN = [1:numBounds (numBounds+1)*ones(1,numBounds)];
@@ -1897,7 +1897,7 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     nonzeroOptVarCosts = optVarCosts~=0;
     if any(nonzeroOptVarCosts)
         ModelSpec.cost.A = sparse(1:sum(nonzeroOptVarCosts), find(nonzeroOptVarCosts),...
-            ones(sum(nonzeroOptVarCosts),1), sum(nonzeroOptVarCosts), numOptVars);
+            ones(sum(nonzeroOptVarCosts),1), sum(nonzeroOptVarCosts), size(allP,2));
         ModelSpec.cost.C = optVarCosts(nonzeroOptVarCosts)';
     elseif numOptVars > 0
         % cost is 0, this is a feasibility problem
