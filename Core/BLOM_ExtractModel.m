@@ -423,14 +423,16 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
                 % special rerouting for mux
                 % the original variables are the outports connected to the
                 % mux
-                mux_optVarIdx = zeros(length(allOutportsFound),1);
+                outportDimsCell = get_param(allOutportsFound, 'CompiledPortWidth');
+                outportDims = [outportDimsCell{1:length(outportDimsCell)}]';
+                mux_optVarIdx = zeros(sum(outportDims),1);
                 for idx=1:length(allOutportsFound)
                     tempOutport = allOutportsFound(idx);
                     [block,tempBlockIndex] =...
                         updateBlock(block,tempOutport);
                     [stepVars,block,sameOptIndex] =...
                         updateStepVars(stepVars,block,tempBlockIndex,tempOutport);
-                    mux_optVarIdx(idx) = sameOptIndex;
+                    mux_optVarIdx(sum(outportDims(1:idx-1))+1:sum(outportDims(1:idx-1))+outportDims(idx)) = sameOptIndex:sameOptIndex+outportDims(idx)-1;
                 end
                 
                 [stepVars,block] = updateStepVars(stepVars,block,currentBlockIndex,currentOutport,mux_optVarIdx);
