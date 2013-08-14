@@ -6,46 +6,51 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.35"
+    ComputedModelVersion    "1.38"
     NumModelReferences	    0
     NumTestPointedSignals   7
     TestPointedSignal {
       SignalName	      ""
       FullBlockPath	      "HelloWorldContNew/Constant"
       LogSignal		      1
-      LogName		      "Constant"
+      UseCustomName	      1
+      LogName		      "Constant_1"
       MaxPoints		      5000
       Decimation	      2
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "HelloWorldContNew/System/Continuous state"
+      FullBlockPath	      "HelloWorldContNew/System/ContinuousState"
       LogSignal		      1
-      LogName		      "Continuous state"
+      UseCustomName	      1
+      LogName		      "System_ContinuousState_1"
       MaxPoints		      5000
       Decimation	      2
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "HelloWorldContNew/System/cost "
+      FullBlockPath	      "HelloWorldContNew/System/cost"
       LogSignal		      1
-      LogName		      "cost "
+      UseCustomName	      1
+      LogName		      "System_cost_1"
       MaxPoints		      5000
       Decimation	      2
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "HelloWorldContNew/System/state constraint"
+      FullBlockPath	      "HelloWorldContNew/System/stateConstraint"
       LogSignal		      1
-      LogName		      "state constraint"
+      UseCustomName	      1
+      LogName		      "System_stateConstraint_1"
       MaxPoints		      5000
       Decimation	      2
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "HelloWorldContNew/System/state constraint1"
+      FullBlockPath	      "HelloWorldContNew/System/stateConstraint1"
       LogSignal		      1
-      LogName		      "state constraint1"
+      UseCustomName	      1
+      LogName		      "System_stateConstraint1_1"
       MaxPoints		      5000
       Decimation	      2
     }
@@ -53,7 +58,8 @@ Model {
       SignalName	      ""
       FullBlockPath	      "HelloWorldContNew/System/u"
       LogSignal		      1
-      LogName		      "u"
+      UseCustomName	      1
+      LogName		      "System_u_1"
       MaxPoints		      5000
       Decimation	      2
     }
@@ -61,7 +67,8 @@ Model {
       SignalName	      ""
       FullBlockPath	      "HelloWorldContNew/System/xdot"
       LogSignal		      1
-      LogName		      "xdot"
+      UseCustomName	      1
+      LogName		      "System_xdot_1"
       MaxPoints		      5000
       Decimation	      2
     }
@@ -81,9 +88,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jun 04 12:08:22 2013"
-  RTWModifiedTimeStamp	  292248490
-  ModelVersionFormat	  "1.%<AutoIncrement:35>"
+  LastModifiedDate	  "Tue Aug 13 15:58:08 2013"
+  RTWModifiedTimeStamp	  298310282
+  ModelVersionFormat	  "1.%<AutoIncrement:38>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -341,7 +348,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "ErrorLevel1"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
 	}
@@ -660,6 +667,21 @@ Model {
       Interpolate	      on
     }
     Block {
+      BlockType		      Integrator
+      ExternalReset	      "none"
+      InitialConditionSource  "internal"
+      InitialCondition	      "0"
+      LimitOutput	      off
+      UpperSaturationLimit    "inf"
+      LowerSaturationLimit    "-inf"
+      ShowSaturationPort      off
+      ShowStatePort	      off
+      AbsoluteTolerance	      "auto"
+      IgnoreLimit	      off
+      ZeroCross		      on
+      ContinuousStateAttributes	"''"
+    }
+    Block {
       BlockType		      Scope
       ModelBased	      off
       TickLabels	      "OneTimeTick"
@@ -698,7 +720,7 @@ Model {
   }
   System {
     Name		    "HelloWorldContNew"
-    Location		    [5, 292, 1019, 724]
+    Location		    [3, 260, 1021, 745]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -712,7 +734,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    21
+    SIDHighWatermark	    23
     Block {
       BlockType		      Constant
       Name		      "Constant"
@@ -723,8 +745,8 @@ Model {
 	PortNumber		1
 	RTWStorageClass		"Auto"
 	DataLogging		on
-	DataLoggingNameMode	"SignalName"
-	DataLoggingName		"Constant"
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Constant_1"
       }
     }
     Block {
@@ -742,7 +764,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[141, 167, 1155, 638]
+	Location		[2139, 118, 3330, 606]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -769,7 +791,7 @@ Model {
 	  Ports			  [1]
 	  Position		  [325, 163, 380, 197]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Bound"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -783,8 +805,8 @@ Model {
 	  ub			  "0"
 	  lb			  "-inf"
 	  initial_step		  on
-	  final_step		  on
 	  intermediate_step	  on
+	  final_step		  on
 	}
 	Block {
 	  BlockType		  Reference
@@ -793,7 +815,7 @@ Model {
 	  Ports			  [1]
 	  Position		  [895, 143, 950, 177]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Bound"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -807,45 +829,32 @@ Model {
 	  ub			  "0"
 	  lb			  "-inf"
 	  initial_step		  on
-	  final_step		  on
 	  intermediate_step	  on
+	  final_step		  on
 	}
 	Block {
-	  BlockType		  Reference
-	  Name			  "Continuous state"
-	  SID			  6
-	  Tag			  "OptState"
+	  BlockType		  Integrator
+	  Name			  "ContinuousState"
+	  SID			  23
 	  Ports			  [1, 1]
 	  Position		  [975, 106, 1015, 134]
-	  LibraryVersion	  "1.138"
-	  SourceBlock		  "MPCMdlLib/Continuous state"
-	  SourceType		  ""
-	  ShowPortLabels	  "FromPortIcon"
-	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData off
-	  RTWMemSecFuncInitTerm	  "Inherit from model"
-	  RTWMemSecFuncExecute	  "Inherit from model"
-	  RTWMemSecDataConstants  "Inherit from model"
-	  RTWMemSecDataInternal	  "Inherit from model"
-	  RTWMemSecDataParameters "Inherit from model"
-	  init_val		  "0.6"
-	  save_name		  "BL_System_Continuous_state"
+	  InitialCondition	  "0.6"
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "Continuous state"
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_ContinuousState_1"
 	  }
 	}
 	Block {
 	  BlockType		  Reference
-	  Name			  "Cost functon"
+	  Name			  "CostFuncton"
 	  SID			  16
 	  Ports			  [1]
 	  Position		  [975, 238, 1030, 272]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/DiscreteCost"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -857,8 +866,8 @@ Model {
 	  RTWMemSecDataInternal	  "Inherit from model"
 	  RTWMemSecDataParameters "Inherit from model"
 	  initial_step		  on
-	  final_step		  on
 	  intermediate_step	  on
+	  final_step		  on
 	}
 	Block {
 	  BlockType		  Scope
@@ -879,12 +888,12 @@ Model {
 	}
 	Block {
 	  BlockType		  Reference
-	  Name			  "cost "
+	  Name			  "cost"
 	  SID			  17
 	  Ports			  [2, 1]
 	  Position		  [770, 236, 940, 274]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -906,18 +915,18 @@ Model {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "cost "
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_cost_1"
 	  }
 	}
 	Block {
 	  BlockType		  Reference
-	  Name			  "state constraint"
+	  Name			  "stateConstraint"
 	  SID			  18
 	  Ports			  [1, 1]
 	  Position		  [725, 133, 835, 187]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -939,18 +948,18 @@ Model {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "state constraint"
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_stateConstraint_1"
 	  }
 	}
 	Block {
 	  BlockType		  Reference
-	  Name			  "state constraint1"
+	  Name			  "stateConstraint1"
 	  SID			  19
 	  Ports			  [1, 1]
 	  Position		  [155, 155, 295, 205]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -972,8 +981,8 @@ Model {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "state constraint1"
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_stateConstraint1_1"
 	  }
 	}
 	Block {
@@ -983,7 +992,7 @@ Model {
 	  Ports			  [1, 1]
 	  Position		  [75, 117, 115, 143]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/InputFromSimulink"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -999,8 +1008,8 @@ Model {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "u"
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_u_1"
 	  }
 	}
 	Block {
@@ -1010,7 +1019,7 @@ Model {
 	  Ports			  [2, 1]
 	  Position		  [440, 94, 550, 141]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.112"
+	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -1032,18 +1041,18 @@ Model {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
-	    DataLoggingNameMode	    "SignalName"
-	    DataLoggingName	    "xdot"
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_xdot_1"
 	  }
 	}
 	Line {
 	  SrcBlock		  "xdot"
 	  SrcPort		  1
-	  DstBlock		  "Continuous state"
+	  DstBlock		  "ContinuousState"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "Continuous state"
+	  SrcBlock		  "ContinuousState"
 	  SrcPort		  1
 	  Points		  [0, -90; -190, 0]
 	  Branch {
@@ -1056,12 +1065,12 @@ Model {
 	    Branch {
 	      Points		      [0, 130]
 	      Branch {
-		DstBlock		"state constraint"
+		DstBlock		"stateConstraint"
 		DstPort			1
 	      }
 	      Branch {
 		Points			[0, 85]
-		DstBlock		"cost "
+		DstBlock		"cost"
 		DstPort			1
 	      }
 	    }
@@ -1084,23 +1093,23 @@ Model {
 	    }
 	    Branch {
 	      Points		      [0, 135]
-	      DstBlock		      "cost "
+	      DstBlock		      "cost"
 	      DstPort		      2
 	    }
 	  }
 	  Branch {
-	    DstBlock		    "state constraint1"
+	    DstBlock		    "stateConstraint1"
 	    DstPort		    1
 	  }
 	}
 	Line {
-	  SrcBlock		  "cost "
+	  SrcBlock		  "cost"
 	  SrcPort		  1
-	  DstBlock		  "Cost functon"
+	  DstBlock		  "CostFuncton"
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "state constraint"
+	  SrcBlock		  "stateConstraint"
 	  SrcPort		  1
 	  DstBlock		  "Constraint2"
 	  DstPort		  1
@@ -1112,7 +1121,7 @@ Model {
 	  DstPort		  1
 	}
 	Line {
-	  SrcBlock		  "state constraint1"
+	  SrcBlock		  "stateConstraint1"
 	  SrcPort		  1
 	  DstBlock		  "Constraint1"
 	  DstPort		  1
