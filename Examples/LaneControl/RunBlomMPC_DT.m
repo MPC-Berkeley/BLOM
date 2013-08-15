@@ -152,9 +152,9 @@ for n=1:simLength
     
     subplot(212)
     plot(SolverResult.System_z(:,6),SolverResult.System_z(:,5),'b','linewidth',2); hold on;
-    plot(SolverResult.System_z(:,6),road_wid*ones(Hp,1),'r');
-    plot(SolverResult.System_z(:,6),-road_wid*ones(Hp,1),'r');
-    plot(SolverResult.System_z(:,6),zeros(Hp,1),'--b');
+    plot(SolverResult.System_z(:,6),road_wid*ones(Hp/dt,1),'r');
+    plot(SolverResult.System_z(:,6),-road_wid*ones(Hp/dt,1),'r');
+    plot(SolverResult.System_z(:,6),zeros(Hp/dt,1),'--b');
     ell_x = (obj(1).s-obj(1).off_s):0.01:(obj(1).s+obj(1).off_s);
     ell_y1 = obj(1).e_y + obj(1).off_e_y*sqrt(1 - (ell_x-obj(1).s).^2/obj(1).off_s^2);
     ell_y2 = obj(1).e_y - obj(1).off_e_y*sqrt(1 - (ell_x-obj(1).s).^2/obj(1).off_s^2);

@@ -6,15 +6,33 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.92"
+    ComputedModelVersion    "1.100"
     NumModelReferences	    0
-    NumTestPointedSignals   8
+    NumTestPointedSignals   10
     TestPointedSignal {
       SignalName	      ""
       FullBlockPath	      "BLOM_MPC_DT/Constant1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Constant1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "BLOM_MPC_DT/System/Add"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Add_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "BLOM_MPC_DT/System/Gain"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_Gain_1"
       MaxPoints		      5000
       Decimation	      2
     }
@@ -68,7 +86,7 @@ Model {
       FullBlockPath	      "BLOM_MPC_DT/System/z"
       LogSignal		      1
       UseCustomName	      1
-      LogName		      "System_UnitDelay_1"
+      LogName		      "System_z_1"
       MaxPoints		      5000
       Decimation	      2
     }
@@ -97,9 +115,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "Kyle"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Aug 14 15:13:58 2013"
-  RTWModifiedTimeStamp	  298385165
-  ModelVersionFormat	  "1.%<AutoIncrement:92>"
+  LastModifiedDate	  "Thu Aug 15 13:46:12 2013"
+  RTWModifiedTimeStamp	  298475166
+  ModelVersionFormat	  "1.%<AutoIncrement:100>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -654,6 +672,28 @@ Model {
       FramePeriod	      "inf"
     }
     Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "fixdt(1,16,0)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "[]"
+      ParamDataTypeStr	      "Inherit: Same as input"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      Inport
       Port		      "1"
       UseBusObject	      off
@@ -720,6 +760,25 @@ Model {
       MinMaxOverflowLogging   "UseLocalSettings"
     }
     Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "fixdt(1,16,0)"
+      OutScaling	      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      ToWorkspace
       VariableName	      "simulink_output"
       MaxDataPoints	      "1000"
@@ -751,7 +810,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "184"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    37
+    SIDHighWatermark	    44
     Block {
       BlockType		      Constant
       Name		      "Constant1"
@@ -782,7 +841,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[2433, 188, 3873, 993]
+	Location		[2, 74, 1918, 1059]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -799,15 +858,35 @@ Model {
 	  BlockType		  Inport
 	  Name			  "u_in"
 	  SID			  3
-	  Position		  [20, 123, 50, 137]
+	  Position		  [20, 153, 50, 167]
 	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Add"
+	  SID			  44
+	  Ports			  [2, 1]
+	  Position		  [895, 142, 925, 173]
+	  InputSameDT		  off
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^-10"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Add_1"
+	  }
 	}
 	Block {
 	  BlockType		  Reference
 	  Name			  "Constraint1"
 	  SID			  26
 	  Ports			  [1]
-	  Position		  [325, 173, 380, 207]
+	  Position		  [325, 363, 380, 397]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Bound"
@@ -831,7 +910,7 @@ Model {
 	  Name			  "Constraint2"
 	  SID			  27
 	  Ports			  [1]
-	  Position		  [895, 183, 950, 217]
+	  Position		  [895, 373, 950, 407]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Bound"
@@ -855,7 +934,7 @@ Model {
 	  Name			  "Constraint3"
 	  SID			  28
 	  Ports			  [1]
-	  Position		  [940, 393, 995, 427]
+	  Position		  [940, 588, 995, 622]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/Bound"
@@ -879,7 +958,7 @@ Model {
 	  Name			  "CostFuncton"
 	  SID			  29
 	  Ports			  [1]
-	  Position		  [975, 308, 1030, 342]
+	  Position		  [975, 498, 1030, 532]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/DiscreteCost"
@@ -897,11 +976,34 @@ Model {
 	  final_step		  on
 	}
 	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  42
+	  Position		  [785, 135, 815, 165]
+	  Gain			  "dt"
+	  ParameterDataTypeMode	  "Inherit via internal rule"
+	  ParameterDataType	  "fixdt(1, 16)"
+	  ParameterScaling	  "2^0"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeMode	  "Inherit via internal rule"
+	  OutDataType		  "fixdt(1, 16)"
+	  OutScaling		  "2^0"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_Gain_1"
+	  }
+	}
+	Block {
 	  BlockType		  Mux
 	  Name			  "Mux"
 	  SID			  14
 	  Ports			  [2, 1]
-	  Position		  [455, 101, 460, 139]
+	  Position		  [455, 131, 460, 169]
 	  ShowName		  off
 	  Inputs		  "2"
 	  DisplayOption		  "bar"
@@ -911,7 +1013,7 @@ Model {
 	  Name			  "Mux1"
 	  SID			  15
 	  Ports			  [2, 1]
-	  Position		  [725, 306, 730, 344]
+	  Position		  [725, 496, 730, 534]
 	  ShowName		  off
 	  Inputs		  "2"
 	  DisplayOption		  "bar"
@@ -950,7 +1052,7 @@ Model {
 	  Name			  "ToWorkspace1"
 	  SID			  23
 	  Ports			  [1]
-	  Position		  [555, 350, 615, 380]
+	  Position		  [555, 565, 615, 595]
 	  ShowName		  off
 	  VariableName		  "inputs"
 	  MaxDataPoints		  "inf"
@@ -962,7 +1064,7 @@ Model {
 	  Name			  "cost"
 	  SID			  30
 	  Ports			  [1, 1]
-	  Position		  [770, 306, 940, 344]
+	  Position		  [770, 496, 940, 534]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
@@ -995,7 +1097,7 @@ Model {
 	  Name			  "inputConstraint"
 	  SID			  31
 	  Ports			  [1, 1]
-	  Position		  [155, 156, 295, 224]
+	  Position		  [155, 346, 295, 414]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
@@ -1028,7 +1130,7 @@ Model {
 	  Name			  "slipAngleConstraint"
 	  SID			  32
 	  Ports			  [1, 1]
-	  Position		  [770, 376, 910, 444]
+	  Position		  [770, 571, 910, 639]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
@@ -1061,7 +1163,7 @@ Model {
 	  Name			  "stateConstraint"
 	  SID			  33
 	  Ports			  [1, 1]
-	  Position		  [725, 129, 835, 271]
+	  Position		  [725, 319, 835, 461]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
@@ -1094,7 +1196,7 @@ Model {
 	  Name			  "u"
 	  SID			  34
 	  Ports			  [1, 1]
-	  Position		  [75, 117, 115, 143]
+	  Position		  [75, 147, 115, 173]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/InputFromSimulink"
@@ -1119,15 +1221,16 @@ Model {
 	Block {
 	  BlockType		  UnitDelay
 	  Name			  "z"
-	  SID			  37
-	  Position		  [980, 98, 1015, 132]
+	  SID			  43
+	  Position		  [970, 143, 1005, 177]
+	  X0			  "Z_curr'"
 	  SampleTime		  "-1"
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
 	    DataLogging		    on
 	    DataLoggingNameMode	    "Custom"
-	    DataLoggingName	    "System_UnitDelay_1"
+	    DataLoggingName	    "System_z_1"
 	  }
 	}
 	Block {
@@ -1135,7 +1238,7 @@ Model {
 	  Name			  "zdot"
 	  SID			  36
 	  Ports			  [1, 1]
-	  Position		  [485, 90, 595, 140]
+	  Position		  [485, 125, 595, 175]
 	  BackgroundColor	  "lightBlue"
 	  LibraryVersion	  "1.115"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
@@ -1164,25 +1267,20 @@ Model {
 	  }
 	}
 	Line {
-	  SrcBlock		  "zdot"
-	  SrcPort		  1
-	  DstBlock		  "z"
-	  DstPort		  1
-	}
-	Line {
 	  SrcBlock		  "u"
 	  SrcPort		  1
 	  Points		  [20, 0]
 	  Branch {
 	    Points		    [260, 0]
 	    Branch {
-	      Points		      [0, 205; 130, 0]
+	      Points		      [0, 365; 130, 0; 5, 0]
 	      Branch {
-		Points			[0, 30]
+		Points			[-5, 0; 5, 0; 0, 55]
 		DstBlock		"ToWorkspace1"
 		DstPort			1
 	      }
 	      Branch {
+		Points			[-5, 0]
 		DstBlock		"Mux1"
 		DstPort			2
 	      }
@@ -1250,40 +1348,66 @@ Model {
 	Line {
 	  SrcBlock		  "z"
 	  SrcPort		  1
-	  Points		  [0, -85; -111, 0]
+	  Points		  [20, 0]
 	  Branch {
-	    Points		    [0, 35]
-	    DstBlock		    "Scope"
-	    DstPort		    1
-	  }
-	  Branch {
-	    Points		    [-170, 0]
+	    Points		    [0, -130; -121, 0]
 	    Branch {
-	      Points		      [0, 50]
-	      DstBlock		      "ToWorkspace"
+	      Points		      [0, 35]
+	      DstBlock		      "Scope"
 	      DstPort		      1
 	    }
 	    Branch {
-	      Points		      [-54, 0]
+	      Points		      [-170, 0]
 	      Branch {
-		Points			[0, 170]
-		Branch {
-		  Points		  [0, 115]
-		  DstBlock		  "Mux1"
-		  DstPort		  1
-		}
-		Branch {
-		  DstBlock		  "stateConstraint"
-		  DstPort		  1
-		}
+		Points			[0, 50]
+		DstBlock		"ToWorkspace"
+		DstPort			1
 	      }
 	      Branch {
-		Points			[-285, 0; 0, 80]
-		DstBlock		"Mux"
-		DstPort			1
+		Points			[-54, 0]
+		Branch {
+		  Points		  [0, 360]
+		  Branch {
+		    Points		    [0, 115]
+		    DstBlock		    "Mux1"
+		    DstPort		    1
+		  }
+		  Branch {
+		    DstBlock		    "stateConstraint"
+		    DstPort		    1
+		  }
+		}
+		Branch {
+		  Points		  [-285, 0; 0, 110]
+		  DstBlock		  "Mux"
+		  DstPort		  1
+		}
 	      }
 	    }
 	  }
+	  Branch {
+	    Points		    [0, 35; -150, 0]
+	    DstBlock		    "Add"
+	    DstPort		    2
+	  }
+	}
+	Line {
+	  SrcBlock		  "zdot"
+	  SrcPort		  1
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  DstBlock		  "Add"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Add"
+	  SrcPort		  1
+	  DstBlock		  "z"
+	  DstPort		  1
 	}
       }
     }
