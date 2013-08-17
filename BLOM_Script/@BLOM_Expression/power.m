@@ -27,7 +27,7 @@ if ~specialFunction && ~in1.specialFunction && all(terms_per_row <= 1)
         if in2 == 0
             % output is a vector of 1's
             out = BLOM_Expression(in1.problem, ...
-                sparse(numel(in1.problem.lb), 1), ones(size1), false);
+                sparse(numel(in1.problem.x), 1), ones(size1), false);
         else
             out = in1;
             out.Pt = in2*out.Pt;
@@ -47,11 +47,11 @@ if ~specialFunction && ~in1.specialFunction && all(terms_per_row <= 1)
         for i = 1:numel(in2) % should vectorize this loop
             if in2(i) == 0
                 % this output is a constant 1
-                newPt{i} = sparse(numel(in1.problem.lb), 1);
+                newPt{i} = sparse(numel(in1.problem.x), 1);
                 newK_diags(i) = 1;
             elseif terms_per_row(i) == 0
                 % this output is a constant 0
-                newPt{i} = sparse(numel(in1.problem.lb), 1);
+                newPt{i} = sparse(numel(in1.problem.x), 1);
                 newK_diags(i) = 0;
             else
                 K_row = in1_Kt(:, i);
@@ -68,6 +68,7 @@ else
     % have to introduce new variable to take power of a multi-term
     % expression or special function, or special function of any expression
     newvar = in1.problem.newVariable(size1);
+    newvar.value = in1.value;
     out = power(newvar, in2);
     % set aux Pt and K in output expression for newvar == in1 constraint
     aux = in1 - newvar;

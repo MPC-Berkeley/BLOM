@@ -4,6 +4,7 @@ classdef BLOM_Problem < handle
         K = sparse(1, 0); % first row of K is cost function
         lb = -inf(0, 1);
         ub = inf(0, 1);
+        x = nan(0, 1); % initial / optimal values of x
     end
     properties (Dependent = true)
         P
@@ -30,14 +31,15 @@ classdef BLOM_Problem < handle
             elseif numel(numrows) > 1 || numel(numcolumns) > 1
                 error('numrows and numcolumns should be scalars if both given')
             end
+            % add entries to lb, ub, and x for new variables
+            problem.lb = [problem.lb; -inf(numrows*numcolumns, 1)];
+            problem.ub = [problem.ub; inf(numrows*numcolumns, 1)];
+            problem.x = [problem.x; nan(numrows*numcolumns, 1)];
             % add new rows to problem.Pt and save indices in newvar
             idx = size(problem.Pt, 1) + reshape(1:(numrows*numcolumns), ...
                 numrows, numcolumns);
             newvar = BLOM_Variable(problem, idx);
             problem.Pt = blkdiag(problem.Pt, sparse(numrows*numcolumns, 0));
-            % add entries to lb and ub for new variables
-            problem.lb = [problem.lb; -inf(numrows*numcolumns, 1)];
-            problem.ub = [problem.ub; inf(numrows*numcolumns, 1)];
         end
         
         function P = get.P(problem)
@@ -70,7 +72,7 @@ classdef BLOM_Problem < handle
             elseif isnumeric(cost)
                 % constant cost
                 cost = BLOM_Expression(problem, ...
-                    sparse(numel(problem.lb), 1), cost(:), false);
+                    sparse(numel(problem.x), 1), cost(:), false);
             else
                 % convert to BLOM_Expression (refreshes size of cost.Pt)
                 cost = BLOM_Expression(cost);
@@ -143,6 +145,7 @@ classdef BLOM_Problem < handle
                     slack_idx = find((lb ~= 0) | (ub ~= 0));
                     num_slacks = numel(slack_idx);
                     slackvar = problem.newVariable(num_slacks, 1);
+                    slackvar.value = expression.value(slack_idx);
                     idx = slackvar.idx;
                     problem.lb(idx) = max(problem.lb(idx), lb);
                     problem.ub(idx) = min(problem.ub(idx), ub);
@@ -162,6 +165,23 @@ classdef BLOM_Problem < handle
             if any(problem.lb(idx) > problem.ub(idx))
                 warning('infeasible bound set')
             end
+        end
+        
+        function info = solve(problem, options)
+            % initial version, using Ipopt mex interface
+            funcs.objective = @(x) BLOM_EvalPolyBlock(problem.cost.P, problem.cost.K, x);
+            funcs.gradient = @(x) BLOM_EvalJacobian(problem.cost.P, problem.cost.K, x);
+            funcs.constraints = @(x) BLOM_EvalPolyBlock(problem.P, problem.K(2:end,:), x);
+            funcs.jacobian = @(x) BLOM_EvalJacobian(problem.P, problem.K(2:end,:), x);
+            funcs.jacobianstructure = @() spones(problem.K(2:end,:))*spones(problem.P);
+            funcs.hessian = @(x, sigma, lambda) BLOM_EvalHessian(problem.P, problem.K, x, [sigma; lambda]);
+            funcs.hessianstructure = @() BLOM_EvalHessian(problem.P, problem.K);
+            options.lb = problem.lb;
+            options.ub = problem.ub;
+            options.cl = zeros(size(problem.K, 1) - 1, 1);
+            options.cu = zeros(size(problem.K, 1) - 1, 1);
+            
+            [problem.x, info] = ipopt(problem.x, funcs, options);
         end
         
         function removeUnusedTerms(problem)

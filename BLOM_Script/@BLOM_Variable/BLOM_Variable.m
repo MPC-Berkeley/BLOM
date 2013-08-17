@@ -7,20 +7,39 @@ classdef BLOM_Variable < handle
     properties
         problem % handle of parent problem
         idx % index within parent problem
+    end
+    properties (Dependent = true)
         value % numerical value (set to nan if no values known)
     end
     
     methods
-        function var = BLOM_Variable(problem, idx, value)
+        function var = BLOM_Variable(problem, idx)
             var.problem = problem;
             var.idx = idx;
-            if nargin < 3
-                var.value = nan(size(idx));
+        end
+        
+        function value = get.value(var)
+            value = var.problem.x(var.idx);
+        end
+        function set.value(var, value)
+            var.problem.x(var.idx) = value;
+        end
+        
+        function out = subsref(var, sub)
+            %{
+            if strcmp(sub.type, '.')
+                out = var.(sub.subs);
             else
-                if ~isequal(size(idx), size(value))
-                    error('idx and value must be same size')
+                out = BLOM_Variable(var.problem, subsref(var.idx, sub));
+            end
+            %}
+            out = var;
+            for i=1:length(sub)
+                if strcmp(sub(i).type, '.')
+                    out = out.(sub(i).subs);
+                else
+                    out = BLOM_Variable(out.problem, subsref(out.idx, sub(i)));
                 end
-                var.value = value;
             end
         end
         
@@ -34,10 +53,10 @@ classdef BLOM_Variable < handle
         function out = plus(in1, in2)
             if isnumeric(in1)
                 in1 = BLOM_Expression(in2.problem, ...
-                    sparse(numel(in2.problem.lb), 1), in1(:), false);
+                    sparse(numel(in2.problem.x), 1), in1(:), false);
             elseif isnumeric(in2)
                 in2 = BLOM_Expression(in1.problem, ...
-                    sparse(numel(in1.problem.lb), 1), in2(:), false);
+                    sparse(numel(in1.problem.x), 1), in2(:), false);
             end
             out = plus(BLOM_Expression(in1), BLOM_Expression(in2));
         end
@@ -45,10 +64,10 @@ classdef BLOM_Variable < handle
         function out = minus(in1, in2)
             if isnumeric(in1)
                 in1 = BLOM_Expression(in2.problem, ...
-                    sparse(numel(in2.problem.lb), 1), in1(:), false);
+                    sparse(numel(in2.problem.x), 1), in1(:), false);
             elseif isnumeric(in2)
                 in2 = BLOM_Expression(in1.problem, ...
-                    sparse(numel(in1.problem.lb), 1), in2(:), false);
+                    sparse(numel(in1.problem.x), 1), in2(:), false);
             end
             out = minus(BLOM_Expression(in1), BLOM_Expression(in2));
         end
@@ -128,7 +147,7 @@ classdef BLOM_Variable < handle
             % scalar variable to non-scalar power, or non-scalar variable
             % to non-scalar power are both handled by sparse()
             out = BLOM_Expression(in1.problem, sparse(in1.idx(:), ...
-                    1:numel(in2), in2(:), numel(in1.problem.lb), ...
+                    1:numel(in2), in2(:), numel(in1.problem.x), ...
                     numel(in2)), speye(numel(in2)));
         end
         
@@ -161,7 +180,7 @@ classdef BLOM_Variable < handle
             if nargin < 2 && min(size1) == 1
                 % product of vector elements
                 out = BLOM_Expression(in1.problem, sparse(in1.idx, 1, 1, ...
-                    numel(in1.problem.lb), 1), speye(1), false);
+                    numel(in1.problem.x), 1), speye(1), false);
             elseif nargin < 2 || isequal(dim, 1)
                 % product of matrix elements along columns
                 
@@ -217,7 +236,6 @@ classdef BLOM_Variable < handle
         % vertcat
         % repmat
         % reshape?
-        % subsref
         % subsasgn
         % le (output BLOM_Constraint object)
         % ge (output BLOM_Constraint object)

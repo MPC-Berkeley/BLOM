@@ -18,6 +18,7 @@ else
     % have to introduce new variable to take power of a multi-term
     % expression or special function, or special function of any expression
     newvar = in1.problem.newVariable;
+    newvar.value = in1.value;
     out = mpower(newvar, in2);
     % set aux Pt and K in output expression for newvar == in1 constraint
     aux = in1 - newvar;

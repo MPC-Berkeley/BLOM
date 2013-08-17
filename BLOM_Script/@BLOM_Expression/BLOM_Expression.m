@@ -9,6 +9,7 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
     end
     properties (Dependent = true)
         P
+        value
     end
     
     methods
@@ -60,7 +61,7 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
                 var = problem;
                 idx = var.idx(:);
                 expr = BLOM_Expression(var.problem, sparse(idx, ...
-                    1:numel(idx), 1, numel(var.problem.lb), ...
+                    1:numel(idx), 1, numel(var.problem.x), ...
                     numel(idx)), speye(numel(idx)), false);
             elseif isa(problem, 'BLOM_Constraint')
                 error('invalid operation on BLOM_Constraint object')
@@ -83,6 +84,10 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
             expr.Pt = P';
             expr.specialFunction = any(ismember(nonzeros(expr.Pt), ...
                 BLOM_FunctionCode('all_codes')));
+        end
+        
+        function value = get.value(expr)
+            value = BLOM_EvalPolyBlock(expr.P, expr.K, expr.problem.x);
         end
         
         function expr = removeUnusedTerms(expr)

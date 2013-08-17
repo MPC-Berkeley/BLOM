@@ -8,7 +8,7 @@ if isnumeric(in1)
                 'converting first input of plus to column vector'])
     end
     in1 = BLOM_Expression(in2.problem, ...
-        sparse(numel(in2.problem.lb), 1), in1(:), false);
+        sparse(numel(in2.problem.x), 1), in1(:), false);
 else
     % convert to BLOM_Expression (refreshes size of in1.Pt)
     in1 = BLOM_Expression(in1);
@@ -22,7 +22,7 @@ if isnumeric(in2)
                 'converting second input of plus to column vector'])
     end
     in2 = BLOM_Expression(in1.problem, ...
-        sparse(numel(in1.problem.lb), 1), in2(:), false);
+        sparse(numel(in1.problem.x), 1), in2(:), false);
 else
     % convert to BLOM_Expression (refreshes size of in2.Pt)
     in2 = BLOM_Expression(in2);

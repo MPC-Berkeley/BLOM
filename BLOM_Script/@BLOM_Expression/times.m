@@ -76,6 +76,7 @@ else % expression times expression
             % if both inputs are scalar and only in2 is a special function,
             % introduce variable for in2
             newvar = problem.newVariable(size2);
+            newvar.value = in2.value;
             out = in1;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
@@ -83,6 +84,7 @@ else % expression times expression
             aux = in2 - newvar;
         elseif max(size1) == 1
             newvar = problem.newVariable(size1);
+            newvar.value = in1.value;
             out = in2;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
@@ -90,6 +92,7 @@ else % expression times expression
             aux = in1 - newvar;
         elseif max(size2) == 1
             newvar = problem.newVariable(size2);
+            newvar.value = in2.value;
             out = in1;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
@@ -99,6 +102,7 @@ else % expression times expression
             % both inputs are vectors, but only in2 has special functions
             % so introduce vector variable for in2
             newvar = problem.newVariable(size2);
+            newvar.value = in2.value;
             newPt = cell(size1);
             newK = cell(size1);
             for i = 1:max(size1) % should vectorize this loop
@@ -120,6 +124,7 @@ else % expression times expression
         else
             % both inputs are vectors, introduce vector variable for in1
             newvar = problem.newVariable(size1);
+            newvar.value = in1.value;
             newPt = cell(size2);
             newK = cell(size2);
             for i = 1:max(size2) % should vectorize this loop

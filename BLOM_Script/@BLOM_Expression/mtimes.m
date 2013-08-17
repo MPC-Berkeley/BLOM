@@ -81,6 +81,7 @@ else % expression times expression, and we know one (or both) of the
             % if both inputs are scalar and only in2 is a special function,
             % introduce variable for in2
             newvar = problem.newVariable(size2);
+            newvar.value = in2.value;
             out = in1;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
@@ -88,6 +89,7 @@ else % expression times expression, and we know one (or both) of the
             aux = in2 - newvar;
         elseif max(size1) == 1
             newvar = problem.newVariable(size1);
+            newvar.value = in1.value;
             out = in2;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
@@ -95,6 +97,7 @@ else % expression times expression, and we know one (or both) of the
             aux = in1 - newvar;
         elseif max(size2) == 1
             newvar = problem.newVariable(size2);
+            newvar.value = in2.value;
             out = in1;
             % multiply all terms by newvar
             out.Pt = [out.Pt; ones(1, size(out.Pt, 2))];
