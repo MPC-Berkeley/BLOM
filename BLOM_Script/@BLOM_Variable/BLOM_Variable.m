@@ -37,8 +37,10 @@ classdef BLOM_Variable < handle
             for i=1:length(sub)
                 if strcmp(sub(i).type, '.')
                     out = out.(sub(i).subs);
-                else
+                elseif isa(out, 'BLOM_Variable')
                     out = BLOM_Variable(out.problem, subsref(out.idx, sub(i)));
+                else
+                    out = subsref(out, sub(i));
                 end
             end
         end
