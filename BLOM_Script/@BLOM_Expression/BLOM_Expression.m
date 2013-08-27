@@ -114,6 +114,31 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
                 idx2, 1, numel(idx2), size(Punique,1));
         end
         
+        function out = subsref(expr, sub)
+            out = expr;
+            for i=1:length(sub)
+                if strcmp(sub(i).type, '.')
+                    out = out.(sub(i).subs);
+                elseif isa(out, 'BLOM_Expression')
+                    K1 = out.K;
+                    specialFunction1 = out.specialFunction;
+                    auxPt1 = out.auxPt;
+                    auxK1 = out.auxK;
+                    if length(sub.subs) == 1 || all(strcmp(sub.subs(2:end), ':'))
+                        K1 = K1(sub.subs{1}, :);
+                    else
+                        error('Multidimensional indexing of BLOM_Expression objects not supported')
+                    end
+                    out = BLOM_Expression(out.problem, out.Pt, K1, specialFunction1);
+                    out.auxPt = auxPt1;
+                    out.auxK = auxK1;
+                    out = out.removeUnusedTerms;
+                else
+                    out = subsref(out, sub(i));
+                end
+            end
+        end
+        
         % plus, multiplication, and powers are in separate files
         
         function out = uplus(in1) % +x
@@ -276,7 +301,6 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
         % vertcat
         % repmat
         % reshape?
-        % subsref
         % subsasgn
         % le (output BLOM_Constraint object)
         % ge (output BLOM_Constraint object)
