@@ -7,7 +7,7 @@
 
 function BLOM_SetDataLogging(BLOMSystem)
     set_param(BLOMSystem, 'StrictBusMsg', 'ErrorLevel1')
-	set_param(gcs, 'SignalLoggingSaveFormat', 'ModelDataLogs');
+	set_param(BLOMSystem, 'SignalLoggingSaveFormat', 'ModelDataLogs');
 
     subsystems = find_system({BLOMSystem});
     systemNameLength = length(BLOMSystem);
