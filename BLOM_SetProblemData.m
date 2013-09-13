@@ -72,7 +72,7 @@ switch lower(SolverStruct.solver)
         
 %         SolverStruc
 
-    case 'linprog'
+    case {'linprog','quadprog'}
         SolverStruct.prData = SolverStruct.pr;
         SolverStruct.prData.x0  = x0;
         % fix external vars

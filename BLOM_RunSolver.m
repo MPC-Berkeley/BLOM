@@ -32,6 +32,12 @@ switch lower(SolverStruct.solver)
                 SolverStruct.prData.options, options);
         end
         [ResultsVec, FVAL, EXITFLAG] = linprog(SolverStruct.prData);
+    case 'quadprog'
+        if nargin > 2
+            SolverStruct.prData.options = optimset( ...
+                SolverStruct.prData.options, options);
+        end
+        [ResultsVec, FVAL, EXITFLAG] = quadprog(SolverStruct.prData);
     case 'ipopt'
         
         % mfilename('fullpath') returns the entire path to this script
