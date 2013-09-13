@@ -585,8 +585,11 @@ blks = find_system(name, 'Tag', 'PolyBlock');
 mem_blks = find_system(name, 'Tag', 'OptState');
 in_blks = find_system(name, 'Tag', 'OptInput');
 ex_blks = find_system(name, 'Tag', 'OptExternal');
-demuxes = find_system(name, 'BlockType', 'Demux');
-muxes = find_system(name, 'BlockType', 'Mux');
+
+BLOM_subsystem  = get_param(blks{1},'parent');
+
+demuxes = find_system(BLOM_subsystem, 'BlockType', 'Demux');
+muxes = find_system(BLOM_subsystem, 'BlockType', 'Mux');
 
 cost_blks = find_system(name, 'Tag', 'OptCost');
 ineq_blks = find_system(name, 'Tag', 'InequalBlock');
