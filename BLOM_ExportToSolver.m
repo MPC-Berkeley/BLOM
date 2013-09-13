@@ -124,6 +124,27 @@ switch lower(solver)
         SolverStruct.pr.solver = 'linprog';
         SolverStruct.pr.options = optimset;
 
+    case 'quadprog'
+        SolverStruct.solver = solver;
+        SolverStruct.name = ModelSpec.name;
+
+        
+        if  BLOM_CheckIfQuadratic(ModelSpec.A,ModelSpec.C) == false
+            warning('The model is not quadratic, will be linearized around x=0');
+        end
+        Hes       = BLOM_EvalHessian(ModelSpec.A, ModelSpec.C(1,:) , zeros(size(ModelSpec.A,2),1));
+        Jac       = BLOM_EvalJacobian(ModelSpec.A, ModelSpec.C , zeros(size(ModelSpec.A,2),1));
+        Constant  = BLOM_EvalPolyBlock(ModelSpec.A,ModelSpec.C, zeros(size(ModelSpec.A,2),1));
+        SolverStruct.pr.H = full(Hes + Hes' - diag(diag(Hes)));
+        SolverStruct.pr.f = full(Jac(1,:));
+        SolverStruct.pr.Aineq  = Jac(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C,:);
+        SolverStruct.pr.bineq = -Constant(ModelSpec.ineq_start_C:ModelSpec.ineq_end_C);
+        SolverStruct.pr.Aeq  = Jac(ModelSpec.eq_start_C:ModelSpec.eq_end_C,:);
+        SolverStruct.pr.beq = -Constant(ModelSpec.eq_start_C:ModelSpec.eq_end_C);
+        SolverStruct.pr.lb = -inf(size(ModelSpec.A,2),1);
+        SolverStruct.pr.ub = inf(size(ModelSpec.A,2),1);
+        SolverStruct.pr.solver = 'quadprog';
+        SolverStruct.pr.options =  optimset('Algorithm' ,'interior-point-convex');
         
         
 end
