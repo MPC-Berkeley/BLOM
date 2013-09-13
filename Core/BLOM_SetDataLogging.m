@@ -6,6 +6,7 @@
 %======================================================================
 
 function BLOM_SetDataLogging(BLOMSystem)
+    load_system(BLOMSystem)
     set_param(BLOMSystem, 'StrictBusMsg', 'ErrorLevel1')
 	set_param(BLOMSystem, 'SignalLoggingSaveFormat', 'ModelDataLogs');
 
@@ -14,9 +15,9 @@ function BLOM_SetDataLogging(BLOMSystem)
     subsystems(1) = [];
     for k = 1:length(subsystems)
         blockType = get_param(subsystems{k}, 'BlockType');
-        if ~(strcmp(blockType, 'Mux') || strcmp(blockType, 'Demux') ||  ...
-                strcmp(blockType, 'Inport') || strcmp(blockType, 'From') || ...
-                (strcmp(blockType, 'SubSystem') && isempty(get_param(subsystems{k}, 'ReferenceBlock'))))
+        if 1 %~(strcmp(blockType, 'Mux') || strcmp(blockType, 'Demux') ||  ...
+                %strcmp(blockType, 'Inport') || strcmp(blockType, 'From') || ...
+                %(strcmp(blockType, 'SubSystem') && isempty(get_param(subsystems{k}, 'ReferenceBlock'))))
 
             name = get_param(subsystems{k}, 'Name');
             if ~isvarname(name)
