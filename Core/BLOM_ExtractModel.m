@@ -1933,10 +1933,9 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     ModelSpec.eq_end_C = len_cost_C + len_ineq_C + len_eq_C;
     
     %create all_state_vars
-    % FIX: this should probably not mix stepVars and allVars, since some
-    % of stepVars might not be included in allVars for first time step
-    ModelSpec.all_state_vars = sparse((allVars.optVarIdx(stepVars.state)), ones(sum(stepVars.state),1), ones(sum(stepVars.state),1), numOptVars,1);
- 
+    ModelSpec.all_state_vars = sparse(allVars.optVarIdx(stepVars.state(allVars.stepVarIdx) & ...
+        (allVars.timeStep == 1)), 1, 1, numOptVars, 1);
+    
     ModelSpec.allVars = allVars;
     ModelSpec.stepVars = stepVars;
     ModelSpec.block = block;
