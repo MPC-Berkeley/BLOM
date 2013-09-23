@@ -117,11 +117,11 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         % create large P and K matrix for entire problem
         % initially we create the P and K matrix of stepVars then we create
         % the P and K matrix for allVars
-        try
-           [stepP,stepK] = combinePK(block,stepVars);
-        catch err
-           rethrow(err)
-        end
+        %try
+        [stepP,stepK] = combinePK(block,stepVars);
+        %catch err
+        %   rethrow(err) % this try-catch is useless if all it does is rethrow the exact same error
+        %end
         
         % create P and K matrix for allVars
         if strcmp(integ_method, 'None')
@@ -414,7 +414,12 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
         % rerouting case
         currentOutport = outports.outportHandles(outports.searchIdx);
         [block, currentBlockIndex] = updateBlock(block,currentOutport);
-        [outports,allOutportsFound] = addToBFS(outports,currentOutport,block,currentBlockIndex);
+        try
+            [outports,allOutportsFound] = addToBFS(outports,currentOutport,block,currentBlockIndex);
+        catch err
+            rethrow(addCause(err, MException('BLOM:error', ...
+                ['Error while attempting to process block ' block.names{currentBlockIndex}])));
+        end
         
         if block.reroute(currentBlockIndex)
             % this block will need some rerouting. mux and demux will
