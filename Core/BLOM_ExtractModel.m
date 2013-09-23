@@ -791,9 +791,9 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         block.refBlock{block.zeroIdx} = get_param(currentBlockHandle,'ReferenceBlock');
         block.handles(block.zeroIdx) = currentBlockHandle;
         if strcmp(block.refBlock{block.zeroIdx},'BLOM_Lib/Polyblock')
-            % store P&K matricies if the current block is a polyblock
-            block.P{block.zeroIdx} = eval(get_param(currentBlockHandle,'P'));
-            block.K{block.zeroIdx} = eval(get_param(currentBlockHandle,'K'));
+            % store P&K matrices if the current block is a polyblock
+            block.P{block.zeroIdx} = evalin('base',get_param(currentBlockHandle,'P'));
+            block.K{block.zeroIdx} = evalin('base',get_param(currentBlockHandle,'K'));
             
             % we have to modify the P and K matrices because the columns of
             % P are only the inputs of the block so far. we need to include
@@ -1280,8 +1280,8 @@ function stepVars = setBounds(block, stepVars)
     searchIndices = find(block.bound);
     for currentBlockIndex = searchIndices'
         boundHandle = block.handles(currentBlockIndex);
-        lowerBound = eval(get_param(boundHandle,'lb'));
-        upperBound = eval(get_param(boundHandle,'ub'));
+        lowerBound = evalin('base',get_param(boundHandle,'lb'));
+        upperBound = evalin('base',get_param(boundHandle,'ub'));
         
         % find out for which time steps these bounds are relevant
         init = strcmp(get_param(boundHandle, 'initial_step'), 'on');
