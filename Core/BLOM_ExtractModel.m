@@ -134,10 +134,10 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block, allP,allK);
         % following code checks whether or not inports and outportHandles
         % was filled in properly
-        fprintf('--------------------------------------------------------\n')
-        fprintf('Test block.stepOutputIdx and inports is correct\n')
-        fprintf('Everything is good if nothing prints\n')
-        fprintf('--------------------------------------------------------\n')
+        %fprintf('--------------------------------------------------------\n')
+        %fprintf('Test block.stepOutputIdx and inports is correct\n')
+        %fprintf('Everything is good if nothing prints\n')
+        %fprintf('--------------------------------------------------------\n')
         for i = 1:length(block.handles)
             currentPorts = get_param(block.handles(i),'PortHandles');
             currentOutports = currentPorts.Outport;
@@ -200,15 +200,15 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         end
         
 
-        fprintf('\n\n\n Here we have the stored data from block\n\n\n');
+        %fprintf('\n\n\n Here we have the stored data from block\n\n\n');
 
         for i = 1:length(block.handles);
             someBlock = block.names{i};
         end
         
         % check to see if stepVars points to the proper block
-        fprintf('Test to make sure stepVars points to the proper block\n')
-        fprintf('--------------------------------------------------------\n')
+        %fprintf('Test to make sure stepVars points to the proper block\n')
+        %fprintf('--------------------------------------------------------\n')
         for i = 1:length(stepVars.block)
             currentBlockName = block.names(stepVars.block(i));
             parent = get_param(stepVars.outportHandle(i),'Parent');
@@ -222,7 +222,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
                 fprintf('\nExambine Above\n')
             end
         end
-        fprintf('--------------------------------------------------------\n')
+        %fprintf('--------------------------------------------------------\n')
 
     catch err
         % close evaluation of models
