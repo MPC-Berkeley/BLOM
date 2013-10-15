@@ -667,8 +667,6 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
                 stepVars.interUpperBound = [stepVars.interUpperBound; inf*ones(newLength*2,1)];
                 stepVars.finalLowerBound = [stepVars.finalLowerBound; -inf*ones(newLength*2,1)];
                 stepVars.finalUpperBound = [stepVars.finalUpperBound; inf*ones(newLength*2,1)];
-                
-                stepVars.time = [stepVars.time; cell(newLength*2,1)];
             else % double the length of all fields in stepVars
                 for field={'block', 'outportNum','outportHandle','outportIndex',...
                         'initCost', 'interCost', 'finalCost'}
