@@ -651,8 +651,8 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         if newLength >= oldLength
             if newLength >= 2*oldLength
             % new entries greater than twice the old length
-                for field={'block', 'outportNum','outportHandle','outportIndex',...
-                        'cost'}
+                for field={'block', 'outportNum', 'outportHandle', 'outportIndex', ...
+                        'initCost', 'interCost', 'finalCost'}
                         stepVars.(field{1}) = [stepVars.(field{1}); zeros(newLength*2,1)];
                 end
                 
