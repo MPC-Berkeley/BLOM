@@ -8,7 +8,7 @@ ModelSpec = BLOM_ExtractModel('SlidesExample',120,0.5);
 
 RunResults = BLOM_RunModel(ModelSpec);
 
-SolverStruct = BLOM_ExportToSolver(ModelSpec,'IPOPT');
+SolverStruct = BLOM_ExportToSolver(ModelSpec,'fmincon');
 
 [OptGuess ExtVars InitialStates ] = BLOM_SplitResults(ModelSpec,RunResults);
 

@@ -99,8 +99,8 @@ switch lower(solver)
         end
         %}
         
-        CreateIpoptCPP(ModelSpec.name, ModelSpec.all_names, AAs, Cs, ...
-            ineq, fixed, ModelSpec.cost);
+        CreateIpoptCPP(ModelSpec.name, ModelSpec.all_names, ModelSpec.A, ModelSpec.C, ...
+             fixed, ModelSpec.eq_end_C - ModelSpec.eq_start_C+1,  ModelSpec.ineq_end_C - ModelSpec.ineq_start_C+1);
         SolverStruct.solver = solver;
         SolverStruct.name = ModelSpec.name;
         SolverStruct.fixed_idx = idx;

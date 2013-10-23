@@ -1,8 +1,8 @@
-function CreateIpoptCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
+function CreateIpoptCPP(name,all_names, A ,  C ,fixed,n_eq,n_ineq)
 
 
-n_eq = sum(cellfun(@(x) size(x,1), Cs));
-n_ineq = sum(cellfun(@(x) size(x,1), ineq.Cs));
+% n_eq = length(AAs);
+% n_ineq = length(ineq.AAs);
 i_fixed = n_eq+n_ineq+1;
 %clear iAAs  iCs  tAAs tCs 
 
@@ -130,7 +130,7 @@ if (code_generate)
     Createget_starting_point(name,length(idx_names));
 else
 
-  [jacobian_bool hessian_bool lambda_sparse_map] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost);
+  [jacobian_bool hessian_bool lambda_sparse_map] = CreateMatricesForCPP(name,all_names, A ,  C , fixed);
   n_constr = size(jacobian_bool,1);
   Create_get_bounds_info(name,length(all_names),n_constr ,n_ineq,fixed,code_generate);
 
@@ -587,7 +587,7 @@ fclose(feval_h_val);
 fclose(feval_h_idx);
 
 
-function [jacobian hessian LambdaMap] = CreateMatricesForCPP(name,all_names, AAs ,  Cs , ineq,fixed,cost)
+function [jacobian hessian LambdaMap] = CreateMatricesForCPP(name,all_names, A ,  C,fixed)
 %{
 A = cost.A;
 C = cost.C;
@@ -618,16 +618,16 @@ if ~isequal(A,vertcat(cost.A, ineq.AAs{:}, AAs{:})) || ...
    disp('mismatch')
 end
 %}
-if all(cellfun(@isempty,ineq.AAs(2:end))) && all(cellfun(@isempty,AAs(2:end)))
-    A = vertcat(cost.A, ineq.AAs{1}, AAs{1});
-else
-    A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
-end
-if all(cellfun(@isempty,ineq.Cs(2:end))) && all(cellfun(@isempty,Cs(2:end)))
-    C = blkdiag(cost.C, ineq.Cs{1}, Cs{1});
-else
-    C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
-end
+% if all(cellfun(@isempty,ineq.AAs(2:end))) && all(cellfun(@isempty,AAs(2:end)))
+%     A = vertcat(cost.A, ineq.AAs{1}, AAs{1});
+% else
+%     A = vertcat(cost.A, ineq.AAs{:}, AAs{:});
+% end
+% if all(cellfun(@isempty,ineq.Cs(2:end))) && all(cellfun(@isempty,Cs(2:end)))
+%     C = blkdiag(cost.C, ineq.Cs{1}, Cs{1});
+% else
+%     C = blkdiag(cost.C, ineq.Cs{:}, Cs{:});
+% end
 
        
 %jacobian = spalloc(size(C,1)-1,size(A,2),size(C,1)*6);
