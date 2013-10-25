@@ -1467,7 +1467,7 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                         startBlockZeroIdx = startBlockZeroIdx + 1;
                         
                         if startBlockZeroIdx > length(startBlock)
-                            startBlock = [startBlock zeros(1, length(startBlock))];
+                            startBlock = [startBlock; zeros(length(startBlock), 1)];
                         end
                         
                         if minor
@@ -1481,7 +1481,7 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                         startBlock(startBlockZeroIdx) = blocks(idx);
                         startBlockZeroIdx = startBlockZeroIdx +1;
                         if startBlockZeroIdx > length(startBlock)
-                            startBlock = [startBlock zeros(1, length(startBlock))];
+                            startBlock = [startBlock; zeros(length(startBlock), 1)];
                         end
                     end
                     inputs = [];
