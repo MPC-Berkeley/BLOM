@@ -47,6 +47,8 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
     else
         cur_dir = pwd;
         cd([BLOM_dir '/BLOM_Ipopt']);
+        old_path = getenv('PATH');
+        setenv('PATH', [old_path, ':/usr/local/bin']) % so Matlab can find pkg-config from Homebrew
         system([ipopt_dir '/Ipopt/config.status --file="Makefile Sparse++/makefile.def"']);
         system('make clean; make all');
         
@@ -59,6 +61,7 @@ if ~isequal(ipopt_dir, 0) && ~isempty(ipopt_dir)
         end
         %copyfile([matlabroot '/bin/' computer('arch') '/libmwma57.*'],'.')
         %movefile(ls('libmwma57.*'),strrep(ls('libmwma57.*'),'libmwma57','libhsl'))
+        setenv('PATH', old_path)
         cd(cur_dir)
     end
 else
