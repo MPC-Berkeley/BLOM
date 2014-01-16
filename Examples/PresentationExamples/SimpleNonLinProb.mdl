@@ -1,17 +1,17 @@
 Model {
-  Name			  "IEORhw_example"
+  Name			  "SimpleNonLinProb"
   Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.12"
+    ComputedModelVersion    "1.13"
     NumModelReferences	    0
-    NumTestPointedSignals   9
+    NumTestPointedSignals   12
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/Add"
+      FullBlockPath	      "SimpleNonLinProb/Add"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Add_1"
@@ -20,7 +20,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/Polyblock2"
+      FullBlockPath	      "SimpleNonLinProb/Polyblock2"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Polyblock2_1"
@@ -29,7 +29,16 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/UnaryMinus"
+      FullBlockPath	      "SimpleNonLinProb/Subsystem"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SimpleNonLinProb/UnaryMinus"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "UnaryMinus_1"
@@ -38,7 +47,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/x1"
+      FullBlockPath	      "SimpleNonLinProb/x1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "x1_1"
@@ -47,7 +56,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/x2"
+      FullBlockPath	      "SimpleNonLinProb/x2"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "x2_1"
@@ -56,7 +65,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/x3"
+      FullBlockPath	      "SimpleNonLinProb/x3"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "x3_1"
@@ -65,7 +74,25 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/Subsystem/Add"
+      FullBlockPath	      "SimpleNonLinProb/Subsystem/inX1"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_inX1_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SimpleNonLinProb/Subsystem/inX2"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "Subsystem_inX2_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "SimpleNonLinProb/Subsystem/Add"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Subsystem_Add_1"
@@ -74,7 +101,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/Subsystem/MathFunction1"
+      FullBlockPath	      "SimpleNonLinProb/Subsystem/MathFunction1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Subsystem_MathFunction1_1"
@@ -83,7 +110,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "IEORhw_example/Subsystem/MathFunction2"
+      FullBlockPath	      "SimpleNonLinProb/Subsystem/MathFunction2"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Subsystem_MathFunction2_1"
@@ -106,9 +133,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jun 28 13:02:13 2013"
-  RTWModifiedTimeStamp	  294325286
-  ModelVersionFormat	  "1.%<AutoIncrement:12>"
+  LastModifiedDate	  "Thu Jan 16 11:51:39 2014"
+  RTWModifiedTimeStamp	  311773881
+  ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -369,7 +396,7 @@ Model {
 	  ModelReferenceExtraNoncontSigs "error"
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
-	  StrictBusMsg		  "Warning"
+	  StrictBusMsg		  "ErrorLevel1"
 	  LoggingUnavailableSignals "error"
 	  BlockIODiagnostic	  "none"
 	}
@@ -761,8 +788,8 @@ Model {
     }
   }
   System {
-    Name		    "IEORhw_example"
-    Location		    [1721, 277, 2460, 639]
+    Name		    "SimpleNonLinProb"
+    Location		    [1176, 397, 1915, 759]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -805,7 +832,7 @@ Model {
       Ports		      [1]
       Position		      [580, 122, 655, 168]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -829,7 +856,7 @@ Model {
       Ports		      [1]
       Position		      [230, 177, 305, 223]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -853,7 +880,7 @@ Model {
       Ports		      [1]
       Position		      [580, 47, 655, 93]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/Bound"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -877,7 +904,7 @@ Model {
       Ports		      [1]
       Position		      [580, 207, 655, 253]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/DiscreteCost"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -899,7 +926,7 @@ Model {
       Ports		      [3, 1]
       Position		      [380, 192, 470, 268]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/Polyblock"
       SourceType	      ""
       ShowPortLabels	      "none"
@@ -937,10 +964,17 @@ Model {
       Opaque		      off
       RequestExecContextInheritance off
       MaskHideContents	      off
+      Port {
+	PortNumber		1
+	RTWStorageClass		"Auto"
+	DataLogging		on
+	DataLoggingNameMode	"Custom"
+	DataLoggingName		"Subsystem_1"
+      }
       System {
 	Name			"Subsystem"
-	Location		[1615, 493, 2113, 793]
-	Open			on
+	Location		[1168, 526, 1666, 826]
+	Open			off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -960,6 +994,13 @@ Model {
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "Subsystem_inX1_1"
+	  }
 	}
 	Block {
 	  BlockType		  Inport
@@ -970,6 +1011,13 @@ Model {
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "Subsystem_inX2_1"
+	  }
 	}
 	Block {
 	  BlockType		  Sum
@@ -1033,6 +1081,13 @@ Model {
 	  IconDisplay		  "Port number"
 	  OutDataType		  "fixdt(1, 16)"
 	  OutScaling		  "2^0"
+	  MaskDisplay		  "fprintf(full_name)\nport_label('input',1,'x1')\nport_label('input',2,'x2')\nport_label('input',3"
+	  ",'x3')"
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  on
+	  MaskIconRotate	  "none"
+	  MaskPortRotate	  "default"
+	  MaskIconUnits		  "autoscale"
 	}
 	Line {
 	  SrcBlock		  "inX1"
@@ -1088,7 +1143,7 @@ Model {
       Ports		      [1, 1]
       Position		      [170, 39, 270, 81]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1100,6 +1155,7 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       interpType	      "Zero-Order Hold"
+      move_blocking_info      "[1 0]"
       Port {
 	PortNumber		1
 	RTWStorageClass		"Auto"
@@ -1115,7 +1171,7 @@ Model {
       Ports		      [1, 1]
       Position		      [100, 129, 200, 171]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1127,6 +1183,7 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       interpType	      "Zero-Order Hold"
+      move_blocking_info      "[1 0]"
       Port {
 	PortNumber		1
 	RTWStorageClass		"Auto"
@@ -1142,7 +1199,7 @@ Model {
       Ports		      [1, 1]
       Position		      [100, 234, 200, 276]
       BackgroundColor	      "lightBlue"
-      LibraryVersion	      "1.113"
+      LibraryVersion	      "1.116"
       SourceBlock	      "BLOM_Lib/InputFromSimulink"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -1154,6 +1211,7 @@ Model {
       RTWMemSecDataInternal   "Inherit from model"
       RTWMemSecDataParameters "Inherit from model"
       interpType	      "Zero-Order Hold"
+      move_blocking_info      "[1 0]"
       Port {
 	PortNumber		1
 	RTWStorageClass		"Auto"

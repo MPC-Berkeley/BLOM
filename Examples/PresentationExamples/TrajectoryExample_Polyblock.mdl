@@ -1,17 +1,17 @@
 Model {
-  Name			  "SlidesExampleNew"
+  Name			  "TrajectoryExample_Polyblock"
   Version		  7.4
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.66"
+    ComputedModelVersion    "1.67"
     NumModelReferences	    0
-    NumTestPointedSignals   11
+    NumTestPointedSignals   13
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/Constant"
+      FullBlockPath	      "TrajectoryExample_Polyblock/Constant"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Constant_1"
@@ -20,7 +20,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/Constant1"
+      FullBlockPath	      "TrajectoryExample_Polyblock/Constant1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "Constant1_1"
@@ -29,7 +29,25 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/cost"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/v_in"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_v_in_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/theta_in"
+      LogSignal		      1
+      UseCustomName	      1
+      LogName		      "System_theta_in_1"
+      MaxPoints		      5000
+      Decimation	      2
+    }
+    TestPointedSignal {
+      SignalName	      ""
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/cost"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_cost_1"
@@ -38,7 +56,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/inputConstraint1"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/inputConstraint1"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_inputConstraint1_1"
@@ -47,7 +65,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/inputConstraint2"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/inputConstraint2"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_inputConstraint2_1"
@@ -56,7 +74,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/theta"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/theta"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_theta_1"
@@ -65,7 +83,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/v"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/v"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_v_1"
@@ -74,7 +92,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/x"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/x"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_x_1"
@@ -83,7 +101,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/xk"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/xk"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_xk_1"
@@ -92,7 +110,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/y"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/y"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_y_1"
@@ -101,7 +119,7 @@ Model {
     }
     TestPointedSignal {
       SignalName	      ""
-      FullBlockPath	      "SlidesExampleNew/System/yk"
+      FullBlockPath	      "TrajectoryExample_Polyblock/System/yk"
       LogSignal		      1
       UseCustomName	      1
       LogName		      "System_yk_1"
@@ -122,11 +140,11 @@ Model {
   Creator		  "vichik"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Kyle"
+  LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jun 28 18:52:38 2013"
-  RTWModifiedTimeStamp	  294333295
-  ModelVersionFormat	  "1.%<AutoIncrement:66>"
+  LastModifiedDate	  "Thu Jan 16 11:53:05 2014"
+  RTWModifiedTimeStamp	  311773969
+  ModelVersionFormat	  "1.%<AutoIncrement:67>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -730,8 +748,8 @@ Model {
     }
   }
   System {
-    Name		    "SlidesExampleNew"
-    Location		    [158, 50, 1192, 747]
+    Name		    "TrajectoryExample_Polyblock"
+    Location		    [158, 72, 1192, 769]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -789,7 +807,7 @@ Model {
       MaskHideContents	      off
       System {
 	Name			"System"
-	Location		[23, 122, 1102, 804]
+	Location		[23, 144, 1102, 826]
 	Open			on
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
@@ -808,6 +826,13 @@ Model {
 	  SID			  3
 	  Position		  [20, 128, 50, 142]
 	  IconDisplay		  "Port number"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_v_in_1"
+	  }
 	}
 	Block {
 	  BlockType		  Inport
@@ -816,6 +841,13 @@ Model {
 	  Position		  [20, 253, 50, 267]
 	  Port			  "2"
 	  IconDisplay		  "Port number"
+	  Port {
+	    PortNumber		    1
+	    RTWStorageClass	    "Auto"
+	    DataLogging		    on
+	    DataLoggingNameMode	    "Custom"
+	    DataLoggingName	    "System_theta_in_1"
+	  }
 	}
 	Block {
 	  BlockType		  Reference
@@ -824,7 +856,7 @@ Model {
 	  Ports			  [1]
 	  Position		  [325, 178, 380, 212]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/Bound"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -848,7 +880,7 @@ Model {
 	  Ports			  [1]
 	  Position		  [325, 313, 380, 347]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/Bound"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -872,7 +904,7 @@ Model {
 	  Ports			  [1]
 	  Position		  [875, 233, 930, 267]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/DiscreteCost"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -894,7 +926,7 @@ Model {
 	  Ports			  [3, 1]
 	  Position		  [680, 231, 850, 269]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -927,7 +959,7 @@ Model {
 	  Ports			  [1, 1]
 	  Position		  [165, 169, 305, 221]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -960,7 +992,7 @@ Model {
 	  Ports			  [1, 1]
 	  Position		  [150, 302, 290, 358]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -993,7 +1025,7 @@ Model {
 	  Ports			  [1, 1]
 	  Position		  [75, 247, 115, 273]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/InputFromSimulink"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -1005,6 +1037,7 @@ Model {
 	  RTWMemSecDataInternal	  "Inherit from model"
 	  RTWMemSecDataParameters "Inherit from model"
 	  interpType		  "Zero-Order Hold"
+	  move_blocking_info	  "[1 0]"
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
@@ -1020,7 +1053,7 @@ Model {
 	  Ports			  [1, 1]
 	  Position		  [85, 122, 125, 148]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/InputFromSimulink"
 	  SourceType		  ""
 	  ShowPortLabels	  "FromPortIcon"
@@ -1032,6 +1065,7 @@ Model {
 	  RTWMemSecDataInternal	  "Inherit from model"
 	  RTWMemSecDataParameters "Inherit from model"
 	  interpType		  "Zero-Order Hold"
+	  move_blocking_info	  "[1 0]"
 	  Port {
 	    PortNumber		    1
 	    RTWStorageClass	    "Auto"
@@ -1061,7 +1095,7 @@ Model {
 	  Ports			  [3, 1]
 	  Position		  [480, 109, 590, 161]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
@@ -1109,7 +1143,7 @@ Model {
 	  Ports			  [3, 1]
 	  Position		  [500, 285, 610, 335]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.116"
 	  SourceBlock		  "BLOM_Lib/GeneralPolyblock"
 	  SourceType		  ""
 	  ShowPortLabels	  "none"
