@@ -1700,7 +1700,9 @@ end
 
 %%
 %========================================================================
-%> @brief creates allVars.optVarIdx and allVars.PKOptVarIdxDtStateReroute
+%> @brief creates allVars.optVarIdx and allVars.PKOptVarIdxDtStateReroute.
+%> reroutes variables for state blocks. Here is also where we reroute
+%> optVarIdx for move blocking
 %>
 %> @param allVars to fill in
 %>
@@ -1768,9 +1770,55 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
         end
     end
     
+    % reroute variables for move blocking
+    allVars = moveBlockingReroute(block,allVars,horizon);
+    
     [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);    
 
 end
+
+%%
+%======================================================================
+%> @brief updates allVars.optVarIdx for move blocking rerouting
+%> 
+%> @param block block structure
+%> @param allVars all variables and relevant information at all time steps
+%> @param horizon horizon of the problem
+%>
+%> @retval stepVars stepVars struct with fields consolidated
+%======================================================================
+function allVars = moveBlockingReroute(block,allVars,horizon)
+    % first find relevant blocks to do move blocking for
+    inputIdxs = find(block.inputBlock==1);
+    externalIdxs = find(block.externalBlock==1);
+    allIdx = [inputIdxs; externalIdxs];
+    % for each of the input blocks, fill in allVars correctly
+    for ii = 1:length(allIdx)
+        idx = allIdx(ii);
+        period = block.period(idx);
+        offset = block.offset(idx);
+        rerouteMat = createMoveBlockReroute(period,offset,horizon);
+        optVarsToChange = block.allOutputMatrix{idx};
+        allVars.optVarIdx(optVarsToChange) = rerouteMat*allVars.optVarIdx(optVarsToChange);
+    end
+end
+
+% the output of the matrix times the proper allVars indices help reroute
+% allVars properly
+function rerouteMat = createMoveBlockReroute(period,offset,horizon)
+    offsetMat = speye(offset);
+    if isinf(period)    
+        % horizon x horizon matrix with all ones in the first column
+        periodMat = sparse(1:horizon,1,1,horizon,horizon); 
+    else
+        onePeriodMat = sparse(1:period,1,1,period,period);
+        numClones = ceil(horizon/period);
+        periodMat = kron(eye(numClones),onePeriodMat);
+    end
+    fullMoveBlock = blkdiag(offsetMat,periodMat);
+    rerouteMat = fullMoveBlock(1:horizon,1:horizon);
+end
+
 
 %%
 %======================================================================
