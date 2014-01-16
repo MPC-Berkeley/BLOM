@@ -78,9 +78,9 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         butcherTableau.C = [0; 1/2; 1/2; 1];
     elseif strcmp(integ_method, 'custom')
         butcherTableau = options;
-    else
-        integ_method = 'None';   
+    else   
         warning(['Invalid integration method: ' integ_method '. Integration method ''None'' used instead.']);
+        integ_method = 'None';
     end
     
     if ~exist('options','var')
@@ -357,6 +357,10 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     block.reroute = false(initialSize,1);% true if this block will need to reroute variables in one way or another
     block.specialFunPresence = false(initialSize,1);% true if this block contains a special function
     block.integrator = false(initialSize,1); %true if this block is an integrator
+    % move blocking information. only inputs and externals will carry this
+    % information
+    block.period = ones(initialSize,1);
+    block.offset = zeros(initialSize,1);
 
 
     
@@ -494,7 +498,8 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     for field={'names', 'P','K','stepInputIdx','stepOutputIdx','dimensions',...
             'handles', 'bound', 'cost', 'subsystem', 'mux', 'demux', 'delay',...
             'subsystemInput', 'fromBlock', 'inputBlock', 'externalBlock', ...
-            'blockType', 'refBlock', 'reroute', 'specialFunPresence', 'integrator'}
+            'blockType', 'refBlock', 'reroute', 'specialFunPresence', 'integrator',...
+            'period','offset'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
 
@@ -775,6 +780,8 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 block.(field{1}) = [block.(field{1}); cell(block.zeroIdx,1)];
         end
         block.handles = [block.handles; zeros(block.zeroIdx,1)];
+        block.period = [block.period; ones(block.zeroIdx,1)];
+        block.offset = [block.offset; zeros(block.zeroIdx,1)];
         
         for field = {'bound', 'cost', 'subsystem', 'mux', 'demux',...
                 'delay','reroute','subsystemInput','fromBlock','inputBlock',...
@@ -828,10 +835,18 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/InputFromWorkspace')
             % this is one of the BLOM input blocks
             block.inputBlock(block.zeroIdx) = true;
+            % fill in move blocking information
+            move_blocking_info = eval(get_param(currentBlockHandle,'move_blocking_info'));
+            block.period(block.zeroIdx) = move_blocking_info(1);
+            block.offset(block.zeroIdx) = move_blocking_info(2);
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromSimulink') ||...
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
             % this is one of the BLOM external blocks
             block.externalBlock(block.zeroIdx) = true;
+            % fill in move blocking information
+            move_blocking_info = eval(get_param(currentBlockHandle,'move_blocking_info'));
+            block.period(block.zeroIdx) = move_blocking_info(1);
+            block.offset(block.zeroIdx) = move_blocking_info(2);
         elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
             % Unit Delay Label
             block.delay(block.zeroIdx) = true;
@@ -1006,7 +1021,6 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
     if horizon>1
         interP_full = kron(speye(horizon-2),interP);
         interK_full = kron(speye(horizon-2),interK);
-
         
         fullP = blkdiag(initP,interP_full,finalP);
         allK = blkdiag(initK,interK_full,finalK);
@@ -1027,6 +1041,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
     allP = fullP*toAddCol;
     
     if exist('butcherTableau','var')   
+        % default dt is 1
         if ~exist('dt','var') 
             dt = 1;
         end
