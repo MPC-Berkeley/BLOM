@@ -1476,7 +1476,7 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                     inputInter = stepVars.interTime(inputVarIdxs(1));
                     inputInit = stepVars.initTime(inputVarIdxs(1));
 
-                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0 && ...
+                    if sum(startBlock == blocks(idx)) == 0 && ...
                             (inputFinal ~= final || inputInter ~= (inter || final || minor) || inputInit ~= (final || inter || init || minor))
                         startBlock(startBlockZeroIdx) = blocks(idx);
                         startBlockZeroIdx = startBlockZeroIdx + 1;
