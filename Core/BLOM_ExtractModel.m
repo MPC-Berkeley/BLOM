@@ -1067,23 +1067,33 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                 for intOutputNum = 1:size(block.allOutputMatrix{intBlkIdx},1) %for each variable
                     %Runge Kutta equality constraint for 1 integrator 1 output
                     stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
+                    
+                    % find the first minor time step that this is relvant
+                    % at
                     minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
-
+                    
+                    
                     minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:(horizon-2))*size(minorP,2);
+                    % numer of total variables needed for all time steps
                     numEntries = size(block.allOutputMatrix{intBlkIdx},2)+length(minorTimeStepIdxs);
-
+                    
+                    % P_RK_new is just grabbing the relevant variables and
+                    % putting a power of 1
                     P_RK_new = sparse(1:numEntries, ...
                         [block.allOutputMatrix{intBlkIdx}(intOutputNum,:) minorTimeStepIdxs], ...
-                        ones(1,numEntries), ...
+                        1, ...
                         numEntries ,...
                         (size(allP,2)+size(minorP_full,2)));
-                    K_RK_new = [kron(speye(horizon-1),[1 -1]) kron(speye(horizon-1),dt*butcherTableau.B)]; %assuming butcherTableau.b is row vector
+                    
+                    nn = horizon-1;
+                    majorStepMat = [speye(nn) zeros(nn,1)] + [zeros(nn,1) -speye(nn)];
+                    K_RK_new = [majorStepMat kron(speye(horizon-1),dt*butcherTableau.B)]; %assuming butcherTableau.b is row vector
 
                     P_RK = [P_RK; P_RK_new];
                     K_RK = blkdiag(K_RK, K_RK_new);
                     
-                    %Runge Kutta equality constraint in feedback for 1
-                    %integrator 1 output
+                    % RK constraint for the output of an integrator IF that
+                    % integrator is relevant at minor time steps
                     stepOutputIdx = block.stepOutputIdx{intBlkIdx}(intOutputNum);
                     if stepVars.minorTime(stepOutputIdx)
                         stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
@@ -1094,22 +1104,24 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
 
                         P_RKm_new = sparse(1:numEntries, ...
                             [block.allOutputMatrix{intBlkIdx}(intOutputNum,:) minorTimeStepIdxs], ...
-                            ones(1,numEntries), ...
+                            1, ...
                             numEntries ,...
                             (size(allP,2)+size(minorP_full,2)));
                         K_RKm_new = [];
-                        for s = 1:size(butcherTableau.A,1)
-                            K_RKm_new = [K_RKm_new; kron(speye(horizon-1),[1 -1]) kron(speye(horizon-1),dt*butcherTableau.A(s,:))]; %assuming butcherTableau.b is row vector
-                        end
+                        
+                        %create the minor timestep constraints for an
+                        %output of an integrator
+                        numKi = size(butcherTableau.A,1);
+                        Ki_constraints = kron(speye(horizon-1),butcherTableau.A - speye(numKi));
+                        y_constraints = kron(speye(horizon-1),ones(numKi,1));
+                        K_RKm_new = [y_constraints Ki_constraints];
+                        
                         P_RKm = [P_RKm; P_RKm_new];
                         K_RKm = blkdiag(K_RKm, K_RKm_new);
                     end
                 end
             end
         end
-
-        %TODO: implement Runge-Kutta constraints for minor timestep output
-        %of integrator
         
         %FOH constraints
         P_FOH = [];
@@ -1126,12 +1138,14 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
 
                     P_FOH_new = sparse(1:numEntries,...
                         [block.allOutputMatrix{fohBlkIdx}(fohOutputNum,:) minorTimeStepIdxs],...
-                        ones(1,numEntries),...
+                        1,...
                         numEntries,...
                         (size(allP,2)+size(minorP_full,2)));
-                    K_FOH_new = [zeros(length(butcherTableau.C)*(horizon-1),1) kron(speye(horizon-1,horizon), -butcherTableau.C)];
-                    K_FOH_new = K_FOH_new + kron(speye(horizon-1,horizon), butcherTableau.C-dt); %assuming butcherTableau.c is a column vector
-                    K_FOH_new = [K_FOH_new dt*speye(length(butcherTableau.C)*(horizon-1))];
+                    nn = horizon-1;
+                    slopeMatLeft = [kron(eye(nn),butcherTableau.C-dt) zeros(length(butcherTableau.C)*nn,1)] + ...
+                        [zeros(length(butcherTableau.C)*nn,1) kron(eye(nn),-butcherTableau.C)];
+                    slopeMatRight = dt*speye(nn*length(butcherTableau.C));
+                    K_FOH_New = [slopeMatLeft slopeMatRight];
 
                     P_FOH = [P_FOH; P_FOH_new];
                     K_FOH = blkdiag(K_FOH, K_FOH_new);
@@ -1154,10 +1168,11 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
 
                     P_ZOH_new = sparse(1:numEntries,...
                         [block.allOutputMatrix{zohBlkIdx}(zohOutputNum,:) minorTimeStepIdxs],...
-                        ones(1,numEntries),...
+                        1,...
                         numEntries,...
                         (size(allP,2)+size(minorP_full,2)));
-                    K_ZOH_new = [kron(speye(horizon-1), ones(length(butcherTableau.C),1)) speye(length(butcherTableau.C)*(horizon-1))];
+                    K_ZOH_new = [kron(speye(horizon-1), ones(length(butcherTableau.C),1))...
+                        -speye(length(butcherTableau.C)*(horizon-1))];
 
                     P_ZOH = [P_ZOH; P_ZOH_new];
                     K_ZOH = blkdiag(K_ZOH, K_ZOH_new);
@@ -1166,8 +1181,8 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
         end
         %modifying allP and allK using minor timestep info
         allP = blkdiag(allP,minorP_full);
-        allP = [allP;P_RK;P_RKm;P_FOH];
-        allK = blkdiag(allK,minorK_full,K_RK,K_RKm,K_FOH);       
+        allP = [allP;P_RK;P_RKm;P_FOH;P_ZOH];
+        allK = blkdiag(allK,minorK_full,K_RK,K_RKm,K_FOH,K_ZOH);       
     end
     
 end
