@@ -1492,7 +1492,7 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                     inputs = [];
                     
                 elseif block.integrator(blocks(idx)) && (idx ~= 1)
-                    if sum(startBlock(startBlockIdx:startBlockZeroIdx) == blocks(idx)) == 0
+                    if sum(startBlock == blocks(idx)) == 0
                         startBlock(startBlockZeroIdx) = blocks(idx);
                         startBlockZeroIdx = startBlockZeroIdx +1;
                         if startBlockZeroIdx > length(startBlock)
