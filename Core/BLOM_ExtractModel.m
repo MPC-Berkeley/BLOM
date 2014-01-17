@@ -1590,6 +1590,13 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
         startBlockIdx = startBlockIdx + 1;
     end
 
+    % all variables are forced to be relevant at major time steps (for 
+    % input and externals) if the variable is relevant at minor time steps 
+    % at the input or external to ensure ZOH and FOH can be done
+    stepVars.initTime = stepVars.initTime | (stepVars.minorTime & (stepVars.input | stepVars.external));
+    stepVars.interTime = stepVars.interTime | (stepVars.minorTime & (stepVars.input | stepVars.external));
+    stepVars.finalTime = stepVars.finalTime | (stepVars.minorTime & (stepVars.input | stepVars.external));
+    
 end
 
 
