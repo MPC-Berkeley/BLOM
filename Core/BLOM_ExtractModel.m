@@ -1063,7 +1063,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
         K_RKm = [];
         integrators = find(block.integrator);
         if ~isempty(integrators)
-            for intBlkIdx = integrators %for each integrator
+            for intBlkIdx = integrators' %for each integrator
                 for intOutputNum = 1:size(block.allOutputMatrix{intBlkIdx},1) %for each variable
                     %Runge Kutta equality constraint for 1 integrator 1 output
                     stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
