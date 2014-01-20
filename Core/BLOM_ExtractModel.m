@@ -836,7 +836,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             % this is one of the BLOM input blocks
             block.inputBlock(block.zeroIdx) = true;
             % fill in move blocking information
-            move_blocking_info = eval(get_param(currentBlockHandle,'move_blocking_info'));
+            move_blocking_info = evalin('base',get_param(currentBlockHandle,'move_blocking_info'));
             block.period(block.zeroIdx) = move_blocking_info(1);
             block.offset(block.zeroIdx) = move_blocking_info(2);
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromSimulink') ||...
@@ -844,7 +844,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             % this is one of the BLOM external blocks
             block.externalBlock(block.zeroIdx) = true;
             % fill in move blocking information
-            move_blocking_info = eval(get_param(currentBlockHandle,'move_blocking_info'));
+            move_blocking_info = evalin('base',get_param(currentBlockHandle,'move_blocking_info'));
             block.period(block.zeroIdx) = move_blocking_info(1);
             block.offset(block.zeroIdx) = move_blocking_info(2);
         elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
@@ -1828,17 +1828,18 @@ end
 % the output of the matrix times the proper allVars indices help reroute
 % allVars properly
 function rerouteMat = createMoveBlockReroute(period,offset,horizon)
-    offsetMat = speye(offset);
+    % use remainder to check offset index in case 
+    offsetIdx = rem(offset,period);
     if isinf(period)    
         % horizon x horizon matrix with all ones in the first column
-        periodMat = sparse(1:horizon,1,1,horizon,horizon); 
+        rerouteMat = sparse(1:horizon,1,1,horizon,horizon); 
     else
         onePeriodMat = sparse(1:period,1,1,period,period);
         numClones = ceil(horizon/period);
-        periodMat = kron(eye(numClones),onePeriodMat);
+        periodMat = kron(eye(numClones+1),onePeriodMat);
+        offsetPeriodMat = periodMat(period-offsetIdx+1:end,period-offsetIdx+1:end);
+        rerouteMat = offsetPeriodMat(1:horizon,1:horizon);
     end
-    fullMoveBlock = blkdiag(offsetMat,periodMat);
-    rerouteMat = fullMoveBlock(1:horizon,1:horizon);
 end
 
 
