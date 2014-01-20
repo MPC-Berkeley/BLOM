@@ -15,9 +15,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "JJK"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jan 15 20:09:38 2014"
-  RTWModifiedTimeStamp	  311717367
-  ModelVersionFormat	  "1.%<AutoIncrement:116>"
+  LastModifiedDate	  "Sun Jan 19 21:11:15 2014"
+  RTWModifiedTimeStamp	  312066673
+  ModelVersionFormat	  "1.%<AutoIncrement:117>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -667,7 +667,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [2831, 858, 3387, 1299]
+    Location		    [2156, 902, 2712, 1343]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -830,8 +830,8 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "To keep values constant for a period of time, enter values under period and offset.\nExam"
-      "ples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so on\nPeriod 2, offset 1 would be u_0 "
-      "free, u_1 = u_2, u_3 = u_4, and so on\nPeriod = inf would imply the value is constant throughout the horizon"
+      "ples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so on\nPeriod 3, offset 2 would be u_0 "
+      "= u_1, u_2=u_3=u_4, etc.\nPeriod = inf would imply the value is constant throughout the horizon"
       MaskPromptString	      "Interpolation type|[Period Offset]"
       MaskStyleString	      "popup(Zero-Order Hold|First-Order Hold),edit"
       MaskTunableValueString  "on,on"
@@ -908,8 +908,8 @@ Library {
       "e used for either one-dimensional or multidimensional signals:\n    var.time=[TimeValues]\n    var.signals.value"
       "s=[DataValues]\n    var.signals.dimensions=[DimValues]\n\nTo keep values constant for a period of time, enter va"
       "lues under period and offset.\nExamples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so o"
-      "n\nPeriod 2, offset 1 would be u_0 free, u_1 = u_2, u_3 = u_4, and so on\nPeriod = inf would imply the value is "
-      "constant throughout the horizon"
+      "n\nPeriod 3, offset 2 would be u_0 = u_1, u_2=u_3=u_4, etc.\nPeriod = inf would imply the value is constant thro"
+      "ughout the horizon"
       MaskPromptString	      "Data:|Interpolation type|[Period Offset]"
       MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold),edit"
       MaskTunableValueString  "on,on,on"
@@ -1216,8 +1216,8 @@ Library {
       RequestExecContextInheritance off
       MaskHideContents	      off
       MaskDescription	      "To keep values constant for a period of time, enter values under period and offset.\nExam"
-      "ples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so on\nPeriod 2, offset 1 would be u_0 "
-      "free, u_1 = u_2, u_3 = u_4, and so on\nPeriod = inf would imply the value is constant throughout the horizon"
+      "ples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so on\nPeriod 3, offset 2 would be u_0 "
+      "= u_1, u_2=u_3=u_4, etc.\nPeriod = inf would imply the value is constant throughout the horizon"
       MaskPromptString	      "Interpolation type|[Period Offset]"
       MaskStyleString	      "popup(Zero-Order Hold|First-Order Hold),edit"
       MaskTunableValueString  "on,on"
@@ -1295,8 +1295,8 @@ Library {
       "e used for either one-dimensional or multidimensional signals:\n    var.time=[TimeValues]\n    var.signals.value"
       "s=[DataValues]\n    var.signals.dimensions=[DimValues]\n\nTo keep values constant for a period of time, enter va"
       "lues under period and offset.\nExamples: Period = 3, offset = 0, then u_0 = u_1 = u_2, u_3 = u_4 = u_5, and so o"
-      "n\nPeriod 2, offset 1 would be u_0 free, u_1 = u_2, u_3 = u_4, and so on\nPeriod = inf would imply the value is "
-      "constant throughout the horizon"
+      "n\nPeriod 3, offset 2 would be u_0 = u_1, u_2=u_3=u_4, etc.\nPeriod = inf would imply the value is constant thro"
+      "ughout the horizon"
       MaskPromptString	      "Data:|Interpolation type|[Period Offset]"
       MaskStyleString	      "edit,popup(Zero-Order Hold|First-Order Hold),edit"
       MaskTunableValueString  "on,on,on"
