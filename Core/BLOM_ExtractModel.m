@@ -361,6 +361,9 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
     % information
     block.period = ones(initialSize,1);
     block.offset = zeros(initialSize,1);
+    % ZOH and FOH parameters
+    block.FOH = false(initialSize,1);
+    block.ZOH = false(initialSize,1);
 
 
     
@@ -499,7 +502,7 @@ function [block,stepVars,stop] = searchSources(boundHandles,costHandles,...
             'handles', 'bound', 'cost', 'subsystem', 'mux', 'demux', 'delay',...
             'subsystemInput', 'fromBlock', 'inputBlock', 'externalBlock', ...
             'blockType', 'refBlock', 'reroute', 'specialFunPresence', 'integrator',...
-            'period','offset'}
+            'period','offset','ZOH','FOH'}
         block.(field{1}) = block.(field{1})(1:(block.zeroIdx-1));
     end
 
@@ -785,7 +788,7 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
         
         for field = {'bound', 'cost', 'subsystem', 'mux', 'demux',...
                 'delay','reroute','subsystemInput','fromBlock','inputBlock',...
-                'externalBlock','specialFunPresence', 'integrator'}
+                'externalBlock','specialFunPresence', 'integrator','ZOH','FOH'}
             block.(field{1}) = [block.(field{1}); false(block.zeroIdx,1)];
         end
     end
@@ -839,6 +842,13 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             move_blocking_info = evalin('base',get_param(currentBlockHandle,'move_blocking_info'));
             block.period(block.zeroIdx) = move_blocking_info(1);
             block.offset(block.zeroIdx) = move_blocking_info(2);
+            
+            interpType = get_param(currentBlockHandle,'interpType');
+            if strcmp(interpType,'Zero-Order Hold')
+                block.ZOH(block.zeroIdx) = true;
+            elseif strcmp(interpType,'First-Order Hold')
+                block.FOH(block.zeroIdx) = true;
+            end
         elseif strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromSimulink') ||...
                 strcmp(block.refBlock{block.zeroIdx}, 'BLOM_Lib/ExternalFromWorkspace')
             % this is one of the BLOM external blocks
@@ -847,9 +857,19 @@ function [block,currentBlockIndex] = updateBlock(block,currentOutport)
             move_blocking_info = evalin('base',get_param(currentBlockHandle,'move_blocking_info'));
             block.period(block.zeroIdx) = move_blocking_info(1);
             block.offset(block.zeroIdx) = move_blocking_info(2);
+            
+            interpType = get_param(currentBlockHandle,'interpType');
+            if strcmp(interpType,'Zero-Order Hold')
+                block.ZOH(block.zeroIdx) = true;
+            elseif strcmp(interpType,'First-Order Hold')
+                block.FOH(block.zeroIdx) = true;
+            end
         elseif strcmp(block.blockType{block.zeroIdx},'UnitDelay')
             % Unit Delay Label
             block.delay(block.zeroIdx) = true;
+            
+            % typically delays will have ZOH (this may be changed later)
+            block.ZOH(block.zeroIdx) = true;
         elseif strcmp(block.blockType{block.zeroIdx}, 'Integrator')
             % Label Integrator
             block.integrator(block.zeroIdx) = true;
@@ -1073,7 +1093,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                     minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
                     
                     
-                    minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:(horizon-2))*size(minorP,2);
+                    minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
                     % numer of total variables needed for all time steps
                     numEntries = size(block.allOutputMatrix{intBlkIdx},2)+length(minorTimeStepIdxs);
                     
@@ -1098,8 +1118,8 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                     if stepVars.minorTime(stepOutputIdx)
                         stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
                         minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
-
-                        minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:(horizon-2))*size(minorP,2);
+                        
+                        minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
                         numEntries = size(block.allOutputMatrix{intBlkIdx},2)+length(minorTimeStepIdxs);
 
                         P_RKm_new = sparse(1:numEntries, ...
@@ -1114,6 +1134,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                         numKi = size(butcherTableau.A,1);
                         Ki_constraints = kron(speye(horizon-1),butcherTableau.A - speye(numKi));
                         y_constraints = kron(speye(horizon-1),ones(numKi,1));
+                        y_constraints = [y_constraints zeros(size(y_constraints,1),1)];
                         K_RKm_new = [y_constraints Ki_constraints];
                         
                         P_RKm = [P_RKm; P_RKm_new];
@@ -1132,23 +1153,27 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                 for fohOutputNum = 1:size(block.allOutputMatrix{fohBlkIdx},1) %for each variable
                     stepVarIdx = block.stepOutputIdx{fohBlkIdx}(fohOutputNum);
                     minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
+                    
+                    % Only if this variable is relevant at minor times,
+                    % then we continue
+                    if ~isempty(minorTimeInitIdx)
+                        minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
+                        numEntries = size(block.allOutputMatrix{fohBlkIdx},2)+length(minorTimeStepIdxs);
 
-                    minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:(horizon-2))*size(minorP,2);
-                    numEntries = size(block.allOutputMatrix{fohBlkIdx},2)+length(minorTimeStepIdxs);
+                        P_FOH_new = sparse(1:numEntries,...
+                            [block.allOutputMatrix{fohBlkIdx}(fohOutputNum,:) minorTimeStepIdxs],...
+                            1,...
+                            numEntries,...
+                            (size(allP,2)+size(minorP_full,2)));
+                        nn = horizon-1;
+                        slopeMatLeft = [kron(eye(nn),butcherTableau.C-dt) zeros(length(butcherTableau.C)*nn,1)] + ...
+                            [zeros(length(butcherTableau.C)*nn,1) kron(eye(nn),-butcherTableau.C)];
+                        slopeMatRight = dt*speye(nn*length(butcherTableau.C));
+                        K_FOH_new = [slopeMatLeft slopeMatRight];
 
-                    P_FOH_new = sparse(1:numEntries,...
-                        [block.allOutputMatrix{fohBlkIdx}(fohOutputNum,:) minorTimeStepIdxs],...
-                        1,...
-                        numEntries,...
-                        (size(allP,2)+size(minorP_full,2)));
-                    nn = horizon-1;
-                    slopeMatLeft = [kron(eye(nn),butcherTableau.C-dt) zeros(length(butcherTableau.C)*nn,1)] + ...
-                        [zeros(length(butcherTableau.C)*nn,1) kron(eye(nn),-butcherTableau.C)];
-                    slopeMatRight = dt*speye(nn*length(butcherTableau.C));
-                    K_FOH_New = [slopeMatLeft slopeMatRight];
-
-                    P_FOH = [P_FOH; P_FOH_new];
-                    K_FOH = blkdiag(K_FOH, K_FOH_new);
+                        P_FOH = [P_FOH; P_FOH_new];
+                        K_FOH = blkdiag(K_FOH, K_FOH_new);
+                    end
                 end
             end
         end
@@ -1156,26 +1181,31 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
         %ZOH constraints
         P_ZOH = [];
         K_ZOH = [];
-        ZOH_blocks = find(block.needHold & ~block.FOH);
+        ZOH_blocks = find(block.ZOH);
         if ~isempty(ZOH_blocks)
             for zohBlkIdx = ZOH_blocks
                 for zohOutputNum = 1:size(block.allOutputMatrix{zohBlkIdx},1) %for each variable
                     stepVarIdx = block.stepOutputIdx{zohBlkIdx}(zohOutputNum);
                     minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
+                    
+                    % Only if this variable is relevant at minor times,
+                    % then we continue
+                    if ~isempty(minorTimeInitIdx)
+                        minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
+                        numEntries = size(block.allOutputMatrix{zohBlkIdx},2)+length(minorTimeStepIdxs);
 
-                    minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:(horizon-2))*size(minorP,2);
-                    numEntries = size(block.allOutputMatrix{zohBlkIdx},2)+length(minorTimeStepIdxs);
+                        P_ZOH_new = sparse(1:numEntries,...
+                            [block.allOutputMatrix{zohBlkIdx}(zohOutputNum,:) minorTimeStepIdxs],...
+                            1,...
+                            numEntries,...
+                            (size(allP,2)+size(minorP_full,2)));
+                        K_ZOH_new = [kron(speye(horizon-1), ones(length(butcherTableau.C),1))...
+                            zeros(length(butcherTableau.C)*(horizon-1),1)...
+                            -speye(length(butcherTableau.C)*(horizon-1))];
 
-                    P_ZOH_new = sparse(1:numEntries,...
-                        [block.allOutputMatrix{zohBlkIdx}(zohOutputNum,:) minorTimeStepIdxs],...
-                        1,...
-                        numEntries,...
-                        (size(allP,2)+size(minorP_full,2)));
-                    K_ZOH_new = [kron(speye(horizon-1), ones(length(butcherTableau.C),1))...
-                        -speye(length(butcherTableau.C)*(horizon-1))];
-
-                    P_ZOH = [P_ZOH; P_ZOH_new];
-                    K_ZOH = blkdiag(K_ZOH, K_ZOH_new);
+                        P_ZOH = [P_ZOH; P_ZOH_new];
+                        K_ZOH = blkdiag(K_ZOH, K_ZOH_new);
+                    end
                 end
             end
         end
@@ -1421,10 +1451,7 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
         FOH = false;
     else
         FOH = strcmp(defaultHold, 'FOH');
-    end
-    block.FOH = false(block.zeroIdx-1,1);
-    block.needHold = false(block.zeroIdx-1,1);
-    
+    end    
     blockIdxs = (1:block.zeroIdx-1)';
     
     startBlock = [blockIdxs(block.bound | block.cost); zeros(10,1)];
@@ -1499,10 +1526,6 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                         if startBlockZeroIdx > length(startBlock)
                             startBlock = [startBlock; zeros(length(startBlock), 1)];
                         end
-                        
-                        if minor
-                            block.FOH = FOH;
-                        end
                     end
                     inputs = [];
                     
@@ -1536,12 +1559,12 @@ function [stepVars,block] = labelTimeRelevance(stepVars, block, inputAndExternal
                         stepVars.initTime(outputVarIdxs) = true;
                         stepVars.interTime(outputVarIdxs) = true;
                         stepVars.finalTime(outputVarIdxs) = true;
-                        if ~block.integrator(blocks(idx))
-                            block.needHold(blocks(idx)) = true;
-                            if block.inputBlock(blocks(idx)) || block.externalBlock(blocks(idx))
-                               block.FOH(blocks(idx)) = get_param(block.handles(blocks(idx)), 'interpType'); 
-                            end
-                        end
+%                         if ~block.integrator(blocks(idx))
+%                             block.needHold(blocks(idx)) = true;
+%                             if block.inputBlock(blocks(idx)) || block.externalBlock(blocks(idx))
+%                                block.FOH(blocks(idx)) = get_param(block.handles(blocks(idx)), 'interpType'); 
+%                             end
+%                         end
                     end
                 end
 
@@ -1931,14 +1954,14 @@ function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,st
     end
     
     for idx = 1:size(ModelSpec.all_names)
-       ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
+        ModelSpec.all_names{idx} =  ModelSpec.all_names{idx}(1:end-1);
     end
 
     %create all_names_struct
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
     if isempty(ModelSpec.all_names)
-       all_fields = cell(1,5);
+        all_fields = cell(1,5);
     else
         all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
     end
