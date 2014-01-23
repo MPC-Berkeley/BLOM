@@ -70,8 +70,8 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         integ_method = 'None';
     elseif strcmp(integ_method, 'Euler')
         butcherTableau.A = 0;
-        butcherTableau.C = 0;
         butcherTableau.B = 1;
+        butcherTableau.C = 0;
     elseif strcmp(integ_method, 'RK4')
         butcherTableau.A = sparse([2 3 4], [1 2 3], [1/2 1/2 1], 4, 4);
         butcherTableau.B = [1/6 1/3 1/3 1/6];
@@ -128,7 +128,12 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
             [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block);
         else
             [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,butcherTableau,dt);
+            % add variables to allVars for the minor timeSteps
+            [allVars] = addMinorToAllVars(allVars,stepVars,butcherTableau,horizon);
         end    
+        
+        
+        
         
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
         ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block, allP,allK);
@@ -1901,6 +1906,64 @@ end
 
 %%
 %======================================================================
+%> @brief Add all minor timestep variable information to allVars structure
+%> to be used for naming and debugging
+%>
+%> @param allVars allVars structure
+%> @param stepVars all variables for one time step
+%> @param butcherTableau butcher tableau of discretization method
+%> @param horizon horizon of time
+%>
+%> @retval allVars updated allVars structure for minor time steps
+%=======================================================================
+
+function allVars = addMinorToAllVars(allVars,stepVars,butcherTableau,horizon)
+    oldLength = allVars.totalLength;
+    numMinorSteps = length(butcherTableau.C); 
+    
+    % find out which variables are relevant at minor time steps for one
+    % time step
+    sizeTimes = length(stepVars.initTime);
+    optMinorTime = stepVars.minorTime'*sparse(1:sizeTimes,stepVars.optVarIdx,1) > 0;
+    % number of columns of one P for minor time steps
+    numColMinorTime = sum(optMinorTime);
+    
+    numNewVars = numMinorSteps*numColMinorTime*(horizon-1);
+    allVars.totalLength = allVars.totalLength + numNewVars;
+    
+    % expand obvious allVars fields 
+    allVars.lowerBound = [allVars.lowerBound; -inf*ones(numNewVars,1)];
+    allVars.upperBound = [allVars.upperBound; inf*ones(numNewVars,1)];
+    allVars.cost = [allVars.lowerBound; false(numNewVars,1)];
+    
+    % fill in optVarIdx
+    newOptVarIdx = (max(allVars.optVarIdx)+1);
+    allVars.optVarIdx = [allVars.optVarIdx; (newOptVarIdx:(newOptVarIdx+numNewVars-1))'];
+    
+    % fill in PKOptVarIdxReroute. There should be no state reroutes for the
+    % minor time steps
+    allVars.PKOptVarIdxDtStateReroute = [allVars.PKOptVarIdxDtStateReroute;...
+        transpose((oldLength+1):allVars.totalLength)];
+    
+    % fill in which timestep this column belongs to
+    allVars.timeStep(oldLength+1:allVars.totalLength) = ...
+        kron(transpose(1:(horizon-1)),ones(numColMinorTime*numMinorSteps,1));
+    
+    % create new field called minorRK_Idx
+    allVars.minorRK_Idx = zeros(oldLength,1);
+    
+    RK_IdxSingleTimeStep = kron(transpose(1:length(butcherTableau.C)),ones(numColMinorTime,1));
+    allVars.minorRK_Idx = ...
+        [allVars.minorRK_Idx; repmat(RK_IdxSingleTimeStep,horizon-1,1)];
+    
+    % fill in which stepVar this minorTime relates to
+    stepVarIdxMinorTime = find(stepVars.minorTime);
+    allVars.stepVarIdx(oldLength+1:allVars.totalLength) = ...
+        repmat(stepVarIdxMinorTime,numMinorSteps*(horizon-1),1);
+end
+
+%%
+%======================================================================
 %> @brief Convert BLOM 2.0 variables into a structure readable by BLOM 1.0
 %>
 %> @param block: block structure
@@ -1912,7 +1975,7 @@ end
 
 % NOTE, REPLACE VARARGIN WITH ACTUAL VARIABLES. THIS IS JUST A PLACEHOLDER
 % FOR NOW
-function [ModelSpec] = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block,allP,allK,varargin)
+function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block,allP,allK,varargin)
     ModelSpec.name = name;
     ModelSpec.horizon = horizon;
     ModelSpec.integ_method = integ_method;
