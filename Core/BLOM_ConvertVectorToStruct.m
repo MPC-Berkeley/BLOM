@@ -38,7 +38,7 @@ else
     % number of ';' is number of multiple names
     num_terms = cellfun(@length, strfind(all_names,';')) + 1;
     terms_so_far = [0; cumsum(num_terms)];
-    all_fields = textscan([all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
+    all_fields = textscan([all_names{:}],'BL_%sOut%dt%dport%dvecIdx%dminor%d','Delimiter','.;');
     if (selector(1) == 0)
         % all names required
         base_name = all_fields{1};

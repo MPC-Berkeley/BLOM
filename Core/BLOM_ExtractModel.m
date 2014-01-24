@@ -126,6 +126,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
         % create P and K matrix for allVars
         if strcmp(integ_method, 'None')
             [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block);
+            allVars.minorRK_Idx = false(allVars.totalLength,1);
         else
             [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,butcherTableau,dt);
             % add variables to allVars for the minor timeSteps
@@ -1934,7 +1935,7 @@ function allVars = addMinorToAllVars(allVars,stepVars,butcherTableau,horizon)
     % expand obvious allVars fields 
     allVars.lowerBound = [allVars.lowerBound; -inf*ones(numNewVars,1)];
     allVars.upperBound = [allVars.upperBound; inf*ones(numNewVars,1)];
-    allVars.cost = [allVars.lowerBound; false(numNewVars,1)];
+    allVars.cost = [allVars.cost; false(numNewVars,1)];
     
     % fill in optVarIdx
     newOptVarIdx = (max(allVars.optVarIdx)+1);
@@ -2007,8 +2008,13 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     varNameTimeStep = num2str(allVars.timeStep);
     varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
     varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
-    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
-        
+%     if ~strcmp(integ_method, 'None')
+        varMinorRKIdx = num2str(allVars.minorRK_Idx);
+        varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, '.minor', varMinorRKIdx, ';');
+%     else 
+%         varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
+%     end
+    
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
@@ -2024,9 +2030,13 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     num_terms = cellfun(@length, strfind(ModelSpec.all_names,';')) + 1; % number of ';'
     terms_so_far = [0; cumsum(num_terms)]; % is number of multiple names
     if isempty(ModelSpec.all_names)
-        all_fields = cell(1,5);
+        all_fields = cell(1,6);
     else
-        all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
+%         if ~strcmp(integ_method, 'None')
+             all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%dminor%d','Delimiter','.;');
+%         else
+%            all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
+%         end
     end
     
     vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
@@ -2113,6 +2123,5 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     
     ModelSpec.allVars = allVars;
     ModelSpec.stepVars = stepVars;
-    ModelSpec.block = block;
-    
+    ModelSpec.block = block;    
 end
