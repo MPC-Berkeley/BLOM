@@ -1092,21 +1092,24 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
             for intBlkIdx = integrators' %for each integrator
                 for intOutputNum = 1:size(block.allOutputMatrix{intBlkIdx},1) %for each variable
                     %Runge Kutta equality constraint for 1 integrator 1 output
-                    stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
+                    stepVarInputIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
                     
                     % find the first minor time step that this is relvant
                     % at
-                    minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
+                    minorTimeInputInitIdx = find(stepVarInputIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
                     
+                    minorTimeInputStepIdxs = minorTimeInputInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
                     
-                    minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
+                    majorTimeOutputIdx = block.allOutputMatrix{intBlkIdx}(intOutputNum,:);
                     % numer of total variables needed for all time steps
-                    numEntries = size(block.allOutputMatrix{intBlkIdx},2)+length(minorTimeStepIdxs);
+                    numEntries = length(majorTimeOutputIdx)+length(minorTimeInputStepIdxs);
+                    
+                    
                     
                     % P_RK_new is just grabbing the relevant variables and
                     % putting a power of 1
                     P_RK_new = sparse(1:numEntries, ...
-                        [block.allOutputMatrix{intBlkIdx}(intOutputNum,:) minorTimeStepIdxs], ...
+                        [majorTimeOutputIdx minorTimeInputStepIdxs], ...
                         1, ...
                         numEntries ,...
                         (size(allP,2)+size(minorP_full,2)));
@@ -1122,14 +1125,15 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                     % integrator is relevant at minor time steps
                     stepOutputIdx = block.stepOutputIdx{intBlkIdx}(intOutputNum);
                     if stepVars.minorTime(stepOutputIdx)
-                        stepVarIdx = block.stepInputIdx{intBlkIdx}(intOutputNum);
-                        minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
+                        stepVarOutputIdx = block.stepOutputIdx{intBlkIdx}(intOutputNum);
+                        minorTimeOutputInitIdx = find(stepVarOutputIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
+                        majorTimeOutputRelevant = majorTimeOutputIdx(1:end-1);
                         
-                        minorTimeStepIdxs = minorTimeInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
-                        numEntries = size(block.allOutputMatrix{intBlkIdx},2)+length(minorTimeStepIdxs);
+                        minorTimeOutputStepIdxs = minorTimeOutputInitIdx + size(allP,2) + (0:((horizon-1)*numMinorSteps-1))*size(minorP,2);
+                        numEntries = length(minorTimeInputStepIdxs)+length(minorTimeOutputStepIdxs)+length(majorTimeOutputRelevant);
 
                         P_RKm_new = sparse(1:numEntries, ...
-                            [block.allOutputMatrix{intBlkIdx}(intOutputNum,:) minorTimeStepIdxs], ...
+                            [minorTimeOutputStepIdxs majorTimeOutputRelevant minorTimeInputStepIdxs], ...
                             1, ...
                             numEntries ,...
                             (size(allP,2)+size(minorP_full,2)));
@@ -1138,10 +1142,10 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
                         %create the minor timestep constraints for an
                         %output of an integrator
                         numKi = size(butcherTableau.A,1);
-                        Ki_constraints = kron(speye(horizon-1),butcherTableau.A - speye(numKi));
-                        y_constraints = kron(speye(horizon-1),ones(numKi,1));
-                        y_constraints = [y_constraints zeros(size(y_constraints,1),1)];
-                        K_RKm_new = [y_constraints Ki_constraints];
+                        K_minorOutMat = -speye((horizon-1)*numKi);
+                        K_majorOutMat = kron(speye(horizon-1),ones(numKi,1));
+                        K_minorInMat = kron(speye(horizon-1),butcherTableau.A);
+                        K_RKm_new = [K_minorOutMat K_majorOutMat K_minorInMat];
                         
                         P_RKm = [P_RKm; P_RKm_new];
                         K_RKm = blkdiag(K_RKm, K_RKm_new);
