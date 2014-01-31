@@ -133,9 +133,7 @@ function [ModelSpec,block,stepVars,allVars] = BLOM_ExtractModel(name,horizon,dt,
             [allVars] = addMinorToAllVars(allVars,stepVars,butcherTableau,horizon);
         end    
         
-        
-        
-        
+
         % convert to ModelSpec - this part will merge BLOM 2.0 and BLOM 1.0
         ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,stepVars,allVars,block, allP,allK);
         % following code checks whether or not inports and outportHandles
@@ -747,6 +745,9 @@ function [stepVars,block,varargout] = updateStepVars(stepVars,...
         end
     elseif block.delay(currentBlockIndex)
         % Unit Delay (or state case)
+        stepVars.state(varIdx:(varIdx+lengthOut-1)) = true;
+    elseif block.integrator(currentBlockIndex)
+        % Integrator
         stepVars.state(varIdx:(varIdx+lengthOut-1)) = true;
     elseif block.mux(currentBlockIndex)
         % Mux rerouting
@@ -1797,7 +1798,8 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     allVars.PKOptVarIdxDtStateReroute = (1:max(allVars.optVarIdx))';
     for idx = initialLength+1:totalLength
         stepVarIdx = allVars.stepVarIdx(idx);
-        if stepVars.state(stepVarIdx)
+        % only reroute for delays
+        if stepVars.state(stepVarIdx) && block.delay(stepVars.block(stepVarIdx))
             oldOptVarIdx = allVars.optVarIdx(idx);
             blockIdx = stepVars.block(stepVarIdx);
             timeStep = allVars.timeStep(idx);
@@ -1998,6 +2000,7 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     ModelSpec.Cs = {allK};
     
     varNameParentChar = char(block.names(stepVars.block(allVars.stepVarIdx)));
+    
     varNameParent = cellstr(varNameParentChar(:,(length(name)+2):end));
     for ii = 1:length(varNameParent)
         varNameParent{ii}(varNameParent{ii}=='/') = '_';
@@ -2012,12 +2015,8 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     varNameTimeStep = num2str(allVars.timeStep);
     varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
     varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
-%     if ~strcmp(integ_method, 'None')
-        varMinorRKIdx = num2str(allVars.minorRK_Idx);
-        varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, '.minor', varMinorRKIdx, ';');
-%     else 
-%         varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, ';');
-%     end
+    varMinorRKIdx = num2str(allVars.minorRK_Idx);
+    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, '.minor', varMinorRKIdx, ';');
     
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
@@ -2036,11 +2035,7 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     if isempty(ModelSpec.all_names)
         all_fields = cell(1,6);
     else
-%         if ~strcmp(integ_method, 'None')
-             all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%dminor%d','Delimiter','.;');
-%         else
-%            all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%d','Delimiter','.;');
-%         end
+        all_fields = textscan([ModelSpec.all_names{:}],'BL_%sOut%dt%dport%dvecIdx%dminor%d','Delimiter','.;');
     end
     
     vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
@@ -2057,7 +2052,6 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     ModelSpec.all_names_struct.all_fields = all_fields;
     ModelSpec.all_names_struct.vec_idx = vec_idx; 
 
-    
     %create inequality polyblocks
     optVarsBounds = zeros(numOptVars,2);   
     optVarsBounds(allVars.optVarIdx,1) = allVars.lowerBound;
@@ -2123,7 +2117,7 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
     
     %create all_state_vars
     ModelSpec.all_state_vars = sparse(allVars.optVarIdx(stepVars.state(allVars.stepVarIdx) & ...
-        (allVars.timeStep == 1)), 1, 1, numOptVars, 1);
+        (allVars.timeStep == 1) & allVars.minorRK_Idx == 0), 1, 1, numOptVars, 1);
     
     ModelSpec.allVars = allVars;
     ModelSpec.stepVars = stepVars;
