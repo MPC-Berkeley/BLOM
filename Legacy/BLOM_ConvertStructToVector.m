@@ -9,7 +9,7 @@ else
     % number of ';' is number of multiple names
     num_terms = cellfun(@length, strfind(all_names,';')) + 1;
     terms_so_far = [0, cumsum(num_terms)];
-    all_fields = textscan([all_names{:}],'BL_%sOut%dt%d%d','Delimiter','.;');
+    all_fields = textscan([all_names{:}],'BL_%sOut%dt%dport%dvecIdx%dminor%d','Delimiter','.;');
     vec_idx = zeros(terms_so_far(end),1); % preallocate vec_idx
     vec_idx(terms_so_far(1:end-1)+1) = 1:length(all_names); % first of each
     twoterms = find(num_terms == 2);
