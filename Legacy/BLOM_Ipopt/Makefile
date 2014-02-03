@@ -16,9 +16,15 @@ EXE = BLOM_NLP
 #           code that you wrote in order to define the problem statement
 OBJS =  BLOM_main.o BLOM_NLP_Sparse.o BLOM_NLP.o 
 
+# CHANGEME: Path to Ipopt
+ifndef IPOPTPATH
+ IPOPTPATH = $(HOME)/Ipopt-3.10.1
+endif
+
 # CHANGEME: Additional libraries
-ADDLIBS = Sparse++/lib/libsparse.a Sparse++/lib/libspblas.a \
+SparseLibs = Sparse++/lib/libsparse.a Sparse++/lib/libspblas.a \
 					Sparse++/lib/libmv.a
+ADDLIBS = $(SparseLibs)
 
 # CHANGEME: Additional flags for compilation (e.g., include flags)
 ADDINCFLAGS = -I ../ '-DCOMPLEX=std::complex<double>' -I Sparse++/mv/include 
@@ -32,19 +38,19 @@ ADDINCFLAGS = -I ../ '-DCOMPLEX=std::complex<double>' -I Sparse++/mv/include
 CXX = g++
 
 # C++ Compiler options
-CXXFLAGS = -O3 -pipe -DNDEBUG -Wparentheses -Wreturn-type -Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -Wno-unknown-pragmas -Wno-long-long   -DIPOPT_BUILD
+CXXFLAGS = -O3 -pipe -DNDEBUG -pedantic-errors -Wparentheses -Wreturn-type -Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -Wno-unknown-pragmas -Wno-long-long   -DIPOPT_BUILD
 
 # additional C++ Compiler options for linking
-CXXLINKFLAGS = 
+CXXLINKFLAGS =  -Wl,--rpath -Wl,$(IPOPTPATH)/lib
 
 # Include directories (we use the CYGPATH_W variables to allow compilation with Windows compilers)
-INCL = `PKG_CONFIG_PATH=/Users/JJK/Documents/Research/ipopt/build/lib64/pkgconfig:/Users/JJK/Documents/Research/ipopt/build/lib/pkgconfig:/Users/JJK/Documents/Research/ipopt/build/share/pkgconfig: pkg-config --cflags ipopt` $(ADDINCFLAGS)
-#INCL = -I`$(CYGPATH_W) /Users/JJK/Documents/Research/ipopt/build/include/coin`  $(ADDINCFLAGS)
+INCL = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --cflags ipopt` $(ADDINCFLAGS)  
+#INCL = -I`$(CYGPATH_W) $(IPOPTPATH)/include/coin`  $(ADDINCFLAGS)
 
 # Linker flags
-LIBS = `PKG_CONFIG_PATH=/Users/JJK/Documents/Research/ipopt/build/lib64/pkgconfig:/Users/JJK/Documents/Research/ipopt/build/lib/pkgconfig:/Users/JJK/Documents/Research/ipopt/build/share/pkgconfig: pkg-config --libs ipopt`
-##LIBS = -link -libpath:`$(CYGPATH_W) /Users/JJK/Documents/Research/ipopt/build/lib` libipopt.lib -framework vecLib -framework vecLib -lm  -ldl
-#LIBS = -L/Users/JJK/Documents/Research/ipopt/build/lib -lipopt `echo -framework vecLib -framework vecLib -lm  -ldl | sed -e 's/ -lmsvcrt / /g'`
+LIBS = `PKG_CONFIG_PATH=$(IPOPTPATH)/lib/pkgconfig:$(IPOPTPATH)/share/pkgconfig: /usr/bin/pkg-config --libs ipopt`
+##LIBS = -link -libpath:`$(CYGPATH_W) $(IPOPTPATH)/lib` libipopt.lib -llapack -lblas -lm  -ldl
+#LIBS = -L$(IPOPTPATH)/lib -lipopt -llapack -lblas -lm  -ldl
 
 # The following is necessary under cygwin, if native compilers are used
 CYGPATH_W = echo
@@ -53,12 +59,12 @@ all: $(EXE)
 
 .SUFFIXES: .cpp .c .o .obj
 
-$(EXE): $(OBJS) $(ADDLIBS)
+$(EXE): $(OBJS) $(SparseLibs)
 	bla=;\
 	for file in $(OBJS); do bla="$$bla `$(CYGPATH_W) $$file`"; done; \
-	$(CXX) $(CXXLINKFLAGS) $(CXXFLAGS) -o $@ $$bla $(LIBS) $(ADDLIBS)
+	$(CXX) $(CXXLINKFLAGS) $(CXXFLAGS)  -o $@ $$bla $(LIBS) $(ADDLIBS)
 
-$(ADDLIBS):
+$(SparseLibs): 
 	cd Sparse++; make sp;
 
 clean:
