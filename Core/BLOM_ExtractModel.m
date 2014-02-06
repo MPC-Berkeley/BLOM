@@ -1853,10 +1853,17 @@ function allVars = moveBlockingReroute(block,allVars,horizon)
     for ii = 1:length(allIdx)
         idx = allIdx(ii);
         period = block.period(idx);
-        offset = block.offset(idx);
-        rerouteMat = createMoveBlockReroute(period,offset,horizon);
-        optVarsToChange = block.allOutputMatrix{idx};
-        allVars.optVarIdx(optVarsToChange) = rerouteMat*allVars.optVarIdx(optVarsToChange);
+        if period == 1
+            % do nothing if no move blocking
+        else
+            offset = block.offset(idx);
+            rerouteMat = createMoveBlockReroute(period,offset,horizon);
+            optVarsToChange = block.allOutputMatrix{idx};
+            for jj = 1:size(optVarsToChange,1)
+                % take into consideration multi-dimensional externals/inputs
+                allVars.optVarIdx(optVarsToChange(jj,:)) = rerouteMat*allVars.optVarIdx(optVarsToChange(jj,:));
+            end
+        end
     end
 end
 
