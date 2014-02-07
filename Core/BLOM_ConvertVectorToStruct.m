@@ -31,6 +31,7 @@ if isstruct(all_names)
     base_name = all_fields{1};
     port_number = all_fields{2};
     time_index = all_fields{3};
+    minor_index = all_fields{6};
 else
     if size(all_names,2) > 1
         all_names = all_names';
@@ -54,26 +55,60 @@ else
     end
 end
 
-if (selector(1) ~= 0)
+if (selector(1) > 0)
     % just a subset given by selector vector required
     base_name = all_fields{1}(terms_so_far(1:end-1) + selector);
     port_number = all_fields{2}(terms_so_far(1:end-1) + selector);
     time_index = all_fields{3}(terms_so_far(1:end-1) + selector);
     vec_idx = (1:length(vec))';
+    minor_index = all_fields{6}(terms_so_far(1:end-1) + selector);
 end
 
-% populate the data structure one variable name at a time
-% goal is to set each matrix of (time, port) data in a vectorized way
-[sorted, index] = sort(base_name);
-% First sort by names, then find last occurrence of each name
-[names, I] = unique(sorted);
-I = [0; I];
-for i=1:length(names)
-    % convert times and port #'s for this signal name into 1d indices
-    time_indices_i = time_index(index(I(i)+1:I(i+1)));
-    port_numbers_i = port_number(index(I(i)+1:I(i+1)));
-    size_i = [max(time_indices_i), max(port_numbers_i)];
-    inds_i = sub2ind(size_i, time_indices_i, port_numbers_i);
-    data.(names{i}) = zeros(size_i); % preallocate - maybe this should be nan's?
-    data.(names{i})(inds_i) = vec(vec_idx(index(I(i)+1:I(i+1))));
+if any(minor_index~=0) && (selector(1) == -1)
+    % this is a continuous time problem and there is some discretization
+    % method
+    
+    base_name_minor = strcat(base_name,';minor',num2str(minor_index));
+    % populate the data structure one variable name at a time
+    % goal is to set each matrix of (time, port) data in a vectorized way
+    [sorted_minor, index_minor] = sort(base_name_minor);
+    
+    % FIX THIS.
+    
+    [names_minor, I] = unique(sorted_minor);
+    parsed_names = textscan([names_minor{:}],'%sminor%d','Delimiter',';');
+    I = [0; I];
+    for i=1:length(names_minor)
+        % convert times and port #'s for this signal name into 1d indices
+        time_indices_i = time_index(index_minor(I(i)+1:I(i+1)));
+        port_numbers_i = port_number(index_minor(I(i)+1:I(i+1)));
+        size_i = [max(time_indices_i), max(port_numbers_i)];
+        inds_i = sub2ind(size_i, time_indices_i, port_numbers_i);
+        minor_name = ['minor' num2str(parsed_names{2}(i))];
+        data.(parsed_names{1}{i}).(minor_name) = zeros(size_i); % preallocate - maybe this should be nan's?
+        data.(parsed_names{1}{i}).(minor_name)(inds_i) = vec(vec_idx(index_minor(I(i)+1:I(i+1))));
+    end
+    
+else
+    % this is a discrete time problem and has no discretization method
+    % (i.e. no minor variables)
+    
+    % populate the data structure one variable name at a time
+    % goal is to set each matrix of (time, port) data in a vectorized way
+    [sorted, index] = sort(base_name);
+    % First sort by names, then find last occurrence of each name
+    [names, I] = unique(sorted);
+    I = [0; I];
+    for i=1:length(names)
+        % convert times and port #'s for this signal name into 1d indices
+        time_indices_i = time_index(index(I(i)+1:I(i+1)));
+        port_numbers_i = port_number(index(I(i)+1:I(i+1)));
+        size_i = [max(time_indices_i), max(port_numbers_i)];
+        inds_i = sub2ind(size_i, time_indices_i, port_numbers_i);
+        data.(names{i}) = zeros(size_i); % preallocate - maybe this should be nan's?
+        data.(names{i})(inds_i) = vec(vec_idx(index(I(i)+1:I(i+1))));
+    end
+    
 end
+
+
