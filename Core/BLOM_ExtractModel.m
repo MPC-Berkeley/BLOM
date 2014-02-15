@@ -1666,8 +1666,7 @@ function block = expandBlock(block, horizon, stepVars, allVars)
     % adds a field to stepVars with row vectors containing pointers to
     % Allvars in column of appropriate timesteps
     % CHANGE ONLY APPLIES TO TEMP VARIABLE IN THIS FUNCTION CALL
-    stepVars.allVarsIdxs = cell(stepVars.zeroIdx-1,1);
-    [stepVars.allVarsIdxs{:}] = deal(zeros(horizon,1));
+    stepVars.allVarsIdxs = repmat({zeros(horizon,1)}, stepVars.zeroIdx-1, 1);
     for allVarsIdx = 1:allVars.totalLength
         stepVars.allVarsIdxs{allVars.stepVarIdx(allVarsIdx)}(allVars.timeStep(allVarsIdx)) = allVarsIdx;
     end
