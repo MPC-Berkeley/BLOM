@@ -1194,7 +1194,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
         K_ZOH = [];
         ZOH_blocks = find(block.ZOH);
         if ~isempty(ZOH_blocks)
-            for zohBlkIdx = ZOH_blocks
+            for zohBlkIdx = ZOH_blocks'
                 for zohOutputNum = 1:size(block.allOutputMatrix{zohBlkIdx},1) %for each variable
                     stepVarIdx = block.stepOutputIdx{zohBlkIdx}(zohOutputNum);
                     minorTimeInitIdx = find(stepVarIdx == find(stepVars.minorTime));  %TODO: optimize to remove find(find(...))
