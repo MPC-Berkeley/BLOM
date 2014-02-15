@@ -1896,10 +1896,11 @@ end
 %======================================================================
 function stepVars = consolidateStepVars(stepVars)
     
-    
-    for optVar = 1:max(stepVars.optVarIdx)
+    optVarIdx_sorted = sort(stepVars.optVarIdx);
+    [optVarIdx_unique, idx_unique] = unique(optVarIdx_sorted, 'last');
+    for optVar = optVarIdx_unique(diff(idx_unique)>1)'+1
         idxs = stepVars.optVarIdx == optVar;
-        numVars = sum(idxs);
+        numVars = nnz(idxs);
         if numVars ~= 1
             %consolidate stepVars
             stepVars.initLowerBound(idxs) = max(stepVars.initLowerBound(idxs));
