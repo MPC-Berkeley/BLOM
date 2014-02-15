@@ -31,7 +31,7 @@ vec_index = all_fields{5}(terms_so_far(1:end-1) + 1); % only first name
 
 varName = cell(size(base_name));
 for ii = 1:length(varName)
-    varName{ii} = [base_name{ii} '_' num2str(port_number(ii))];
+    varName{ii} = sprintf('%s_%d', base_name{ii}, port_number(ii));
 end
 
 % convert from Simulink ToWS to BLOM vector one variable name at a time

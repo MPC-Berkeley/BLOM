@@ -2018,18 +2018,17 @@ function ModelSpec = convert2ModelSpec(name,horizon,integ_method,dt,options,step
             stepVarOutputNum(block.stepOutputIdx{blockIdx}(outputIdx)) = outputIdx;
         end
     end
-    varNameOutputNum = num2str(stepVarOutputNum(allVars.stepVarIdx));
-    varNameTimeStep = num2str(allVars.timeStep);
-    varNamePortNum = num2str(stepVars.outportNum(allVars.stepVarIdx));
-    varNameVecIdx = num2str(stepVars.outportIndex(allVars.stepVarIdx));
-    varMinorRKIdx = num2str(allVars.minorRK_Idx);
-    varNameAllVars = strcat('BL_',varNameParent, '.Out', varNameOutputNum, '.t', varNameTimeStep,'.port', varNamePortNum  ,'.vecIdx', varNameVecIdx, '.minor', varMinorRKIdx, ';');
+    varNameAllVars = strcat('BL_', varNameParent, arrayfun(@(x1, x2, x3, x4, x5) ...
+        sprintf('.Out%d.t%d.port%d.vecIdx%d.minor%d;', x1, x2, x3, x4, x5), ...
+        stepVarOutputNum(allVars.stepVarIdx), allVars.timeStep, ...
+        stepVars.outportNum(allVars.stepVarIdx), stepVars.outportIndex(allVars.stepVarIdx), ...
+        allVars.minorRK_Idx, 'UniformOutput', 0));
     
     %create all_names field
     ModelSpec.all_names = cell(numOptVars,1);
     for idx = 1:allVars.totalLength
         ModelSpec.all_names{allVars.optVarIdx(idx)} = ...
-            strcat(ModelSpec.all_names{allVars.optVarIdx(idx)}, varNameAllVars{idx});
+            [ModelSpec.all_names{allVars.optVarIdx(idx)}, varNameAllVars{idx}];
     end
     
     for idx = 1:size(ModelSpec.all_names)
