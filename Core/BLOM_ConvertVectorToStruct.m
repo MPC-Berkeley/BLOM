@@ -75,7 +75,7 @@ if any(minor_index~=0) && (selector(1) == -1)
     
     % FIX THIS.
     
-    [names_minor, I] = unique(sorted_minor);
+    [names_minor, I] = unique(sorted_minor, 'last');
     parsed_names = textscan([names_minor{:}],'%sminor%d','Delimiter',';');
     I = [0; I];
     for i=1:length(names_minor)
@@ -97,7 +97,7 @@ else
     % goal is to set each matrix of (time, port) data in a vectorized way
     [sorted, index] = sort(base_name);
     % First sort by names, then find last occurrence of each name
-    [names, I] = unique(sorted);
+    [names, I] = unique(sorted, 'last');
     I = [0; I];
     for i=1:length(names)
         % convert times and port #'s for this signal name into 1d indices

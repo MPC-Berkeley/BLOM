@@ -182,7 +182,7 @@ end
 %> @retval newK matrix reduced
 %=======================================================================
 function [newP newK] = cleanupPK(P, K)
-    [newP,~,J] = unique(P, 'rows');
+    [newP,~,J] = unique(P, 'rows', 'last');
     newK = zeros(size(K,1), max(J));
     for col = 1:size(K,2)
        newK(:,J(col)) =  newK(:,J(col)) + K(:,col);

@@ -38,7 +38,7 @@ end
 % goal is to copy each matrix of (time, port) data in a vectorized way
 [sorted, index] = sort(varName);
 % First sort by names, then find last occurrence of each name
-[names, I] = unique(sorted);
+[names, I] = unique(sorted, 'last');
 I = [0; I];
 
 ResultsVec = zeros(length(ModelSpec.all_names),1);

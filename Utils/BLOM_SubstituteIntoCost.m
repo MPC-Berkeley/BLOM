@@ -8,7 +8,7 @@ function [P K vars_removed] = ...
 P = P(any(K,1),:); % remove unused terms
 K = K(:,any(K,1));
 % combine duplicate rows of P
-[P idx1 idx2] = unique(P, 'rows');
+[P idx1 idx2] = unique(P, 'rows', 'last');
 perm2 = sparse(1:length(idx2), idx2, 1, length(idx2), size(P,1));
 K = K*perm2;
 

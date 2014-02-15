@@ -108,7 +108,7 @@ classdef (InferiorClasses = {?BLOM_Variable}) BLOM_Expression
         function expr = combineDuplicateTerms(expr)
             % find the unique columns of Pt
             expr = expr.removeUnusedTerms;
-            [Punique, idx1, idx2] = unique(expr.Pt', 'rows');
+            [Punique, idx1, idx2] = unique(expr.Pt', 'rows', 'last');
             expr.Pt = Punique';
             expr.K = expr.K * sparse(1:numel(idx2), ...
                 idx2, 1, numel(idx2), size(Punique,1));

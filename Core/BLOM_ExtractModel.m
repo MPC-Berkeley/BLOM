@@ -1058,7 +1058,7 @@ function [allP,allK] = createAllPK(stepP,stepK,stepVars,horizon,allVars,block,bu
     
     % use allVars.PKOptVarIdxDtStateReroute to reroute columns of states
     [~,colPLength] = size(fullP);
-    [~,~,rerouteIdx] = unique(allVars.PKOptVarIdxDtStateReroute);
+    [~,~,rerouteIdx] = unique(allVars.PKOptVarIdxDtStateReroute, 'last');
     
     % create a matrix that finds which columns of the entire P (with
     % states) to add to the columns of P without states
@@ -1335,7 +1335,7 @@ function optVarIdx = cleanupOptVarIdx(optVarIdx)
         end
         optVarIdx(i) = target;
     end
-    [~,~,optVarIdx] = unique(optVarIdx);
+    [~,~,optVarIdx] = unique(optVarIdx, 'last');
 end
 
 %%
@@ -1792,7 +1792,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
         
     % reroute optVarIdx for delay blocks such that output of 1/z at timestep
     % k+1 is same as optvaridx of inut at timestep k
-    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);
+    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx, 'last');
         
     allVars.PKOptVarIdxDtStateReroute = (1:max(allVars.optVarIdx))';
     for idx = initialLength+1:totalLength
@@ -1829,7 +1829,7 @@ function allVars = allOptVarIdxs(allVars,block,stepVars,horizon)
     % reroute variables for move blocking
     allVars = moveBlockingReroute(block,allVars,horizon);
     
-    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx);    
+    [~,~,allVars.optVarIdx] = unique(allVars.optVarIdx, 'last');    
 
 end
 
@@ -1895,6 +1895,7 @@ end
 %> @retval stepVars stepVars struct with fields consolidated
 %======================================================================
 function stepVars = consolidateStepVars(stepVars)
+    
     
     for optVar = 1:max(stepVars.optVarIdx)
         idxs = stepVars.optVarIdx == optVar;
