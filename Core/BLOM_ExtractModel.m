@@ -1247,13 +1247,13 @@ function [trimP,trimK] = trimPK(stepP,stepK,relevantTimes)
     % remove initP rows if the row had a value in the columns that were
     % removed. 
     removeP_rows = any(stepP(:,~relevantTimes)~=0,2);
-    trimP(removeP_rows,:) = [];
+    trimP = trimP(~removeP_rows,:);
     % remove the corresponding columns of K
     trimK = stepK(:,~removeP_rows);
     % remove rows of K that had a value in the removed columns of K in the
     % previous line
     removeK_rows = any(stepK(:,removeP_rows)~=0,2);
-    trimK(removeK_rows,:) = [];
+    trimK = trimK(~removeK_rows,:);
 end
 
 %%
