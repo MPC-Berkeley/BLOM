@@ -13,11 +13,11 @@ Library {
   Creator		  "JJK"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "JJK"
+  LastModifiedBy	  "Tony"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Sun Jan 19 21:11:15 2014"
-  RTWModifiedTimeStamp	  312066673
-  ModelVersionFormat	  "1.%<AutoIncrement:117>"
+  LastModifiedDate	  "Thu Mar 06 14:26:30 2014"
+  RTWModifiedTimeStamp	  316012741
+  ModelVersionFormat	  "1.%<AutoIncrement:118>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -667,7 +667,7 @@ Library {
   }
   System {
     Name		    "BLOM_Lib"
-    Location		    [2156, 902, 2712, 1343]
+    Location		    [405, 163, 961, 604]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -973,7 +973,6 @@ Library {
       Ports		      [2, 1]
       Position		      [290, 221, 390, 259]
       BackgroundColor	      "lightBlue"
-      MoveFcn		      "set_param(gcb,'P',get_param(gcb,'P'))"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
@@ -1095,12 +1094,12 @@ Library {
 	  Ports			  [1, 1]
 	  Position		  [155, 32, 245, 108]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.117"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  "Unknown"
+	  SourceType		  ""
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData "off"
+	  FunctionWithSeparateData off
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1109,8 +1108,8 @@ Library {
 	  P			  "P_f"
 	  K			  "K_f"
 	  inputs		  "x"
-	  inputScalar		  "off"
-	  outputScalar		  "off"
+	  inputScalar		  off
+	  outputScalar		  off
 	}
 	Block {
 	  BlockType		  Reference
@@ -1119,12 +1118,12 @@ Library {
 	  Ports			  [1, 1]
 	  Position		  [155, 152, 245, 228]
 	  BackgroundColor	  "lightBlue"
-	  LibraryVersion	  "1.113"
+	  LibraryVersion	  "1.117"
 	  SourceBlock		  "BLOM_Lib/Polyblock"
-	  SourceType		  "Unknown"
+	  SourceType		  ""
 	  ShowPortLabels	  "none"
 	  SystemSampleTime	  "-1"
-	  FunctionWithSeparateData "off"
+	  FunctionWithSeparateData off
 	  RTWMemSecFuncInitTerm	  "Inherit from model"
 	  RTWMemSecFuncExecute	  "Inherit from model"
 	  RTWMemSecDataConstants  "Inherit from model"
@@ -1133,8 +1132,8 @@ Library {
 	  P			  "P_g"
 	  K			  "K_g"
 	  inputs		  "x"
-	  inputScalar		  "off"
-	  outputScalar		  "off"
+	  inputScalar		  off
+	  outputScalar		  off
 	}
 	Block {
 	  BlockType		  Outport
@@ -1360,7 +1359,6 @@ Library {
       Ports		      [2, 1]
       Position		      [60, 221, 160, 259]
       BackgroundColor	      "lightBlue"
-      MoveFcn		      "set_param(gcb,'P',get_param(gcb,'P'))"
       ShowPortLabels	      "none"
       MinAlgLoopOccurrences   off
       PropExecContextOutsideSubsystem off
