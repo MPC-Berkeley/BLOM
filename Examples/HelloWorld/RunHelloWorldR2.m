@@ -3,7 +3,7 @@ clear
 %% Convert model to optimization problem
 BLOM_SetDataLogging('HelloWorldContNew')
 
-[ModelSpec] = BLOM_ExtractModel('HelloWorldContNew',10,1,'Euler');
+[ModelSpec] = BLOM_ExtractModel('HelloWorldNew',10,1,'Euler');
 %%
 [RunResults ResultsVec] = BLOM_RunModel(ModelSpec);
 %%
