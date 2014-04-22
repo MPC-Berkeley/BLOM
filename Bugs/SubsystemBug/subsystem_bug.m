@@ -31,7 +31,7 @@ dt_model    =       0.2;              %   time step for model                   
 % Constants related to obstacles avoidance
 dsafe       =       0.2;              %  safety distance obstacle avoidance             [m] 
 K           =       3;                %  number of position states                      [1]
-n0          =       size(obstacles,1);%  number of obstacles                            [1]
+n0          =       1; %size(obstacles,1);%  number of obstacles                            [1]
 
 
 
